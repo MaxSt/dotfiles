@@ -1,0 +1,11 @@
+[core]
+  editor = vim
+[user]
+  name = <%= print("Your Name: "); STDOUT.flush; STDIN.gets.chomp %>
+  email = <%= print("Your Email: "); STDOUT.flush; STDIN.gets.chomp %>
+[alias]
+  ac = !git add -A && git commit
+[color]
+  diff = auto
+  status = auto
+  branch = auto

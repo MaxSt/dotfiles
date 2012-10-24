@@ -1,0 +1,26 @@
+snippet if
+	<% if ${1:condition} %>
+		${2}
+	<% end %>
+snippet ife
+	<% if ${1} %>
+		${2}
+	<% else %>
+	<% end %>
+snippet ri
+	<%= ${1} %>
+snippet rt
+	<% ${1} %>
+snippet unless
+	<% unless ${1} %>
+		${2}
+	<% end %>
+snippet unlesse
+	<% unless ${1} %>
+		${2}
+	<% else %>
+	<% end %>
+snippet hval
+	:${1:key} => ${2:val}
+snippet hash
+	${1:hash}[:${2:key}]${3}

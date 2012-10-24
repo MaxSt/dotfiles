@@ -1,0 +1,129 @@
+snippet base
+	<base href="<++>"<+ target="<++>"+>/>
+snippet body
+	<body id="${1}">
+		${2}
+	</body>
+snippet div
+	<div>
+		${1}
+	</div>
+snippet divc
+	<div class="${1:class-name}">
+		${2}
+	</div>
+snippet divci
+	<div class="${1:class-name}" id="${2:id-name}">
+		${3}
+	</div>
+snippet divi
+	<div id="${1:id-name}">
+		${2}
+	</div>
+snippet divic
+	<div id="${1:id-name}" class="${2:class-name}">
+		${3}
+	</div>
+snippet doctype
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">${1}
+snippet form
+	<form action="${1:action}" method="${2:post}" accept-charset="utf-8">
+		${3}
+
+		<p><input type="submit" value="Continue &rarr;"/></p>
+	</form>
+snippet h1
+	<h1 id="${1}">${2}</h1>
+snippet head
+	<head>
+		<meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+		<title>${1:Page Title}</title>
+		${2}
+	</head>
+snippet href
+	<a href="${1}">${2}</a>
+snippet ifie
+	<!--[if IE ${1:6}]>${2}<![endif]-->${3}
+snippet img
+	<img src="${1}"${2} />
+snippet input
+	<input type="${1:text/submit/hidden/button}" name="${2}" value="${3:value}" id="${4:$2}"/>${5}
+snippet inputl
+	<label for="${1:input_id}">${2}</label>
+	<input type="${3:text/submit/hidden/button}" name="${4:$1}" value="${5:value}" id="${6:$1}"/>${7}
+snippet label
+	<label for="${1:id}">${2:label_text}</label>
+snippet link
+	<link rel="${1:stylesheet}" href="${2:path-to-stylesheet}.css" type="text/css" media="${3:screen}" charset="${4:utf-8}"/>${5}
+snippet mailto
+	<a href="mailto:<+email+><+?subject=<+feedback+>+>"><+email me+></a>
+snippet meta
+	<meta name="${1:name}" content="${2:content}"/>
+snippet option
+	<option value="${1}">${2}</option>
+snippet script include_script
+	<script src="${1:url}" type="text/javascript" charset="utf-8"></script>${2}
+snippet script inline_script
+	<script type="text/javascript" language="javascript" charset="utf-8">
+	//<![CDATA[
+		${1}
+	//]]>
+	</script>
+snippet select
+	<select name="${1}" id="${2}">
+		${3}
+	</select>
+snippet skel basic
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0
+	Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+	<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>${1:Page Title}</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+	</head>
+
+	<body>
+		${2}
+	</body>
+	</html>
+snippet skel basic_with_meta
+	<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0
+	Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+	<html xmlns="http://www.w3.org/1999/xhtml">
+		<head>
+			<title>${1:Page Title}</title>
+			<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+			<meta name="keywords" content=""/>
+			<meta name="description" content=""/>
+		</head>
+
+		<body>
+			${2}
+		</body>
+	</html>
+snippet style
+	<style type="text/css" media="screen">
+		${1}
+	</style>
+snippet t
+	<${1:div}${2}>
+		${3}
+	</$1>${4}
+snippet table basic
+	<table class="${1}">
+		${2}
+	</table>
+snippet table hardcore
+	<table<+ width="<+100%+>" border="<+0+>" cellspacing="<+0+>" cellpadding="<+5+>"<++>+>>
+	<tr>
+		<th><++></th>
+	</tr>
+
+	<tr>
+		<td></td>
+	</tr>
+	</table>
+snippet textarea
+	<textarea name="${1:Name}" rows="${2:8}" cols="${2:40}">${3}</textarea>
