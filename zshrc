@@ -12,6 +12,8 @@ ZSH_THEME="max"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias t="task"
 
+source /etc/profile
+
 #For vi Keybindings
 bindkey -v
 

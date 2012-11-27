@@ -105,7 +105,7 @@
     if has("mac")
       set guifont=DejaVu\ Sans\ Mono:h15          " set Font by Editing with a gui
     elseif has('unix')
-      set guifont=DejaVuSansMono\ 15
+      set guifont=DejaVuSansMono\ 14
     endif
   else
     let g:solarized_termcolors=256  " set colors to termcolors for terminal
