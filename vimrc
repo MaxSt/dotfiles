@@ -53,13 +53,13 @@
     " }
 
 
-    " TagmarTasks
+    " TagmarTasks{
         " dont show Marks
         let g:TagmaTasksMarks = 0
     " }
 
 
-    " ctrlp
+    " ctrlp{
         let g:ctrlp_map = '<leader>t'
         noremap <leader>g :CtrlPTag<cr>
         let g:ctrlp_working_path_mode = 0 " Dont manage working directory
@@ -69,17 +69,17 @@
     " }
 
 
-    " Powerline
+    " Powerline{
         let g:Powerline_symbols = 'fancy'
     " }
 
-    " Intent-Guides (binding: ,ig)
+    " Intent-Guides (binding: ,ig) {
         let g:indent_guides_start_level = 2
         let g:indent_guides_guide_size = 1
         let g:indent_guides_enable_on_vim_startup = 1
     " }
 
-    " AutoClose
+    " AutoClose{
         let g:AutoClosePairs = {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'","<% ": " %>", "<%= ": " %>"}
     " }
 
@@ -88,11 +88,15 @@
     " }
 
     " Easytags{
-      let g:easytags_updatetime_autodisable = 1
+        let g:easytags_updatetime_autodisable = 1
     " }
 
-    " Gundo
+    " Gundo{
         nnoremap  <leader>u :GundoToggle<CR>
+    " }
+
+    " syntastic{
+        let g:syntastic_auto_loc_list=1
     " }
 "}
 

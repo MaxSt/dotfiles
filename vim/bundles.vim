@@ -35,6 +35,7 @@
  Bundle 'AndrewRadev/splitjoin.vim.git'
  Bundle 'vim-scripts/easytags.vim.git'
  Bundle 'majutsushi/tagbar.git'
+ Bundle 'scrooloose/syntastic'
  " Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 
 
