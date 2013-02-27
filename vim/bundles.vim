@@ -36,6 +36,7 @@
  Bundle 'vim-scripts/easytags.vim.git'
  Bundle 'majutsushi/tagbar.git'
  Bundle 'scrooloose/syntastic'
+ Bundle 'altercation/vim-colors-solarized'
  " Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 
 

@@ -1,13 +1,15 @@
     " Basics {
       filetype plugin indent on     " required!
-                set nocompatible 		" must be first line
+      set nocompatible 		" must be first line
       set background=dark     " Assume a dark background
       "The default leader is '\', but many people prefer ',' as it's in a standard
       "location
       let mapleader = ','
+
+      " Automatic reloading of .vimrc
+      "autocmd! bufwritepost .vimrc source %
     " }
   " }
-
 
     " Plugins {
       " Vundler {
@@ -104,6 +106,11 @@
 " General {
 	syntax on 					" syntax highlighting
   set background=dark
+
+  if $COLORTERM == 'gnome-terminal'
+    set t_Co=256
+  endif
+
   if has('gui_running')
     set guioptions-=m
     if has("mac")
@@ -120,7 +127,7 @@
   set completeopt=longest,menu,preview
 	scriptencoding utf-8
 
-  set clipboard=unnamed           " for standard os clipboard
+  set clipboard=unnamedplus       " for standard os clipboard
   set noeb vb t_vb=               " disable peep
   set autoread                    " automatically load file when its changed
 	" set autowrite                 " automatically write a file when leaving a modified buffer
@@ -170,7 +177,12 @@
     set expandtab 	  	     		    " tabs are spaces, not tabs
     set tabstop=2 					        " an indentation every four columns
     set softtabstop=2 				      " let backspace delete indent
-    set pastetoggle=<F12>          	" pastetoggle (sane indentation on pastes)
+    " Better copy & paste
+    " When you want to paste large blocks of code into vim, press F2 before you
+    " paste. At the bottom you should see ``-- INSERT (paste) --``.
+
+    set pastetoggle=<F2>
+    set clipboard=unnamed
     set shiftround                  " use multiple of shiftwidth when indenting with '<' and '>'
     set showmatch                   " set show matching parenthesis
     set ignorecase                  " ignore case (must be set for smartcase)
@@ -220,6 +232,10 @@
 
   "§ for Window switching
   noremap § <C-W>
+
+  " <control-c> system copy
+  vnoremap <C-C> "+y
+  noremap <C-C> "+yy
 
   "match closest and lets you type while autocomplete
 
