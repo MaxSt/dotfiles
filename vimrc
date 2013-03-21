@@ -45,24 +45,12 @@
     " }
 
 
-    " Showmarks{
-        " the marks you want to have displayed.
-        let g:showmarks_marks = "abcdefghijklmnopqrstuvwxyz.;"
-    " }
-
-
     " Supertab{
       let g:SuperTabDefaultCompletionType = "context"
       " Damit Tab nach unten geht und nicht nach oben
       let g:SuperTabMappingBackward = '<tab>'
       " Damit S-Tab nach oben geht und nicht nach unten 
       let g:SuperTabMappingForward = '<s-tab>'"
-    " }
-
-
-    " TagmarTasks{
-        " dont show Marks
-        let g:TagmaTasksMarks = 0
     " }
 
 
@@ -88,10 +76,6 @@
 
     " AutoClose{
         let g:AutoClosePairs = {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'","<% ": " %>", "<%= ": " %>"}
-    " }
-
-    " Tagbar{
-        noremap <leader>m :TagbarOpenAutoClose<CR>
     " }
 
     " Easytags{
