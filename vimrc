@@ -1,6 +1,6 @@
     " Basics {
-      filetype plugin indent on     " required!
       set nocompatible 		" must be first line
+      filetype plugin indent on     " required!
       set background=dark     " Assume a dark background
       "The default leader is '\', but many people prefer ',' as it's in a standard
       "location
@@ -39,8 +39,8 @@
           nmap <silent> [b :MiniBufExplorer<CR>h<CR>
           " Close Buffer and dont change window layout
           nmap <silent> <leader>w :MiniBufExplorer<CR>d<CR><ESC>
-        let g:miniBufExplCheckDupeBufs = 0 "faster for many buffers
-        let g:miniBufExplMapWindowNavVim = 1 "ctrl-<hjkl> for window navigation
+          let g:miniBufExplCheckDupeBufs = 0 "faster for many buffers
+          let g:miniBufExplMapWindowNavVim = 1 "ctrl-<hjkl> for window navigation
     " }
 
 
@@ -52,6 +52,10 @@
 
     " Supertab{
       let g:SuperTabDefaultCompletionType = "context"
+      " Damit Tab nach unten geht und nicht nach oben
+      let g:SuperTabMappingBackward = '<tab>'
+      " Damit S-Tab nach oben geht und nicht nach unten 
+      let g:SuperTabMappingForward = '<s-tab>'"
     " }
 
 
@@ -100,12 +104,15 @@
     " syntastic{
         let g:syntastic_auto_loc_list=1
     " }
+
+    " TableMode{
+        noremap ,T :TableModeToggle<CR>a
+    " }
 "}
 
 
 " General {
 	syntax on 					" syntax highlighting
-  set background=dark
 
   if $COLORTERM == 'gnome-terminal'
     set t_Co=256

@@ -37,6 +37,8 @@
  Bundle 'majutsushi/tagbar.git'
  Bundle 'scrooloose/syntastic'
  Bundle 'altercation/vim-colors-solarized'
+ Bundle 'dhruvasagar/vim-table-mode.git'
+ Bundle 'tpope/vim-fugitive.git'
  " Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 
 
