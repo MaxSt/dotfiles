@@ -1,6 +1,6 @@
     " Basics {
       set nocompatible 		" must be first line
-      filetype plugin indent on     " required!
+      filetype off     " required!
       set background=dark     " Assume a dark background
       "The default leader is '\', but many people prefer ',' as it's in a standard
       "location
@@ -26,10 +26,10 @@
     " }
 
 
-    " Snipmate support functions{
+    " Ultisnips support functions{
         " add support_fucntions to snipptes
-        let g:snippets_dir='~/.vim/mySnippets'
-        source ~/.vim/mySnippets/support_functions.vim
+        " let g:UltiSnipsSnippetsDir = '~/.vim/mySnippets'
+        let g:UltiSnipsExpandTrigger = "<c-space>"
     " }
 
 
@@ -87,6 +87,11 @@
 
     " TableMode{
         noremap ,T :TableModeToggle<CR>
+    " }
+
+    " YouCompleteMe{
+    let g:ycm_complete_in_comments_and_strings = 1
+    let g:ycm_collect_identifiers_from_comments_and_strings = 1
     " }
 "}
 

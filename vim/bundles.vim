@@ -37,7 +37,7 @@
  Bundle 'scrooloose/nerdcommenter.git'
 
  "insert Code snippets
- Bundle 'msanders/snipmate.vim.git'
+ Bundle 'SirVer/ultisnips'
 
  "Yand Ring (Circle with <ctrl>p)
  Bundle 'vim-scripts/YankRing.vim.git'
