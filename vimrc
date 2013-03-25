@@ -41,7 +41,6 @@
           nmap <silent> <leader>w :MiniBufExplorer<CR>d<CR><ESC>
           let g:miniBufExplCheckDupeBufs = 0 "faster for many buffers
           let g:miniBufExplMapWindowNavVim = 1 "ctrl-<hjkl> for window navigation
-          let g:miniBufExplorerMoreThanOne=3
     " }
 
 
