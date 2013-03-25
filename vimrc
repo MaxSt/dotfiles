@@ -56,11 +56,11 @@
 
     " ctrlp{
         let g:ctrlp_map = '<leader>t'
-        noremap <leader>g :CtrlPTag<cr>
+        "noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
         let g:ctrlp_working_path_mode = 0 " Dont manage working directory
         let g:ctrlp_open_new_file = 'r' " ctrlp opens new file in current window
         let g:ctrlp_open_multiple_files = 'rr'
-        let g:ctrlp_extensions = ['tag']
+        "let g:ctrlp_extensions = ['tag'] for tags but disabled atm
     " }
 
 
@@ -78,10 +78,6 @@
         let g:AutoClosePairs = {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'","<% ": " %>", "<%= ": " %>"}
     " }
 
-    " Easytags{
-        let g:easytags_updatetime_autodisable = 1
-    " }
-
     " Gundo{
         nnoremap  <leader>u :GundoToggle<CR>
     " }
@@ -91,7 +87,7 @@
     " }
 
     " TableMode{
-        noremap ,T :TableModeToggle<CR>a
+        noremap ,T :TableModeToggle<CR>
     " }
 "}
 

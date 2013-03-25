@@ -8,40 +8,95 @@
  " -----------------------------------------
  " original repos on github
  " -----------------------------------------
+
+ "move with <leader><leader>[motion]
  Bundle 'Lokaltog/vim-easymotion.git'
+
+ "Filetree
  Bundle 'scrooloose/nerdtree.git'
+
+ "text filtering and alignment (:Tab /[ =,... ]
  Bundle 'godlygeek/tabular.git'
+
+ "surrounding text ( cs[motion], insert: ysi[motion], entire line: yss)
  Bundle 'tpope/vim-surround.git'
+
+ "Buffertabs
  Bundle 'fholgado/minibufexpl.vim.git'
+
+ "pairs of handy bracket mappings
  Bundle 'tpope/vim-unimpaired.git'
+
+ "PowerLine StatusBar
  Bundle 'Lokaltog/vim-powerline.git'
+
+ "Show indent lines
  Bundle 'nathanaelkane/vim-indent-guides'
+
+ "Comment and Uncomment with <leader>cc
  Bundle 'scrooloose/nerdcommenter.git'
+
+ "insert Code snippets
  Bundle 'msanders/snipmate.vim.git'
- "Bundle 'vim-scripts/showmarks--Politz.git'
+
+ "Yand Ring (Circle with <ctrl>p)
  Bundle 'vim-scripts/YankRing.vim.git'
+
+ "Ack for vim
  Bundle 'mileszs/ack.vim.git'
+
+ "Show Colorcodes in Color
  Bundle 'skammer/vim-css-color.git'
- Bundle 'ervandew/supertab.git'
+
+ "identify and Irradicate unwanted whitespace at the end of the line (:Trim)
  Bundle 'csexton/trailertrash.vim.git'
- "Bundle 'LStinson/TagmaTasks.git'
+
+ " auto-close chars feature
  Bundle 'Townk/vim-autoclose.git'
+
+ "xml plugin (% matches, closing tags,..)
  Bundle 'othree/xml.vim.git'
+
+ "% matches for html, latex, ruby,...
  Bundle 'vim-scripts/matchit.zip.git'
+
+ "#N out of M matches output when searching
  Bundle 'vim-scripts/IndexedSearch.git'
+
+ "Undo Tree
  Bundle 'sjl/gundo.vim.git'
+
+ "ctrl open file with fuzzy search
  Bundle 'kien/ctrlp.vim.git'
- "Bundle 'coderifous/textobj-word-column.vim'
+
+ "splits and joins multiple code lines
  Bundle 'AndrewRadev/splitjoin.vim.git'
- Bundle 'vim-scripts/easytags.vim.git'
- Bundle 'majutsushi/tagbar.git'
+
+ "show compiler errors after saving
  Bundle 'scrooloose/syntastic'
+
+ "vim solarized color scheme
  Bundle 'altercation/vim-colors-solarized'
+
+ "make tables :TableModeEnable and |
  Bundle 'dhruvasagar/vim-table-mode.git'
+
+ "Git Support for vim
  Bundle 'tpope/vim-fugitive.git'
+
+ "Code completion
  Bundle 'Valloric/YouCompleteMe.git'
+
  " Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 
+
+ "Tried but disabled:
+ "Bundle 'majutsushi/tagbar.git'
+ "Bundle 'vim-scripts/easytags.vim.git'
+ "Bundle 'ervandew/supertab.git'
+ "Bundle 'vim-scripts/showmarks--Politz.git'
+ "Bundle 'LStinson/TagmaTasks.git'
+ "Bundle 'coderifous/textobj-word-column.vim'
 
 
  " -----------------------------------------
