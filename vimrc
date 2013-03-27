@@ -30,6 +30,8 @@
         " add support_fucntions to snipptes
         " let g:UltiSnipsSnippetsDir = '~/.vim/mySnippets'
         let g:UltiSnipsExpandTrigger = "<c-space>"
+        "Snipedit zum editierten
+        command SnipEdit call UltiSnipsEdit()
     " }
 
 
@@ -100,6 +102,7 @@
 
 " General {
 	syntax on 					" syntax highlighting
+  filetype plugin indent on "Automatic detect file types
 
   if $COLORTERM == 'gnome-terminal'
     set t_Co=256
