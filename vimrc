@@ -31,7 +31,8 @@
         " let g:UltiSnipsSnippetsDir = '~/.vim/mySnippets'
         let g:UltiSnipsExpandTrigger = "<c-space>"
         "Snipedit zum editierten
-        command SnipEdit call UltiSnipsEdit()
+        command! -nargs=? SnipsEdit :call UltiSnipsEdit(<q-args>)
+
     " }
 
 
