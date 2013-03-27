@@ -73,8 +73,8 @@
         let g:indent_guides_enable_on_vim_startup = 1
     " }
 
-    " AutoClose{
-        let g:AutoClosePairs = {'(': ')', '{': '}', '[': ']', '"': '"', "'": "'","<% ": " %>", "<%= ": " %>"}
+    " delimitMate{
+        let delimitMate_matchpairs = '(:),[:],{:},<:>'
     " }
 
     " Gundo{
@@ -92,6 +92,8 @@
     " YouCompleteMe{
     let g:ycm_complete_in_comments_and_strings = 1
     let g:ycm_collect_identifiers_from_comments_and_strings = 1
+    let g:ycm_autoclose_preview_window_after_completion = 1
+
     " }
 "}
 
@@ -250,6 +252,10 @@
 
   "Map ToggleHighlight function to ,d
   nnoremap <silent> <leader>d :ToggleHighlight<CR>
+
+  "diable visualbell
+  autocmd GUIEnter * set vb t_vb= " for your GUI
+  autocmd VimEnter * set vb t_vb=
 
   "activate/deaktivate Spell checking
   function! ToggleSpell()

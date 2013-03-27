@@ -52,7 +52,7 @@
  Bundle 'csexton/trailertrash.vim.git'
 
  " auto-close chars feature
- Bundle 'Townk/vim-autoclose.git'
+ Bundle 'Raimondi/delimitMate'
 
  "xml plugin (% matches, closing tags,..)
  Bundle 'othree/xml.vim.git'
