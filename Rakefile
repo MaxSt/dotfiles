@@ -6,7 +6,7 @@ task :install do
   install_oh_my_zsh
   switch_to_zsh
   replace_all = false
-  files = Dir['*'] - %w[Rakefile README.md oh-my-zsh]
+  files = Dir['*'] - %w[Rakefile README.md oh-my-zsh config]
   files << "oh-my-zsh/custom/max.zsh-theme"
   files.each do |file|
     system %Q{mkdir -p "$HOME/.#{File.dirname(file)}"} if file =~ /\//
@@ -34,6 +34,7 @@ task :install do
     end
   end
   install_vundler
+  install_config
 end
 
 def replace_file(file)
@@ -93,5 +94,38 @@ def install_vundler
   else
     puts "installing Vundle"
     system %Q{git clone https://github.com/gmarik/vundle.git ~/dotfiles/vim/bundle/vundle}
+  end
+end
+
+def install_config
+  replace_all = false
+  configfiles = Dir['config/*']
+  if !File.exists?(File.join(ENV['HOME'],".config"))
+    system %Q{mkdir -p "$HOME/.config/."}
+  end
+  configfiles.each do |file|
+    system %Q{mkdir -p "$HOME/.config/#{File.dirname(file)}"} if file =~ /\//
+    if File.exist?(File.join(ENV['HOME'], ".#{file.sub(/\.erb$/, '')}"))
+      if File.identical? file, File.join(ENV['HOME'], ".#{file.sub(/\.erb$/, '')}")
+        puts "identical ~/.#{file.sub(/\.erb$/, '')}"
+      elsif replace_all
+        replace_file(file)
+      else
+        print "overwrite ~/.#{file.sub(/\.erb$/, '')}? [ynaq] "
+        case $stdin.gets.chomp
+        when 'a'
+          replace_all = true
+          replace_file(file)
+        when 'y'
+          replace_file(file)
+        when 'q'
+          exit
+        else
+          puts "skipping ~/.#{file.sub(/\.erb$/, '')}"
+        end
+      end
+    else
+      link_file(file)
+    end
   end
 end

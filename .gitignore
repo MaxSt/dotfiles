@@ -4,3 +4,7 @@
 .netrwhist
 vim/bundle/**/*
 vim/bundle/*
+config/ranger/bookmarks
+config/ranger/history
+config/ranger/__pycache__
+config/ranger/tagged
