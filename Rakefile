@@ -101,6 +101,9 @@ end
 def make_vim_tmp_dir
   if !File.exists?(File.join(ENV['HOME'],".vim/tmp"))
     system %Q{mkdir -p "$HOME/.vim/tmp"}
+    print "created dir ~/.vim/tmp for vim swap files"
+  else
+    print "found dir ~/.vim/tmp for vim swap files"
   end
 end
 
