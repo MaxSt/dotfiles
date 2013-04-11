@@ -35,6 +35,7 @@ task :install do
   end
   install_vundler
   install_config
+  make_vim_tmp_dir
 end
 
 def replace_file(file)
@@ -94,6 +95,12 @@ def install_vundler
   else
     puts "installing Vundle"
     system %Q{git clone https://github.com/gmarik/vundle.git ~/dotfiles/vim/bundle/vundle}
+  end
+end
+
+def make_vim_tmp_dir
+  if !File.exists?(File.join(ENV['HOME'],".vim/tmp"))
+    system %Q{mkdir -p "$HOME/.vim/tmp"}
   end
 end
 

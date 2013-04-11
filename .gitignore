@@ -3,7 +3,7 @@
 .*.swp
 .netrwhist
 vim/bundle/**/*
-vim/bundle/*
+vim/tmp/**/*
 config/ranger/bookmarks
 config/ranger/history
 config/ranger/__pycache__

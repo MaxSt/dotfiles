@@ -136,7 +136,7 @@
 	set nospell 		 	        	" spell checking off
   set nobackup       " no backup files
   set nowritebackup  " only in case you don't want a backup file while editing
-  set backupdir=/tmp
+  set backupdir=~/.vim/tmp
   set noswapfile     " no swap files
   set hidden         " lets you open multiple buffers without saving
   set modeline
