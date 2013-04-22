@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<gconf>
+	<entry name="active_encodings" mtime="1353488174" type="list" ltype="string">
+		<li type="string">
+			<stringvalue>UTF-8</stringvalue>
+		</li>
+	</entry>
+</gconf>
