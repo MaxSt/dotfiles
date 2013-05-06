@@ -62,6 +62,7 @@
         let g:ctrlp_working_path_mode = 0 " Dont manage working directory
         let g:ctrlp_open_new_file = 'r' " ctrlp opens new file in current window
         let g:ctrlp_open_multiple_files = 'rr'
+        let g:ctrlp_user_command = 'find %s -type f'
         "let g:ctrlp_extensions = ['tag'] for tags but disabled atm
     " }
 
@@ -136,6 +137,7 @@
 	set nospell 		 	        	" spell checking off
   set nobackup       " no backup files
   set nowritebackup  " only in case you don't want a backup file while editing
+  set backupdir=~/.vim/tmp
   set noswapfile     " no swap files
   set hidden         " lets you open multiple buffers without saving
   set modeline

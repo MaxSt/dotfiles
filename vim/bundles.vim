@@ -87,6 +87,10 @@
  "Code completion
  Bundle 'Valloric/YouCompleteMe.git'
 
+
+ "Multiple Cursors
+ Bundle 'terryma/vim-multiple-cursors.git'
+
  " Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 
 
