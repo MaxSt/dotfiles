@@ -28,7 +28,8 @@
  Bundle 'tpope/vim-unimpaired.git'
 
  "PowerLine StatusBar
- Bundle 'Lokaltog/powerline.git'
+ "Bundle 'Lokaltog/powerline.git'
+ Bundle 'Lokaltog/vim-powerline.git'
 
  "Show indent lines
  Bundle 'nathanaelkane/vim-indent-guides'

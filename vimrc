@@ -68,8 +68,8 @@
 
 
     " Powerline{
-        set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
-        let g:Powerline_symbols = 'compatible'
+        "set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+        let g:Powerline_symbols = 'fancy'
     " }
 
     " Intent-Guides (binding: ,ig) {
@@ -123,6 +123,7 @@
     endif
   else
     let g:solarized_termcolors=256  " set colors to termcolors for terminal
+    let g:solarized_termtrans=1
   endif
 	set mouse=a					" automatically enable mouse usage
   set report=0
