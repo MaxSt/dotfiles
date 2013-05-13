@@ -36,6 +36,12 @@ task :install do
   install_vundler
   install_config
   make_vim_tmp_dir
+  update_font_cache
+end
+
+def update_font_cache
+  puts "Update font cache..."
+  system "fc-cache -vf ~/.fonts"
 end
 
 def replace_file(file)

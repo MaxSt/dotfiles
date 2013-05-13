@@ -68,6 +68,7 @@
 
 
     " Powerline{
+        set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
         let g:Powerline_symbols = 'compatible'
     " }
 
@@ -94,10 +95,13 @@
     " }
 
     " YouCompleteMe{
-    let g:ycm_complete_in_comments_and_strings = 1
-    let g:ycm_collect_identifiers_from_comments_and_strings = 1
-    let g:ycm_autoclose_preview_window_after_completion = 1
+      let g:ycm_complete_in_comments_and_strings = 1
+      let g:ycm_collect_identifiers_from_comments_and_strings = 1
+      let g:ycm_autoclose_preview_window_after_completion = 1
+    " }
 
+    " vim-easy-align{
+      vnoremap <silent> <Enter> :EasyAlign<cr>
     " }
 "}
 
@@ -115,7 +119,7 @@
     if has("mac")
       set guifont=DejaVu\ Sans\ Mono:h15          " set Font by Editing with a gui
     elseif has('unix')
-      set guifont=DejaVuSansMono\ 14
+      set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 16
     endif
   else
     let g:solarized_termcolors=256  " set colors to termcolors for terminal

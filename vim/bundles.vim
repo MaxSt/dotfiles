@@ -28,7 +28,7 @@
  Bundle 'tpope/vim-unimpaired.git'
 
  "PowerLine StatusBar
- Bundle 'Lokaltog/vim-powerline.git'
+ Bundle 'Lokaltog/powerline.git'
 
  "Show indent lines
  Bundle 'nathanaelkane/vim-indent-guides'
@@ -90,6 +90,10 @@
 
  "Multiple Cursors
  Bundle 'terryma/vim-multiple-cursors.git'
+
+ "easy align
+ Bundle 'junegunn/vim-easy-align.git'
+
 
  " Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
 
