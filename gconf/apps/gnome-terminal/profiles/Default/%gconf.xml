@@ -1,32 +1,32 @@
 <?xml version="1.0"?>
 <gconf>
-	<entry name="silent_bell" mtime="1368423977" type="bool" value="true"/>
-	<entry name="allow_bold" mtime="1368423977" type="bool" value="false"/>
-	<entry name="scrollbar_position" mtime="1368423977" type="string">
+	<entry name="silent_bell" mtime="1368428298" type="bool" value="true"/>
+	<entry name="allow_bold" mtime="1368428298" type="bool" value="false"/>
+	<entry name="scrollbar_position" mtime="1368428298" type="string">
 		<stringvalue>hidden</stringvalue>
 	</entry>
-	<entry name="scrollback_unlimited" mtime="1368423977" type="bool" value="true"/>
-	<entry name="scrollback_lines" mtime="1368423977" type="int" value="5000"/>
-	<entry name="login_shell" mtime="1368423977" type="bool" value="true"/>
-	<entry name="font" mtime="1368423977" type="string">
+	<entry name="scrollback_unlimited" mtime="1368428298" type="bool" value="true"/>
+	<entry name="scrollback_lines" mtime="1368428298" type="int" value="5000"/>
+	<entry name="login_shell" mtime="1368428298" type="bool" value="true"/>
+	<entry name="font" mtime="1368428298" type="string">
 		<stringvalue>DejaVu Sans Mono 12</stringvalue>
 	</entry>
-	<entry name="use_system_font" mtime="1368423977" type="bool" value="false"/>
-	<entry name="default_show_menubar" mtime="1368423977" type="bool" value="false"/>
-	<entry name="use_theme_colors" mtime="1368423977" type="bool" value="false"/>
-	<entry name="palette" mtime="1368423977" type="string">
+	<entry name="use_system_font" mtime="1368428298" type="bool" value="false"/>
+	<entry name="default_show_menubar" mtime="1368428298" type="bool" value="false"/>
+	<entry name="use_theme_colors" mtime="1368428298" type="bool" value="false"/>
+	<entry name="palette" mtime="1368428298" type="string">
 		<stringvalue>#000000000000:#AAAA00000000:#0000AAAA0000:#AAAA55550000:#00000000AAAA:#AAAA0000AAAA:#0000AAAAAAAA:#AAAAAAAAAAAA:#24B124B124B1:#FFFF55555555:#5555FFFF5555:#FFFFFFFF5555:#55555555FFFF:#FFFF5555FFFF:#5555FFFFFFFF:#FFFFFFFFFFFF</stringvalue>
 	</entry>
-	<entry name="background_color" mtime="1368423977" type="string">
+	<entry name="background_color" mtime="1368428298" type="string">
 		<stringvalue>#2B2B2B2B2B2B</stringvalue>
 	</entry>
-	<entry name="visible_name" mtime="1368423977" type="string">
+	<entry name="visible_name" mtime="1368428298" type="string">
 		<stringvalue>Default</stringvalue>
 	</entry>
-	<entry name="bold_color" mtime="1368423977" type="string">
+	<entry name="bold_color" mtime="1368428298" type="string">
 		<stringvalue>#000000000000</stringvalue>
 	</entry>
-	<entry name="foreground_color" mtime="1368423977" type="string">
+	<entry name="foreground_color" mtime="1368428298" type="string">
 		<stringvalue>#EEEEEEEEECEC</stringvalue>
 	</entry>
 </gconf>
