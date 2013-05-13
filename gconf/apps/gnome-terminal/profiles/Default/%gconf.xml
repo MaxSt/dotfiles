@@ -12,8 +12,8 @@
 	<entry name="scrollback_unlimited" mtime="1368429272" type="bool" value="true"/>
 	<entry name="scrollback_lines" mtime="1368429272" type="int" value="5000"/>
 	<entry name="login_shell" mtime="1368429272" type="bool" value="true"/>
-	<entry name="font" mtime="1368429272" type="string">
-		<stringvalue>DejaVu Sans Mono 12</stringvalue>
+	<entry name="font" mtime="1368438317" type="string">
+		<stringvalue>DejaVu Sans Mono for Powerline 14</stringvalue>
 	</entry>
 	<entry name="use_system_font" mtime="1368429272" type="bool" value="false"/>
 	<entry name="default_show_menubar" mtime="1368429272" type="bool" value="false"/>
