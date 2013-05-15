@@ -54,7 +54,7 @@
         "Bundle 'Lokaltog/powerline.git' "new Version but still too slow
         Bundle 'Lokaltog/vim-powerline.git'
         " set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
-        let g:Powerline_symbols = 'fancy'
+        "let g:Powerline_symbols = 'fancy'
         autocmd! bufwritepost .vimrc PowerlineReloadColorscheme " reload poerline colorscheme when .vimrc is written
     " }
 
