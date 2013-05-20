@@ -169,6 +169,10 @@
     " Eunuch (UNIX shell commands in VIM){
         Bundle 'tpope/vim-eunuch.git'
     " }
+
+    " Covim (Collaborative Editing){
+        Bundle 'FredKSchott/CoVim.git'
+    " }
 " }
 
 
