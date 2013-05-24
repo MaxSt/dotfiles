@@ -45,3 +45,5 @@ export PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local
 export EDITOR="gvim"
 
 if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then source "$HOME/.rvm/scripts/rvm" ; fi
+
+PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
