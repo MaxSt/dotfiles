@@ -27,9 +27,6 @@
       elseif has('unix')
         set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 14
       endif
-    else
-      let g:solarized_termcolors=256                              " set colors to termcolors for terminal
-      let g:solarized_termtrans=1
     endif
     set mouse=a                                                   " automatically enable mouse usage
     set report=0
@@ -67,9 +64,9 @@
 " Vim UI {
     set showcmd                                                   " Show current command
     if has('gui_running')
-      color luna                                                  " load a colorscheme
+      color molokai                                               " load a colorscheme
     else
-      color luna-term                                             " load a colorscheme
+      color molokai                                               " load a colorscheme
     end
     source ~/.vim/max-colors.vim                                  " load customized colors
     set wildmenu                                                  " show menu in commandline (tabs)
