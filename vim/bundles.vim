@@ -174,8 +174,8 @@
         Bundle 'FredKSchott/CoVim.git'
     " }
 
-    " Luna Colorscheme (Colorscheme){
-        Bundle 'Pychimp/vim-luna.git'
+    " Molokai Colorscheme (Colorscheme){
+        Bundle 'tomasr/molokai.git'
     " }
 " }
 
