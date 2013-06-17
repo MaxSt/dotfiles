@@ -173,6 +173,10 @@
     " Covim (Collaborative Editing){
         Bundle 'FredKSchott/CoVim.git'
     " }
+
+    " Luna Colorscheme (Colorscheme){
+        Bundle 'Pychimp/vim-luna.git'
+    " }
 " }
 
 

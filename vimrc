@@ -66,7 +66,11 @@
 
 " Vim UI {
     set showcmd                                                   " Show current command
-    color Tomorrow-Night-Eighties                                 " load a colorscheme
+    if has('gui_running')
+      color luna                                                  " load a colorscheme
+    else
+      color luna-term                                             " load a colorscheme
+    end
     source ~/.vim/max-colors.vim                                  " load customized colors
     set wildmenu                                                  " show menu in commandline (tabs)
     set tabpagemax=15                                             " only show 15 tabs
