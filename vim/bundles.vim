@@ -31,12 +31,12 @@
     " MiniBufExplorer (Buffertabs){
         Bundle 'fholgado/minibufexpl.vim.git'
         " Set Hotkeys for Buffer Switching
-        nmap <silent> ]b :MiniBufExplorer<CR>l<CR>
-        nmap <silent> [b :MiniBufExplorer<CR>h<CR>
-        " Close Buffer and dont change window layout
-        nmap <silent> <leader>w :MiniBufExplorer<CR>d<CR><ESC>
+        noremap ]b :MBEbf<CR>
+        noremap [b :MBEbb<CR>
+        noremap <leader>x :MBEbd<CR>
+        let g:miniBufExplCycleArround = 1
         let g:miniBufExplCheckDupeBufs = 0                    " faster for many buffers
-        let g:miniBufExplMapWindowNavVim = 1                  " ctrl-<hjkl> for window navigation
+        let g:miniBufExplUseSingleClick = 1                   " single click for buffer switching
     " }
 
     " ctrlp (open file with fuzzy search){

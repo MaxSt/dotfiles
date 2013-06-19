@@ -1,6 +1,6 @@
 "Colors for MBE
-hi MBEVisibleActive guibg=fg guifg=#A6DB29 ctermfg=154 ctermbg=235
-hi MBEVisibleChangedActive guifg=#F1266F guibg=fg ctermbg=235 ctermfg=161
+hi MBEVisibleActiveNormal guibg=fg guifg=#A6DB29 ctermfg=154 ctermbg=235
+hi MBEVisibleActiveChanged guifg=#F1266F guibg=fg ctermbg=235 ctermfg=161
 hi MBEVisibleChanged guifg=#F1266F ctermfg=166
 hi MBEVisibleNormal guifg=#A6DB29 guibg=fg ctermbg=235 ctermfg=154
 hi MBEChanged guifg=#CD5907

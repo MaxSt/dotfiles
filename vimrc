@@ -149,6 +149,12 @@
     " § for Window switching
     noremap § <C-W>
 
+    "control + hjkl to switch windows
+    noremap <C-J>     <C-W>j
+    noremap <C-K>     <C-W>k
+    noremap <C-H>     <C-W>h
+    noremap <C-L>     <C-W>l
+
     " <control-c> system copy
     vnoremap <C-C>                                                " +y
     noremap <C-C>                                                 " +yy
