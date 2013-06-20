@@ -1,8 +1,9 @@
+" Easy bundles editing with :EditBundles
+command! EditBundles :edit ~/.vim/bundles.vim
+" Auto - Reload this File
+autocmd! bufwritepost bundles.vim source %
+
  " Bundles{
-    " Easy bundles editing with :EditBundles
-    command! EditBundles :edit ~/.vim/bundles.vim
-    " Auto - Reload this File
-    autocmd! bufwritepost bundles.vim source %
 
     " Vundler {
         set rtp+=~/.vim/bundle/vundle/
@@ -177,6 +178,11 @@
     " Molokai Colorscheme (Colorscheme){
         Bundle 'tomasr/molokai.git'
     " }
+
+    " Startify (Vim Startscreen){
+        Bundle 'mhinz/vim-startify.git'
+    " }
+    
 " }
 
 
