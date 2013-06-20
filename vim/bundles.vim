@@ -182,7 +182,10 @@ autocmd! bufwritepost bundles.vim source %
     " Startify (Vim Startscreen){
         Bundle 'mhinz/vim-startify.git'
     " }
-    
+
+    " Calendar (vim calendar){
+        Bundle 'mattn/calendar-vim.git'
+    " }
 " }
 
 
