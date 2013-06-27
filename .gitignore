@@ -2,7 +2,9 @@
 *~
 .*.swp
 .netrwhist
+vim/bundle/*
 vim/bundle/**/*
+vim/tmp/*
 vim/tmp/**/*
 config/ranger/bookmarks
 config/ranger/history
