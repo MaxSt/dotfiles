@@ -47,8 +47,14 @@ autocmd! bufwritepost bundles.vim source %
         let g:ctrlp_working_path_mode = 0                       " Dont manage working directory
         let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
         let g:ctrlp_open_multiple_files = 'rr'
-        let g:ctrlp_user_command = 'find %s -type f'
+        let g:ctrlp_max_files = 10000
         " let g:ctrlp_extensions = ['tag'] for tags but disabled atm
+    " }
+    
+    " ctlp cmatcher (ctrl matcher plugin for faster searching){
+        Bundle 'JazzCore/ctrlp-cmatcher.git'
+        " to let ctrlp use ctrp-cmatcher matching function
+        let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
     " }
 
     " Powerline (StatusBar){
