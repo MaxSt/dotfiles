@@ -25,7 +25,7 @@
       if has(" mac")
         set guifont=DejaVu\ Sans\ Mono:h15                        " set Font by Editing with a gui
       elseif has('unix')
-        set guifont=DejaVu\ Sans\ Mono\ for\ Powerline\ 14
+        set guifont=Anonymous\ Pro\ 14
       endif
     endif
     set mouse=a                                                   " automatically enable mouse usage
@@ -132,7 +132,7 @@
     vnoremap < <gv
 
     " what to show when I hit :set list
-    set listchars=tab:»-,trail:·,extends:>,precedes:<
+    set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
     set showbreak=↳
     " Easier moving in tabs and windows
     map <C-Tab> <C-W><C-W>
@@ -155,9 +155,11 @@
     noremap <C-H>     <C-W>h
     noremap <C-L>     <C-W>l
 
-    " <control-c> system copy
-    vnoremap <C-C>                                                " +y
-    noremap <C-C>                                                 " +yy
+    "Make Y behave Like D or C
+    nnoremap Y y$
+
+    "write file with <leader>w
+    noremap <leader>w :w<CR>
 
     " match closest and lets you type while autocomplete
 
@@ -171,6 +173,26 @@
     endif
     exe" setlocal " . Myhl
     :endfunction
+
+    "Select indent level
+    function SelectIndent()
+      let cur_line = line(".")
+      let cur_ind = indent(cur_line)
+      let line = cur_line
+      while indent(line - 1) >= cur_ind
+        let line = line - 1
+      endw
+      exe "normal " . line . "G"
+      exe "normal V"
+      let line = cur_line
+      while indent(line + 1) >= cur_ind
+        let line = line + 1
+      endw
+      exe "normal " . line . "G"
+    endfunction
+    nnoremap vii :call SelectIndent()<CR>
+    nmap cii viic
+    nmap dii viid
 
     " Alias the ToggleHighlight function
     command! ToggleHighlight call ToggleHighlight()

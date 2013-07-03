@@ -4,7 +4,6 @@ command! EditBundles :edit ~/.vim/bundles.vim
 autocmd! bufwritepost bundles.vim source %
 
  " Bundles{
-
     " Vundler {
         set rtp+=~/.vim/bundle/vundle/
         call vundle#rc()
@@ -24,7 +23,7 @@ autocmd! bufwritepost bundles.vim source %
         Bundle 'SirVer/ultisnips'
         " add support_funtions to snipptes
         " let g:UltiSnipsSnippetsDir = '~/.vim/mySnippets'
-        let g:UltiSnipsExpandTrigger =" <c-space>"
+        let g:UltiSnipsExpandTrigger ="<CR>"
         " :SnipEdit zum editierten
         command! -nargs=? SnipsEdit :call UltiSnipsEdit(<q-args>)
     " }
@@ -192,29 +191,8 @@ autocmd! bufwritepost bundles.vim source %
     " Calendar (vim calendar){
         Bundle 'mattn/calendar-vim.git'
     " }
+
+    " endwise (end structures automatically (ruby if end,...)){
+        Bundle 'tpope/vim-endwise.git'
+    " }
 " }
-
-
-" Tutorial{
-    " -----------------------------------------
-    " original repos on github
-    " -----------------------------------------
-    " Bundle 'tpope/vim-fugitive.git'
-    " Bundle 'rstacruz/sparkup', {'rtp': 'vim/'}
-
-
-    " -----------------------------------------
-    " vim-scripts repos
-    " -----------------------------------------
-    " Bundle 'L9'
-    " Bundle 'FuzzyFinder'
-
-
-
-    " -----------------------------------------
-    " non github repos
-    " -----------------------------------------
-    " Bundle 'git://git.wincent.com/command-t.git'
-"}
-
-
