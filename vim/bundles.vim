@@ -174,7 +174,7 @@ autocmd! bufwritepost bundles.vim source %
     " }
 
     " Covim (Collaborative Editing){
-        Bundle 'FredKSchott/CoVim.git'
+        "Bundle 'FredKSchott/CoVim.git'
     " }
 
     " Molokai Colorscheme (Colorscheme){
