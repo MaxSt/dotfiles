@@ -74,6 +74,12 @@
     set ttyfast                                                   " Improves redrawing
     set number                                                    " Views Line Numbers
     set relativenumber                                            " Views Line Numbers
+    autocmd FocusLost * set number "set absolute numbers when focus lost
+    autocmd FocusGained * set relativenumber "set relative numbers when focus gained
+    autocmd InsertEnter * set number "set absolute numbers when in insert mode
+    autocmd InsertLeave * set relativenumber "set relative numbers when in normal mode
+
+
     set guioptions-=T
     set guioptions-=r
 
@@ -114,12 +120,6 @@
 
 
 " Key (re)Mappings {
-    " Better j k movement when line wrap is enabled (each line on screen)
-    nmap j gj
-    nmap k gk
-    " For old use of j k (each line in file)
-    noremap ,j j
-    noremap ,k k
 
     " Select last inserted text with C-i
     nmap <C-I> `[v`]
@@ -157,7 +157,7 @@
     noremap <C-L>     <C-W>l
 
     "Make Y behave Like D or C
-    nnoremap Y y$
+    nmap Y y$
 
     "write file with <leader>w
     noremap <leader>w :w<CR>
