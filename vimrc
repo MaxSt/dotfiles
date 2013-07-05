@@ -73,6 +73,7 @@
     set tabpagemax=15                                             " only show 15 tabs
     set ttyfast                                                   " Improves redrawing
     set number                                                    " Views Line Numbers
+    set relativenumber                                            " Views Line Numbers
     set guioptions-=T
     set guioptions-=r
 
@@ -139,8 +140,8 @@
 
     " Maps Alt-[h,j,k,l] to resizing a window split
     noremap <silent> <A-h> <C-w><<esc>
-    noremap <silent> <A-j> <C-W>-<esc>
-    noremap <silent> <A-k> <C-W>+<esc>
+    noremap <silent> <A-k> <C-W>-<esc>
+    noremap <silent> <A-j> <C-W>+<esc>
     noremap <silent> <A-l> <C-w>><esc>
 
     " space to : for easier commands

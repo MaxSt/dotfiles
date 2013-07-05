@@ -23,7 +23,7 @@ autocmd! bufwritepost bundles.vim source %
         Bundle 'SirVer/ultisnips'
         " add support_funtions to snipptes
         " let g:UltiSnipsSnippetsDir = '~/.vim/mySnippets'
-        let g:UltiSnipsExpandTrigger ="<CR>"
+        let g:UltiSnipsExpandTrigger ="<c-j>"
         " :SnipEdit zum editierten
         command! -nargs=? SnipsEdit :call UltiSnipsEdit(<q-args>)
     " }
@@ -73,7 +73,8 @@ autocmd! bufwritepost bundles.vim source %
 
     " delimitMate (auto-close chars){
         Bundle 'Raimondi/delimitMate'
-        let delimitMate_matchpairs = '(:),[:],{:},<:>'
+        let g:delimitMate_matchpairs = '(:),[:],{:},<:>'
+        let g:delimitMate_quotes = "\" ' ` | %"
     " }
 
     " Gundo (Undo Tree){
@@ -144,10 +145,6 @@ autocmd! bufwritepost bundles.vim source %
         Bundle 'csexton/trailertrash.vim.git'
     " }
 
-    " XML (xml plugin (% matches, closing tags,..)){
-        Bundle 'othree/xml.vim.git'
-    " }
-
     " Matchit (% matches for html, latex, ruby,...){
         Bundle 'vim-scripts/matchit.zip.git'
     " }
@@ -194,5 +191,9 @@ autocmd! bufwritepost bundles.vim source %
 
     " endwise (end structures automatically (ruby if end,...)){
         Bundle 'tpope/vim-endwise.git'
+    " }
+    
+    " eunuch (unix commands inside vim){
+        Bundle 'tpope/vim-eunuch.git'
     " }
 " }
