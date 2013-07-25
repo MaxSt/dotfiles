@@ -8,6 +8,13 @@
     autocmd! bufwritepost .vimrc source %
 " }
 
+ " Windows Compatible {
+    " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization  across (heterogeneous) systems easier.
+    if has('win32') || has('win64')
+      set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+    endif
+" }
+
 " Plugins {
     source ~/.vim/bundles.vim
 " }
@@ -103,7 +110,6 @@
     " paste. At the bottom you should see ``-- INSERT (paste) --``.
     set pastetoggle=<F2>
 
-    set clipboard=unnamed
     set shiftround                                              " use multiple of shiftwidth when indenting with '<' and '>'
     set showmatch                                               " set show matching parenthesis
     set ignorecase                                              " ignore case (must be set for smartcase)

@@ -31,8 +31,10 @@ autocmd! bufwritepost bundles.vim source %
     " MiniBufExplorer (Buffertabs){
         Bundle 'fholgado/minibufexpl.vim.git'
         " Set Hotkeys for Buffer Switching
-        noremap ]b :MBEbf<CR>
-        noremap [b :MBEbb<CR>
+        noremap ]b :MBEbn<CR>
+        noremap [b :MBEbp<CR>
+        noremap ]v :MBEbf<CR>
+        noremap [v :MBEbb<CR>
         noremap <leader>x :MBEbd<CR>
         let g:miniBufExplCycleArround = 1
         let g:miniBufExplCheckDupeBufs = 0                    " faster for many buffers
@@ -56,19 +58,12 @@ autocmd! bufwritepost bundles.vim source %
         let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
     " }
 
-    " Powerline (StatusBar){
-        "Bundle 'Lokaltog/powerline.git' "new Version but still too slow
-        Bundle 'Lokaltog/vim-powerline.git'
-        " set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
-        "let g:Powerline_symbols = 'fancy'
-        autocmd! bufwritepost .vimrc PowerlineReloadColorscheme " reload poerline colorscheme when .vimrc is written
+    " Airline  (StatusBar){
+        Bundle 'bling/vim-airline.git'
     " }
 
-    " Intent-Guides (show indent lines (binding: ,ig)) {
-        Bundle 'nathanaelkane/vim-indent-guides'
-        let g:indent_guides_start_level = 2
-        let g:indent_guides_guide_size = 1
-        let g:indent_guides_enable_on_vim_startup = 1
+    " InentLine (show Indent Lines){
+        Bundle 'Yggdroot/indentLine.git'
     " }
 
     " delimitMate (auto-close chars){
@@ -131,6 +126,7 @@ autocmd! bufwritepost bundles.vim source %
 
     " YankRing (Circle with <ctrl>p){
         Bundle 'vim-scripts/YankRing.vim.git'
+        let g:yankring_history_dir = '$HOME/.vim/tmp'
     " }
 
     " Ack (Ack for vim){
@@ -179,6 +175,7 @@ autocmd! bufwritepost bundles.vim source %
 
     " Molokai Colorscheme (Colorscheme){
         Bundle 'tomasr/molokai.git'
+        let g:molokai_original = 1
     " }
 
     " Startify (Vim Startscreen){
@@ -195,6 +192,12 @@ autocmd! bufwritepost bundles.vim source %
     
     " eunuch (unix commands inside vim){
         Bundle 'tpope/vim-eunuch.git'
+    " }
+    
+    " SexyScroller (smoth scroll){
+        "Bundle 'joeytwiddle/sexy_scroller.vim.git'
+        "let g:SexyScroller_MaxTime = 400
+        "let g:SexyScroller_EasingStyle = 1
     " }
 
 " }
