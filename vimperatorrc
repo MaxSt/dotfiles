@@ -1,0 +1,20 @@
+noremap <C-Space> :
+noremap ]b :bn<CR>
+noremap [b :bp<CR>
+noremap <C-P> :hardcopy<CR>
+
+set complete=ls
+set history=1000
+set newtab=all
+set popups=tab
+set nohlsearch
+set ignorecase
+set incsearch
+set smartcase
+set focuscontent
+set visualbell
+set hintchars=asdfjkl;ghqwertuiopybnmvc
+
+
+let mapleader = ","
+
