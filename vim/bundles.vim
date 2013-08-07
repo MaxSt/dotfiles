@@ -43,12 +43,15 @@ autocmd! bufwritepost bundles.vim source %
 
     " ctrlp (open file with fuzzy search){
         Bundle 'kien/ctrlp.vim.git'
+        let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20'
         let g:ctrlp_map = '<leader>t'
         " noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
         let g:ctrlp_working_path_mode = 0                       " Dont manage working directory
         let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
         let g:ctrlp_open_multiple_files = 'rr'
         let g:ctrlp_max_files = 10000
+        nmap <leader>b :CtrlPBuffer<CR>
+        let g:ctrlp_extensions = [ 'undo' ]
         " let g:ctrlp_extensions = ['tag'] for tags but disabled atm
     " }
     
@@ -78,8 +81,8 @@ autocmd! bufwritepost bundles.vim source %
     " }
 
     " syntastic (show compiler errors after saving){
-        Bundle 'scrooloose/syntastic'
-        let g:syntastic_auto_loc_list=1
+        "Bundle 'scrooloose/syntastic'
+        "let g:syntastic_auto_loc_list=1
     " }
 
     " TableMode (make tables: TableModeEnable and |){
@@ -105,7 +108,7 @@ autocmd! bufwritepost bundles.vim source %
     " }
 
     " vim-easymotion (move with <leader><leader>[motion]){
-        Bundle 'Lokaltog/vim-easymotion.git'
+        "Bundle 'Lokaltog/vim-easymotion.git'
     " }
 
     " Tabular (text filtering and alignment (:Tab /[ =,... ])){
@@ -198,6 +201,15 @@ autocmd! bufwritepost bundles.vim source %
         "Bundle 'joeytwiddle/sexy_scroller.vim.git'
         "let g:SexyScroller_MaxTime = 400
         "let g:SexyScroller_EasingStyle = 1
+    " }
+    
+    " Matchmaker (Highlight word under cursor){
+        Bundle 'qstrahl/vim-matchmaker.git'
+        autocmd VimEnter * :Matchmaker
+    " }
+
+    " TurboMark (Mark extension){
+        Bundle 'kbairak/TurboMark.git'
     " }
 
 " }

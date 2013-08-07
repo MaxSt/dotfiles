@@ -8,3 +8,5 @@ hi MBENormal guifg=#808080 ctermfg=240
 
 hi SignColumn guibg=bg ctermbg=154
 hi hlShowMarks guibg=bg guifg=#A6DB29 ctermfg=154 ctermbg=235
+hi Matchmaker guibg=#000000 ctermbg=0
+

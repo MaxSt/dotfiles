@@ -123,9 +123,25 @@
     set cmdheight=1
     set showcmd
 " }
-
+    "set undofile (undo after re- opening vim)
+    if exists("+undofile")
+      " undofile - This allows you to use undos after exiting and restarting
+      " :help undo-persistence
+      " This is only present in 7.3+
+      set undodir=~/.vim/tmp/
+      set undofile
+    endif
 
 " Key (re)Mappings {
+
+    " Better Command Line editing
+    cnoremap <C-j> <t_kd>
+    cnoremap <C-k> <t_ku>
+    cnoremap <C-a> <Home>
+    cnoremap <C-e> <End>
+
+    "Map Q to repeat last recorded Macro
+    noremap Q @@
 
     " Select last inserted text with C-i
     nmap <C-I> `[v`]
