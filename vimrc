@@ -28,6 +28,8 @@
     endif
 
     if has('gui_running')
+      "Maxiize Window
+      set lines=999 columns=999
       set guioptions-=m
       if has(" mac")
         set guifont=DejaVu\ Sans\ Mono:h15                        " set Font by Editing with a gui
