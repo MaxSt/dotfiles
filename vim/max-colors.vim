@@ -6,7 +6,13 @@ hi MBEVisibleNormal guifg=#A6DB29 guibg=fg ctermbg=235 ctermfg=154
 hi MBEChanged guifg=#CD5907
 hi MBENormal guifg=#808080 ctermfg=240
 
+"Colors for Marks and Signs
 hi SignColumn guibg=bg ctermbg=154
 hi hlShowMarks guibg=bg guifg=#A6DB29 ctermfg=154 ctermbg=235
+
+"Colors for Matchmaker
 hi Matchmaker guibg=#000000 ctermbg=0
+
+"Colors for Startify
+hi StartifyHeader guifg=#A6DB29 ctermfg=154
 

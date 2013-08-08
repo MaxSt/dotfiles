@@ -67,6 +67,7 @@ autocmd! bufwritepost bundles.vim source %
 
     " InentLine (show Indent Lines){
         Bundle 'Yggdroot/indentLine.git'
+        let g:indentLine_color_term = 239
     " }
 
     " delimitMate (auto-close chars){
@@ -183,6 +184,13 @@ autocmd! bufwritepost bundles.vim source %
 
     " Startify (Vim Startscreen){
         Bundle 'mhinz/vim-startify.git'
+        let g:startify_custom_header = [
+          \ '   .--------.---.-.--.--.',
+          \ '   |        |  _  |_   _|',
+          \ '   |__|__|__|___._|__.__|',
+          \ '',
+          \ '=================================================',
+          \ ]
     " }
 
     " Calendar (vim calendar){
