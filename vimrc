@@ -135,6 +135,8 @@
     endif
 
 " Key (re)Mappings {
+    "Buffer swtiching with [Bufferindex]!
+    nnoremap ! :<C-u>b<C-r>=v:count<CR><CR>
 
     " Better Command Line editing
     cnoremap <C-j> <t_kd>
@@ -148,9 +150,6 @@
     " Select last inserted text with C-i
     nmap <C-I> `[v`]
 
-    " easier shifting
-    noremap > >>
-    noremap < <<
 
     " select Visual again after shifting
     vnoremap > >gv

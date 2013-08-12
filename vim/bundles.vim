@@ -184,6 +184,7 @@ autocmd! bufwritepost bundles.vim source %
 
     " Startify (Vim Startscreen){
         Bundle 'mhinz/vim-startify.git'
+        autocmd FileType startify setlocal bt=
         let g:startify_custom_header = [
           \ '   .--------.---.-.--.--.',
           \ '   |        |  _  |_   _|',
@@ -214,10 +215,6 @@ autocmd! bufwritepost bundles.vim source %
     " Matchmaker (Highlight word under cursor){
         Bundle 'qstrahl/vim-matchmaker.git'
         autocmd VimEnter * :Matchmaker
-    " }
-
-    " TurboMark (Mark extension){
-        Bundle 'kbairak/TurboMark.git'
     " }
 
 " }
