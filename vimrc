@@ -93,6 +93,7 @@
     set guioptions-=r
 
     set cursorline                                                " highlight current line (performance issues)
+    set cursorcolumn                                              " highlight current column (performance issues)
     set laststatus=2                                              " Always show the statusline
 
 " }
@@ -124,6 +125,7 @@
     set ruler                                                   " show the cursor position
     set cmdheight=1
     set showcmd
+    set so=14                                                   " Keep cursor away from edges of screen.
 " }
     "set undofile (undo after re- opening vim)
     if exists("+undofile")
@@ -135,8 +137,12 @@
     endif
 
 " Key (re)Mappings {
-    "Buffer swtiching with [Bufferindex]!
+    " Buffer swtiching with [Bufferindex]!
     nnoremap ! :<C-u>b<C-r>=v:count<CR><CR>
+
+    " Better Mark jumps
+    noremap ` '
+    noremap ' `
 
     " Better Command Line editing
     cnoremap <C-j> <t_kd>
