@@ -29,12 +29,12 @@
 
     if has('gui_running')
       "Maxiize Window
-      set lines=999 columns=999
+      set lines=45 columns=160
       set guioptions-=m
       if has(" mac")
-        set guifont=DejaVu\ Sans\ Mono:h15                        " set Font by Editing with a gui
+        set guifont=EnvyCodeR:h12                        " set Font by Editing with a gui
       elseif has('unix')
-        set guifont=Anonymous\ Pro\ 14
+        set guifont=EnvyCodeR\ 12
       endif
     endif
     set mouse=a                                                   " automatically enable mouse usage

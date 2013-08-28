@@ -61,8 +61,9 @@ autocmd! bufwritepost bundles.vim source %
         let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
     " }
 
-    " Airline  (StatusBar){
-        Bundle 'bling/vim-airline.git'
+    " lightline  (StatusBar){
+        "Bundle 'bling/vim-airline.git'
+        Bundle 'itchyny/lightline.vim.git'
     " }
 
     " InentLine (show Indent Lines){
