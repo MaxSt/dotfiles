@@ -54,7 +54,7 @@ autocmd! bufwritepost bundles.vim source %
         let g:ctrlp_extensions = [ 'undo' ]
         " let g:ctrlp_extensions = ['tag'] for tags but disabled atm
     " }
-    
+
     " ctlp cmatcher (ctrl matcher plugin for faster searching){
         Bundle 'JazzCore/ctrlp-cmatcher.git'
         " to let ctrlp use ctrp-cmatcher matching function
@@ -62,8 +62,15 @@ autocmd! bufwritepost bundles.vim source %
     " }
 
     " lightline  (StatusBar){
-        "Bundle 'bling/vim-airline.git'
-        Bundle 'itchyny/lightline.vim.git'
+        Bundle 'bling/vim-airline.git'
+        "let g:airline#extensions#tabline#enabled = 1
+        "let g:airline#extensions#tabline#fnamemod = ':t'
+        let g:airline_left_sep = ''
+        let g:airline_left_alt_sep = ''
+        let g:airline_right_sep = ''
+        let g:airline_right_alt_sep = ''
+        let g:airline_theme='powerlineish'
+        "Bundle 'itchyny/lightline.vim.git'
     " }
 
     " InentLine (show Indent Lines){
@@ -183,6 +190,12 @@ autocmd! bufwritepost bundles.vim source %
         let g:molokai_original = 1
     " }
 
+    " Luna Colorscheme (Colorscheme){
+        Bundle 'Pychimp/vim-luna.git'
+        "let g:molokai_original = 1
+    " }
+
+
     " Startify (Vim Startscreen){
         Bundle 'mhinz/vim-startify.git'
         autocmd FileType startify setlocal bt=
@@ -202,20 +215,24 @@ autocmd! bufwritepost bundles.vim source %
     " endwise (end structures automatically (ruby if end,...)){
         Bundle 'tpope/vim-endwise.git'
     " }
-    
+
     " eunuch (unix commands inside vim){
         Bundle 'tpope/vim-eunuch.git'
     " }
-    
+
     " SexyScroller (smoth scroll){
         "Bundle 'joeytwiddle/sexy_scroller.vim.git'
         "let g:SexyScroller_MaxTime = 400
         "let g:SexyScroller_EasingStyle = 1
     " }
-    
+
     " Matchmaker (Highlight word under cursor){
         Bundle 'qstrahl/vim-matchmaker.git'
         autocmd VimEnter * :Matchmaker
+    " }
+
+    " cleverf (better f and t command){
+        Bundle 'rhysd/clever-f.vim.git'
     " }
 
 " }

@@ -1,0 +1,28 @@
+snippet sec "section" b
+\section{${1:Name}}${0}
+endsnippet
+
+snippet ssec "subsection" b
+\subsection{${1:Name}}${0}
+endsnippet
+
+snippet sssec "subsubsection" b
+\subsubsection{${1:Name}}${0}
+endsnippet
+
+snippet img "image" b
+\begin{figure}
+\begin{centering}
+\includegraphics[scale=${5:0.5}]{${1:Pfad}}
+\par\end{centering}
+\caption[${2:Kurzer Titel der Grafik}]{${3:Das ist der lange Titel der Grafik, der genau erklärt, worum es sich handelt.}\label{fig:${4:figure}}
+\end{figure}
+endsnippet
+
+snippet ref "Reference figure" w
+\ref{fig:${1:fig}}${0}
+endsnippet
+
+snippet ref "Reference section" w
+\ref{sec:${1:sec}}${0}
+endsnippet

@@ -73,9 +73,9 @@
 " Vim UI {
     set showcmd                                                   " Show current command
     if has('gui_running')
-      color molokai                                               " load a colorscheme
+      color luna                                                  " load a colorscheme
     else
-      color molokai                                               " load a colorscheme
+      color luna                                                  " load a colorscheme
     end
     source ~/.vim/max-colors.vim                                  " load customized colors
     set wildmenu                                                  " show menu in commandline (tabs)
