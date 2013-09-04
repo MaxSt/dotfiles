@@ -1,0 +1,43 @@
+snippet end "end" b
+<!-- -->
+${0}
+endsnippet
+
+snippet # "numbered list" b
+#. ${0}
+endsnippet
+
+snippet - "horizontal rule" b
+---
+${0}
+endsnippet
+
+snippet b "bold" w
+**${1}** ${0}
+endsnippet
+
+snippet s "strike out" w
+~~${1}~~ ${0}
+endsnippet
+
+
+snippet f "foot note" i
+[^${1:name}]${0}
+
+[^$1]: ${2:text}
+endsnippet
+
+snippet link "Link" w
+[http://${1:url}](/http://$1) ${0}
+endsnippet
+
+snippet table "Table" !b
+\begin{tabular}{${1:|l|l|l|}}\hline
+  ${0:column & column & column} \\\ \hline
+	\hline
+\end{tabular}
+endsnippet
+
+snippet row "Tablerow" !b
+${0:column & column & column} \\\
+endsnippet
