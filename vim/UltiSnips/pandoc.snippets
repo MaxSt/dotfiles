@@ -41,3 +41,13 @@ endsnippet
 snippet row "Tablerow" !b
 ${0:column & column & column} \\\
 endsnippet
+
+snippet img "Image" !b
+![](./${1:image.png})\
+endsnippet
+
+snippet fig "Figure" !b
+[${1:name}]: ${2:image.png}
+
+![$1]
+endsnippet
