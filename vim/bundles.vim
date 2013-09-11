@@ -5,6 +5,8 @@ autocmd! bufwritepost bundles.vim source %
 
  " Bundles{
     " Vundler {
+        filetype on
+        filetype off
         set rtp+=~/.vim/bundle/vundle/
         call vundle#rc()
       " let Vundle manage Vundle
@@ -70,12 +72,6 @@ autocmd! bufwritepost bundles.vim source %
         let g:airline_right_sep = ''
         let g:airline_right_alt_sep = ''
         let g:airline_theme='powerlineish'
-        "Bundle 'itchyny/lightline.vim.git'
-    " }
-
-    " InentLine (show Indent Lines){
-        Bundle 'Yggdroot/indentLine.git'
-        let g:indentLine_color_term = 239
     " }
 
     " delimitMate (auto-close chars){
@@ -177,22 +173,17 @@ autocmd! bufwritepost bundles.vim source %
         Bundle 'terryma/vim-multiple-cursors.git'
     " }
 
-    " Eunuch (UNIX shell commands in VIM){
-        Bundle 'tpope/vim-eunuch.git'
-    " }
-
     " Covim (Collaborative Editing){
         "Bundle 'FredKSchott/CoVim.git'
     " }
 
     " Molokai Colorscheme (Colorscheme){
-        Bundle 'tomasr/molokai.git'
-        let g:molokai_original = 1
+        "Bundle 'tomasr/molokai.git'
+        "let g:molokai_original = 1
     " }
 
     " Luna Colorscheme (Colorscheme){
         Bundle 'Pychimp/vim-luna.git'
-        "let g:molokai_original = 1
     " }
 
 
@@ -208,10 +199,6 @@ autocmd! bufwritepost bundles.vim source %
           \ ]
     " }
 
-    " Calendar (vim calendar){
-        Bundle 'mattn/calendar-vim.git'
-    " }
-
     " endwise (end structures automatically (ruby if end,...)){
         Bundle 'tpope/vim-endwise.git'
     " }
@@ -220,15 +207,9 @@ autocmd! bufwritepost bundles.vim source %
         Bundle 'tpope/vim-eunuch.git'
     " }
 
-    " SexyScroller (smoth scroll){
-        "Bundle 'joeytwiddle/sexy_scroller.vim.git'
-        "let g:SexyScroller_MaxTime = 400
-        "let g:SexyScroller_EasingStyle = 1
-    " }
-
     " Matchmaker (Highlight word under cursor){
         Bundle 'qstrahl/vim-matchmaker.git'
-        autocmd VimEnter * :Matchmaker
+        let g:matchmaker_enable_startup = 1
     " }
 
     " cleverf (better f and t command){

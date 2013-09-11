@@ -1,6 +1,5 @@
 " Basics {
     set nocompatible               " must be first line
-    filetype off                   " required!
     set background=dark            " Assume a dark background
     let mapleader = ','            " The default leader is '\', but many people prefer ',' as it's in a standard location
 
@@ -20,9 +19,8 @@
 " }
 
 " General {
-    syntax on                         " syntax highlighting
     filetype plugin indent on         " Automatic detect file types
-
+    syntax on                         " syntax highlighting
     if $COLORTERM == 'gnome-terminal'
       set t_Co=256
     endif
@@ -83,10 +81,10 @@
     set ttyfast                                                   " Improves redrawing
     set number                                                    " Views Line Numbers
     set relativenumber                                            " Views Line Numbers
-    autocmd FocusLost * set number "set absolute numbers when focus lost
-    autocmd FocusGained * set relativenumber "set relative numbers when focus gained
-    autocmd InsertEnter * set number "set absolute numbers when in insert mode
-    autocmd InsertLeave * set relativenumber "set relative numbers when in normal mode
+    "autocmd FocusLost * set number "set absolute numbers when focus lost
+    "autocmd FocusGained * set relativenumber "set relative numbers when focus gained
+    "autocmd InsertEnter * set number "set absolute numbers when in insert mode
+    "autocmd InsertLeave * set relativenumber "set relative numbers when in normal mode
 
 
     set guioptions-=T
@@ -94,6 +92,7 @@
 
     set cursorline                                                " highlight current line (performance issues)
     set cursorcolumn                                              " highlight current column (performance issues)
+
     set laststatus=2                                              " Always show the statusline
 
 " }
@@ -253,7 +252,3 @@
 
     " Map Spell function to ,s
     nnoremap <silent> <leader>s :ToggleSpell<CR>
-
-    " set Path to pdflatex for making pdfs out ouf vim
-    :command! PDFlatex !/usr/texbin/pdflatex %
-" }
