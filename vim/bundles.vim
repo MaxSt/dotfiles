@@ -1,7 +1,5 @@
 " Easy bundles editing with :EditBundles
 command! EditBundles :edit ~/.vim/bundles.vim
-" Auto - Reload this File
-autocmd! bufwritepost bundles.vim source %
 
  " Bundles{
     " Vundler {
@@ -12,6 +10,17 @@ autocmd! bufwritepost bundles.vim source %
       " let Vundle manage Vundle
       " required!
         Bundle 'gmarik/vundle'
+    " }
+
+    " Luna Colorscheme (Colorscheme){
+        Bundle 'Pychimp/vim-luna.git'
+        set background=dark               " Assume a dark background
+        syntax on                         " syntax highlighting
+        if has('gui_running')
+          color luna                                                  " load a colorscheme
+        else
+          color luna                                                  " load a colorscheme
+        end
     " }
 
     " NERDTree (Filetree){
@@ -41,6 +50,13 @@ autocmd! bufwritepost bundles.vim source %
         let g:miniBufExplCycleArround = 1
         let g:miniBufExplCheckDupeBufs = 0                    " faster for many buffers
         let g:miniBufExplUseSingleClick = 1                   " single click for buffer switching
+        "Colors for MBE
+        hi MBEVisibleActiveNormal guibg=fg guifg=#A6DB29 ctermfg=154 ctermbg=235
+        hi MBEVisibleActiveChanged guifg=#F1266F guibg=fg ctermbg=235 ctermfg=161
+        hi MBEVisibleChanged guifg=#F1266F ctermfg=166
+        hi MBEVisibleNormal guifg=#66D9EF guibg=fg ctermbg=235 ctermfg=81
+        hi MBEChanged guifg=#CD5907
+        hi MBENormal guifg=#808080 ctermfg=240
     " }
 
     " ctrlp (open file with fuzzy search){
@@ -182,9 +198,6 @@ autocmd! bufwritepost bundles.vim source %
         "let g:molokai_original = 1
     " }
 
-    " Luna Colorscheme (Colorscheme){
-        Bundle 'Pychimp/vim-luna.git'
-    " }
 
 
     " Startify (Vim Startscreen){
@@ -197,6 +210,8 @@ autocmd! bufwritepost bundles.vim source %
           \ '',
           \ '=================================================',
           \ ]
+          "Colors for Startify
+          hi StartifyHeader guifg=#A6DB29 ctermfg=154
     " }
 
     " endwise (end structures automatically (ruby if end,...)){
@@ -210,10 +225,15 @@ autocmd! bufwritepost bundles.vim source %
     " Matchmaker (Highlight word under cursor){
         Bundle 'qstrahl/vim-matchmaker.git'
         let g:matchmaker_enable_startup = 1
+        "Colors for Matchmaker
+        hi Matchmaker guibg=#000000 ctermbg=0
     " }
 
     " cleverf (better f and t command){
         Bundle 'rhysd/clever-f.vim.git'
+        let g:clever_f_ignore_case = 1
+        let g:clever_f_fix_key_direction = 1
+        let g:clever_f_show_prompt = 1
     " }
 
 " }

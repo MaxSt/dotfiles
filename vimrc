@@ -1,10 +1,5 @@
 " Basics {
     set nocompatible               " must be first line
-    set background=dark            " Assume a dark background
-    let mapleader = ','            " The default leader is '\', but many people prefer ',' as it's in a standard location
-
-    " Automatic reloading of .vimrc (Colors are not reloading)
-    autocmd! bufwritepost .vimrc source %
 " }
 
  " Windows Compatible {
@@ -15,24 +10,30 @@
 " }
 
 " Plugins {
-    source ~/.vim/bundles.vim
+    " Use bundles config
+    if filereadable(expand("~/.vim/bundles.vim"))
+        source ~/.vim/bundles.vim
+    endif
+
 " }
 
 " General {
     filetype plugin indent on         " Automatic detect file types
-    syntax on                         " syntax highlighting
-    if $COLORTERM == 'gnome-terminal'
-      set t_Co=256
+    if &term == 'xterm' || &term == 'screen'
+        set t_Co=256            " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
     endif
 
     if has('gui_running')
       "Maxiize Window
-      set lines=45 columns=160
+      set lines=50 columns=170
       set guioptions-=m
-      if has(" mac")
-        set guifont=EnvyCodeR:h12                        " set Font by Editing with a gui
-      elseif has('unix')
-        set guifont=EnvyCodeR\ 12
+
+      if has("gui_gtk2")
+          set guifont=EnvyCodeR\ 12,Andale\ Mono\ Regular\ 16,Menlo\ Regular\ 15,Consolas\ Regular\ 16,Courier\ New\ Regular\ 18
+      elseif has("gui_mac")
+          set guifont=EnvyCodeR:h12,Andale\ Mono\ Regular:h16,Menlo\ Regular:h15,Consolas\ Regular:h16,Courier\ New\ Regular:h18
+      elseif has("gui_win32")
+          set guifont=EnvyCodeR:h12,Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
       endif
     endif
     set mouse=a                                                   " automatically enable mouse usage
@@ -41,7 +42,11 @@
     set completeopt=longest,menu,preview
     scriptencoding utf-8
 
-    set clipboard=unnamedplus                                     " for standard os clipboard
+    if has ('x') && has ('gui') " On Linux use + register for copy-paste
+        set clipboard=unnamedplus
+    elseif has ('gui')          " On mac and Windows, use * register for copy-paste
+        set clipboard=unnamed
+    endif
     set noeb vb t_vb=                                             " disable peep
     set autoread                                                  " automatically load file when its changed
     " set autowrite                 " automatically write a file when leaving a modified buffer
@@ -62,6 +67,7 @@
     set wildignore+=*.xlsx,*.ico,*.png,*.jpg,*.gif,*.jpeg,*.xcf,*.xls,*.orig,*.swp,*.bak,*.pyc,*.class,*.obj,*.o
     set foldmethod=indent
     set nofoldenable
+    let mapleader = ','            " The default leader is '\', but many people prefer ',' as it's in a standard location
     set nostartofline
     if has('mac')
       set macmeta
@@ -70,21 +76,19 @@
 
 " Vim UI {
     set showcmd                                                   " Show current command
-    if has('gui_running')
-      color luna                                                  " load a colorscheme
-    else
-      color luna                                                  " load a colorscheme
-    end
-    source ~/.vim/max-colors.vim                                  " load customized colors
     set wildmenu                                                  " show menu in commandline (tabs)
     set tabpagemax=15                                             " only show 15 tabs
     set ttyfast                                                   " Improves redrawing
     set number                                                    " Views Line Numbers
     set relativenumber                                            " Views Line Numbers
-    "autocmd FocusLost * set number "set absolute numbers when focus lost
-    "autocmd FocusGained * set relativenumber "set relative numbers when focus gained
-    "autocmd InsertEnter * set number "set absolute numbers when in insert mode
-    "autocmd InsertLeave * set relativenumber "set relative numbers when in normal mode
+    set linespace=0                                               " No extra spaces between rows
+    set winminheight=0                                            " Windows can be 0 line high
+    set scrolljump=5                                              " Lines to scroll when cursor leaves screen
+    set scrolloff=3                                               " Minimum lines to keep above and below cursor
+    autocmd FocusLost * set number "set absolute numbers when focus lost
+    autocmd FocusGained * set relativenumber "set relative numbers when focus gained
+    autocmd InsertEnter * set number "set absolute numbers when in insert mode
+    autocmd InsertLeave * set relativenumber "set relative numbers when in normal mode
 
 
     set guioptions-=T
@@ -116,7 +120,6 @@
     set showmatch                                               " set show matching parenthesis
     set ignorecase                                              " ignore case (must be set for smartcase)
     set smartcase                                               " ignore case if search pattern is all lowercase,
-    set gdefault                                                " %s /g is on --> all matches in a line are substituted instead of one
     set smarttab                                                " insert tabs on the start of a line according to
     " shiftwidth, not tabstop
     set hlsearch                                                " highlight search terms
@@ -143,6 +146,10 @@
     noremap ` '
     noremap ' `
 
+    " Wrapped lines goes down/up to next row, rather than next line in file.
+    noremap j gj
+    noremap k gk
+
     " Better Command Line editing
     cnoremap <C-j> <t_kd>
     cnoremap <C-k> <t_ku>
@@ -161,7 +168,8 @@
     vnoremap < <gv
 
     " what to show when I hit :set list
-    set listchars=tab:>\ ,trail:-,extends:>,precedes:<,nbsp:+
+    set list
+    set listchars=tab:›\ ,trail:•,extends:#,nbsp:. " Highlight problematic whitespace
     set showbreak=↳
     " Easier moving in tabs and windows
     map <C-Tab> <C-W><C-W>
@@ -184,11 +192,19 @@
     noremap <C-H>     <C-W>h
     noremap <C-L>     <C-W>l
 
+    " Adjust viewports to the same size
+    map <Leader>= <C-w>=
+
+    " Map <Leader>f to display all lines with keyword under cursor
+    " and ask which one to jump to
+    nmap <Leader>f [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
+
     "Make Y behave Like D or C
     nmap Y y$
 
     "write file with <leader>w
     noremap <leader>w :w<CR>
+    noremap ; :update<CR>
 
     " match closest and lets you type while autocomplete
 
@@ -252,3 +268,27 @@
 
     " Map Spell function to ,s
     nnoremap <silent> <leader>s :ToggleSpell<CR>
+" }
+
+" Shell command {
+  function! s:RunShellCommand(cmdline)
+      botright new
+
+      setlocal buftype=nofile
+      setlocal bufhidden=delete
+      setlocal nobuflisted
+      setlocal noswapfile
+      setlocal nowrap
+      setlocal filetype=shell
+      setlocal syntax=shell
+
+      call setline(1, a:cmdline)
+      call setline(2, substitute(a:cmdline, '.', '=', 'g'))
+      execute 'silent $read !' . escape(a:cmdline, '%#')
+      setlocal nomodifiable
+      1
+  endfunction
+
+  command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
+  " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
+" }
