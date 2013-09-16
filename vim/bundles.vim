@@ -79,10 +79,14 @@ command! EditBundles :edit ~/.vim/bundles.vim
         let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
     " }
 
-    " lightline  (StatusBar){
+    " airline  (StatusBar){
         Bundle 'bling/vim-airline.git'
+        " tabline
         "let g:airline#extensions#tabline#enabled = 1
         "let g:airline#extensions#tabline#fnamemod = ':t'
+        "let g:airline#extensions#tabline#buffer_nr_show = 1
+        "let g:airline#extensions#tabline#buffer_nr_format = '%s:'
+
         let g:airline_left_sep = ''
         let g:airline_left_alt_sep = ''
         let g:airline_right_sep = ''
