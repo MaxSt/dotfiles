@@ -73,7 +73,7 @@ command! EditBundles :edit ~/.vim/bundles.vim
         " let g:ctrlp_extensions = ['tag'] for tags but disabled atm
     " }
 
-    " ctlp cmatcher (ctrl matcher plugin for faster searching){
+    " ctlp cmatcher (ctrlp matcher plugin for faster searching){
         Bundle 'JazzCore/ctrlp-cmatcher.git'
         " to let ctrlp use ctrp-cmatcher matching function
         let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
@@ -224,13 +224,6 @@ command! EditBundles :edit ~/.vim/bundles.vim
 
     " eunuch (unix commands inside vim){
         Bundle 'tpope/vim-eunuch.git'
-    " }
-
-    " Matchmaker (Highlight word under cursor){
-        Bundle 'qstrahl/vim-matchmaker.git'
-        let g:matchmaker_enable_startup = 1
-        "Colors for Matchmaker
-        hi Matchmaker guibg=#000000 ctermbg=0
     " }
 
     " cleverf (better f and t command){
