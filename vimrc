@@ -1,5 +1,6 @@
 " Basics {
     set nocompatible               " must be first line
+    syntax on
 " }
 
  " Windows Compatible {
@@ -9,16 +10,7 @@
     endif
 " }
 
-" Plugins {
-    " Use bundles config
-    if filereadable(expand("~/.vim/bundles.vim"))
-        source ~/.vim/bundles.vim
-    endif
-
-" }
-
 " General {
-    filetype plugin indent on         " Automatic detect file types
     if &term == 'xterm' || &term == 'screen'
         set t_Co=256            " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
     endif
@@ -254,13 +246,13 @@
 
     " activate/deaktivate Spell checking
     function! ToggleSpell()
-    let Myspl=&spell
-    if &spell
-        let Myspl=" nospell"
-    else
-        let Myspl=" spell"
-    endif
-    exe" setlocal " . Myspl
+      let Myspl=&spell
+      if &spell
+          let Myspl=" nospell"
+      else
+          let Myspl=" spell"
+      endif
+      exe" setlocal " . Myspl
     :endfunction
 
     " Alias the ToggleSpell function
@@ -291,4 +283,13 @@
 
   command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
   " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
+" }
+
+" Plugins {
+    " Use bundles config
+    if filereadable(expand("~/.vim/bundles.vim"))
+        source ~/.vim/bundles.vim
+    endif
+
+    filetype plugin indent on         " Automatic detect file types
 " }

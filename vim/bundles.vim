@@ -12,22 +12,20 @@ command! EditBundles :edit ~/.vim/bundles.vim
         Bundle 'gmarik/vundle'
     " }
 
-    " Luna Colorscheme (Colorscheme){
-        Bundle 'Pychimp/vim-luna.git'
-        set background=dark               " Assume a dark background
-        syntax on                         " syntax highlighting
+    " Colorscheme (Colorscheme){
+        Bundle 'zeis/vim-kolor'
         if has('gui_running')
-          color luna                                                  " load a colorscheme
+          color kolor                                             " load a colorscheme
         else
-          color luna                                                  " load a colorscheme
-        end
+          color kolor                                             " load a colorscheme
+        endif
     " }
 
     " NERDTree (Filetree){
         Bundle 'scrooloose/nerdtree.git'
-        " autocmd VimEnter * NERDTree           "Open NERDTree on Startup
+        " autocmd VimEnter * NERDTree                           "Open NERDTree on Startup
         let NERDTreeQuitOnOpen = 1                              " Closes NERDTree After Opening a file
-        noremap <silent> \ :NERDTreeToggle<CR>                  " open/close Nerdtree on ctrl + m
+        noremap <silent> \ :NERDTreeToggle<CR>                  " open/close Nerdtree with \
     " }
 
     " Ultisnips (Code Snippets){
@@ -51,6 +49,12 @@ command! EditBundles :edit ~/.vim/bundles.vim
         let g:miniBufExplCheckDupeBufs = 0                    " faster for many buffers
         let g:miniBufExplUseSingleClick = 1                   " single click for buffer switching
         "Colors for MBE
+        hi clear MBEVisibleActiveNormal
+        hi clear MBEVisibleActiveChanged
+        hi clear MBEVisibleChanged
+        hi clear MBEVisibleNormal
+        hi clear MBEChanged
+        hi clear MBENormal
         hi MBEVisibleActiveNormal guibg=fg guifg=#A6DB29 ctermfg=154 ctermbg=235
         hi MBEVisibleActiveChanged guifg=#F1266F guibg=fg ctermbg=235 ctermfg=161
         hi MBEVisibleChanged guifg=#F1266F ctermfg=166
@@ -231,6 +235,11 @@ command! EditBundles :edit ~/.vim/bundles.vim
         let g:clever_f_ignore_case = 1
         let g:clever_f_fix_key_direction = 1
         let g:clever_f_show_prompt = 1
+    " }
+
+    " IndentLine (Show vertical line at each indent Level){
+        "Slows down vim too much
+        "Bundle 'Yggdroot/indentLine.git'
     " }
 
 " }
