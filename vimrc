@@ -135,6 +135,7 @@
     nnoremap ! :<C-u>b<C-r>=v:count<CR><CR>
 
     " Better Mark jumps
+    noremap <leader>m :marks<CR>
     noremap ` '
     noremap ' `
 
@@ -195,8 +196,8 @@
     nmap Y y$
 
     "write file with <leader>w
-    noremap <leader>w :w<CR>
-    noremap ; :update<CR>
+    noremap <leader>w :update<CR>
+    noremap ; :buffer<Space>
 
     " match closest and lets you type while autocomplete
 
