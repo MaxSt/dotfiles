@@ -246,4 +246,19 @@ command! EditBundles :edit ~/.vim/bundles.vim
         "Bundle 'Yggdroot/indentLine.git'
     " }
 
+    " Emmet (Zen Coding){
+        Bundle 'mattn/emmet-vim.git'
+
+        function! s:zen_html_tab()
+          let line = getline('.')
+          if match(line, '<.*>') >= 0
+            return "\<c-y>n"
+          endif
+          return "\<c-y>,"
+        endfunction
+        autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml imap <buffer><expr><c-l> <sid>zen_html_tab()
+        autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml nmap <buffer><expr><c-l> <sid>zen_html_tab()
+        autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml vmap <buffer><c-l> <c-y>,
+    " }
+
 " }
