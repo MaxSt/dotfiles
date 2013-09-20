@@ -15,7 +15,7 @@ snippet img "image" b
 \begin{centering}
 \includegraphics[scale=${5:0.5}]{${1:Pfad}}
 \par\end{centering}
-\caption[${2:Kurzer Titel der Grafik}]{${3:Das ist der lange Titel der Grafik, der genau erklärt, worum es sich handelt.}\label{fig:${4:figure}}
+\caption[${2:Kurzer Titel der Grafik}]{${3:Das ist der lange Titel der Grafik, der genau erklärt, worum es sich handelt.}\label{fig:${4:figure}}}
 \end{figure}
 endsnippet
 
@@ -29,4 +29,14 @@ endsnippet
 
 snippet sc "Literatur Source" w
 \citep{${1:source}}${0}
+endsnippet
+
+snippet list "list" !b
+\begin{itemize}
+  \item ${0}
+\end{itemize}
+endsnippet
+
+snippet i "item" !b
+\item ${0}
 endsnippet

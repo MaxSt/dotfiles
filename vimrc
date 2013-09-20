@@ -56,7 +56,7 @@
     set nomodeline
     set sessionoptions=buffers,folds,tabpages,winsize
     " dont load binary files:
-    set wildignore+=*.xlsx,*.ico,*.png,*.jpg,*.gif,*.jpeg,*.xcf,*.xls,*.orig,*.swp,*.bak,*.pyc,*.class,*.obj,*.o
+    set wildignore+=*.xlsx,*.ico,*.png,*.jpg,*.gif,*.jpeg,*.xcf,*.xls,*.orig,*.swp,*.bak,*.pyc,*.class,*.obj,*.o,*.aux,*.odg,*.pdf
     set foldmethod=indent
     set nofoldenable
     let mapleader = ','            " The default leader is '\', but many people prefer ',' as it's in a standard location
