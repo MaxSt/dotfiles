@@ -195,6 +195,12 @@
     "Make Y behave Like D or C
     nmap Y y$
 
+    "J and K to Jump to beginning of Line
+    noremap J +
+    noremap K -
+    noremap <leader>j J "to Join lines
+    noremap <leader>k K "to show help under cursor
+
     "write file with <leader>w
     noremap <leader>w :update<CR>
     noremap ; :buffer<Space>

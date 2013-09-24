@@ -2,6 +2,7 @@ noremap <C-Space> :
 noremap ]b :bn<CR>
 noremap [b :bp<CR>
 noremap <C-P> :hardcopy<CR>
+noremap ! b
 
 set complete=ls
 set history=1000
