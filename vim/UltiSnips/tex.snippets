@@ -12,14 +12,15 @@ endsnippet
 
 snippet img "image" b
 \begin{figure}
-\begin{centering}
-\includegraphics[scale=${5:0.5}]{${1:Pfad}}
-\par\end{centering}
-\caption[${2:Kurzer Titel der Grafik}]{${3:Das ist der lange Titel der Grafik, der genau erklärt, worum es sich handelt.}\label{fig:${4:figure}}}
+  \begin{centering}
+    \includegraphics[scale=${5:0.5}]{${1:Pfad}}
+    \par
+  \end{centering}
+  \caption[${2:Kurzer Titel der Grafik}]{${3:Das ist der lange Titel der Grafik, der genau erklärt, worum es sich handelt.}\label{fig:${4:figure}}}
 \end{figure}
 endsnippet
 
-snippet ref "Reference figure" w
+snippet ref "Reference figure" i
 \ref{fig:${1:fig}}${0}
 endsnippet
 
@@ -37,6 +38,12 @@ snippet list "list" !b
 \end{itemize}
 endsnippet
 
-snippet i "item" !b
-\item ${0}
+snippet codeb "Code block" !b
+\begin{lstlisting}[language=${1:Ruby}]
+  ${0}
+\end{lstlisting}
+endsnippet
+
+snippet code "Code File" !b
+\lstinputlisting[language=${1:Ruby}]{${2:Pfad}}
 endsnippet

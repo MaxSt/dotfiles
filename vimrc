@@ -140,8 +140,8 @@
     noremap ' `
 
     " Wrapped lines goes down/up to next row, rather than next line in file.
-    noremap j gj
-    noremap k gk
+    "noremap j gj
+    "noremap k gk
 
     " Better Command Line editing
     cnoremap <C-j> <t_kd>
