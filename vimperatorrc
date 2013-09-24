@@ -15,7 +15,7 @@ set smartcase
 set focuscontent
 set visualbell
 set hintchars=asdfjkl;ghqwertuiopybnmvc
-
+set tabnumbers
 
 let mapleader = ","
 
