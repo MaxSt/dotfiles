@@ -13,11 +13,12 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " Colorscheme (Colorscheme){
+        Bundle 'https://github.com/altercation/vim-colors-solarized.git'
         Bundle 'zeis/vim-kolor'
         if has('gui_running')
-          color kolor                                             " load a colorscheme
+          color solarized                                             " load a colorscheme
         else
-          color kolor                                             " load a colorscheme
+          color kolor                                                 " load a colorscheme
         endif
     " }
 
@@ -260,5 +261,14 @@ command! EditBundles :edit ~/.vim/bundles.vim
         autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml nmap <buffer><expr><c-l> <sid>zen_html_tab()
         autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml vmap <buffer><c-l> <c-y>,
     " }
+
+    " textobject user (define your own text objects){
+        Bundle 'https://github.com/kana/vim-textobj-user.git'
+    " }
+
+    " textobject indent (textobject for same indent level){
+        Bundle 'https://github.com/kana/vim-textobj-indent.git'
+    " }
+
 
 " }

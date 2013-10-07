@@ -198,8 +198,10 @@
     "J and K to Jump to beginning of Line
     noremap J +
     noremap K -
-    noremap <leader>j J "to Join lines
-    noremap <leader>k K "to show help under cursor
+    "to Join lines
+    noremap <leader>j J
+    "to show help under cursor
+    noremap <leader>k K
 
     "write file with <leader>w
     noremap <leader>w :update<CR>
@@ -217,26 +219,6 @@
     endif
     exe" setlocal " . Myhl
     :endfunction
-
-    "Select indent level
-    function SelectIndent()
-      let cur_line = line(".")
-      let cur_ind = indent(cur_line)
-      let line = cur_line
-      while indent(line - 1) >= cur_ind
-        let line = line - 1
-      endw
-      exe "normal " . line . "G"
-      exe "normal V"
-      let line = cur_line
-      while indent(line + 1) >= cur_ind
-        let line = line + 1
-      endw
-      exe "normal " . line . "G"
-    endfunction
-    nnoremap vii :call SelectIndent()<CR>
-    nmap cii viic
-    nmap dii viid
 
     " Alias the ToggleHighlight function
     command! ToggleHighlight call ToggleHighlight()
