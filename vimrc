@@ -193,7 +193,7 @@
     nmap <Leader>f [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
 
     "Make Y behave Like D or C
-    nmap Y y$
+    noremap Y y$
 
     "J and K to Jump to beginning of Line
     noremap J +

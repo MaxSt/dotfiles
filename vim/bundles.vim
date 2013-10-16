@@ -161,11 +161,6 @@ command! EditBundles :edit ~/.vim/bundles.vim
         Bundle 'scrooloose/nerdcommenter.git'
     " }
 
-    " YankRing (Circle with <ctrl>p){
-        Bundle 'vim-scripts/YankRing.vim.git'
-        let g:yankring_history_dir = '$HOME/.vim/tmp'
-    " }
-
     " Ack (Ack for vim){
         Bundle 'mileszs/ack.vim.git'
     " }
