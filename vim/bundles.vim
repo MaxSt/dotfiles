@@ -13,12 +13,11 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " Colorscheme (Colorscheme){
-        Bundle 'https://github.com/altercation/vim-colors-solarized.git'
-        Bundle 'zeis/vim-kolor'
+        Bundle 'junegunn/seoul256.vim'
         if has('gui_running')
-          color solarized                                             " load a colorscheme
+          color seoul256                                             " load a colorscheme
         else
-          color kolor                                                 " load a colorscheme
+          color seoul256                                                 " load a colorscheme
         endif
     " }
 
