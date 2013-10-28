@@ -31,6 +31,7 @@
     set mouse=a                                                   " automatically enable mouse usage
     set report=0
     set encoding=utf-8
+    let g:matchparen_insert_timeout=5
     set completeopt=longest,menu,preview
     scriptencoding utf-8
 
