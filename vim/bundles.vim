@@ -264,5 +264,4 @@ command! EditBundles :edit ~/.vim/bundles.vim
         Bundle 'https://github.com/kana/vim-textobj-indent.git'
     " }
 
-
 " }

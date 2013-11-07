@@ -208,6 +208,9 @@
     noremap <leader>w :update<CR>
     noremap ; :buffer<Space>
 
+    " go to end of search highlight
+    noremap <silent> <leader>e /<c-r>//e<cr>:let @/='<c-r>/'<cr>
+
     " match closest and lets you type while autocomplete
 
     " activate/deaktivate Hightlight search
