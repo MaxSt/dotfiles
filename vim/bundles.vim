@@ -20,6 +20,7 @@ command! EditBundles :edit ~/.vim/bundles.vim
         else
           color harlequin                                                 " load a colorscheme
         endif
+        hi CursorLine term=none cterm=none gui=none
     " }
 
     " NERDTree (Filetree){
