@@ -14,10 +14,11 @@ command! EditBundles :edit ~/.vim/bundles.vim
 
     " Colorscheme (Colorscheme){
         Bundle 'junegunn/seoul256.vim'
+        Bundle 'nielsmadan/harlequin.git'
         if has('gui_running')
-          color seoul256                                             " load a colorscheme
+          color harlequin                                                " load a colorscheme
         else
-          color seoul256                                                 " load a colorscheme
+          color harlequin                                                 " load a colorscheme
         endif
     " }
 
@@ -262,6 +263,10 @@ command! EditBundles :edit ~/.vim/bundles.vim
 
     " textobject indent (textobject for same indent level){
         Bundle 'https://github.com/kana/vim-textobj-indent.git'
+    " }
+
+    " vim-over (substitute preview){
+        Bundle 'https://github.com/osyo-manga/vim-over.git'
     " }
 
 " }
