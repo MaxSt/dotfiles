@@ -218,8 +218,9 @@ command! EditBundles :edit ~/.vim/bundles.vim
           \ '',
           \ '=================================================',
           \ ]
-          "Colors for Startify
-          hi StartifyHeader guifg=#A6DB29 ctermfg=154
+        "Colors for Startify
+        hi def link StartifyHeader Todo
+        let g:startify_change_to_vcs_root = 1
     " }
 
     " endwise (end structures automatically (ruby if end,...)){
