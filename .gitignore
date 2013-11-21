@@ -4,6 +4,8 @@
 .netrwhist
 vim/bundle/*
 vim/bundle/**/*
+vim/session/*
+vim/session/**/*
 vim/tmp/*
 vim/tmp/**/*
 config/ranger/bookmarks

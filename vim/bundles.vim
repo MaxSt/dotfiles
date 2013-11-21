@@ -13,7 +13,6 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " Colorscheme (Colorscheme){
-        Bundle 'junegunn/seoul256.vim'
         Bundle 'nielsmadan/harlequin.git'
         if has('gui_running')
           color harlequin                                                " load a colorscheme

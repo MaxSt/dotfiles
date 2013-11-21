@@ -175,7 +175,16 @@
     noremap <silent> <A-l> <C-w>><esc>
 
     " space to : for easier commands
-    noremap <space> :
+    nnoremap <space> :
+    nnoremap q<space> q:
+    nnoremap q/ q/
+    nnoremap q? q?
+
+    augroup ECW_au
+      au!
+      au CmdwinEnter * noremap q :q<CR>
+      au CmdwinLeave * unmap q
+    augroup END
 
     " § for Window switching
     noremap § <C-W>
@@ -276,6 +285,36 @@
 
   command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
   " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
+
+  " Define a command to make it easier to use
+  command! -nargs=+ QFDo call QFDo(<q-args>)
+
+  " Quick Fix Do (do command for all quick fix lines)
+  " Function that does the work
+  function! QFDo(command)
+      " Create a dictionary so that we can
+      " get the list of buffers rather than the
+      " list of lines in buffers (easy way
+      " to get unique entries)
+      let buffer_numbers = {}
+      " For each entry, use the buffer number as 
+      " a dictionary key (won't get repeats)
+      for fixlist_entry in getqflist()
+          let buffer_numbers[fixlist_entry['bufnr']] = 1
+      endfor
+      " Make it into a list as it seems cleaner
+      let buffer_number_list = keys(buffer_numbers)
+
+      " For each buffer
+      for num in buffer_number_list
+          " Select the buffer
+          exe 'buffer' num
+          " Run the command that's passed as an argument
+          exe a:command
+          " Save if necessary
+          update
+      endfor
+  endfunction
 " }
 
 " Plugins {
