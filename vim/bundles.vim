@@ -13,11 +13,11 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " Colorscheme (Colorscheme){
-        Bundle 'nielsmadan/harlequin.git'
+        Bundle 'MaxSt/FlatColor'
         if has('gui_running')
-          color harlequin                                                " load a colorscheme
+          color flatcolor                                                " load a colorscheme
         else
-          color harlequin                                                 " load a colorscheme
+          color flatcolor                                                 " load a colorscheme
         endif
         hi CursorLine term=none cterm=none gui=none
     " }
