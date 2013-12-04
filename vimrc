@@ -77,7 +77,7 @@
     set linespace=0                                               " No extra spaces between rows
     set winminheight=0                                            " Windows can be 0 line high
     set scrolljump=5                                              " Lines to scroll when cursor leaves screen
-    set scrolloff=3                                               " Minimum lines to keep above and below cursor
+    set scrolloff=0                                               " Minimum lines to keep above and below cursor
     autocmd FocusLost * set number "set absolute numbers when focus lost
     autocmd FocusGained * set relativenumber "set relative numbers when focus gained
     autocmd InsertEnter * set number "set absolute numbers when in insert mode
@@ -134,6 +134,7 @@
 " Key (re)Mappings {
     " Buffer swtiching with [Bufferindex]!
     nnoremap ! :<C-u>b<C-r>=v:count<CR><CR>
+    nnoremap #! :b #<CR>
 
     " Better Mark jumps
     noremap <leader>m :marks<CR>
