@@ -77,10 +77,6 @@ command! EditBundles :edit ~/.vim/bundles.vim
         " let g:ctrlp_extensions = [ 'undo' ]
         " let g:ctrlp_extensions = ['tag'] for tags but disabled atm
         " ctrlp plugins {
-            Bundle 'JazzCore/ctrlp-cmatcher.git'
-            " to let ctrlp use ctrp-cmatcher matching function
-            let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
-
             Bundle 'mattn/ctrlp-register'
             let g:ctrlp_extensions = [ 'register']
             noremap <leader>p :CtrlPRegister<CR>
