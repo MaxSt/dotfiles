@@ -39,51 +39,51 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " MiniBufExplorer (Buffertabs){
-        Bundle 'fholgado/minibufexpl.vim.git'
-        " Set Hotkeys for Buffer Switching
-        noremap ]b :MBEbn<CR>
-        noremap [b :MBEbp<CR>
-        noremap ]v :MBEbf<CR>
-        noremap [v :MBEbb<CR>
-        noremap <leader>x :MBEbd<CR>
-        let g:miniBufExplCycleArround = 1
-        let g:miniBufExplCheckDupeBufs = 0                    " faster for many buffers
-        let g:miniBufExplUseSingleClick = 1                   " single click for buffer switching
-        "Colors for MBE
-        hi clear MBEVisibleActiveNormal
-        hi clear MBEVisibleActiveChanged
-        hi clear MBEVisibleChanged
-        hi clear MBEVisibleNormal
-        hi clear MBEChanged
-        hi clear MBENormal
-        hi MBEVisibleActiveNormal guibg=fg guifg=#A6DB29 ctermfg=154 ctermbg=235
-        hi MBEVisibleActiveChanged guifg=#F1266F guibg=fg ctermbg=235 ctermfg=161
-        hi MBEVisibleChanged guifg=#F1266F ctermfg=166
-        hi MBEVisibleNormal guifg=#66D9EF guibg=fg ctermbg=235 ctermfg=81
-        hi MBEChanged guifg=#CD5907
-        hi MBENormal guifg=#808080 ctermfg=240
+        "Bundle 'fholgado/minibufexpl.vim.git'
+        "" Set Hotkeys for Buffer Switching
+        "noremap ]b :MBEbn<CR>
+        "noremap [b :MBEbp<CR>
+        "noremap ]v :MBEbf<CR>
+        "noremap [v :MBEbb<CR>
+        "noremap <leader>x :MBEbd<CR>
+        "let g:miniBufExplCycleArround = 1
+        "let g:miniBufExplCheckDupeBufs = 0                    " faster for many buffers
+        "let g:miniBufExplUseSingleClick = 1                   " single click for buffer switching
+        ""Colors for MBE
+        "hi clear MBEVisibleActiveNormal
+        "hi clear MBEVisibleActiveChanged
+        "hi clear MBEVisibleChanged
+        "hi clear MBEVisibleNormal
+        "hi clear MBEChanged
+        "hi clear MBENormal
+        "hi MBEVisibleActiveNormal guibg=fg guifg=#A6DB29 ctermfg=154 ctermbg=235
+        "hi MBEVisibleActiveChanged guifg=#F1266F guibg=fg ctermbg=235 ctermfg=161
+        "hi MBEVisibleChanged guifg=#F1266F ctermfg=166
+        "hi MBEVisibleNormal guifg=#66D9EF guibg=fg ctermbg=235 ctermfg=81
+        "hi MBEChanged guifg=#CD5907
+        "hi MBENormal guifg=#808080 ctermfg=240
     " }
 
     " ctrlp (open file with fuzzy search){
-        Bundle 'kien/ctrlp.vim.git'
-        let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20'
-        let g:ctrlp_map = '<leader>t'
-        " noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
-        let g:ctrlp_working_path_mode = 0                       " Dont manage working directory
-        let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
-        let g:ctrlp_open_multiple_files = 'rr'
-        let g:ctrlp_max_files = 10000
-        nmap <leader>b :CtrlPBuffer<CR>
-        " let g:ctrlp_extensions = [ 'undo' ]
-        " let g:ctrlp_extensions = ['tag'] for tags but disabled atm
-        " ctrlp plugins {
-            Bundle 'JazzCore/ctrlp-cmatcher.git'
-            " to let ctrlp use ctrp-cmatcher matching function
-            let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+        "Bundle 'kien/ctrlp.vim.git'
+        "let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20'
+        "let g:ctrlp_map = '<leader>t'
+        "" noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
+        "let g:ctrlp_working_path_mode = 0                       " Dont manage working directory
+        "let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
+        "let g:ctrlp_open_multiple_files = 'rr'
+        "let g:ctrlp_max_files = 10000
+        "nmap <leader>b :CtrlPBuffer<CR>
+        "" let g:ctrlp_extensions = [ 'undo' ]
+        "" let g:ctrlp_extensions = ['tag'] for tags but disabled atm
+        "" ctrlp plugins {
+            "Bundle 'JazzCore/ctrlp-cmatcher.git'
+            "" to let ctrlp use ctrp-cmatcher matching function
+            "let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
 
-            Bundle 'mattn/ctrlp-register'
-            let g:ctrlp_extensions = [ 'register']
-            noremap <leader>p :CtrlPRegister<CR>
+            "Bundle 'mattn/ctrlp-register'
+            "let g:ctrlp_extensions = [ 'register']
+            "noremap <leader>p :CtrlPRegister<CR>
         " }
 
     " }
@@ -95,6 +95,7 @@ command! EditBundles :edit ~/.vim/bundles.vim
         "let g:airline#extensions#tabline#fnamemod = ':t'
         "let g:airline#extensions#tabline#buffer_nr_show = 1
         "let g:airline#extensions#tabline#buffer_nr_format = '%s:'
+        let g:airline_exclude_preview = 1
 
         let g:airline_left_sep = ''
         let g:airline_left_alt_sep = ''
@@ -269,5 +270,8 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " vim-over (substitute preview){
         Bundle 'https://github.com/osyo-manga/vim-over.git'
     " }
+    "
+    
+    Bundle 'https://github.com/szw/vim-ctrlspace.git'
 
 " }
