@@ -92,7 +92,7 @@ command! EditBundles :edit ~/.vim/bundles.vim
         Bundle 'bling/vim-airline.git'
         " tabline
         "let g:airline#extensions#tabline#enabled = 1
-        "let g:airline#extensions#tabline#fnamemod = ':t'
+        "let g:airline#extensions#tabline#tab_nr_type = 1 " tab number
         "let g:airline#extensions#tabline#buffer_nr_show = 1
         "let g:airline#extensions#tabline#buffer_nr_format = '%s:'
         let g:airline_exclude_preview = 1
@@ -232,11 +232,8 @@ command! EditBundles :edit ~/.vim/bundles.vim
         Bundle 'tpope/vim-eunuch.git'
     " }
 
-    " cleverf (better f and t command){
-        Bundle 'rhysd/clever-f.vim.git'
-        let g:clever_f_ignore_case = 1
-        let g:clever_f_fix_key_direction = 1
-        let g:clever_f_show_prompt = 1
+    " sneak (2 character search){
+        Bundle 'justinmk/vim-sneak.git'
     " }
 
     " IndentLine (Show vertical line at each indent Level){
@@ -271,7 +268,8 @@ command! EditBundles :edit ~/.vim/bundles.vim
         Bundle 'https://github.com/osyo-manga/vim-over.git'
     " }
     "
-    
+
     Bundle 'https://github.com/szw/vim-ctrlspace.git'
+    let g:ctrlspace_use_tabline = 1
 
 " }

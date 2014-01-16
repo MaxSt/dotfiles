@@ -133,8 +133,8 @@
 
 " Key (re)Mappings {
     " Buffer swtiching with [Bufferindex]!
-    nnoremap ! :<C-u>b<C-r>=v:count<CR><CR>
-    nnoremap #! :b #<CR>
+    " nnoremap ! :<C-u>b<C-r>=v:count<CR><CR>
+    " nnoremap #! :b #<CR>
 
     " Better Mark jumps
     noremap <leader>m :marks<CR>
@@ -216,7 +216,6 @@
 
     "write file with <leader>w
     noremap <leader>w :update<CR>
-    noremap ; :buffer<Space>
 
     " go to end of search highlight
     noremap <silent> <leader>e /<c-r>//e<cr>:let @/='<c-r>/'<cr>
