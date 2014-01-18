@@ -86,6 +86,7 @@
 
     set guioptions-=T
     set guioptions-=r
+    set guioptions-=e
 
     set cursorline                                                " highlight current line (performance issues)
     set cursorcolumn                                              " highlight current column (performance issues)
@@ -176,7 +177,7 @@
     noremap <silent> <A-l> <C-w>><esc>
 
     " space to : for easier commands
-    nnoremap <space> :
+    nnoremap <c-space> :
     nnoremap q<space> q:
     nnoremap q/ q/
     nnoremap q? q?

@@ -11,7 +11,7 @@ snippet sssec "subsubsection" b
 endsnippet
 
 snippet img "image" b
-\begin{figure}
+\begin{figure}[hp]
   \begin{centering}
     \includegraphics[scale=${5:0.5}]{${1:Pfad}}
     \par
@@ -36,6 +36,10 @@ snippet list "list" !b
 \begin{itemize}
   \item ${0}
 \end{itemize}
+endsnippet
+
+snippet it "item" !b
+\item ${0}
 endsnippet
 
 snippet codeb "Code block" !b
