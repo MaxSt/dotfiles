@@ -213,11 +213,12 @@ command! EditBundles :edit ~/.vim/bundles.vim
         Bundle 'mhinz/vim-startify.git'
         autocmd FileType startify setlocal bt=
         let g:startify_custom_header = [
-          \ '   .--------.---.-.--.--.',
-          \ '   |        |  _  |_   _|',
-          \ '   |__|__|__|___._|__.__|',
+          \ '      .--------.---.-.--.--.',
+          \ '      |        |  _  |_   _|',
+          \ '      |__|__|__|___._|__.__|',
           \ '',
-          \ '=================================================',
+          \ '   =================================================',
+          \ '',
           \ ]
         "Colors for Startify
         hi def link StartifyHeader Todo
