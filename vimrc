@@ -176,11 +176,6 @@
     noremap <silent> <A-j> <C-W>+<esc>
     noremap <silent> <A-l> <C-w>><esc>
 
-    " space to : for easier commands
-    nnoremap <c-space> :
-    nnoremap q<space> q:
-    nnoremap q/ q/
-    nnoremap q? q?
 
     augroup ECW_au
       au!
