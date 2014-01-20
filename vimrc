@@ -247,6 +247,12 @@
     autocmd GUIEnter * set vb t_vb=                               " for your GUI
     autocmd VimEnter * set vb t_vb=
 
+    "set cole=2    " conceal level
+    "set cocu=n  " conceal cursor /when set to n typing is not very pleasant/
+    " Conceal in tex file: "admgs", a=accents, d=delimiters, m=math symbols,
+    " g=Greek, s=superscripts/subscripts:
+    "let g:tex_conceal="agm"
+
     " activate/deaktivate Spell checking
     function! ToggleSpell()
       let Myspl=&spell

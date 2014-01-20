@@ -267,10 +267,11 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " vim-over (substitute preview){
         Bundle 'https://github.com/osyo-manga/vim-over.git'
     " }
-    "
 
-    Bundle 'https://github.com/szw/vim-ctrlspace.git'
-    let g:ctrlspace_use_tabline = 1
-    let g:ctrlspace_default_mapping_key = '<space>'
+    " ControlSpace (Tabs/Buffer/Workspace manager){
+      Bundle 'https://github.com/szw/vim-ctrlspace.git'
+      let g:ctrlspace_use_tabline = 1
+      let g:ctrlspace_default_mapping_key = '<space>'
+    " }
 
 " }
