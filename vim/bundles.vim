@@ -102,6 +102,8 @@ command! EditBundles :edit ~/.vim/bundles.vim
         let g:airline_right_sep = ''
         let g:airline_right_alt_sep = ''
         let g:airline_theme='powerlineish'
+        let g:airline#extensions#whitespace#enabled = 0 "no Whitespace detection
+
     " }
 
     " delimitMate (auto-close chars){
