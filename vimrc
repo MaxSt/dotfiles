@@ -120,8 +120,12 @@
     set incsearch                                               " show search matches as you type
     set ruler                                                   " show the cursor position
     set cmdheight=1
+<<<<<<< HEAD
     set showcmd
     "set so=14                                                   " Keep cursor away from edges of screen.
+=======
+    set so=14                                                   " Keep cursor away from edges of screen.
+>>>>>>> fde1bd79fa814ad371bb4843761dcb761cb187bd
 " }
     "set undofile (undo after re- opening vim)
     if exists("+undofile")
