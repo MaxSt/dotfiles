@@ -1,8 +1,8 @@
 setlocal textwidth=130
 setlocal formatoptions=l
 
-
 autocmd CursorMovedI *.tex call FormatLatex()
+autocmd TextChanged *.tex call FormatLatex()
 
 
 function FormatLatex()
