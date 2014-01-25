@@ -12,8 +12,9 @@ call textobj#user#plugin('formattext', {
 \ })
 
 function! FormatText()
-    let dontformat = '((^\s*\\.*$)|(^(\s*)$))'
-    let format = '(^\s*\\ref\{.*$)'
+    "%u0025 = %
+    let dontformat = '((^\s*\\.*$)|(^\s*$)|(^\s*%u0025))'
+    let format = '((^\s*\\ref\{.*$)|(^\s*\\\".*$))'
     let ignoreformat = '\v'.dontformat.'&'.format.'@!'
     call search(ignoreformat, 'bce')
     let start_position = [0, line('.') + 1, 1, 0]
@@ -24,12 +25,12 @@ endfunction
 
 
 function! FormatLatex()
-
-  let dontformat = '((^\s*\\.*$)|(^(\s*)$))'
-  let format = '(^\s*\\ref\{.*$)'
+  let dontformat = '((^\s*\\.*$)|(^\s*$)|(^\s*%u0025))'
+  let format = '((^\s*\\ref\{.*$)|(^\s*\\\".*$))'
+  let ignoreformat = '\v'.dontformat.'&'.format.'@!'
   let ignoreformat = '\v'.dontformat.'&'.format.'@!'
   let line = getline('.')
-  if line !~ dontformat
+  if line !~ ignoreformat
     normal gwit
   end
 endfunction
