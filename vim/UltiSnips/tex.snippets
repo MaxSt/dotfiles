@@ -38,8 +38,22 @@ snippet list "list" !b
 \end{itemize}
 endsnippet
 
+snippet list "list with header" !b
+\begin{itemize}
+  \item \textbf{${1:header}}\hspace{0.3cm}
+    ${2:text}
+  ${0}
+\end{itemize}
+endsnippet
+
 snippet it "item" !b
 \item ${0}
+endsnippet
+
+snippet it "item with header" !b
+\item \textbf{${1:header}}\hspace{0.3cm}
+  ${2:text}
+${0}
 endsnippet
 
 snippet codeb "Code block" !b

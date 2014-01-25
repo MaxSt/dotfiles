@@ -1,40 +1,36 @@
 setlocal textwidth=130
 setlocal formatoptions=l
 
-autocmd CursorMovedI *.tex call FormatLatex()
+autocmd TextChangedI *.tex call FormatLatex()
 autocmd TextChanged *.tex call FormatLatex()
 
+call textobj#user#plugin('formattext', {
+\   'code': {
+\     'select-i': 'it',
+\     'select-i-function': 'FormatText'
+\   },
+\ })
 
-function FormatLatex()
+function! FormatText()
+    let dontformat = '((^\s*\\.*$)|(^(\s*)$))'
+    let format = '(^\s*\\ref\{.*$)'
+    let ignoreformat = '\v'.dontformat.'&'.format.'@!'
+    call search(ignoreformat, 'bce')
+    let start_position = [0, line('.') + 1, 1, 0]
+    call search(ignoreformat, '')
+    let end_position = [0, line('.') - 1, 99999, 0]
+    return ['v', start_position, end_position]
+endfunction
+
+
+function! FormatLatex()
+
+  let dontformat = '((^\s*\\.*$)|(^(\s*)$))'
+  let format = '(^\s*\\ref\{.*$)'
+  let ignoreformat = '\v'.dontformat.'&'.format.'@!'
   let line = getline('.')
-  let dontformat = '\v(^\s*\\)|(^(\s*)$)'
   if line !~ dontformat
-    let _cursorcol = col('.')
-    if strlen(line)+1 == _cursorcol
-      let append = 1
-    else
-      let append = 0
-    endif
-
-    normal ml
-
-    "Start and End of Format Selection
-    let startformat = search(dontformat, 'bW')
-    let endformat = search(dontformat, 'W')
-
-    if endformat == 0
-      execute "normal 'lV".(startformat+1)."GoGgq'l"
-    else
-      execute "normal 'lV".(startformat+1)."Go".(endformat-1)."Ggq'l"
-    endif
-
-
-    if append
-      let new_cursor = getpos('.')
-      let new_cursor[2] = new_cursor[2] + 1
-      call setpos('.', new_cursor)
-  endif
-
-  endif
+    normal gwit
+  end
 endfunction
 
