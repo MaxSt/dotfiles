@@ -47,6 +47,7 @@
     " set virtualedit=onemore        " allow for cursor beyond last character
     set history=1000                                              " Store a ton of history (default is 20)
     set spelllang=en,de_at                                        " Set Language to German and English (for Spellchecking)
+    set spellfile=~/.vim/spell/custom.utf-8.add                   " Set File for additional dictionary
     set nospell                                                   " spell checking off
     set nobackup                                                  " no backup files
     set nowritebackup                                             " only in case you don't want a backup file while editing

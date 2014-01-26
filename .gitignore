@@ -6,6 +6,7 @@ vim/bundle/*
 vim/bundle/**/*
 vim/session/*
 vim/session/**/*
+vim/spell/*
 vim/tmp/*
 vim/tmp/**/*
 config/ranger/bookmarks
