@@ -156,7 +156,7 @@
     noremap Q @@
 
     " Select last inserted text with C-i
-    nmap <C-I> `[v`]
+    nmap <leader>i `[v`]
 
 
     " select Visual again after shifting
