@@ -2,8 +2,8 @@ setlocal textwidth=130
 setlocal formatoptions=l
 setlocal spell
 
-autocmd TextChangedI *.tex call FormatLatex()
-autocmd TextChanged *.tex call FormatLatex()
+"autocmd TextChangedI *.tex call FormatLatex()
+"autocmd TextChanged *.tex call FormatLatex()
 
 call textobj#user#plugin('formattext', {
 \   'code': {
