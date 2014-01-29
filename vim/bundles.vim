@@ -23,10 +23,10 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " NERDTree (Filetree){
-        Bundle 'scrooloose/nerdtree.git'
+        "Bundle 'scrooloose/nerdtree.git'
         " autocmd VimEnter * NERDTree                           "Open NERDTree on Startup
-        let NERDTreeQuitOnOpen = 1                              " Closes NERDTree After Opening a file
-        noremap <silent> \ :NERDTreeToggle<CR>                  " open/close Nerdtree with \
+        "let NERDTreeQuitOnOpen = 1                              " Closes NERDTree After Opening a file
+        "noremap <silent> \ :NERDTreeToggle<CR>                  " open/close Nerdtree with \
     " }
 
     " Ultisnips (Code Snippets){
@@ -185,7 +185,7 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " SplitJoin (splits and joins multiple code lines){
-        Bundle 'AndrewRadev/splitjoin.vim.git'
+        "Bundle 'AndrewRadev/splitjoin.vim.git'
     " }
 
     " Solarized (vim solarized color scheme){
@@ -193,7 +193,7 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " Fugitive (Git Support for vim){
-        Bundle 'tpope/vim-fugitive.git'
+        "Bundle 'tpope/vim-fugitive.git'
     " }
 
     " Multiple Cursors (with <C-N> while searching){

@@ -31,7 +31,6 @@
     set mouse=a                                                   " automatically enable mouse usage
     set report=0
     set encoding=utf-8
-    let g:matchparen_insert_timeout=5
     set completeopt=longest,menu,preview
     scriptencoding utf-8
 
@@ -79,11 +78,6 @@
     set winminheight=0                                            " Windows can be 0 line high
     set scrolljump=5                                              " Lines to scroll when cursor leaves screen
     set scrolloff=0                                               " Minimum lines to keep above and below cursor
-    autocmd FocusLost * set number "set absolute numbers when focus lost
-    autocmd FocusGained * set relativenumber "set relative numbers when focus gained
-    autocmd InsertEnter * set number "set absolute numbers when in insert mode
-    autocmd InsertLeave * set relativenumber "set relative numbers when in normal mode
-
 
     set guioptions-=T
     set guioptions-=r
@@ -155,7 +149,7 @@
     "Map Q to repeat last recorded Macro
     noremap Q @@
 
-    " Select last inserted text with C-i
+    " Select last inserted text with <leader> i
     nmap <leader>i `[v`]
 
 
@@ -236,7 +230,7 @@
     command! EditVim :edit ~/.vimrc
 
     " Map ToggleHighlight function to ,d
-    nnoremap <silent> <leader>d :ToggleHighlight<CR>
+    nnoremap <silent> <leader>d :nohlsearch<CR>
 
     " diable visualbell
     autocmd GUIEnter * set vb t_vb=                               " for your GUI
