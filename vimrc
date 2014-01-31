@@ -24,7 +24,7 @@
           set guifont=EnvyCodeR\ 12,Andale\ Mono\ Regular\ 16,Menlo\ Regular\ 15,Consolas\ Regular\ 16,Courier\ New\ Regular\ 18
       elseif has("gui_mac")
           set guifont=EnvyCodeR:h12,Andale\ Mono\ Regular:h16,Menlo\ Regular:h15,Consolas\ Regular:h16,Courier\ New\ Regular:h18
-      elseif has("gui_win32")
+      elseif has("gui_win32") || has('win64')
           set guifont=EnvyCodeR:h12,Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
       endif
     endif
@@ -34,11 +34,6 @@
     set completeopt=longest,menu,preview
     scriptencoding utf-8
 
-    if has ('x') && has ('gui') " On Linux use + register for copy-paste
-        set clipboard=unnamedplus
-    elseif has ('gui')          " On mac and Windows, use * register for copy-paste
-        set clipboard=unnamed
-    endif
     set noeb vb t_vb=                                             " disable peep
     set autoread                                                  " automatically load file when its changed
     " set autowrite                 " automatically write a file when leaving a modified buffer
@@ -60,7 +55,7 @@
     set wildignore+=*.xlsx,*.ico,*.png,*.jpg,*.gif,*.jpeg,*.xcf,*.xls,*.orig,*.swp,*.bak,*.pyc,*.class,*.obj,*.o,*.aux,*.odg,*.pdf
     set foldmethod=indent
     set nofoldenable
-    let mapleader = ','            " The default leader is '\', but many people prefer ',' as it's in a standard location
+    let mapleader = ' '                                           " Use Space as leader (insetead of the default '\')
     set nostartofline
     if has('mac')
       set macmeta
@@ -128,8 +123,10 @@
 
 " Key (re)Mappings {
     " Buffer swtiching with [Bufferindex]!
-    " nnoremap ! :<C-u>b<C-r>=v:count<CR><CR>
-    " nnoremap #! :b #<CR>
+    " nnoremap ! :<C-u>b<C-r>=v:count<CR><CR> " nnoremap #! :b #<CR>
+
+    " Map Space to Nothing (space is leader)
+    noremap <space> <nop>
 
     " Better Mark jumps
     noremap <leader>m :marks<CR>

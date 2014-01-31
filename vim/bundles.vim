@@ -274,7 +274,7 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " ControlSpace (Tabs/Buffer/Workspace manager){
       Bundle 'https://github.com/szw/vim-ctrlspace.git'
       let g:ctrlspace_use_tabline = 1
-      let g:ctrlspace_default_mapping_key = '<space>'
+      let g:ctrlspace_default_mapping_key = '<leader>t'
     " }
 
 " }
