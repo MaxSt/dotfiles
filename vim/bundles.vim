@@ -65,25 +65,25 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " ctrlp (open file with fuzzy search){
-        "Bundle 'kien/ctrlp.vim.git'
-        "let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20'
-        "let g:ctrlp_map = '<leader>t'
-        "" noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
-        "let g:ctrlp_working_path_mode = 0                       " Dont manage working directory
-        "let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
-        "let g:ctrlp_open_multiple_files = 'rr'
-        "let g:ctrlp_max_files = 10000
-        "nmap <leader>b :CtrlPBuffer<CR>
-        "" let g:ctrlp_extensions = [ 'undo' ]
-        "" let g:ctrlp_extensions = ['tag'] for tags but disabled atm
-        "" ctrlp plugins {
+        Bundle 'kien/ctrlp.vim.git'
+        let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20'
+        let g:ctrlp_map = '<leader>t'
+        " noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
+        let g:ctrlp_working_path_mode = 0                       " Dont manage working directory
+        let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
+        let g:ctrlp_open_multiple_files = 'rr'
+        let g:ctrlp_max_files = 10000
+        nmap <leader>b :CtrlPBuffer<CR>
+        " let g:ctrlp_extensions = [ 'undo' ]
+        " let g:ctrlp_extensions = ['tag'] for tags but disabled atm
+        " ctrlp plugins {
             "Bundle 'JazzCore/ctrlp-cmatcher.git'
-            "" to let ctrlp use ctrp-cmatcher matching function
+            " to let ctrlp use ctrp-cmatcher matching function
             "let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
 
-            "Bundle 'mattn/ctrlp-register'
-            "let g:ctrlp_extensions = [ 'register']
-            "noremap <leader>p :CtrlPRegister<CR>
+            Bundle 'mattn/ctrlp-register'
+            let g:ctrlp_extensions = [ 'register']
+            noremap <leader>p :CtrlPRegister<CR>
         " }
 
     " }
@@ -272,9 +272,12 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " ControlSpace (Tabs/Buffer/Workspace manager){
-      Bundle 'https://github.com/szw/vim-ctrlspace.git'
-      let g:ctrlspace_use_tabline = 1
-      let g:ctrlspace_default_mapping_key = '<leader>t'
+      "Bundle 'https://github.com/szw/vim-ctrlspace.git'
+      "let g:ctrlspace_use_tabline = 1
+      "let g:ctrlspace_default_mapping_key = '<leader>t'
     " }
 
+    " vim-tmux-navigator (c-hjkl navigation in vim and tmux){
+      Bundle 'christoomey/vim-tmux-navigator'
+    " }
 " }

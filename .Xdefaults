@@ -37,3 +37,16 @@ xterm*jumpScroll::       true
 xterm*multiScroll::      true
 xterm*toolBar::          false
 xterm*geometry::         100x30term*colorBD: rgb:fc/fc/fc
+
+#urxvt
+URxvt.scrollBar: false
+URxvt*font: xft:EnvyCodeR:pixelsize=16:antialias=true
+URxvt*foreground: #ffffff
+URxvt*background: #2b2b2b
+
+#better Font rendering
+Xft.dpi:        96
+Xft.antialias:  true
+Xft.rgba:       rgb
+Xft.hinting:    true
+Xft.hintstyle:  hintslight
