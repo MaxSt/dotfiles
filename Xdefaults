@@ -1,11 +1,12 @@
 #urxvt
 URxvt.scrollBar: false
-URxvt*font: xft:EnvyCodeR:pixelsize=16:antialias=true
+URxvt*font: xft:DejaVu Sans Mono:pixelsize=15
 URxvt*foreground: #ffffff
 URxvt*background: #1c1c1c
 
 #better Font rendering
 Xft.dpi:        96
+Xft.autohint: false
 Xft.antialias:  true
 Xft.rgba:       rgb
 Xft.hinting:    true
