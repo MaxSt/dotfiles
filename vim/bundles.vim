@@ -64,27 +64,27 @@ command! EditBundles :edit ~/.vim/bundles.vim
         "hi MBENormal guifg=#808080 ctermfg=240
     " }
 
-    " ctrlp (open file with fuzzy search){
-        Bundle 'kien/ctrlp.vim.git'
-        let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20'
-        let g:ctrlp_map = '<leader>t'
-        " noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
-        let g:ctrlp_working_path_mode = 0                       " Dont manage working directory
-        let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
-        let g:ctrlp_open_multiple_files = 'rr'
-        let g:ctrlp_max_files = 10000
-        nmap <leader>b :CtrlPBuffer<CR>
-        " let g:ctrlp_extensions = [ 'undo' ]
-        " let g:ctrlp_extensions = ['tag'] for tags but disabled atm
-        " ctrlp plugins {
-            "Bundle 'JazzCore/ctrlp-cmatcher.git'
-            " to let ctrlp use ctrp-cmatcher matching function
-            "let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
+    "" ctrlp (open file with fuzzy search){
+        "Bundle 'kien/ctrlp.vim.git'
+        "let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20'
+        "let g:ctrlp_map = '<leader>t'
+        "" noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
+        "let g:ctrlp_working_path_mode = 0                       " Dont manage working directory
+        "let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
+        "let g:ctrlp_open_multiple_files = 'rr'
+        "let g:ctrlp_max_files = 10000
+        "nmap <leader>b :CtrlPBuffer<CR>
+        "" let g:ctrlp_extensions = [ 'undo' ]
+        "" let g:ctrlp_extensions = ['tag'] for tags but disabled atm
+        "" ctrlp plugins {
+            ""Bundle 'JazzCore/ctrlp-cmatcher.git'
+            "" to let ctrlp use ctrp-cmatcher matching function
+            ""let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
 
-            Bundle 'mattn/ctrlp-register'
-            let g:ctrlp_extensions = [ 'register']
-            noremap <leader>p :CtrlPRegister<CR>
-        " }
+            "Bundle 'mattn/ctrlp-register'
+            "let g:ctrlp_extensions = [ 'register']
+            "noremap <leader>p :CtrlPRegister<CR>
+        "" }
 
     " }
 
@@ -237,6 +237,29 @@ command! EditBundles :edit ~/.vim/bundles.vim
 
     " sneak (2 character search){
         Bundle 'justinmk/vim-sneak.git'
+
+        "EasyMotion like sneak
+        "let g:sneak#streak = 1
+
+        " 1-character _inclusive_ Sneak (for enhanced 'f')
+        nmap f <Plug>Sneak_f
+        nmap F <Plug>Sneak_F
+        " visual-mode
+        xmap f <Plug>Sneak_f
+        xmap F <Plug>Sneak_F
+        " operator-pending-mode
+        omap f <Plug>Sneak_f
+        omap F <Plug>Sneak_F
+
+        " 1-character _exclusive_ Sneak (for enhanced 't')
+        nmap t <Plug>Sneak_t
+        nmap T <Plug>Sneak_T
+        " visual-mode
+        xmap t <Plug>Sneak_t
+        xmap T <Plug>Sneak_T
+        " operator-pending-mode
+        omap t <Plug>Sneak_t
+        omap ? <Plug>Sneak_T
     " }
 
     " IndentLine (Show vertical line at each indent Level){
@@ -254,9 +277,9 @@ command! EditBundles :edit ~/.vim/bundles.vim
           endif
           return "\<c-y>,"
         endfunction
-        autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml imap <buffer><expr><c-l> <sid>zen_html_tab()
-        autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml nmap <buffer><expr><c-l> <sid>zen_html_tab()
-        autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml vmap <buffer><c-l> <c-y>,
+        "autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml imap <buffer><expr><c-l> <sid>zen_html_tab()
+        "autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml nmap <buffer><expr><c-l> <sid>zen_html_tab()
+        "autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml vmap <buffer><c-l> <c-y>,
     " }
 
     " textobject user (define your own text objects){
@@ -272,12 +295,16 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " ControlSpace (Tabs/Buffer/Workspace manager){
-      "Bundle 'https://github.com/szw/vim-ctrlspace.git'
-      "let g:ctrlspace_use_tabline = 1
-      "let g:ctrlspace_default_mapping_key = '<leader>t'
+      Bundle 'https://github.com/szw/vim-ctrlspace.git'
+      let g:ctrlspace_use_tabline = 1
+      let g:ctrlspace_default_mapping_key = '<space>'
     " }
 
     " vim-tmux-navigator (c-hjkl navigation in vim and tmux){
-      Bundle 'christoomey/vim-tmux-navigator'
+        Bundle 'christoomey/vim-tmux-navigator'
+    " }
+
+    " targets (more text objects z.b in]){
+        Bundle 'wellle/targets.vim'
     " }
 " }

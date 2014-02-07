@@ -55,7 +55,7 @@
     set wildignore+=*.xlsx,*.ico,*.png,*.jpg,*.gif,*.jpeg,*.xcf,*.xls,*.orig,*.swp,*.bak,*.pyc,*.class,*.obj,*.o,*.aux,*.odg,*.pdf
     set foldmethod=indent
     set nofoldenable
-    let mapleader = ' '                                           " Use Space as leader (insetead of the default '\')
+    let mapleader = ','                                           " Use Space as leader (insetead of the default '\')
     set nostartofline
     if has('mac')
       set macmeta
@@ -126,7 +126,10 @@
     " nnoremap ! :<C-u>b<C-r>=v:count<CR><CR> " nnoremap #! :b #<CR>
 
     " Map Space to Nothing (space is leader)
-    noremap <space> <nop>
+    noremap <,> <nop>
+
+    " Map ; to : for faster command mode
+    noremap ; :
 
     " Better Mark jumps
     noremap <leader>m :marks<CR>
