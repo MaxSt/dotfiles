@@ -48,6 +48,7 @@
     set backupdir=~/.vim/tmp
     set noswapfile                                                " no swap files
     set noautowrite
+    set lazyredraw
     set hidden                                                    " lets you open multiple buffers without saving
     set nomodeline
     set sessionoptions=buffers,folds,tabpages,winsize

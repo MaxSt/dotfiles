@@ -137,11 +137,16 @@ command! EditBundles :edit ~/.vim/bundles.vim
         let g:ycm_complete_in_comments_and_strings = 1
         let g:ycm_collect_identifiers_from_comments_and_strings = 1
         let g:ycm_autoclose_preview_window_after_completion = 1
+        let g:ycm_filepath_completion_use_working_dir = 1
     " }
 
     " vim-easy-align (easy alignment by seperators){
-        Bundle 'junegunn/vim-easy-align.git'
-        vnoremap <silent> <Enter> :EasyAlign<cr>
+        "Bundle 'junegunn/vim-easy-align.git'
+        "vnoremap <silent> <Enter> :EasyAlign<cr>
+    " }
+
+    " wildfire (smart selection of the closest text object){
+        "Bundle 'gcmt/wildfire.vim'
     " }
 
     " vim-easymotion (move with <leader><leader>[motion]){
@@ -160,8 +165,8 @@ command! EditBundles :edit ~/.vim/bundles.vim
         Bundle 'tpope/vim-unimpaired.git'
     " }
 
-    " NerdCommenter (Comment and Uncomment with <leader>cc){
-        Bundle 'scrooloose/nerdcommenter.git'
+    " vim-commentary (Comment and Uncomment with gcc){
+        Bundle 'tpope/vim-commentary.git'
     " }
 
     " Ack (Ack for vim){
