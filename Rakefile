@@ -7,7 +7,7 @@ task :install do
   switch_to_zsh
   install_tmux_themes
   replace_all = false
-  files = Dir['*'] - %w[Rakefile README.md oh-my-zsh config gconf/*]
+  files = Dir['*'] - %w[Rakefile README.md oh-my-zsh config]
   files << "oh-my-zsh/custom/max.zsh-theme"
   files.each do |file|
     system %Q{mkdir -p "$HOME/.#{File.dirname(file)}"} if file =~ /\//
@@ -36,7 +36,6 @@ task :install do
   end
   install_vundler
   install_config
-  install_gconf
   make_vim_tmp_dir
   update_font_cache
 end
@@ -138,39 +137,6 @@ def install_config
   end
   configfiles.each do |file|
     system %Q{mkdir -p "$HOME/.config/#{File.dirname(file)}"} if file =~ /\//
-    if File.exist?(File.join(ENV['HOME'], ".#{file.sub(/\.erb$/, '')}"))
-      if File.identical? file, File.join(ENV['HOME'], ".#{file.sub(/\.erb$/, '')}")
-        puts "identical ~/.#{file.sub(/\.erb$/, '')}"
-      elsif replace_all
-        replace_file(file)
-      else
-        print "overwrite ~/.#{file.sub(/\.erb$/, '')}? [ynaq] "
-        case $stdin.gets.chomp
-        when 'a'
-          replace_all = true
-          replace_file(file)
-        when 'y'
-          replace_file(file)
-        when 'q'
-          exit
-        else
-          puts "skipping ~/.#{file.sub(/\.erb$/, '')}"
-        end
-      end
-    else
-      link_file(file)
-    end
-  end
-end
-
-def install_gconf
-  replace_all = false
-  gconffiles = Dir['gconf/*']
-  if !File.exists?(File.join(ENV['HOME'],".gconf/apps"))
-    system %Q{mkdir -p "$HOME/.gconf/apps/."}
-  end
-  gconffiles.each do |file|
-    system %Q{mkdir -p "$HOME/.gconf/apps/#{File.dirname(file)}"} if file =~ /\//
     if File.exist?(File.join(ENV['HOME'], ".#{file.sub(/\.erb$/, '')}"))
       if File.identical? file, File.join(ENV['HOME'], ".#{file.sub(/\.erb$/, '')}")
         puts "identical ~/.#{file.sub(/\.erb$/, '')}"
