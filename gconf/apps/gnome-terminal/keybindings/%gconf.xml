@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<gconf>
+	<entry name="zoom_in" mtime="1392805531" type="string">
+		<stringvalue>&lt;Primary&gt;plus</stringvalue>
+	</entry>
+	<entry name="paste" mtime="1392805507" type="string">
+		<stringvalue>disabled</stringvalue>
+	</entry>
+	<entry name="copy" mtime="1392805504" type="string">
+		<stringvalue>disabled</stringvalue>
+	</entry>
+	<entry name="close_window" mtime="1392805496" type="string">
+		<stringvalue>disabled</stringvalue>
+	</entry>
+	<entry name="close_tab" mtime="1392805494" type="string">
+		<stringvalue>disabled</stringvalue>
+	</entry>
+	<entry name="new_window" mtime="1392805491" type="string">
+		<stringvalue>disabled</stringvalue>
+	</entry>
+	<entry name="new_tab" mtime="1392805489" type="string">
+		<stringvalue>disabled</stringvalue>
+	</entry>
+</gconf>

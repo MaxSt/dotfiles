@@ -12,6 +12,8 @@ ZSH_THEME="max"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias t="task"
 
+export TERM=xterm-256color
+
 source /etc/profile
 
 #For vi Keybindings
