@@ -15,6 +15,7 @@ alias v="vim"
 alias g="git"
 alias l="ls"
 alias c="cd"
+alias tr="tmuxinator"
 
 export TERM=xterm-256color
 source /etc/profile
@@ -40,7 +41,7 @@ bindkey -v
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git vi-mode rvm ruby rails rake bundler archlinux taskwarrior zsh-syntax-highlighting tmux)
+plugins=(git vi-mode rvm ruby rails rake bundler archlinux taskwarrior zsh-syntax-highlighting tmux tmuxinator)
 
 ZSH_TMUX_AUTOSTART='true'
 
