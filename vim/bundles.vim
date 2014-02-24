@@ -252,7 +252,7 @@ command! EditBundles :edit ~/.vim/bundles.vim
         omap f <Plug>Sneak_f
         omap F <Plug>Sneak_F
 
-        " 1-character _exclusive_ Sneak (for enhanced 't')
+        " character _exclusive_ Sneak (for enhanced 't')
         nmap t <Plug>Sneak_t
         nmap T <Plug>Sneak_T
         " visual-mode
@@ -260,7 +260,7 @@ command! EditBundles :edit ~/.vim/bundles.vim
         xmap T <Plug>Sneak_T
         " operator-pending-mode
         omap t <Plug>Sneak_t
-        omap ? <Plug>Sneak_T
+        omap T <Plug>Sneak_T
     " }
 
     " IndentLine (Show vertical line at each indent Level){
