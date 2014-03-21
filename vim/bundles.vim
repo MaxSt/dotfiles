@@ -39,16 +39,16 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " }
 
     " MiniBufExplorer (Buffertabs){
-        "Bundle 'fholgado/minibufexpl.vim.git'
-        "" Set Hotkeys for Buffer Switching
-        "noremap ]b :MBEbn<CR>
-        "noremap [b :MBEbp<CR>
-        "noremap ]v :MBEbf<CR>
-        "noremap [v :MBEbb<CR>
-        "noremap <leader>x :MBEbd<CR>
-        "let g:miniBufExplCycleArround = 1
-        "let g:miniBufExplCheckDupeBufs = 0                    " faster for many buffers
-        "let g:miniBufExplUseSingleClick = 1                   " single click for buffer switching
+        Bundle 'fholgado/minibufexpl.vim.git'
+        " Set Hotkeys for Buffer Switching
+        noremap ]b :MBEbn<CR>
+        noremap [b :MBEbp<CR>
+        noremap ]v :MBEbf<CR>
+        noremap [v :MBEbb<CR>
+        noremap <leader>x :MBEbd<CR>
+        let g:miniBufExplCycleArround = 1
+        let g:miniBufExplCheckDupeBufs = 0                    " faster for many buffers
+        let g:miniBufExplUseSingleClick = 1                   " single click for buffer switching
         ""Colors for MBE
         "hi clear MBEVisibleActiveNormal
         "hi clear MBEVisibleActiveChanged
@@ -64,27 +64,36 @@ command! EditBundles :edit ~/.vim/bundles.vim
         "hi MBENormal guifg=#808080 ctermfg=240
     " }
 
-    "" ctrlp (open file with fuzzy search){
-        "Bundle 'kien/ctrlp.vim.git'
-        "let g:ctrlp_match_window = 'bottom,order:btt,min:1,max:20'
-        "let g:ctrlp_map = '<leader>t'
-        "" noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
+    " ctrlp (open file with fuzzy search){
+        Bundle 'kien/ctrlp.vim.git'
+        let g:ctrlp_map = '<leader>t'
+        " noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
         "let g:ctrlp_working_path_mode = 0                       " Dont manage working directory
-        "let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
-        "let g:ctrlp_open_multiple_files = 'rr'
-        "let g:ctrlp_max_files = 10000
-        "nmap <leader>b :CtrlPBuffer<CR>
-        "" let g:ctrlp_extensions = [ 'undo' ]
-        "" let g:ctrlp_extensions = ['tag'] for tags but disabled atm
-        "" ctrlp plugins {
-            ""Bundle 'JazzCore/ctrlp-cmatcher.git'
-            "" to let ctrlp use ctrp-cmatcher matching function
-            ""let g:ctrlp_match_func = {'match' : 'matcher#cmatch' }
-
-            "Bundle 'mattn/ctrlp-register'
-            "let g:ctrlp_extensions = [ 'register']
-            "noremap <leader>p :CtrlPRegister<CR>
-        "" }
+        let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
+        let g:ctrlp_cache_dir='~/.vim/tmp/'
+        let g:ctrlp_reuse_window='startify'
+        let g:ctrlp_open_multiple_files = 'rr'
+        let g:ctrlp_clear_cache_on_exit=1
+        let g:ctrlp_max_files = 10000
+        let g:ctrlp_follow_symlinks=1
+        nmap <leader>b :CtrlPBuffer<CR>
+        if executable('ag')
+          let g:ctrlp_user_command = {
+            \ 'types': {
+              \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
+              \ 2: ['.hg', 'hg --cwd %s locate -I .']
+            \ },
+            \ 'fallback': 'ag  %s -l --nocolor -g ""'
+            \ }
+        else
+          let g:ctrlp_user_command = {
+            \ 'types': {
+              \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
+              \ 2: ['.hg', 'hg --cwd %s locate -I .']
+            \ },
+            \ 'fallback': 'find %s/.. -type f'
+            \ }
+        endif
 
     " }
 
@@ -167,6 +176,7 @@ command! EditBundles :edit ~/.vim/bundles.vim
 
     " Ack (Ack for vim){
         Bundle 'mileszs/ack.vim.git'
+        let g:ackprg = 'ag --nogroup --nocolor --column'
     " }
 
     " CSS-Color (Show Colorcodes in Color){
@@ -295,11 +305,6 @@ command! EditBundles :edit ~/.vim/bundles.vim
         Bundle 'https://github.com/osyo-manga/vim-over.git'
     " }
 
-    " ControlSpace (Tabs/Buffer/Workspace manager){
-      Bundle 'https://github.com/szw/vim-ctrlspace.git'
-      let g:ctrlspace_use_tabline = 1
-      let g:ctrlspace_default_mapping_key = '<space>'
-    " }
 
     " vim-tmux-navigator (c-hjkl navigation in vim and tmux){
         Bundle 'christoomey/vim-tmux-navigator'

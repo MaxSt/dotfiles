@@ -124,7 +124,7 @@
 
 " Key (re)Mappings {
     " Buffer swtiching with [Bufferindex]!
-    " nnoremap ! :<C-u>b<C-r>=v:count<CR><CR> " nnoremap #! :b #<CR>
+    nnoremap ! :<C-u>b<C-r>=v:count<CR><CR> " nnoremap #! :b #<CR>
 
     " Map Space to Nothing (space is leader)
     noremap <,> <nop>
@@ -193,6 +193,15 @@
     " Map <Leader>f to display all lines with keyword under cursor
     " and ask which one to jump to
     nmap <Leader>f [I:let nr = input("Which one: ")<Bar>exe "normal " . nr ."[\t"<CR>
+
+    "<leader>y or <leader>p for system clipboard
+    vnoremap <Leader>y "+y
+    vnoremap <Leader>d "+d
+    nnoremap <Leader>d "+d
+    nnoremap <Leader>p "+p
+    nnoremap <Leader>P "+P
+    vnoremap <Leader>p "+p
+    vnoremap <Leader>P "+P
 
     "Make Y behave Like D or C
     noremap Y y$
