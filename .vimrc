@@ -1,77 +1,29 @@
-" Basics {
-    set nocompatible               " must be first line
-    syntax on
-" }
-
- " Windows Compatible {
-    " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization  across (heterogeneous) systems easier.
-    if has('win32') || has('win64')
-      set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+" Plugins {
+    " Use bundles config
+    if filereadable(expand("~/.vim/bundles.vim"))
+        source ~/.vim/bundles.vim
     endif
 " }
 
 " General {
-    if &term == 'xterm' || &term == 'screen'
-        set t_Co=256            " Enable 256 colors to stop the CSApprox warning and make xterm vim shine
-    endif
-
-    if has('gui_running')
-      set guioptions-=m
-
-      if has("gui_gtk2")
-          set guifont=EnvyCodeR\ 12,Andale\ Mono\ Regular\ 16,Menlo\ Regular\ 15,Consolas\ Regular\ 16,Courier\ New\ Regular\ 18
-      elseif has("gui_mac")
-          set guifont=EnvyCodeR:h12,Andale\ Mono\ Regular:h16,Menlo\ Regular:h15,Consolas\ Regular:h16,Courier\ New\ Regular:h18
-      elseif has("gui_win32") || has('win64')
-          set guifont=EnvyCodeR:h12,Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
-      endif
-    endif
-    set mouse=a                                                   " automatically enable mouse usage
-    set report=0
-    set encoding=utf-8
-    set completeopt=longest,menu,preview
-    scriptencoding utf-8
-
-    set noeb vb t_vb=                                             " disable peep
-    set autoread                                                  " automatically load file when its changed
-    " set autowrite                 " automatically write a file when leaving a modified buffer
     set viewoptions=folds,options,cursor,unix,slash               " better unix / windows compatibility
-    " set virtualedit=onemore        " allow for cursor beyond last character
-    set history=1000                                              " Store a ton of history (default is 20)
     set spelllang=en,de_at                                        " Set Language to German and English (for Spellchecking)
     set spellfile=~/.vim/spell/custom.utf-8.add                   " Set File for additional dictionary
     set nospell                                                   " spell checking off
-    set nobackup                                                  " no backup files
-    set nowritebackup                                             " only in case you don't want a backup file while editing
     set backupdir=~/.vim/tmp
     set noswapfile                                                " no swap files
     set noautowrite
     set lazyredraw
     set hidden                                                    " lets you open multiple buffers without saving
-    set nomodeline
-    set sessionoptions=buffers,folds,tabpages,winsize
-    " dont load binary files:
     set wildignore+=*.xlsx,*.ico,*.png,*.jpg,*.gif,*.jpeg,*.xcf,*.xls,*.orig,*.swp,*.bak,*.pyc,*.class,*.obj,*.o,*.aux,*.odg,*.pdf
     set foldmethod=indent
     set nofoldenable
     let mapleader = ','                                           " Use Space as leader (insetead of the default '\')
-    set nostartofline
-    if has('mac')
-      set macmeta
-    endif
 " }
 
 " Vim UI {
-    set showcmd                                                   " Show current command
-    set wildmenu                                                  " show menu in commandline (tabs)
-    set tabpagemax=15                                             " only show 15 tabs
-    set ttyfast                                                   " Improves redrawing
     set number                                                    " Views Line Numbers
     set relativenumber                                            " Views Line Numbers
-    set linespace=0                                               " No extra spaces between rows
-    set winminheight=0                                            " Windows can be 0 line high
-    set scrolljump=5                                              " Lines to scroll when cursor leaves screen
-    set scrolloff=0                                               " Minimum lines to keep above and below cursor
 
     set guioptions-=T
     set guioptions-=r
@@ -80,36 +32,20 @@
     set cursorline                                                " highlight current line (performance issues)
     set cursorcolumn                                              " highlight current column (performance issues)
 
-    set laststatus=2                                              " Always show the statusline
-
 " }
 
 
 " Formatting {
     set backspace=2                                             " more powerful backspacing
     set wrap                                                    " wrap long lines
-    set autoindent                                              " indent at the same level of the previous line
     set shiftwidth=2                                            " use indents of 4 spaces
     set expandtab                                               " tabs are spaces, not tabs
     set tabstop=2                                               " an indentation every four columns
     set softtabstop=2                                           " let backspace delete indent
-
-    " Better copy & paste
-    " When you want to paste large blocks of code into vim, press F2 before you
-    " paste. At the bottom you should see ``-- INSERT (paste) --``.
-    set pastetoggle=<F2>
-
-    set shiftround                                              " use multiple of shiftwidth when indenting with '<' and '>'
     set showmatch                                               " set show matching parenthesis
     set ignorecase                                              " ignore case (must be set for smartcase)
     set smartcase                                               " ignore case if search pattern is all lowercase,
-    set smarttab                                                " insert tabs on the start of a line according to
-    " shiftwidth, not tabstop
     set hlsearch                                                " highlight search terms
-    set incsearch                                               " show search matches as you type
-    set ruler                                                   " show the cursor position
-    set cmdheight=1
-    "set so=14                                                   " Keep cursor away from edges of screen.
 " }
     "set undofile (undo after re- opening vim)
     if exists("+undofile")
@@ -124,8 +60,11 @@
     " Buffer swtiching with [Bufferindex]!
     nnoremap ! :<C-u>b<C-r>=v:count<CR><CR> " nnoremap #! :b #<CR>
 
-    " Map <space> to : for faster command mode
-    noremap <space> :
+    " Map Space to Nothing (space is leader)
+    noremap <,> <nop>
+
+    " Map ; to : for faster command mode
+    noremap ; :
 
     " Better Mark jumps
     noremap <leader>m :marks<CR>
@@ -209,13 +148,12 @@
     "to show help under cursor
     noremap <leader>k K
 
-    "write file with gs
-    noremap gs :w<CR>
+    "write file with <leader>w
+    noremap <leader>w :update<CR>
 
     " go to end of search highlight
     noremap <silent> <leader>e /<c-r>//e<cr>:let @/='<c-r>/'<cr>
 
-    " match closest and lets you type while autocomplete
 
     " activate/deaktivate Hightlight search
     function! ToggleHighlight()
@@ -232,8 +170,7 @@
     command! ToggleHighlight call ToggleHighlight()
 
     " Easy vimrc editing with :EditVim
-    command! VimEdit :edit ~/.vimrc
-    noremap g. :VimEdit<CR>
+    command! EditVim :edit ~/.vimrc
 
     " Map ToggleHighlight function to ,d
     nnoremap <silent> <leader>d :nohlsearch<CR>
@@ -273,7 +210,6 @@
       setlocal buftype=nofile
       setlocal bufhidden=delete
       setlocal nobuflisted
-      setlocal noswapfile
       setlocal nowrap
       setlocal filetype=shell
       setlocal syntax=shell
@@ -319,11 +255,3 @@
   endfunction
 " }
 
-" Plugins {
-    " Use bundles config
-    if filereadable(expand("~/.vim/bundles.vim"))
-        source ~/.vim/bundles.vim
-    endif
-
-    filetype plugin indent on         " Automatic detect file types
-" }

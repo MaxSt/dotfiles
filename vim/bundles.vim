@@ -1,68 +1,31 @@
 " Easy bundles editing with :EditBundles
-command! EditBundles :edit ~/.vim/bundles.vim
+command! BundlesEdit :edit ~/.vim/bundles.vim
+noremap gb :BundlesEdit<CR>
 
  " Bundles{
     " Vundler {
-        filetype on
         filetype off
         set rtp+=~/.vim/bundle/vundle/
         call vundle#rc()
       " let Vundle manage Vundle
       " required!
         Bundle 'gmarik/vundle'
+        filetype plugin indent on
     " }
 
     " Colorscheme (Colorscheme){
         Bundle 'MaxSt/FlatColor'
-        if has('gui_running')
-          color flatcolor                                                " load a colorscheme
-        else
-          color flatcolor                                                 " load a colorscheme
-        endif
-        hi CursorLine term=none cterm=none gui=none
+        color flatcolor
+        let g:flatcolor_cursorlinebold = 1
     " }
 
-    " NERDTree (Filetree){
-        "Bundle 'scrooloose/nerdtree.git'
-        " autocmd VimEnter * NERDTree                           "Open NERDTree on Startup
-        "let NERDTreeQuitOnOpen = 1                              " Closes NERDTree After Opening a file
-        "noremap <silent> \ :NERDTreeToggle<CR>                  " open/close Nerdtree with \
-    " }
 
     " Ultisnips (Code Snippets){
         Bundle 'SirVer/ultisnips'
-        " add support_funtions to snipptes
-        " let g:UltiSnipsSnippetsDir = '~/.vim/mySnippets'
         let g:UltiSnipsExpandTrigger ="<c-j>"
-        " :SnipEdit zum editierten
-        command! -nargs=? SnipsEdit :call UltiSnipsEdit(<q-args>)
+        noremap gu :UltiSnipsEdit!<CR>
     " }
 
-    " MiniBufExplorer (Buffertabs){
-        Bundle 'fholgado/minibufexpl.vim.git'
-        " Set Hotkeys for Buffer Switching
-        noremap ]b :MBEbn<CR>
-        noremap [b :MBEbp<CR>
-        noremap ]v :MBEbf<CR>
-        noremap [v :MBEbb<CR>
-        noremap <leader>x :MBEbd<CR>
-        let g:miniBufExplCycleArround = 1
-        let g:miniBufExplCheckDupeBufs = 0                    " faster for many buffers
-        let g:miniBufExplUseSingleClick = 1                   " single click for buffer switching
-        ""Colors for MBE
-        "hi clear MBEVisibleActiveNormal
-        "hi clear MBEVisibleActiveChanged
-        "hi clear MBEVisibleChanged
-        "hi clear MBEVisibleNormal
-        "hi clear MBEChanged
-        "hi clear MBENormal
-        "hi MBEVisibleActiveNormal guibg=fg guifg=#A6DB29 ctermfg=154 ctermbg=235
-        "hi MBEVisibleActiveChanged guifg=#F1266F guibg=fg ctermbg=235 ctermfg=161
-        "hi MBEVisibleChanged guifg=#F1266F ctermfg=166
-        "hi MBEVisibleNormal guifg=#66D9EF guibg=fg ctermbg=235 ctermfg=81
-        "hi MBEChanged guifg=#CD5907
-        "hi MBENormal guifg=#808080 ctermfg=240
-    " }
 
     " ctrlp (open file with fuzzy search){
         Bundle 'kien/ctrlp.vim.git'
@@ -145,18 +108,6 @@ command! EditBundles :edit ~/.vim/bundles.vim
         let g:ycm_filepath_completion_use_working_dir = 1
     " }
 
-    " vim-easy-align (easy alignment by seperators){
-        "Bundle 'junegunn/vim-easy-align.git'
-        "vnoremap <silent> <Enter> :EasyAlign<cr>
-    " }
-
-    " wildfire (smart selection of the closest text object){
-        "Bundle 'gcmt/wildfire.vim'
-    " }
-
-    " vim-easymotion (move with <leader><leader>[motion]){
-        "Bundle 'Lokaltog/vim-easymotion.git'
-    " }
 
     " Tabular (text filtering and alignment (:Tab /[ =,... ])){
         Bundle 'godlygeek/tabular.git'
@@ -179,9 +130,6 @@ command! EditBundles :edit ~/.vim/bundles.vim
         let g:ackprg = 'ag --nogroup --nocolor --column'
     " }
 
-    " CSS-Color (Show Colorcodes in Color){
-        Bundle 'skammer/vim-css-color.git'
-    " }
 
     " Trailertrash (identify and Irradicate unwanted whitespace at the end of the line (:Trim)){
         Bundle 'csexton/trailertrash.vim.git'
@@ -199,10 +147,6 @@ command! EditBundles :edit ~/.vim/bundles.vim
         "Bundle 'AndrewRadev/splitjoin.vim.git'
     " }
 
-    " Solarized (vim solarized color scheme){
-        "Bundle 'altercation/vim-colors-solarized'
-    " }
-
     " Fugitive (Git Support for vim){
         "Bundle 'tpope/vim-fugitive.git'
     " }
@@ -214,12 +158,6 @@ command! EditBundles :edit ~/.vim/bundles.vim
     " Covim (Collaborative Editing){
         "Bundle 'FredKSchott/CoVim.git'
     " }
-
-    " Molokai Colorscheme (Colorscheme){
-        "Bundle 'tomasr/molokai.git'
-        "let g:molokai_original = 1
-    " }
-
 
 
     " Startify (Vim Startscreen){
@@ -312,5 +250,9 @@ command! EditBundles :edit ~/.vim/bundles.vim
 
     " targets (more text objects z.b in]){
         Bundle 'wellle/targets.vim'
+    " }
+
+    " sensible (defaults everyone can agree on){
+        Bundle 'tpope/vim-sensible'
     " }
 " }
