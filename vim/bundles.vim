@@ -10,7 +10,6 @@ noremap gb :BundlesEdit<CR>
       " let Vundle manage Vundle
       " required!
         Bundle 'gmarik/vundle'
-        filetype plugin indent on
     " }
 
     " Colorscheme (Colorscheme){
@@ -22,8 +21,10 @@ noremap gb :BundlesEdit<CR>
 
     " Ultisnips (Code Snippets){
         Bundle 'SirVer/ultisnips'
-        let g:UltiSnipsExpandTrigger ="<c-j>"
         noremap gu :UltiSnipsEdit!<CR>
+        let g:UltiSnipsExpandTrigger="<Tab>"
+        let g:UltiSnipsJumpForwardTrigger="<Tab>"
+        let g:UltiSnipsJumpBackwardTrigger="<S-Tab>"
     " }
 
 
@@ -106,6 +107,8 @@ noremap gb :BundlesEdit<CR>
         let g:ycm_collect_identifiers_from_comments_and_strings = 1
         let g:ycm_autoclose_preview_window_after_completion = 1
         let g:ycm_filepath_completion_use_working_dir = 1
+        let g:ycm_key_list_select_completion = ['<Down>']
+        let g:ycm_key_list_previous_completion = ['<Up>']
     " }
 
 
@@ -256,3 +259,5 @@ noremap gb :BundlesEdit<CR>
         Bundle 'tpope/vim-sensible'
     " }
 " }
+
+filetype plugin indent on
