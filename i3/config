@@ -1,8 +1,19 @@
-#.......
+#.......http://users.fmrib.ox.ac.uk/~steve/review/review/node1.html
 # font
 #.......
 
 font -*-cure-medium-*-*-*-11-*-*-*-*-*-*-*
+
+# i3init; starts gnome-keyring-daemon
+exec "i3init"
+
+#set keybard
+exec "~/dotfiles/autostart.sh"
+
+# Start some applets
+exec "gnome-settings-daemon"
+exec "nm-applet"
+exec "bluetooth-applet"
 
 #..........
 # windows

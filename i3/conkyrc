@@ -15,9 +15,9 @@ TEXT
  { "full_text" : "Ram" , "color" : "\#b72f62" } ,
  { "full_text" : "${mem}" },
  { "full_text" : "Wifi" , "color" : "\#b72f62" } ,
- { "full_text" : "${wireless_essid wlan0}(${wireless_link_qual wlan0}/${wireless_link_qual_max wlan0})" } ,
+ { "full_text" : "${wireless_essid wlp2s0}(${wireless_link_qual wlp2s0}/${wireless_link_qual_max wlp2s0})" } ,
  { "full_text" : "Bat" , "color" : "\#7996a9" } ,
- { "full_text" : "${battery BAT1}" , "color" : 
-  ${if_match ${battery_percent BAT1}<20}"\#b95670"${else}"\#5f5f5f"${endif} } ,
+ { "full_text" : "${battery_percent} %" , "color" : 
+  ${if_match ${battery_percent}<30}"\#b95670"${else}"\#5f5f5f"${endif} } ,
  { "full_text" : "Max" , "color" : "\#7996a9" } , 
  { "full_text" : "${time %b %d %Y %I:%M%P}" }]  ,
