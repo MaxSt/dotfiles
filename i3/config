@@ -12,9 +12,11 @@ exec "i3init"
 exec "~/dotfiles/autostart.sh"
 
 # Start some applets
-exec "/usr/bin/gnome-settings-daemon"
-exec "/usr/bin/nm-applet"
-exec "/usr/bin/bluetooth-applet"
+
+exec --no-startup-id gnome-settings-daemon
+exec --no-startup-id gnome-keyring-daemon --start --components=pkcs11,gpg,secrets
+exec --no-startup-id nm-applet
+exec --no-startup-id bluetooth-applet
 
 bindsym XF86AudioRaiseVolume exec amixer -q set Master 5%+
 bindsym XF86AudioLowerVolume exec amixer -q set Master 5%-

@@ -4,7 +4,7 @@ out_to_console yes
 background no
 max_text_width 0
 # Update interval in seconds
-update_interval 1.0
+update_interval 1
 total_run_times 0
 override_utf8_locale yes
 
