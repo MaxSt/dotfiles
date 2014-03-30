@@ -55,5 +55,3 @@ PATH=$PATH:$HOME/.gem/ruby/2.0.0/bin
 export EDITOR="vim"
 
 if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then source "$HOME/.rvm/scripts/rvm" ; fi
-
-

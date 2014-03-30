@@ -4,20 +4,20 @@ out_to_console yes
 background no
 max_text_width 0
 # Update interval in seconds
-update_interval 2.0
+update_interval 1.0
 total_run_times 0
 override_utf8_locale yes
 
 TEXT
 
-[{ "full_text" : "HD" , "color" : "\#7996a9" } ,
- { "full_text" : "home: ${fs_free /home}/${fs_size /home}  root: ${fs_free /}/${fs_size /}" } , 
- { "full_text" : "Ram" , "color" : "\#b72f62" } ,
+[{ "full_text" : "Ram" , "color" : "\#b72f62" } ,
  { "full_text" : "${mem}" },
  { "full_text" : "Wifi" , "color" : "\#b72f62" } ,
  { "full_text" : "${wireless_essid wlp2s0}(${wireless_link_qual wlp2s0}/${wireless_link_qual_max wlp2s0})" } ,
- { "full_text" : "Bat" , "color" : "\#7996a9" } ,
- { "full_text" : "${battery_percent} %" , "color" : 
+ { "full_text" : "☊ " , "color" : "\#7996a9" } ,
+ { "full_text" : "${exec ~/.i3/volume.sh}" , "color" : "\#5f5f5f" } ,
+ { "full_text" : "⚡ " , "color" : "\#7996a9" } ,
+ { "full_text" : "${battery_percent}%" , "color" :
   ${if_match ${battery_percent}<30}"\#b95670"${else}"\#5f5f5f"${endif} } ,
- { "full_text" : "Max" , "color" : "\#7996a9" } , 
+ { "full_text" : "Max" , "color" : "\#7996a9" } ,
  { "full_text" : "${time %b %d %Y %I:%M%P}" }]  ,
