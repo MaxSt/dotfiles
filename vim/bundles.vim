@@ -151,7 +151,7 @@ noremap gb :BundlesEdit<CR>
     " }
 
     " Fugitive (Git Support for vim){
-        "Bundle 'tpope/vim-fugitive.git'
+        Bundle 'tpope/vim-fugitive.git'
     " }
 
     " Multiple Cursors (with <C-N> while searching){
