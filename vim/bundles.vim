@@ -18,13 +18,30 @@ noremap gb :BundlesEdit<CR>
         let g:flatcolor_cursorlinebold = 1
     " }
 
+    " YouCompleteMe (Code Completion){
+        Bundle 'Valloric/YouCompleteMe.git'
+        let g:ycm_complete_in_comments_and_strings = 1
+        let g:ycm_collect_identifiers_from_comments_and_strings = 1
+        let g:ycm_autoclose_preview_window_after_completion = 1
+        let g:ycm_filepath_completion_use_working_dir = 1
+    " }
 
     " Ultisnips (Code Snippets){
         Bundle 'SirVer/ultisnips'
         noremap gu :UltiSnipsEdit!<CR>
-        let g:UltiSnipsExpandTrigger="<Tab>"
-        let g:UltiSnipsJumpForwardTrigger="<Tab>"
-        let g:UltiSnipsJumpBackwardTrigger="<S-Tab>"
+
+        function! g:UltiSnips_Complete()
+            call UltiSnips#ExpandSnippet()
+            if g:ulti_expand_res == 0
+              call UltiSnips#JumpForwards()
+              if g:ulti_jump_forwards_res == 0
+                return "\<CR>"
+              endif
+            endif
+            return ""
+        endfunction
+
+        au BufEnter * exec "inoremap <silent> <CR> <C-R>=g:UltiSnips_Complete()<cr>"
     " }
 
 
@@ -64,7 +81,7 @@ noremap gb :BundlesEdit<CR>
     " airline  (StatusBar){
         Bundle 'bling/vim-airline.git'
         " tabline
-        "let g:airline#extensions#tabline#enabled = 1
+        let g:airline#extensions#tabline#enabled = 1
         "let g:airline#extensions#tabline#tab_nr_type = 1 " tab number
         "let g:airline#extensions#tabline#buffer_nr_show = 1
         "let g:airline#extensions#tabline#buffer_nr_format = '%s:'
@@ -100,17 +117,6 @@ noremap gb :BundlesEdit<CR>
         let g:table_mode_map_prefix='<C-t>'
         let g:table_mode_tableize_map='<C-t>t'
     " }
-
-    " YouCompleteMe (Code Completion){
-        Bundle 'Valloric/YouCompleteMe.git'
-        let g:ycm_complete_in_comments_and_strings = 1
-        let g:ycm_collect_identifiers_from_comments_and_strings = 1
-        let g:ycm_autoclose_preview_window_after_completion = 1
-        let g:ycm_filepath_completion_use_working_dir = 1
-        let g:ycm_key_list_select_completion = ['<Down>']
-        let g:ycm_key_list_previous_completion = ['<Up>']
-    " }
-
 
     " Tabular (text filtering and alignment (:Tab /[ =,... ])){
         Bundle 'godlygeek/tabular.git'
@@ -192,6 +198,9 @@ noremap gb :BundlesEdit<CR>
 
         "EasyMotion like sneak
         "let g:sneak#streak = 1
+
+        "repeat by pressing the same key again
+        let g:sneak#s_next = 1
 
         " 1-character _inclusive_ Sneak (for enhanced 'f')
         nmap f <Plug>Sneak_f
