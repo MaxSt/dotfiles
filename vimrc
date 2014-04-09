@@ -19,11 +19,11 @@
       set guioptions-=m
 
       if has("gui_gtk2")
-          set guifont=EnvyCodeR\ 12,Andale\ Mono\ Regular\ 16,Menlo\ Regular\ 15,Consolas\ Regular\ 16,Courier\ New\ Regular\ 18
+          set guifont=Meslo\ LG\ S\ for\ Powerline\ 11
       elseif has("gui_mac")
-          set guifont=EnvyCodeR:h12,Andale\ Mono\ Regular:h16,Menlo\ Regular:h15,Consolas\ Regular:h16,Courier\ New\ Regular:h18
+          set guifont=Meslo\ LG\ S\ for\ Powerline:h11
       elseif has("gui_win32") || has('win64')
-          set guifont=EnvyCodeR:h12,Andale_Mono:h10,Menlo:h10,Consolas:h10,Courier_New:h10
+          set guifont=Meslo\ LG\ S\ for\ Powerline:h11
       endif
     endif
     set mouse=a                                                   " automatically enable mouse usage
