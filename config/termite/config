@@ -9,7 +9,6 @@ allow_bold = true
 dynamic_title = true
 urgent_on_bell = true
 clickable_url = true
-#font=Meslo LG S for Powerline Medium 10
 font=Envy Code R for Powerline 10
 scrollback_lines = 1000
 search_wrap = true
@@ -40,7 +39,7 @@ foreground = #ffffff
 foreground_bold = #ffffff
 #foreground_dim = #888888
 background = #1b1b1b
-#cursor = #dcdccc
+#cursor = #15abdd
 
 # if unset, will reverse foreground and background
 highlight = #2f2f2f

@@ -267,6 +267,9 @@ noremap gb :BundlesEdit<CR>
     " sensible (defaults everyone can agree on){
         Bundle 'tpope/vim-sensible'
     " }
-" }
+
+    " pandoc-syntax (Pandoc Syntax Highlighting){
+        Bundle 'vim-pandoc/vim-pandoc-syntax.git'
+    " }
 
 filetype plugin indent on
