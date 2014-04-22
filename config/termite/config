@@ -9,7 +9,8 @@ allow_bold = true
 dynamic_title = true
 urgent_on_bell = true
 clickable_url = true
-font=Envy Code R for Powerline 10
+#font=Envy Code R for Powerline 10
+font=tewi 11px
 scrollback_lines = 1000
 search_wrap = true
 #icon_name = terminal
@@ -35,10 +36,10 @@ cursor_shape = block
 #modify_other_keys = false
 
 [colors]
-foreground = #ffffff
-foreground_bold = #ffffff
+foreground = #bcbcbc
+#foreground_bold = #ffffff
 #foreground_dim = #888888
-background = #1b1b1b
+background = #262626
 #cursor = #15abdd
 
 # if unset, will reverse foreground and background
