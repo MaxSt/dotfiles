@@ -15,7 +15,7 @@ GIT_PROMPT_INFO=$FG[161]
 
 
 # Prompt format
-PROMPT='%{$GIT_CLEAN_COLOR%}<%n> %{$PROMPT_SUCCESS_COLOR%}%~%{$reset_color%} %{$GIT_PROMPT_INFO%}$(git_prompt_info)%{$GIT_DIRTY_COLOR%}$(git_prompt_status) %{$reset_color%}%{$PROMPT_PROMPT%}▶%{$reset_color%} '
+PROMPT='%{$GIT_CLEAN_COLOR%}<%n> %{$PROMPT_SUCCESS_COLOR%}%~%{$reset_color%} %{$GIT_PROMPT_INFO%}$(git_prompt_info)%{$GIT_DIRTY_COLOR%}$(git_prompt_status) %{$reset_color%}%{$PROMPT_PROMPT%}»%{$reset_color%} '
 
 #RPS1="${return_code}"
 

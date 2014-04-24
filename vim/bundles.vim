@@ -87,7 +87,7 @@ noremap gb :BundlesEdit<CR>
         "let g:airline#extensions#tabline#buffer_nr_format = '%s:'
         let g:airline_exclude_preview = 1
         let g:airline_powerline_fonts = 1
-        let g:airline_theme='powerlineish'
+        let g:airline_theme='sol'
         let g:airline#extensions#whitespace#enabled = 0 "no Whitespace detection
 
     " }
