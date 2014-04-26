@@ -1,3 +1,3 @@
 #!/bin/sh
 
-~/.config/bar/barscript | bar -p -g 1366x14 -B "#262626" -F "#bcbcbc" -f "-*-tewi-medium-*-*-*-11-*-*-*-*-*-*-*" &
+~/.config/bar/barscript | bar -p -g x14 -B "#262626" -F "#bcbcbc" -f "-*-tewi-medium-*-*-*-11-*-*-*-*-*-*-*" &
