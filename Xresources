@@ -38,8 +38,8 @@ URxvt.background : #262626
 # URxvt*color8:           #2c3e50
 
 # real Black
-URxvt*color0:           #262626
-URxvt*color8:           #252525
+ URxvt*color0:           #262626
+ URxvt*color8:           #222222
 
 # Red
 URxvt*color1:           #FF0033
