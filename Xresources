@@ -8,14 +8,15 @@ Xft.lcdfilter:  lcddefault
 Xft.rgba:       rgb
 
 ! Misc settings
-URxvt*intensityStyles : true
+URxvt*intensityStyles : false
 URxvt*jumpScroll      : true
 URxvt*saveLines       : 4096
 URxvt*scrollBar       : false
-URxvt*skipScroll      : true
+URxvt*skipScroll      : false
 URxvt*urgentOnBell    : false
 URxvt*visualBell      : false
 URxvt*internalBorder  : 4
+URxvt*buffered        : false
 
 ! Extensions
 URxvt*perl-ext-common : default,matcher,fullscreen
@@ -30,58 +31,41 @@ URxvt*boldFont: fonts
 ! Colors
 
 URxvt.foreground : #bcbcbc
-URxvt.background : #262626
+URxvt.background : #252525
 
 
-# Midnight Blue-Black
-# URxvt*color0:           #34495e
-# URxvt*color8:           #2c3e50
+! Midnight Blue-Black
+! URxvt*color0:           #34495e
+! URxvt*color8:           #2c3e50
 
-# real Black
- URxvt*color0:           #262626
- URxvt*color8:           #222222
+! real Black
+URxvt*color0:           #292929
+URxvt*color8:           #252525
 
-# Red
+! Red
 URxvt*color1:           #FF0033
 URxvt*color9:           #C0392B
 
-# Green
+! Green
 URxvt*color2:           #2ecc71
 URxvt*color10:          #27ae60
 
-# Yellow
+! Yellow
 URxvt*color3:           #f1c40f
 URxvt*color11:          #f39c12
 
-# Blue
+! Blue
 URxvt*color4:           #3498db
 URxvt*color12:          #2980b9
 
-# Magenta
+! Magenta
 URxvt*color5:           #9b59b6
 URxvt*color13:          #8e44ad
 
-# Cyan
+! Cyan
 URxvt*color6:           #1abc9c
 URxvt*color14:          #16a085
 
-# White
+! White
 URxvt*color7:           #ecf0f1
 URxvt*color15:          #bdc3c7
-
-/* URxvt*color0 : #3f3f3f */
-/* URxvt*color1 : #705050 */
-/* URxvt*color2 : #60b48a */
-/* URxvt*color3 : #dfaf8f */
-/* URxvt*color4 : #506070 */
-/* URxvt*color5 : #dc8cc3 */
-/* URxvt*color6 : #8cd0d3 */
-/* URxvt*color7 : #dcdccc */
-/* URxvt*color8 : #709080 */
-/* URxvt*color9 : #dca3a3 */
-/* URxvt*color10 : #c3bf9f */
-/* URxvt*color11 : #f0dfaf */
-/* URxvt*color12 : #94bff3 */
-/* URxvt*color13 : #ec93d3 */
-/* URxvt*color14 : #93e0e3 */
-/* URxvt*color15 : #ffffff */
