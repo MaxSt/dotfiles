@@ -20,7 +20,20 @@ bspc rule -a mplayer2 floating=on
 bspc rule -a Kupfer.py focus=on
 bspc rule -a Screenkey manage=off
 
+# silent bell
+/usr/bin/xset b off
+
+# keyboard settings
 ~/dotfiles/autostart.sh &
+
+# start dropbox
+dropbox start &
+
+# start compton (shadows)
 compton --config ~/.config/compton/compton.conf &
+
+# start barpannel
 ~/.config/bar/barpannel &
+
+# set background image
 hsetroot -fill ~/Pictures/bg.jpg

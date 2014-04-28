@@ -1,0 +1,3 @@
+#!/bin/bash
+echo -n 'V';
+amixer | if grep -q "off"; then echo "mute"; else echo $(amixer | awk '/Front Left: Playback/ {print $5}' | sed 's/\[//g;s/\]//g');fi;

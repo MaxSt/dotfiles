@@ -13,7 +13,7 @@ URxvt*jumpScroll      : true
 URxvt*saveLines       : 4096
 URxvt*scrollBar       : false
 URxvt*skipScroll      : false
-URxvt*urgentOnBell    : false
+URxvt.urgentOnBell    : false
 URxvt*visualBell      : false
 URxvt*internalBorder  : 4
 URxvt*buffered        : false

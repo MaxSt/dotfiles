@@ -1,3 +1,0 @@
-#!/bin/sh
-
-~/.config/bar/barscript | bar -p -g x14 -B "#ff252525" -F "#ffbcbcbc" -f "-*-tewi-medium-*-*-*-11-*-*-*-*-*-*-*" &

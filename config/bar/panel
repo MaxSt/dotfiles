@@ -1,0 +1,40 @@
+#! /bin/sh
+
+export PANEL_FIFO=/tmp/panel-fifo
+
+if [ $(pgrep -cx pannel) -gt 1 ] ; then
+printf "%s\n" "The panel is already running." >&2
+exit 1
+fi
+
+trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
+
+[ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
+mkfifo "$PANEL_FIFO"
+
+#clock -sf 'T%a %H:%M' > "$PANEL_FIFO" &
+
+# workspaces (W)
+bspc control --subscribe > "$PANEL_FIFO" &
+
+# battery (B)
+watch -n 5 acpi --battery | awk '{gsub(/,/, "");} {printf "B" $4}' | sed 's/%//' > "$PANEL_FIFO" &
+
+
+# ram usage (R)
+free -m -s 2 | awk '/-/ {print "R" $3}' > "$PANEL_FIFO" &
+
+# date and time (T)
+date "+T%H:%M  %d.%m.%y" > "$PANEL_FIFO" &
+
+# volume (V)
+watch -n 0.3 ~/.config/bar/scripts/volume > "$PANEL_FIFO" &
+
+#app title (A)
+watch -n 0.3 ~/.config/bar/scripts/app > "$PANEL_FIFO" &
+
+~/.config/bar/panel_colors
+
+cat "$PANEL_FIFO" | ~/.config/bar/panel_bar | bar -g x14 -F "$COLOR_FOREGROUND" -B "$COLOR_BACKGROUND" -f "-*-tewi-medium-*-*-*-11-*-*-*-*-*-*-*" &
+
+wait
