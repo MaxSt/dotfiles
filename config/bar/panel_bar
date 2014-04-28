@@ -2,17 +2,21 @@
 #
 # Example panel for LemonBoy's bar
 
-~/.config/bar/panel_colors
+. ~/.config/bar/panel_colors
 
 while read -r line ; do
 	case $line in
 		T*)
 			# clock output
-      clock="%{F$DARK}%{B$LIGHT}%{F}%{B}%{B$DARK}%{F$WHITE} ◷ ${line#?}%{B}%{F}"
+      clock="%{F$COLOR_DARK}%{B$COLOR_LIGHTGREEN}%{F}%{B}%{B$COLOR_DARK}%{F$COLOR_WHITE} ◷ ${line#?}%{B}%{F}"
+			;;
+		V*)
+			# current Volume
+      volume="%{F$COLOR_LIGHTGREEN}%{F}%{B$COLOR_LIGHTGREEN}%{F$COLOR_DARK} ♫ ${line#?} %{B}%{F}"
 			;;
 		A*)
 			# current Application
-      title="%{F$DARK}%{B$LIGHT} ❏ ${line#?} %{B} %{F}%{F$LIGHT}%{B}"
+      title="%{F$COLOR_DARK}%{B$COLOR_LIGHTGREEN} ❏ ${line#?} %{B}%{F}%{F$COLOR_LIGHTGREEN}%{B}"
 			;;
 		W*)
 			# bspwm internal state
@@ -26,27 +30,28 @@ while read -r line ; do
 				case $item in
 					O*)
 						# focused occupied desktop
-            wm_infos="$wm_infos %{B$DARK}%{F$WHITE}%{+u}■%{-u}%{B}%{F}"
+            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_LIGHTGREEN}■%{B}%{F}"
 						;;
 					F*)
 						# focused free desktop
-            wm_infos="$wm_infos %{B$DARK}%{F$WHITE}%{+u}□%{-u}%{B}%{F}"
+            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_LIGHTGREEN}□%{B}%{F}"
 						;;
 					U*)
 						# focused urgent desktop
-            wm_infos="$wm_infos %{B$DARK}%{F$WHITE}%{+u}■#{-u}%{B}%{F}"
+            #wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_WHITE}%{+u}■#{-u}%{B}%{F}"
+            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_LIGHTGREEN}■%{B}%{F}"
 						;;
 					o*)
 						# occupied desktop
-            wm_infos="$wm_infos %{B$DARK}%{F$WHITE}■%{B}%{F}"
+            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_WHITE}■%{B}%{F}"
 						;;
 					f*)
 						# free desktop
-            wm_infos="$wm_infos %{B$DARK}%{F$WHITE}□%{B}%{F}"
+            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_WHITE}□%{B}%{F}"
 						;;
 					u*)
 						# urgent desktop
-            wm_infos="$wm_infos %{B$DARK}%{F$WHITE}■%{B}%{F}"
+            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_WHITE}■%{B}%{F}"
 						;;
 					L*)
 						# layout
@@ -58,13 +63,13 @@ while read -r line ; do
 			;;
 	esac
 
-	#%{B$DARK} %{F$WHITE}$(mus) %{F$DARK}%{B$LIGHT}%{F}%{B}
-  #%{F$DARK}%{B$LIGHT} ❏ $(wintitle) %{B} %{F}%{F$LIGHT}%{B}
-  #%{c}%{B$DARK} %{F$WHITE}$(workspace) %{B}%{F} %{c}
-  #%{r}%{F$LIGHT}%{F}%{B$LIGHT}%{F$DARK} $(bat) ram $(ram) ♫ $(vol)% %{B}%{F}
-  #%{F$DARK}%{B$LIGHT}%{F}%{B}%{B$DARK}%{F$WHITE} ◷ $(dat) %{B}%{F}
+	#%{B$COLOR_DARK} %{F$COLOR_WHITE}$(mus) %{F$COLOR_DARK}%{B$COLOR_LIGHTGREEN}%{F}%{B}
+  #%{F$COLOR_DARK}%{B$COLOR_LIGHTGREEN} ❏ $(wintitle) %{B} %{F}%{F$COLOR_LIGHTGREEN}%{B}
+  #%{c}%{B$COLOR_DARK} %{F$COLOR_WHITE}$(workspace) %{B}%{F} %{c}
+  #%{r}%{F$COLOR_LIGHTGREEN}%{F}%{B$COLOR_LIGHTGREEN}%{F$COLOR_DARK} $(bat) ram $(ram) ♫ $(vol)% %{B}%{F}
+  #%{F$COLOR_DARK}%{B$COLOR_LIGHTGREEN}%{F}%{B}%{B$COLOR_DARK}%{F$COLOR_WHITE} ◷ $(dat) %{B}%{F}
 
-	printf "%s\n" "%{l}$title%{c}$wm_infos%{r}$clock"
+	printf "%s\n" " %{l}$title%{c}$wm_infos%{r}$volume$clock "
 done
 
 
