@@ -81,13 +81,13 @@ super + @button{1-3}e
 #
 
 XF86AudioMute
-  ~/.config/bar/volume toggle
+  amixer set Master toggle
 
 XF86AudioRaiseVolume
-  ~/.config/bar/volume raise
+  amixer set Master 5%+ unmute
 
 XF86AudioLowerVolume
-  ~/.config/bar/volume lower
+  amixer set Master 5%- unmute
 
 super + Return
 	urxvt

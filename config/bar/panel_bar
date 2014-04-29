@@ -8,15 +8,15 @@ while read -r line ; do
 	case $line in
 		T*)
 			# clock output
-      clock="%{F$COLOR_DARK}%{B$COLOR_MAINCOLOR}%{F}%{B}%{B$COLOR_DARK}%{F$COLOR_WHITE} ◷ ${line#?}%{B}%{F}"
+      clock="%{F#FF$COLOR_DARK}%{B#FF$COLOR_MAINCOLOR}%{F}%{B}%{B#FF$COLOR_DARK}%{F#FF$COLOR_WHITE} ◷ ${line#?}%{B}%{F}"
 			;;
 		V*)
 			# current Volume
-      volume="%{F$COLOR_MAINCOLOR}%{F}%{B$COLOR_MAINCOLOR}%{F$COLOR_DARK} ♫ ${line#?} %{B}%{F}"
+      volume="%{F#FF$COLOR_MAINCOLOR}%{F}%{B#FF$COLOR_MAINCOLOR}%{F#FF$COLOR_DARK} ♫ ${line#?} %{B}%{F}"
 			;;
 		A*)
 			# current Application
-      title="%{F$COLOR_DARK}%{B$COLOR_MAINCOLOR} ❏ ${line#?} %{B}%{F}%{F$COLOR_MAINCOLOR}%{B}"
+      title="%{F#FF$COLOR_DARK}%{B#FF$COLOR_MAINCOLOR} ❏ ${line#?} %{B}%{F}%{F#FF$COLOR_MAINCOLOR}%{B}"
 			;;
 		W*)
 			# bspwm internal state
@@ -30,28 +30,28 @@ while read -r line ; do
 				case $item in
 					O*)
 						# focused occupied desktop
-            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_MAINCOLOR}■%{B}%{F}"
+            wm_infos="$wm_infos %{B#FF$COLOR_DARK}%{F#FF$COLOR_MAINCOLOR}■%{B}%{F}"
 						;;
 					F*)
 						# focused free desktop
-            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_MAINCOLOR}□%{B}%{F}"
+            wm_infos="$wm_infos %{B#FF$COLOR_DARK}%{F#FF$COLOR_MAINCOLOR}□%{B}%{F}"
 						;;
 					U*)
 						# focused urgent desktop
-            #wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_WHITE}%{+u}■#{-u}%{B}%{F}"
-            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_MAINCOLOR}■%{B}%{F}"
+            #wm_infos="$wm_infos %{B#FF$COLOR_DARK}%{F#FF$COLOR_WHITE}%{+u}■#{-u}%{B}%{F}"
+            wm_infos="$wm_infos %{B#FF$COLOR_DARK}%{F#FF$COLOR_MAINCOLOR}■%{B}%{F}"
 						;;
 					o*)
 						# occupied desktop
-            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_WHITE}■%{B}%{F}"
+            wm_infos="$wm_infos %{B#FF$COLOR_DARK}%{F#FF$COLOR_WHITE}■%{B}%{F}"
 						;;
 					f*)
 						# free desktop
-            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_WHITE}□%{B}%{F}"
+            wm_infos="$wm_infos %{B#FF$COLOR_DARK}%{F#FF$COLOR_WHITE}□%{B}%{F}"
 						;;
 					u*)
 						# urgent desktop
-            wm_infos="$wm_infos %{B$COLOR_DARK}%{F$COLOR_WHITE}■%{B}%{F}"
+            wm_infos="$wm_infos %{B#FF$COLOR_DARK}%{F#FF$COLOR_WHITE}■%{B}%{F}"
 						;;
 					L*)
 						# layout
@@ -63,11 +63,11 @@ while read -r line ; do
 			;;
 	esac
 
-	#%{B$COLOR_DARK} %{F$COLOR_WHITE}$(mus) %{F$COLOR_DARK}%{B$COLOR_MAINCOLOR}%{F}%{B}
-  #%{F$COLOR_DARK}%{B$COLOR_MAINCOLOR} ❏ $(wintitle) %{B} %{F}%{F$COLOR_MAINCOLOR}%{B}
-  #%{c}%{B$COLOR_DARK} %{F$COLOR_WHITE}$(workspace) %{B}%{F} %{c}
-  #%{r}%{F$COLOR_MAINCOLOR}%{F}%{B$COLOR_MAINCOLOR}%{F$COLOR_DARK} $(bat) ram $(ram) ♫ $(vol)% %{B}%{F}
-  #%{F$COLOR_DARK}%{B$COLOR_MAINCOLOR}%{F}%{B}%{B$COLOR_DARK}%{F$COLOR_WHITE} ◷ $(dat) %{B}%{F}
+	#%{B#FF$COLOR_DARK} %{F#FF$COLOR_WHITE}$(mus) %{F#FF$COLOR_DARK}%{B#FF$COLOR_MAINCOLOR}%{F}%{B}
+  #%{F#FF$COLOR_DARK}%{B#FF$COLOR_MAINCOLOR} ❏ $(wintitle) %{B} %{F}%{F#FF$COLOR_MAINCOLOR}%{B}
+  #%{c}%{B#FF$COLOR_DARK} %{F#FF$COLOR_WHITE}$(workspace) %{B}%{F} %{c}
+  #%{r}%{F#FF$COLOR_MAINCOLOR}%{F}%{B#FF$COLOR_MAINCOLOR}%{F#FF$COLOR_DARK} $(bat) ram $(ram) ♫ $(vol)% %{B}%{F}
+  #%{F#FF$COLOR_DARK}%{B#FF$COLOR_MAINCOLOR}%{F}%{B}%{B#FF$COLOR_DARK}%{F#FF$COLOR_WHITE} ◷ $(dat) %{B}%{F}
 
 	printf "%s\n" " %{l}$title%{c}$wm_infos%{r}$volume$clock "
 done
