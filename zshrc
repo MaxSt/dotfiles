@@ -19,6 +19,7 @@ alias tr="tmuxinator"
 
 export TERM=xterm-256color
 source /etc/profile
+source $HOME/.profile
 
 #For vi Keybindings
 bindkey -v

@@ -1,0 +1,29 @@
+#! /bin/sh
+export PANEL_FIFO=/tmp/panel-fifo
+while [ $# -gt 0 ] ; do
+case "$1" in
+        status)
+            :
+            ;;
+        toggle)
+            amixer set Master toggle
+            ;;
+        raise)
+            amixer set Master 5%+ unmute
+            ;;
+        lower)
+            amixer set Master 5%- unmute
+            ;;
+        strong_raise)
+            amixer set Master 10%+ unmute
+            ;;
+        strong_lower)
+            amixer set Master 10%- unmute
+            ;;
+        *)
+            amixer "$1"
+            ;;
+  esac
+  printf "V%s\n" $(amixer | if grep -q "off"; then echo "mute"; else echo $(amixer | awk '/Front Left: Playback/ {print $5}' | sed 's/\[//g;s/\]//g');fi) > "$PANEL_FIFO"
+  shift
+done
