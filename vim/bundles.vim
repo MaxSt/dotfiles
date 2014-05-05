@@ -14,8 +14,8 @@ noremap gb :BundlesEdit<CR>
 
     " Colorscheme (Colorscheme){
         Bundle 'MaxSt/FlatColor'
+        let g:flatcolor_termcolors = 16
         color flatcolor
-        let g:flatcolor_cursorlinebold = 1
     " }
 
     " YouCompleteMe (Code Completion){
