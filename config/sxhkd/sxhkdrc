@@ -8,10 +8,10 @@ super + alt + Escape
 super + w
 	bspc window -c
 
-super + t
+super + less
 	bspc desktop -l next
 
-super + b
+super + greater
 	bspc desktop -B
 
 super + {s,f}
@@ -100,6 +100,18 @@ super + minus
 
 super + Return
 	urxvt
+
+super + r
+	urxvt -e ranger
+
+super + t
+	urxvt -e tmux
+
+super + b
+	firefox
+
+super + b
+	nautilus
 
 #j4-dmenu-desktop --dmenu='dmenu -i -fn -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1 -nb "#FFFFFF" -l 5 -p "-->"'
 #dmenu_run -i -fn -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1 -nb "#FFFFFF" -l 5 -p "-->"

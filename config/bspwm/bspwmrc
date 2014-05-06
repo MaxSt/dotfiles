@@ -38,3 +38,6 @@ compton --config ~/.config/compton/compton.conf &
 
 # set background image
 hsetroot -fill ~/Pictures/bg.jpg
+
+# disable ctrl-s freeze
+stty -ixon
