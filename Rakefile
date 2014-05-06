@@ -5,7 +5,6 @@ desc "install the dot files into user's home directory"
 task :install do
   install_oh_my_zsh
   switch_to_zsh
-  install_tmux_themes
   replace_all = false
   files = Dir['*'] - %w[Rakefile README.md oh-my-zsh config]
   files << "oh-my-zsh/custom/max.zsh-theme"
@@ -37,7 +36,6 @@ task :install do
   install_vundler
   install_config
   make_vim_tmp_dir
-  update_font_cache
 end
 
 def replace_file(file)
@@ -100,23 +98,6 @@ def install_vundler
   else
     puts "installing Vundle"
     system %Q{git clone https://github.com/gmarik/vundle.git ~/dotfiles/vim/bundle/vundle}
-  end
-end
-
-def update_font_cache
-  puts "updating font  cache"
-  puts "---------------------------"
-  system %Q{fc-cache -vf ~/.fonts}
-  puts "---------------------------"
-  puts "font cache updated"
-end
-
-def install_tmux_themes
-  if File.exist?(File.join(ENV['HOME'], "/.tmux/themes"))
-    puts "found ~/.tmux/themes"
-  else
-    puts "installing tmux themes"
-    system %Q{git clone https://github.com/jimeh/tmux-themepack.git ~/.tmux/themes}
   end
 end
 

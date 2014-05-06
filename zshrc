@@ -43,7 +43,7 @@ bindkey -v
 # Example format: plugins=(rails git textmate ruby lighthouse)
 plugins=(git vi-mode rvm ruby rails rake bundler archlinux taskwarrior zsh-syntax-highlighting tmux tmuxinator)
 
-ZSH_TMUX_AUTOSTART='true'
+#ZSH_TMUX_AUTOSTART='true'
 
 source $ZSH/oh-my-zsh.sh
 

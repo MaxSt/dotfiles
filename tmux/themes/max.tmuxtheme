@@ -1,0 +1,70 @@
+#
+# Powerline Double Orange - Tmux Theme
+# Created by Jim Myhrberg <contact@jimeh.me>.
+#
+# Inspired by vim-powerline: https://github.com/Lokaltog/powerline
+#
+# Requires terminal to be using a powerline compatible font, find one here:
+# https://github.com/Lokaltog/powerline-fonts
+#
+
+# Status update interval
+set -g status-interval 1
+
+# Basic status bar coloron to 10.0.0.3 closed.ide of status bar
+set -g status-left-bg colour8
+set -g status-left-fg colour15
+set -g status-left-length 40
+set -g status-left "#[fg=colour15,bg=colour8,bold] tmux #[fg=colour8,bg=colour2,nobold]#[fg=colour8,bg=colour2] #S #[fg=colour2,bg=colour8]"
+
+# Right side of status bar
+set -g status-right-bg colour8
+set -g status-right-fg colour15
+set -g status-right-length 150
+set -g status-right "#[fg=colour2,bg=colour8]#[fg=colour8,bg=colour2]   #I   #P #[fg=colour8,bg=colour2]#[fg=colour15,bg=colour8,bold] #H "
+
+# Window status
+set -g window-status-format "  #I:#W#F  "
+set -g window-status-current-format "#[fg=colour8,bg=colour2]#[fg=colour8,bg=colour2,nobold] #I:#W#F #[fg=colour8,bg=colour2,nobold]"
+
+# Current window status
+set -g window-status-current-bg colour2
+set -g window-status-current-fg colour8
+
+# Window with activity status
+set -g window-status-activity-bg colour2 # fg and bg are flipped here due to
+set -g window-status-activity-fg colour0 # a bug in tmux
+
+# Window separator
+set -g window-status-separator ""
+
+# Window status alignment
+set -g status-justify centre
+
+# Pane border
+set -g pane-border-bg default
+set -g pane-border-fg colour8
+
+# Active pane border
+set -g pane-active-border-bg default
+set -g pane-active-border-fg colour2
+
+# Pane number indicator
+set -g display-panes-colour colour8
+set -g display-panes-active-colour colour2
+
+# Clock mode
+set -g clock-mode-colour colour2
+set -g clock-mode-style 24
+
+# Message
+set -g message-bg colour2
+set -g message-fg colour8
+
+# Command message
+set -g message-command-bg colour2
+set -g message-command-fg colour8
+
+# Mode
+set -g mode-bg colour2
+set -g mode-fg colour8
