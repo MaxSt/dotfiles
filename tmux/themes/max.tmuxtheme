@@ -11,7 +11,11 @@
 # Status update interval
 set -g status-interval 1
 
-# Basic status bar coloron to 10.0.0.3 closed.ide of status bar
+# Basic status bar colors
+set -g status-fg colour15
+set -g status-bg colour8
+
+# Left side of status bar
 set -g status-left-bg colour8
 set -g status-left-fg colour15
 set -g status-left-length 40
