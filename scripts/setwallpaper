@@ -1,0 +1,1 @@
+rm ~/Pictures/bg; ln -s ${1} ~/Pictures/bg;hsetroot -fill ~/Pictures/bg

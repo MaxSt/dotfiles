@@ -8,17 +8,20 @@ super + alt + Escape
 super + w
 	bspc window -c
 
+# Change layout
 super + less
 	bspc desktop -l next
 
+# Balance (Adjust the split ratios of the tree of the selected desktop so that all windows occupy the same area)
 super + greater
 	bspc desktop -B
 
 super + {s,f}
 	bspc window -t {floating,fullscreen}
 
-super + {grave,Tab}
-	bspc {window,desktop} -f last
+# Focus last {window,desktop}
+# super + {grave,Tab}
+#	bspc {window,desktop} -f last
 
 super + apostrophe
 	bspc window -s last
@@ -37,7 +40,7 @@ super + m
 super + {_,shift + }{h,j,k,l}
 	bspc window -{f,s} {left,down,up,right}
 
-super + {_,shift + }c
+alt + {_,shift + }tab
 	bspc window -f {next,prev}
 
 super + {comma,period}

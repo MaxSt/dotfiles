@@ -51,6 +51,7 @@ source $ZSH/oh-my-zsh.sh
 PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/local/rvm/bin:/usr/bin/vendor_perl:/usr/bin/core_perl
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 PATH=$PATH:$HOME/.gem/ruby/2.0.0/bin
+PATH=$PATH:$HOME/.scripts
 
 export EDITOR="vim"
 

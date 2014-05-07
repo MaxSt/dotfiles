@@ -1,0 +1,71 @@
+#! /bin/sh
+#
+# Example panel for LemonBoy's bar
+
+. ~/.config/bspwm/colors
+
+while read -r line ; do
+	case $line in
+		T*)
+			# clock output
+      clock="%{F#$OPACITY$COLOR_BACKGROUND}%{B#$OPACITY$COLOR_MAINCOLOR}%{F}%{B}%{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND} ⭧ ${line#?}%{B}%{F}"
+			;;
+		V*)
+			# current Volume
+      volume="%{F#$OPACITY$COLOR_MAINCOLOR}%{F}%{B#$OPACITY$COLOR_MAINCOLOR}%{F#$OPACITY$COLOR_BACKGROUND} ♫ ${line#?} %{B}%{F}"
+			;;
+		A*)
+			# current Application
+      title="${line#?}"
+			;;
+		W*)
+			# bspwm internal state
+			wm_infos=""
+			IFS=':'
+			set -- ${line#?}
+			while [ $# -gt 0 ] ; do
+				item=$1
+        # $name to get workspace name
+				name=${item#?}
+				case $item in
+					O*)
+						# focused occupied desktop
+            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_MAINCOLOR}■%{B}%{F}"
+						;;
+					F*)
+						# focused free desktop
+            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_MAINCOLOR}□%{B}%{F}"
+						;;
+					U*)
+						# focused urgent desktop
+            #wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND}%{+u}■#{-u}%{B}%{F}"
+            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_MAINCOLOR}■%{B}%{F}"
+						;;
+					o*)
+						# occupied desktop
+            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND}■%{B}%{F}"
+						;;
+					f*)
+						# free desktop
+            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND}□%{B}%{F}"
+						;;
+					u*)
+						# urgent desktop
+            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND}■%{B}%{F}"
+						;;
+					L*)
+						# layout
+            layout=$(printf "%s" "${name}" | sed 's/\(.\).*/\U\1/' | sed 's/M//' | sed 's/T//')
+						;;
+				esac
+				shift
+			done
+      wm_infos="$wm_infos "
+			;;
+	esac
+
+  left_side=" ${layout} %{F#$OPACITY$COLOR_BACKGROUND}%{B#$OPACITY$COLOR_MAINCOLOR}%{F#$OPACITY$COLOR_BACKGROUND}%{B#$OPACITY$COLOR_MAINCOLOR} ${title} %{B}%{F}%{F#$OPACITY$COLOR_MAINCOLOR}%{B}"
+	printf "%s\n" " %{l}$left_side%{c}$wm_infos%{r}$volume$clock "
+done
+
+
