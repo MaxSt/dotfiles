@@ -101,6 +101,15 @@ XF86AudioLowerVolume
 super + minus
   amixer set Master 5%- unmute
 
+XF86AudioPlay
+  mpc toggle
+
+XF86AudioNext
+  mpc next
+
+XF86AudioPrev
+  mpc previous
+
 super + Return
 	urxvt
 

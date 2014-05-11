@@ -41,3 +41,6 @@ hsetroot -fill ~/Pictures/bg
 
 # disable ctrl-s freeze
 stty -ixon
+
+# start mudic player demon
+# mpd ~/.config/mpd/mpd.conf
