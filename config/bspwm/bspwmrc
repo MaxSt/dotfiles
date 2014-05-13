@@ -44,3 +44,6 @@ stty -ixon
 
 # start mudic player demon
 # mpd ~/.config/mpd/mpd.conf
+
+# start gnome keyring
+gnome-keyring-deamon

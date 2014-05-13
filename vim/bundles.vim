@@ -108,16 +108,6 @@ noremap gb :BundlesEdit<CR>
         "let g:syntastic_auto_loc_list=1
     " }
 
-    " TableMode (make tables: TableModeEnable and |){
-        Bundle 'dhruvasagar/vim-table-mode.git'
-        let g:table_mode_toggle_map='<C-t>m'
-        let g:table_mode_cell_text_object='<C-t>c'
-        let g:table_mode_delete_row_map='<C-t>dd'
-        let g:table_mode_delete_column_map='<C-t>tdc'
-        let g:table_mode_map_prefix='<C-t>'
-        let g:table_mode_tableize_map='<C-t>t'
-    " }
-
     " Tabular (text filtering and alignment (:Tab /[ =,... ])){
         Bundle 'godlygeek/tabular.git'
     " }
