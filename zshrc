@@ -16,6 +16,7 @@ alias g="git"
 alias l="ls"
 alias c="cd"
 alias tr="tmuxinator"
+alias rm="trash-put"
 
 export TERM=xterm-256color
 source /etc/profile

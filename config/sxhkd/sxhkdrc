@@ -40,11 +40,14 @@ super + m
 super + {_,shift + }{h,j,k,l}
 	bspc window -{f,s} {left,down,up,right}
 
-alt + {_,shift + }tab
-	bspc window -f {next,prev}
+super + period
+	bspc window -f next
 
-super + {comma,period}
-	bspc desktop -C {backward,forward}
+super + comma
+	bspc window -f prev
+
+#super + {comma,period}
+#bspc desktop -C {backward,forward}
 
 super + bracket{left,right}
 	bspc desktop -f {prev,next}
@@ -126,9 +129,9 @@ super + b
 	nautilus
 
 #j4-dmenu-desktop --dmenu='dmenu -i -fn -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1 -nb "#FFFFFF" -l 5 -p "-->"'
-#dmenu_run -i -fn -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1 -nb "#FFFFFF" -l 5 -p "-->"
+#interrobang
 super + space
-  interrobang
+  dmenu_run -i -fn -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1 -nb "#252525" -sb "#FF0055" -l 5 -p "-->" -y 20 -x 20 -w 500
 
 # make sxhkd reload its configuration files:
 super + Escape

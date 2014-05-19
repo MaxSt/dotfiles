@@ -1,0 +1,6 @@
+#!/bin/bash
+export DISPLAY=":0.0"
+USER="max"
+xrandr --output HDMI1 --auto --right-of LVDS1
+su $USER -c 'initrogen --restore'
+su $USER -c 'notify-send "screen change detected"'
