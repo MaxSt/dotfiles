@@ -1,0 +1,30 @@
+"Disable smooth scroll
+set scrollsteps=1
+set scrolltime=0
+
+"show pattern matches as you type
+set incfind
+
+"Ignore case in search unless pattern has uppercase chars,
+set findcase=smart
+
+"Color Scheme
+colorscheme molokai
+
+"Faster Scrolling
+map -b j 4j
+map -b k 4k
+map -b h 4h
+map -b l 4l
+
+"Use Full Zoom
+map -b zi ZI
+map -b zo ZO
+
+"Use characters for hints
+
+set hintkeys=asdflkj
+hi -a Hint font-size: 9pt !important;
+
+"hi FontFixed -a font-size:8 !important; font-family:"Tewi" !important;
+hi FontFixed -a font: 11px "Tewi" !important;

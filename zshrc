@@ -21,9 +21,6 @@ alias rm="trash-put"
 export TERM=xterm-256color
 source /etc/profile
 
-#For vi Keybindings
-bindkey -v
-
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
 

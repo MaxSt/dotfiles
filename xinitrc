@@ -19,8 +19,8 @@ dropbox start &
 compton --config ~/.config/compton/compton.conf &
 
 # set background image
-# hsetroot -fill ~/Pictures/bg
-nitrogen --restore
+hsetroot -fill ~/Pictures/bg
+# nitrogen --restore
 
 # start dunst (notifications with notify-send)
 dunst --config ~/.config/dunst/dunstrc &
