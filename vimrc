@@ -78,7 +78,7 @@
     set guioptions-=e
 
     set cursorline                                                " highlight current line (performance issues)
-    set cursorcolumn                                              " highlight current column (performance issues)
+    set nocursorcolumn                                            " highlight current column (performance issues)
 
     set laststatus=2                                              " Always show the statusline
 

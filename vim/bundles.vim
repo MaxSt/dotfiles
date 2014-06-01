@@ -214,8 +214,9 @@ noremap gb :BundlesEdit<CR>
     " }
 
     " IndentLine (Show vertical line at each indent Level){
-        "Slows down vim too much
-        "Bundle 'Yggdroot/indentLine.git'
+        let g:indent_guides_auto_colors = 0
+        let g:indent_guides_enable_on_vim_startup = 1
+        Bundle 'nathanaelkane/vim-indent-guides'
     " }
 
     " Emmet (Zen Coding){
