@@ -31,17 +31,15 @@ URxvt*boldFont: fonts
 
 ! Colors
 
-URxvt.foreground : #bcbcbc
-URxvt.background : #252525
-
-
 ! Midnight Blue-Black
 ! URxvt*color0:           #34495e
 ! URxvt*color8:           #2c3e50
+!URxvt.background :       #2c3e50
 
 ! real Black
 URxvt*color0:           #2B2B2B
 URxvt*color8:           #252525
+URxvt.background :      #252525
 
 ! Red
 URxvt*color1:           #FF0033
@@ -70,3 +68,4 @@ URxvt*color14:          #16a085
 ! White
 URxvt*color7:           #ecf0f1
 URxvt*color15:          #bdc3c7
+URxvt.foreground :      #bdc3c7
