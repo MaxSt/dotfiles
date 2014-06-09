@@ -31,5 +31,11 @@ dunst --config ~/.config/dunst/dunstrc &
 # start gnome keyring
 gnome-keyring-deamon
 
+# start pulse audio
+/usr/bin/start-pulseaudio-x11 &
+
+# dont turn screen off
+xset -dpms; xset s off &
+
 sxhkd &
 exec bspwm

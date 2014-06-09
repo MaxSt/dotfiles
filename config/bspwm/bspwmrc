@@ -10,6 +10,7 @@ bspc config gapless_monocle     false
 . ~/.config/bspwm/colors
 
 bspc config top_padding 12px
+bspc config bottom_padding 12px
 bspc config normal_border_color "#$BSPWM_BORDERCOLOR_UNFOCUSED"
 bspc config focused_border_color "#$BSPWM_BORDERCOLOR_FOCUSED"
 presel_border_color "#$COLOR_LIGHTRED"
@@ -24,3 +25,6 @@ bspc rule -a Screenkey manage=off
 
 # start barpannel
 ~/.config/bspwm/panel &
+
+# start tray
+stalonetray -i 16 -t true --icon-gravity SE --geometry 20x1-0-0 --max-geometry 30x1-0-0 --kludges force_icons_size &
