@@ -8,15 +8,15 @@ while read -r line ; do
 	case $line in
 		T*)
 			# clock output
-      clock="%{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND} ⭧ ${line#?}%{B}%{F}"
+      clock="%{B}%{F#$OPACITY$COLOR_FOREGROUND}  ${line#?}%{B}%{F}"
 			;;
 		N*)
 			# current Network
-      network="%{F#$OPACITY$COLOR_MAINCOLOR}%{F}%{B#$OPACITY$COLOR_MAINCOLOR}%{F#$OPACITY$COLOR_BACKGROUND} ${line#?} %{F#$OPACITY$COLOR_BACKGROUND}%{B#$OPACITY$COLOR_MAINCOLOR}%{F}%{B}"
+      network="%{B}%{F#$OPACITY$COLOR_BACKGROUND} ${line#?} %{F}%{B}"
 			;;
 		V*)
 			# current Volume
-      volume="%{F#$OPACITY$COLOR_MAINCOLOR}%{F}%{B#$OPACITY$COLOR_MAINCOLOR}%{F#$OPACITY$COLOR_BACKGROUND} ♫ ${line#?} %{F#$OPACITY$COLOR_BACKGROUND}%{B#$OPACITY$COLOR_MAINCOLOR}%{F}%{B}"
+      volume="%{B#$OPACITY$COLOR_MAINCOLOR}%{F#$OPACITY$COLOR_BACKGROUND}  ${line#?} %{F}%{B}"
 			;;
 		B*)
 			# current Battery
@@ -29,22 +29,22 @@ while read -r line ; do
       # Set Icon
       icon=""
       if [[ $batstatus != "Discharging" ]]; then
-        icon="▴"
+        icon=""
         batcolor=$COLOR_MAINCOLOR
       elif [[ $batpercent -lt 10 ]]; then
-        icon="⭩"
+        icon=""
         batcolor=$COLOR_LIGHTRED
       elif [[ $batpercent -lt 40 ]]; then
-        icon="⭪"
+        icon=""
         batcolor=$COLOR_DARKYELLOW
-      elif [[ $batpercent -lt 70 ]]; then
-        icon="⭫"
+      elif [[ $batpercent -lt 75 ]]; then
+        icon=""
         batcolor=$COLOR_LIGHTBLUE
       else
-        icon="⭨"
+        icon=""
         batcolor=$COLOR_LIGHTCYAN
       fi
-      battery="%{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$batcolor} ${icon} ${batpercent} %{B}%{F}"
+      battery="%{B}%{F#$OPACITY$batcolor} ${icon} ${batpercent} %{B}%{F}"
 			;;
 		A*)
 			# current Application
@@ -62,32 +62,32 @@ while read -r line ; do
 				case $item in
 					O*)
 						# focused occupied desktop
-            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_MAINCOLOR}■%{B}%{F}"
+            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_MAINCOLOR}%{B}%{F}"
 						;;
 					F*)
 						# focused free desktop
-            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_MAINCOLOR}□%{B}%{F}"
+            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_MAINCOLOR}%{B}%{F}"
 						;;
 					U*)
 						# focused urgent desktop
             #wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND}%{+u}■#{-u}%{B}%{F}"
-            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_MAINCOLOR}■%{B}%{F}"
+            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_MAINCOLOR}%{B}%{F}"
 						;;
 					o*)
 						# occupied desktop
-            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND}■%{B}%{F}"
+            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_FOREGROUND}%{B}%{F}"
 						;;
 					f*)
 						# free desktop
-            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND}□%{B}%{F}"
+            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_FOREGROUND}%{B}%{F}"
 						;;
 					u*)
 						# urgent desktop
-            wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND}■%{B}%{F}"
+            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_FOREGROUND}%{B}%{F}"
 						;;
 					L*)
 						# layout
-            layout=$(printf "%s" "${name}" | sed 's/\(.\).*/\U\1/' | sed 's/M//' | sed 's/T//')
+            layout=$(printf "%s" "${name}" | sed 's/\(.\).*/\U\1/' | sed 's/M//' | sed 's/T//')
 						;;
 				esac
 				shift
@@ -96,7 +96,7 @@ while read -r line ; do
 			;;
 	esac
 
-  left_side=" ${layout} %{F#$OPACITY$COLOR_BACKGROUND}%{B#$OPACITY$COLOR_MAINCOLOR}%{F#$OPACITY$COLOR_BACKGROUND}%{B#$OPACITY$COLOR_MAINCOLOR} ${title} %{B}%{F}%{F#$OPACITY$COLOR_MAINCOLOR}%{B}"
+  left_side=" ${layout} %{F#$OPACITY$COLOR_BACKGROUND}%{B#$OPACITY$COLOR_MAINCOLOR} ${title} %{B}%{F}"
 	printf "%s\n" " %{l}$left_side%{c}$wm_infos%{r}$network$battery$volume$clock "
 done
 

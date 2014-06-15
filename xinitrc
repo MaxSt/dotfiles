@@ -1,5 +1,9 @@
 xrdb -merge ~/.Xresources #update x resources db
 
+#Add font
+xset +fp /usr/share/fonts/local
+xset fp rehash
+
 #Touchpad Palm Detect
 synclient PalmDetect=1 PalmMinZ=80 PalmMinWidth=8
 

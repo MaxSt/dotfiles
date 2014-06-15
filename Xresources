@@ -15,7 +15,7 @@ URxvt*scrollBar       : false
 URxvt*skipScroll      : false
 URxvt.urgentOnBell    : false
 URxvt*visualBell      : false
-URxvt*internalBorder  : 4
+URxvt*internalBorder  : 8
 URxvt*buffered        : false
 
 ! Extensions
@@ -26,8 +26,22 @@ URxvt*url-launcher    : firefox
 URxvt.keysym.Shift-Control-C: perl:clipboard:copy
 URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 
-URxvt.font: -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1
-URxvt*boldFont: fonts
+!URxvt.font: -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1
+!URxvt*boldFont: fonts
+
+!URxvt.font: -*-gohufont-medium-*-normal-*-14-*-*-*-*-*-*-*
+!URxvt*boldFont: -*-gohufont-medium-*-normal-*-14-*-*-*-*-*-*-*
+
+!URxvt.font: -ypn-envypn-medium-*-*-*-15-*-*-*-*-*-*-1
+!URxvt*boldFont: -ypn-envypn-medium-*-*-*-15-*-*-*-*-*-*-1
+
+URxvt*font: -*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1,-*-stlarch-medium-r-*-*-10-*-*-*-*-*-*-*
+URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1,-*-stlarch-medium-r-*-*-10-*-*-*-*-*-*-*
+
+!urxvt*font: -lokaltog-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*
+!urxvt*boldFont: -lokaltog-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*
+!urxvt*italicFont: -lokaltog-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*
+!urxvt*bolditalicFont: -lokaltog-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*
 
 ! Colors
 

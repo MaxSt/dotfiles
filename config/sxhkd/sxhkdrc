@@ -131,7 +131,7 @@ super + b
 #j4-dmenu-desktop --dmenu='dmenu -i -fn -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1 -nb "#FFFFFF" -l 5 -p "-->"'
 #interrobang
 super + space
-  dmenu_run -i -fn -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1 -nb "#252525" -sb "#FF0055" -l 5 -p "-->" -y 20 -x 20 -w 500
+  dmenu_run -i -fn -misc-tamsyn-medium-r-normal--13-94-100-100-c-70-iso8859-1 -nb "#252525" -sb "#FF0055" -l 5 -p "-->" -y 20 -x 20 -w 500
 
 # make sxhkd reload its configuration files:
 super + Escape
