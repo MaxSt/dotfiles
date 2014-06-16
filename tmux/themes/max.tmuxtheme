@@ -25,7 +25,7 @@ set -g status-left "#[fg=colour15,bg=colour8,bold] tmux #[fg=colour8,bg=colour2,
 set -g status-right-bg colour8
 set -g status-right-fg colour15
 set -g status-right-length 150
-set -g status-right "#[fg=colour2,bg=colour8]#[fg=colour8,bg=colour2]   #I   #P #[fg=colour8,bg=colour2]#[fg=colour15,bg=colour8,bold] #H "
+set -g status-right "##[fg=colour8,bg=colour2]   #I   #P #[fg=colour8,bg=colour2]#[fg=colour15,bg=colour8,bold] #H "
 
 # Window status
 set -g window-status-format "  #I:#W#F  "

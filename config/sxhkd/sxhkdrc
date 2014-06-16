@@ -135,4 +135,8 @@ super + space
 
 # make sxhkd reload its configuration files:
 super + Escape
-pkill -USR1 -x sxhkd
+  pkill -USR1 -x sxhkd
+
+# Turn screen off
+super + x
+  xset dpms force standby

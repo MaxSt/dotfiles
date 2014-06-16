@@ -9,8 +9,8 @@ bspc config gapless_monocle     false
 
 . ~/.config/bspwm/colors
 
-bspc config top_padding 8px
-bspc config bottom_padding 8px
+bspc config top_padding 10px
+bspc config bottom_padding 10px
 bspc config normal_border_color "#$BSPWM_BORDERCOLOR_UNFOCUSED"
 bspc config focused_border_color "#$BSPWM_BORDERCOLOR_FOCUSED"
 presel_border_color "#$COLOR_LIGHTRED"
