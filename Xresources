@@ -35,8 +35,8 @@ URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 !URxvt.font: -ypn-envypn-medium-*-*-*-15-*-*-*-*-*-*-1
 !URxvt*boldFont: -ypn-envypn-medium-*-*-*-15-*-*-*-*-*-*-1
 
-URxvt*font: -*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1,-*-stlarch-medium-r-*-*-10-*-*-*-*-*-*-*
-URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1,-*-stlarch-medium-r-*-*-10-*-*-*-*-*-*-*
+URxvt*font: -*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1
+URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1
 
 !urxvt*font: -lokaltog-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*
 !urxvt*boldFont: -lokaltog-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*
