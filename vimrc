@@ -299,7 +299,7 @@
       " list of lines in buffers (easy way
       " to get unique entries)
       let buffer_numbers = {}
-      " For each entry, use the buffer number as 
+      " For each entry, use the buffer number as
       " a dictionary key (won't get repeats)
       for fixlist_entry in getqflist()
           let buffer_numbers[fixlist_entry['bufnr']] = 1
