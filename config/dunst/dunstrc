@@ -1,5 +1,5 @@
 [global]
-    font = tewi 8
+    font = tamsyn 8
 
     # Allow a small subset of html markup:
     #   <b>bold</b>
@@ -65,7 +65,7 @@
     # the top and down respectevly.
     # The width can be negative.  In this case the actual width is the
     # screen width minus the width defined in within the geometry option.
-    geometry = "300x5-2+16"
+    geometry = "300x5-20+25"
 
     # Shrink window if it's smaller than the width.  Will be ignored if
     # width is 0.
@@ -146,8 +146,8 @@
     icon_folders = /usr/share/icons/gnome/16x16/status/:/usr/share/icons/gnome/16x16/devices/
 
 [frame]
-    width = 3
-    color = "#252525"
+    width = 1
+    color = "#151515"
 
 [shortcuts]
 
