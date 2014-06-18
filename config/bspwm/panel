@@ -21,7 +21,7 @@ bspc control --subscribe > "$PANEL_FIFO" &
 clock -sf 'T%a, %d.%m.%y, %H:%M ' > "$PANEL_FIFO" &
 
 # battery
-battery -sf 'B%s %i' || echo 'BCharging 100' > "$PANEL_FIFO" &
+battery -sf 'B%s %i' > "$PANEL_FIFO" || echo 'BCharging 100' > "$PANEL_FIFO" &
 
 # current window title (A)
 xtitle -sf 'A%s' | cut -c -18 > "$PANEL_FIFO" &
