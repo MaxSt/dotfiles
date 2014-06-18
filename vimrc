@@ -248,22 +248,7 @@
     " g=Greek, s=superscripts/subscripts:
     "let g:tex_conceal="agm"
 
-    " activate/deaktivate Spell checking
-    function! ToggleSpell()
-      let Myspl=&spell
-      if &spell
-          let Myspl=" nospell"
-      else
-          let Myspl=" spell"
-      endif
-      exe" setlocal " . Myspl
-    :endfunction
-
-    " Alias the ToggleSpell function
-    :command! ToggleSpell call ToggleSpell()
-
-    " Map Spell function to ,s
-    nnoremap <silent> <leader>s :ToggleSpell<CR>
+    nnoremap <silent> <leader>s :set spell!<CR>
 " }
 
 " Shell command {
