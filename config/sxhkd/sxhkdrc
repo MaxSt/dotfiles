@@ -13,8 +13,12 @@ super + less
 	bspc desktop -l next
 
 # Balance (Adjust the split ratios of the tree of the selected desktop so that all windows occupy the same area)
-super + greater
+super + shift + b
 	bspc desktop -B
+
+# Cycle Desktop Windows 90 deg
+super + greater
+	bspc desktop -R 90
 
 super + {s,f}
 	bspc window -t {floating,fullscreen}
