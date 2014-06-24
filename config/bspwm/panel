@@ -35,6 +35,8 @@ done &
 
 . ~/.config/bspwm/colors
 
-cat "$PANEL_FIFO" | ~/.config/bspwm/panel_bar | bar -g x12 -F "#$OPACITY$COLOR_FOREGROUND" -B "#00000000" -f "-*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1,-misc-stlarch-medium-r-normal--10-100-75-75-c-80-iso10646-1" &
+# start bar with input from fifo piped through panel_bar and then start stalonetray
+cat "$PANEL_FIFO" | ~/.config/bspwm/panel_bar | bar -g x16+0+0 -F "#$OPACITY$COLOR_FOREGROUND" -B "#00000000" -f "-*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1,-misc-stlarch-medium-r-normal--10-100-75-75-c-80-iso10646-1" & stalonetray -i 16 -t true --icon-gravity NE --geometry 20x1-280+0 --max-geometry 30x1-0-0 --kludges force_icons_size &
 
 wait
+
