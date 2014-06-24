@@ -17,11 +17,7 @@ presel_border_color "#$COLOR_LIGHTRED"
 bspc config focus_follows_pointer true
 
 
-bspc rule -a Gimp desktop=^8 follow=on floating=on
-bspc rule -a Chromium desktop=^2 floating=on
 bspc rule -a mplayer2 floating=on
-bspc rule -a Kupfer.py focus=on
-bspc rule -a Screenkey manage=off
 
 # start barpannel
 ~/.config/bspwm/panel &
