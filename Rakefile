@@ -33,7 +33,7 @@ task :install do
       link_file(file)
     end
   end
-  install_vundler
+  install_plugvim
   install_config
   make_vim_tmp_dir
 end
@@ -92,12 +92,13 @@ def install_oh_my_zsh
   end
 end
 
-def install_vundler
-  if File.exist?(File.join(ENV['HOME'], "/dotfiles/vim/bundle/vundle"))
-    puts "found ~/vim/bundle/vundle"
+def install_plugvim
+  if File.exist?(File.join(ENV['HOME'], "/dotfiles/vim/autoload/plug.vim"))
+    puts "found ~/vim/autoload/plug.vim"
   else
-    puts "installing Vundle"
-    system %Q{git clone https://github.com/gmarik/vundle.git ~/dotfiles/vim/bundle/vundle}
+    puts "plug.vim"
+    system %Q{mkdir -p ~/.vim/autoload}
+    system %Q{curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim}
   end
 end
 

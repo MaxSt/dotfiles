@@ -2,24 +2,17 @@
 command! BundlesEdit :edit ~/.vim/bundles.vim
 noremap gb :BundlesEdit<CR>
 
+call plug#begin('~/.vim/plugged')
+
  " Bundles{
-    " Vundler {
-        filetype off
-        set rtp+=~/.vim/bundle/vundle/
-        call vundle#rc()
-      " let Vundle manage Vundle
-      " required!
-        Bundle 'gmarik/vundle'
-    " }
 
     " Colorscheme (Colorscheme){
-        Bundle 'MaxSt/FlatColor'
+        Plug 'MaxSt/FlatColor'
         let g:flatcolor_termcolors = 16
-        color flatcolor
     " }
 
     " YouCompleteMe (Code Completion){
-        Bundle 'Valloric/YouCompleteMe.git'
+        Plug 'Valloric/YouCompleteMe'
         let g:ycm_complete_in_comments_and_strings = 1
         let g:ycm_collect_identifiers_from_comments_and_strings = 1
         let g:ycm_autoclose_preview_window_after_completion = 1
@@ -27,7 +20,7 @@ noremap gb :BundlesEdit<CR>
     " }
 
     " Ultisnips (Code Snippets){
-        Bundle 'SirVer/ultisnips'
+        Plug 'SirVer/ultisnips'
         noremap gu :UltiSnipsEdit!<CR>
 
         function! g:UltiSnips_Complete()
@@ -44,44 +37,15 @@ noremap gb :BundlesEdit<CR>
         au BufEnter * exec "inoremap <silent> <CR> <C-R>=g:UltiSnips_Complete()<cr>"
     " }
 
-
-    " ctrlp (open file with fuzzy search){
-        Bundle 'kien/ctrlp.vim.git'
-        let g:ctrlp_map = '<leader>t'
-        " noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
-        "let g:ctrlp_working_path_mode = 0                       " Dont manage working directory
-        let g:ctrlp_open_new_file = 'r'                         " ctrlp opens new file in current window
-        let g:ctrlp_cache_dir='~/.vim/tmp/'
-        let g:ctrlp_reuse_window='startify'
-        let g:ctrlp_open_multiple_files = 'rr'
-        let g:ctrlp_clear_cache_on_exit=1
-        let g:ctrlp_max_files = 10000
-        let g:ctrlp_follow_symlinks=1
-        nmap <leader>b :CtrlPBuffer<CR>
-        if executable('ag')
-          let g:ctrlp_user_command = {
-            \ 'types': {
-              \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
-              \ 2: ['.hg', 'hg --cwd %s locate -I .']
-            \ },
-            \ 'fallback': 'ag  %s -l --nocolor -g ""'
-            \ }
-        else
-          let g:ctrlp_user_command = {
-            \ 'types': {
-              \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
-              \ 2: ['.hg', 'hg --cwd %s locate -I .']
-            \ },
-            \ 'fallback': 'find %s/.. -type f'
-            \ }
-        endif
-
+    " ctrlspace  (workspace controller){
+        Plug 'szw/vim-ctrlspace'
+        let g:ctrlspace_default_mapping_key = '<space>'
     " }
 
     " airline  (StatusBar){
-        Bundle 'bling/vim-airline.git'
+        Plug 'bling/vim-airline'
         " tabline
-        let g:airline#extensions#tabline#enabled = 1
+        "let g:airline#extensions#tabline#enabled = 1
         "let g:airline#extensions#tabline#tab_nr_type = 1 " tab number
         "let g:airline#extensions#tabline#buffer_nr_show = 1
         "let g:airline#extensions#tabline#buffer_nr_format = '%s:'
@@ -93,74 +57,74 @@ noremap gb :BundlesEdit<CR>
     " }
 
     " delimitMate (auto-close chars){
-        Bundle 'Raimondi/delimitMate'
+        Plug 'Raimondi/delimitMate'
         let g:delimitMate_matchpairs = '(:),[:],{:},<:>'
         let g:delimitMate_quotes = "\" ' ` | %"
     " }
 
     " Gundo (Undo Tree){
-        Bundle 'sjl/gundo.vim.git'
+        Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
         nnoremap  <leader>u :GundoToggle<CR>
     " }
 
     " syntastic (show compiler errors after saving){
-        "Bundle 'scrooloose/syntastic'
+        "Plug 'scrooloose/syntastic'
         "let g:syntastic_auto_loc_list=1
     " }
 
     " Tabular (text filtering and alignment (:Tab /[ =,... ])){
-        Bundle 'godlygeek/tabular.git'
+        Plug 'godlygeek/tabular', {'on': 'Tab'}
     " }
 
     " Surround (surrounding text ( cs[motion], insert: ysi[motion], entire line: yss)){
-        Bundle 'tpope/vim-surround.git'
+        Plug 'tpope/vim-surround'
     " }
 
     " Unimpaired (pairs of handy bracket mappings){
-        Bundle 'tpope/vim-unimpaired.git'
+        Plug 'tpope/vim-unimpaired'
     " }
 
     " vim-commentary (Comment and Uncomment with gcc){
-        Bundle 'tpope/vim-commentary.git'
+        Plug 'tpope/vim-commentary'
     " }
 
     " Ack (Ack for vim){
-        Bundle 'mileszs/ack.vim.git'
+        Plug 'mileszs/ack.vim', {'on': 'Ack'}
         let g:ackprg = 'ag --nogroup --nocolor --column'
     " }
 
 
     " Trailertrash (identify and Irradicate unwanted whitespace at the end of the line (:Trim)){
-        Bundle 'csexton/trailertrash.vim.git'
+        Plug 'csexton/trailertrash.vim', {'on': 'Trim'}
     " }
 
     " Matchit (% matches for html, latex, ruby,...){
-        Bundle 'vim-scripts/matchit.zip.git'
+        Plug 'vim-scripts/matchit.zip'
     " }
 
     " IndexedSearch (#N out of M matches output when searching){
-        Bundle 'vim-scripts/IndexedSearch.git'
+        Plug 'vim-scripts/IndexedSearch'
     " }
 
     " SplitJoin (splits and joins multiple code lines){
-        "Bundle 'AndrewRadev/splitjoin.vim.git'
+        "Plug 'AndrewRadev/splitjoin.vim.git'
     " }
 
     " Fugitive (Git Support for vim){
-        Bundle 'tpope/vim-fugitive.git'
+        Plug 'tpope/vim-fugitive'
     " }
 
     " Multiple Cursors (with <C-N> while searching){
-        Bundle 'terryma/vim-multiple-cursors.git'
+        Plug 'terryma/vim-multiple-cursors'
     " }
 
     " Covim (Collaborative Editing){
-        "Bundle 'FredKSchott/CoVim.git'
+        "Plug 'FredKSchott/CoVim.git'
     " }
 
 
     " Startify (Vim Startscreen){
-        Bundle 'mhinz/vim-startify.git'
+        Plug 'mhinz/vim-startify'
         autocmd FileType startify setlocal bt=
         let g:startify_custom_header = [
           \ '      .--------.---.-.--.--.',
@@ -176,51 +140,42 @@ noremap gb :BundlesEdit<CR>
     " }
 
     " endwise (end structures automatically (ruby if end,...)){
-        Bundle 'tpope/vim-endwise.git'
+        Plug 'tpope/vim-endwise'
     " }
 
     " eunuch (unix commands inside vim){
-        Bundle 'tpope/vim-eunuch.git'
+        Plug 'tpope/vim-eunuch'
     " }
 
-    " sneak (2 character search){
-        Bundle 'justinmk/vim-sneak.git'
+    " easymotion (faster vim motions){
+        Plug 'Lokaltog/vim-easymotion'
+        let g:EasyMotion_do_mapping = 0 " Disable default mappings
 
-        "EasyMotion like sneak
-        "let g:sneak#streak = 1
+        " Bi-directional find motion
+        " Jump to anywhere you want with minimal keystrokes, with just one key binding.
+        " `s{char}{label}`
+        "nmap s <Plug>(easymotion-s)
+        " or
+        " `s{char}{char}{label}`
+        " Need one more keystroke, but on average, it may be more comfortable.
+        nmap s <Plug>(easymotion-s2)
 
-        "repeat by pressing the same key again
-        let g:sneak#s_next = 1
+        " Turn on case sensitive feature
+        let g:EasyMotion_smartcase = 1
 
-        " 1-character _inclusive_ Sneak (for enhanced 'f')
-        nmap f <Plug>Sneak_f
-        nmap F <Plug>Sneak_F
-        " visual-mode
-        xmap f <Plug>Sneak_f
-        xmap F <Plug>Sneak_F
-        " operator-pending-mode
-        omap f <Plug>Sneak_f
-        omap F <Plug>Sneak_F
-
-        " character _exclusive_ Sneak (for enhanced 't')
-        nmap t <Plug>Sneak_t
-        nmap T <Plug>Sneak_T
-        " visual-mode
-        xmap t <Plug>Sneak_t
-        xmap T <Plug>Sneak_T
-        " operator-pending-mode
-        omap t <Plug>Sneak_t
-        omap T <Plug>Sneak_T
+        " JK motions: Line motions
+        map <Leader>j <Plug>(easymotion-j)
+        map <Leader>k <Plug>(easymotion-k)
     " }
 
     " IndentLine (Show vertical line at each indent Level){
         let g:indent_guides_auto_colors = 0
         let g:indent_guides_enable_on_vim_startup = 1
-        Bundle 'nathanaelkane/vim-indent-guides'
+        Plug 'nathanaelkane/vim-indent-guides'
     " }
 
     " Emmet (Zen Coding){
-        Bundle 'mattn/emmet-vim.git'
+        Plug 'mattn/emmet-vim'
 
         function! s:zen_html_tab()
           let line = getline('.')
@@ -235,32 +190,34 @@ noremap gb :BundlesEdit<CR>
     " }
 
     " textobject user (define your own text objects){
-        Bundle 'https://github.com/kana/vim-textobj-user.git'
+        Plug 'kana/vim-textobj-user'
     " }
 
     " textobject indent (textobject for same indent level){
-        Bundle 'https://github.com/kana/vim-textobj-indent.git'
+        Plug 'kana/vim-textobj-indent'
     " }
 
     " vim-over (substitute preview){
-        Bundle 'https://github.com/osyo-manga/vim-over.git'
+        Plug 'osyo-manga/vim-over'
     " }
 
 
     " vim-tmux-navigator (c-hjkl navigation in vim and tmux){
-        Bundle 'christoomey/vim-tmux-navigator'
+        Plug 'christoomey/vim-tmux-navigator'
     " }
 
     " targets (more text objects z.b in]){
-        Bundle 'wellle/targets.vim'
+        Plug 'wellle/targets.vim'
     " }
 
     " sensible (defaults everyone can agree on){
-        Bundle 'tpope/vim-sensible'
+        Plug 'tpope/vim-sensible'
     " }
 
     " pandoc-syntax (Pandoc Syntax Highlighting){
-        Bundle 'vim-pandoc/vim-pandoc-syntax.git'
+        Plug 'vim-pandoc/vim-pandoc-syntax'
     " }
 
+call plug#end()
 filetype plugin indent on
+color flatcolor

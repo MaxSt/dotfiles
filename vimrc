@@ -125,7 +125,7 @@
     nnoremap ! :<C-u>b<C-r>=v:count<CR><CR> " nnoremap #! :b #<CR>
 
     " Map <space> to : for faster command mode
-    noremap <space> :
+    "noremap <space> :
 
     " Better Mark jumps
     noremap <leader>m :marks<CR>

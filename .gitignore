@@ -2,8 +2,9 @@
 *~
 .*.swp
 .netrwhist
-vim/bundle/*
-vim/bundle/**/*
+vim/autoload/plug.vim
+vim/plugged/*
+vim/plugged/**/*
 vim/session/*
 vim/session/**/*
 vim/spell/*
