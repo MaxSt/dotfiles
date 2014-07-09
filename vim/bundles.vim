@@ -127,11 +127,12 @@ call plug#begin('~/.vim/plugged')
         Plug 'mhinz/vim-startify'
         autocmd FileType startify setlocal bt=
         let g:startify_custom_header = [
-          \ '      .--------.---.-.--.--.',
-          \ '      |        |  _  |_   _|',
-          \ '      |__|__|__|___._|__.__|',
+          \ '   ┌─────────────────────────────────┐',
+          \ '   │     ┌────────┬───┬─┬──┬──┐      │',
+          \ '   │     │        │  ─  ├─   ─┤      │',
+          \ '   │     └──┴──┴──┴───┴─┴──┴──┘      │',
+          \ '   └─────────────────────────────────┘',
           \ '',
-          \ '   =================================================',
           \ '',
           \ ]
         "Colors for Startify
@@ -147,26 +148,6 @@ call plug#begin('~/.vim/plugged')
         Plug 'tpope/vim-eunuch'
     " }
 
-    " easymotion (faster vim motions){
-        Plug 'Lokaltog/vim-easymotion'
-        let g:EasyMotion_do_mapping = 0 " Disable default mappings
-
-        " Bi-directional find motion
-        " Jump to anywhere you want with minimal keystrokes, with just one key binding.
-        " `s{char}{label}`
-        "nmap s <Plug>(easymotion-s)
-        " or
-        " `s{char}{char}{label}`
-        " Need one more keystroke, but on average, it may be more comfortable.
-        nmap s <Plug>(easymotion-s2)
-
-        " Turn on case sensitive feature
-        let g:EasyMotion_smartcase = 1
-
-        " JK motions: Line motions
-        map <Leader>j <Plug>(easymotion-j)
-        map <Leader>k <Plug>(easymotion-k)
-    " }
 
     " IndentLine (Show vertical line at each indent Level){
         let g:indent_guides_auto_colors = 0
