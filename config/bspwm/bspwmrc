@@ -7,7 +7,7 @@ for desktop in $(bspc query -D); do
   bspc config -d $desktop border_width 2;
 done
 
-bspc config border_width        5
+bspc config border_width        3
 bspc config window_gap          10
 bspc config split_ratio         0.50
 bspc config borderless_monocle  false
