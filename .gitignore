@@ -2,7 +2,7 @@
 *~
 .*.swp
 .netrwhist
-vim/autoload/plug.vim
+vim/autoload/plug.vim*
 vim/plugged/*
 vim/plugged/**/*
 vim/session/*
