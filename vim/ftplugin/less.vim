@@ -1,2 +1,2 @@
-autocmd BufWritePost,FileWritePost *.less silent !./makeless.sh
+"autocmd BufWritePost,FileWritePost *.less silent !./makeless.sh
 

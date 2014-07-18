@@ -11,6 +11,10 @@ call plug#begin('~/.vim/plugged')
         let g:flatcolor_termcolors = 16
     " }
 
+    " asyncfinder (asyncronous fuzzy file finder){
+        Plug 'troydm/asyncfinder.vim'
+    " }
+
     " YouCompleteMe (Code Completion){
         Plug 'Valloric/YouCompleteMe'
         let g:ycm_complete_in_comments_and_strings = 1
@@ -35,11 +39,6 @@ call plug#begin('~/.vim/plugged')
         endfunction
 
         au BufEnter * exec "inoremap <silent> <CR> <C-R>=g:UltiSnips_Complete()<cr>"
-    " }
-
-    " ctrlspace  (workspace controller){
-        Plug 'szw/vim-ctrlspace'
-        let g:ctrlspace_default_mapping_key = '<space>'
     " }
 
     " airline  (StatusBar){
@@ -111,7 +110,7 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " Fugitive (Git Support for vim){
-        Plug 'tpope/vim-fugitive'
+        " Plug 'tpope/vim-fugitive'
     " }
 
     " Multiple Cursors (with <C-N> while searching){
@@ -152,22 +151,20 @@ call plug#begin('~/.vim/plugged')
     " IndentLine (Show vertical line at each indent Level){
         let g:indent_guides_auto_colors = 0
         let g:indent_guides_enable_on_vim_startup = 1
+        "let g:indent_guides_guide_size = 1
         Plug 'nathanaelkane/vim-indent-guides'
     " }
 
     " Emmet (Zen Coding){
-        Plug 'mattn/emmet-vim'
+        " Plug 'mattn/emmet-vim'
 
-        function! s:zen_html_tab()
-          let line = getline('.')
-          if match(line, '<.*>') >= 0
-            return "\<c-y>n"
-          endif
-          return "\<c-y>,"
-        endfunction
-        "autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml imap <buffer><expr><c-l> <sid>zen_html_tab()
-        "autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml nmap <buffer><expr><c-l> <sid>zen_html_tab()
-        "autocmd FileType html,*.html.*,*.html,xml,*.xml.*,*.xml vmap <buffer><c-l> <c-y>,
+        " function! s:zen_html_tab()
+        "   let line = getline('.')
+        "   if match(line, '<.*>') >= 0
+        "     return "\<c-y>n"
+        "   endif
+        "   return "\<c-y>,"
+        " endfunction
     " }
 
     " textobject user (define your own text objects){
@@ -179,7 +176,7 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " vim-over (substitute preview){
-        Plug 'osyo-manga/vim-over'
+        " Plug 'osyo-manga/vim-over'
     " }
 
 

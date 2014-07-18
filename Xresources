@@ -45,15 +45,10 @@ URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1
 
 ! Colors
 
-! Midnight Blue-Black
-URxvt*color0:           #34495e
-URxvt*color8:           #2c3e50
-URxvt.background :       #2c3e50
-
-! real Black
-!URxvt*color0:           #2B2B2B
-!URxvt*color8:           #252525
-!URxvt.background :      #252525
+! Dark colors
+URxvt*color0:           #2c3e50
+URxvt*color8:           #242f38
+URxvt.background :       #242f38
 
 ! Red
 URxvt*color1:           #FF0033
