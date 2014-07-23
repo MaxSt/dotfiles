@@ -11,8 +11,36 @@ call plug#begin('~/.vim/plugged')
         let g:flatcolor_termcolors = 16
     " }
 
-    " asyncfinder (asyncronous fuzzy file finder){
-        Plug 'troydm/asyncfinder.vim'
+    " ctrlp (open file with fuzzy search){
+      Plug 'kien/ctrlp.vim'
+      let g:ctrlp_map = '<leader>t'
+      " noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
+      "let g:ctrlp_working_path_mode = 0 " Dont manage working directory
+      let g:ctrlp_open_new_file = 'r' " ctrlp opens new file in current window
+      let g:ctrlp_cache_dir='~/.vim/tmp/'
+      let g:ctrlp_reuse_window='startify'
+      let g:ctrlp_open_multiple_files = 'rr'
+      let g:ctrlp_clear_cache_on_exit=1
+      let g:ctrlp_max_files = 10000
+      let g:ctrlp_follow_symlinks=1
+      nmap <leader>b :CtrlPBuffer<CR>
+      if executable('ag')
+        let g:ctrlp_user_command = {
+          \ 'types': {
+          \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
+          \ 2: ['.hg', 'hg --cwd %s locate -I .']
+          \ },
+          \ 'fallback': 'ag %s -l --nocolor -g ""'
+        \ }
+      else
+        let g:ctrlp_user_command = {
+          \ 'types': {
+            \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
+            \ 2: ['.hg', 'hg --cwd %s locate -I .']
+          \ },
+          \ 'fallback': 'find %s/.. -type f'
+        \ }
+      endif
     " }
 
     " YouCompleteMe (Code Completion){
@@ -149,10 +177,10 @@ call plug#begin('~/.vim/plugged')
 
 
     " IndentLine (Show vertical line at each indent Level){
-        let g:indent_guides_auto_colors = 0
-        let g:indent_guides_enable_on_vim_startup = 1
-        "let g:indent_guides_guide_size = 1
-        Plug 'nathanaelkane/vim-indent-guides'
+        " let g:indent_guides_auto_colors = 0
+        " let g:indent_guides_enable_on_vim_startup = 1
+        " "let g:indent_guides_guide_size = 1
+        " Plug 'nathanaelkane/vim-indent-guides'
     " }
 
     " Emmet (Zen Coding){

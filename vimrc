@@ -109,6 +109,7 @@
     set incsearch                                               " show search matches as you type
     set ruler                                                   " show the cursor position
     set cmdheight=1
+    set breakindent
     "set so=14                                                   " Keep cursor away from edges of screen.
 " }
     "set undofile (undo after re- opening vim)
@@ -156,6 +157,7 @@
     " what to show when I hit :set list
     set list
     set listchars=tab:›\ ,trail:•,extends:#,nbsp:. " Highlight problematic whitespace
+    set fillchars=vert:│ "Set vertical border of splits
     set showbreak=↳
     " Easier moving in tabs and windows
     map <C-Tab> <C-W><C-W>
