@@ -76,9 +76,11 @@ call plug#begin('~/.vim/plugged')
         "let g:airline#extensions#tabline#tab_nr_type = 1 " tab number
         "let g:airline#extensions#tabline#buffer_nr_show = 1
         "let g:airline#extensions#tabline#buffer_nr_format = '%s:'
+        let g:airline_left_sep='░'
+        let g:airline_right_sep='░'
         let g:airline_exclude_preview = 1
         let g:airline_powerline_fonts = 0
-        let g:airline_theme='sol'
+        let g:airline_theme='luna'
         let g:airline#extensions#whitespace#enabled = 0 "no Whitespace detection
 
     " }
