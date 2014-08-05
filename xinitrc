@@ -23,7 +23,7 @@ stty -ixona
 dropbox start &
 
 # start compton (shadows)
-# compton --config ~/.config/compton/compton.conf &
+ compton --config ~/.config/compton/compton.conf &
 
 # set background image
 hsetroot -fill ~/Pictures/bg

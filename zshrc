@@ -54,3 +54,9 @@ PATH=$PATH:$HOME/.scripts
 export EDITOR="vim"
 
 if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then source "$HOME/.rvm/scripts/rvm" ; fi
+
+#chpwd is called after changing directories
+function chpwd(){
+  #call ls after cd
+  ls;
+}

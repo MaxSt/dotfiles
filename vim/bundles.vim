@@ -86,9 +86,9 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " delimitMate (auto-close chars){
-        Plug 'Raimondi/delimitMate'
-        let g:delimitMate_matchpairs = '(:),[:],{:},<:>'
-        let g:delimitMate_quotes = "\" ' ` | %"
+        " Plug 'Raimondi/delimitMate'
+        " let g:delimitMate_matchpairs = '(:),[:],{:},<:>'
+        " let g:delimitMate_quotes = "\" ' ` | %"
     " }
 
     " Gundo (Undo Tree){
@@ -224,6 +224,10 @@ call plug#begin('~/.vim/plugged')
 
     " pandoc-syntax (Pandoc Syntax Highlighting){
         Plug 'vim-pandoc/vim-pandoc-syntax'
+    " }
+
+    " vim-exchange (exchange with cx){
+        Plug 'tommcdo/vim-exchange'
     " }
 
 call plug#end()
