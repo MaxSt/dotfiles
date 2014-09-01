@@ -9,3 +9,7 @@ xmodmap -e "keysym a = a A adiaeresis Adiaeresis"
 xmodmap -e "keysym o = o O odiaeresis Odiaeresis"
 xmodmap -e "keysym u = u U udiaeresis Udiaeresis"
 xmodmap -e "keysym s = s S ssharp"
+
+#Add font
+xset +fp /usr/share/fonts/local
+xset fp rehash
