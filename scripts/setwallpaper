@@ -1,1 +1,1 @@
-rm ~/Pictures/bg; ln -s ${1} ~/Pictures/bg;hsetroot -full ~/Pictures/bg
+rm ~/Pictures/bg; ln -s ${1} ~/Pictures/bg;hsetroot -center ~/Pictures/bg

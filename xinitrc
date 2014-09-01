@@ -22,7 +22,7 @@ dropbox start &
  compton --config ~/.config/compton/compton.conf &
 
 # set background image
-hsetroot -fill ~/Pictures/bg
+hsetroot -center ~/Pictures/bg
 # nitrogen --restore
 
 # start dunst (notifications with notify-send)
