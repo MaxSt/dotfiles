@@ -131,10 +131,6 @@ call plug#begin('~/.vim/plugged')
         Plug 'vim-scripts/matchit.zip'
     " }
 
-    " IndexedSearch (#N out of M matches output when searching){
-        Plug 'vim-scripts/IndexedSearch'
-    " }
-
     " SplitJoin (splits and joins multiple code lines){
         "Plug 'AndrewRadev/splitjoin.vim.git'
     " }
@@ -251,11 +247,10 @@ call plug#begin('~/.vim/plugged')
         let g:incsearch#magic = '\v'
 
         let g:incsearch#consistent_n_direction = 1
+        let g:incsearch#separate_highlight = 1
 
-        highlight IncSearchCursor ctermfg=0 ctermbg=9 guifg=#000000 guibg=#FF0000
+      " }
 
-    " }
-
-call plug#end()
-filetype plugin indent on
-color flatcolor
+  call plug#end()
+  filetype plugin indent on
+  color flatcolor
