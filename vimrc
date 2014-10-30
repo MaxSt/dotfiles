@@ -217,6 +217,11 @@
     " go to end of search highlight
     noremap <silent> <leader>e /<c-r>//e<cr>:let @/='<c-r>/'<cr>
 
+    "Put the searched word in the middle of the screen.
+    nnoremap <silent>n nzz
+    nnoremap <silent>N Nzz
+    nnoremap <silent>* *zz
+
     " match closest and lets you type while autocomplete
 
     " activate/deaktivate Hightlight search
@@ -251,6 +256,11 @@
     "let g:tex_conceal="agm"
 
     nnoremap <silent> <leader>s :set spell!<CR>
+
+
+    "Opens the help page on the current window if cursor is in a help page or opens another tab if it's not
+    command! -nargs=1 -complete=help Help if &ft=~"help" | help <args> | else | tab help <args> | endif
+
 " }
 
 " Shell command {

@@ -230,6 +230,32 @@ call plug#begin('~/.vim/plugged')
         Plug 'tommcdo/vim-exchange'
     " }
 
+    " incsearch (Improved incremental searching for vim){
+        Plug 'haya14busa/incsearch.vim'
+        map /  <Plug>(incsearch-forward)
+        map ?  <Plug>(incsearch-backward)
+        map g/ <Plug>(incsearch-stay)
+
+        " :h g:incsearch#auto_nohlsearch
+        " Sets hlsearch off automatically
+        set hlsearch
+        let g:incsearch#auto_nohlsearch = 1
+        map n  <Plug>(incsearch-nohl-n)
+        map N  <Plug>(incsearch-nohl-N)
+        map *  <Plug>(incsearch-nohl-*)
+        map #  <Plug>(incsearch-nohl-#)
+        map g* <Plug>(incsearch-nohl-g*)
+        map g# <Plug>(incsearch-nohl-g#)
+
+        "Verymagic option as default
+        let g:incsearch#magic = '\v'
+
+        let g:incsearch#consistent_n_direction = 1
+
+        highlight IncSearchCursor ctermfg=0 ctermbg=9 guifg=#000000 guibg=#FF0000
+
+    " }
+
 call plug#end()
 filetype plugin indent on
 color flatcolor
