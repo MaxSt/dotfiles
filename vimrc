@@ -2,7 +2,7 @@
     set nocompatible               " must be first line
     syntax on
 " }
-
+" + CompanyBase.find(session[:company_base_id]).printer_name.to_s, "
  " Windows Compatible {
     " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization  across (heterogeneous) systems easier.
     if has('win32') || has('win64')
@@ -314,6 +314,19 @@
           update
       endfor
   endfunction
+
+  "Display the numbered registers, press a key and paste it to the buffer
+  function! Reg()
+    reg
+    echo "Register: "
+    let char = getchar()
+    execute "normal! \"".nr2char(char)."p"
+    redraw
+    normal! k
+  endfunction
+
+  command! -nargs=0 Reg call Reg() | normal <cr>
+
 " }
 
 " Plugins {
