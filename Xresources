@@ -1,10 +1,10 @@
 ! Misc settings
-URxvt*jumpScroll      : true
+
 URxvt*saveLines       : 4096
 URxvt*scrollBar       : false
-URxvt*skipScroll      : false
 URxvt.urgentOnBell    : false
 URxvt*visualBell      : false
+URxvt*cursorBlink     : false
 URxvt*internalBorder  : 8
 
 ! Extensions
