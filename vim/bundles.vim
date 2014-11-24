@@ -249,7 +249,16 @@ call plug#begin('~/.vim/plugged')
         let g:incsearch#consistent_n_direction = 1
         let g:incsearch#separate_highlight = 1
 
-      " }
+    " }
+
+    " vim-exchange (exchange with cx){
+        Plug 'zefei/vim-wintabs'
+    " }
+
+    " vim-shot-f (highlight next f,t,F,T chars){
+        Plug 'deris/vim-shot-f'
+    " }
+
 
   call plug#end()
   filetype plugin indent on
