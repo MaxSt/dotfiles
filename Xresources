@@ -1,47 +1,23 @@
-! Make Xft less bad
-Xft.antialias:  1
-Xft.autohint:   0
-Xft.dpi:        96
-Xft.hinting:    1
-Xft.hintstyle:  hintfull
-Xft.lcdfilter:  lcddefault
-Xft.rgba:       rgb
-
 ! Misc settings
-URxvt*intensityStyles : false
-URxvt*jumpScroll      : true
+
 URxvt*saveLines       : 4096
 URxvt*scrollBar       : false
-URxvt*skipScroll      : false
 URxvt.urgentOnBell    : false
 URxvt*visualBell      : false
+URxvt*cursorBlink     : false
 URxvt*internalBorder  : 8
-URxvt*buffered        : false
 
 ! Extensions
 URxvt*perl-ext-common : default,matcher,clipboard
 URxvt*matcher*button  : 1
-URxvt*url-launcher    : firefox
+URxvt*url-launcher    : chromium
 
 URxvt.keysym.Shift-Control-C: perl:clipboard:copy
 URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 
-!URxvt.font: -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1
-!URxvt*boldFont: fonts
-
-!URxvt.font: -*-gohufont-medium-*-normal-*-14-*-*-*-*-*-*-*
-!URxvt*boldFont: -*-gohufont-medium-*-normal-*-14-*-*-*-*-*-*-*
-
-!URxvt.font: -ypn-envypn-medium-*-*-*-15-*-*-*-*-*-*-1
-!URxvt*boldFont: -ypn-envypn-medium-*-*-*-15-*-*-*-*-*-*-1
-
-URxvt*font: -*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1
-URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1
-
-!urxvt*font: -lokaltog-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*
-!urxvt*boldFont: -lokaltog-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*
-!urxvt*italicFont: -lokaltog-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*
-!urxvt*bolditalicFont: -lokaltog-fixed-medium-r-normal-*-12-*-*-*-*-*-*-*
+!Fonts
+URxvt*font: xft:tamsyn:size=11
+URxvt*boldFont: xft:tamsyn:size=11
 
 ! Colors
 

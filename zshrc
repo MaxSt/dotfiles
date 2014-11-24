@@ -16,7 +16,9 @@ alias g="git"
 alias l="ls"
 alias c="cd"
 alias tr="tmuxinator"
-alias rm="trash-put"
+if ~/.scripts/command_is_available trash-put; then
+  alias rm="trash-put"
+fi
 
 export TERM=xterm-256color
 source /etc/profile
@@ -39,18 +41,22 @@ source /etc/profile
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
-plugins=(git vi-mode rvm ruby rails rake bundler archlinux taskwarrior tmux tmuxinator)
+plugins=(git vi-mode rvm ruby rails rake bundler taskwarrior tmux tmuxinatorgithub)
+
+if ~/.scripts/command_is_available pacman; then
+  plugins+=(archlinux)
+fi
 
 #ZSH_TMUX_AUTOSTART='true'
 
 source $ZSH/oh-my-zsh.sh
 
-# Customize to your needs...
+# PATH setting
 PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/local/rvm/bin:/usr/bin/vendor_perl:/usr/bin/core_perl
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
-PATH=$PATH:$HOME/.gem/ruby/2.0.0/bin
 PATH=$PATH:$HOME/.scripts
 
+# Customize to your needs...
 export EDITOR="vim"
 
 if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then source "$HOME/.rvm/scripts/rvm" ; fi

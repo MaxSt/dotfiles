@@ -1,0 +1,18 @@
+HELPFILE=.helpfile
+EVDEV=/usr/share/X11/xkb/rules/evdev.xml
+
+# nur in file hineinkopieren wenn us_de darin noch nicht vorkommt
+count=`grep "us_de" $EVDEV|wc -l`
+if [ $count -ne 0 ]
+then
+     echo "us_de schon in evdev.xml enthalten"
+     echo "ueberspringe bearbeiten von evdev.xml"
+else
+     cat $EVDEV | sed '/<layoutList>/ r ./evdevadd.xml' > $HELPFILE;
+     sudo cp $HELPFILE $EVDEV;
+     rm $HELPFILE;
+     echo "evdev.xml wurde bearbeitet"
+fi
+
+sudo cp ./us_de /usr/share/X11/xkb/symbols/
+echo "Keyboardlayout us_de erfolgreich hinzugefuegt!"

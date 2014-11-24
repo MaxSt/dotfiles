@@ -1,0 +1,12 @@
+  <layout>
+    <configItem>
+      <name>us_de</name>
+      <shortDescription>us_de</shortDescription>
+      <description>English (US, mit dt. Umlauten)</description>
+      <languageList>
+        <iso639Id>eng</iso639Id>
+      </languageList>
+    </configItem>
+    <variantList/>
+  </layout>
+

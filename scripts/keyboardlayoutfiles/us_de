@@ -1,0 +1,31 @@
+default partial alphanumeric_keys 
+xkb_symbols "basic" {
+    include "us(basic)"
+
+    //Capslock zu escape machen
+    key <CAPS> { [ Escape, Escape ] };
+
+    //Escape zu capslock machen
+    //key <ESC> { [ Caps_Lock ] };
+    
+    // Euro-Zeichen eingeben lassen
+    key <AD03> { [ e, E, EuroSign ] };
+
+    // ä und Ä über a und A bereitstellen
+     key <AC01> { [ a, A, adiaeresis, Adiaeresis ] };
+     key <AD09> { [ o, O, odiaeresis, Odiaeresis ] };
+     key <AD07> { [ u, U, udiaeresis, Udiaeresis ] };
+     key <AC02> { [ s, S, ssharp, ssharp ] };
+
+    // bei q auch @ eingeben lassen
+    // key <AD01> { [ q, Q, at, at ] };
+
+    // § auch über AltGr+3 eingeben lassen
+    key <AE03> { [ 3, numbersign, section ] };
+
+    // °-Zeichen über AltGr+` eingeben lassen
+    key <TLDE> { [ grave, asciitilde, degree ] };
+
+    // AltGr-Taste aktivieren
+    include "level3(ralt_switch)"
+};
