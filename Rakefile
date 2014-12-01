@@ -3,11 +3,10 @@ require 'erb'
 
 desc "install the dot files into user's home directory"
 task :install do
-  install_oh_my_zsh
+  install_prezto
   switch_to_zsh
   replace_all = false
-  files = Dir['*'] - %w[Rakefile README.md oh-my-zsh config]
-  files << "oh-my-zsh/custom/max.zsh-theme"
+  files = Dir['*'] - %w[Rakefile README.md config]
   files.each do |file|
     system %Q{mkdir -p "$HOME/.#{File.dirname(file)}"} if file =~ /\//
     if File.exist?(File.join(ENV['HOME'], ".#{file.sub(/\.erb$/, '')}"))
@@ -72,22 +71,19 @@ def switch_to_zsh
   end
 end
 
-def install_oh_my_zsh
-  if File.exist?(File.join(ENV['HOME'], ".oh-my-zsh"))
-    puts "found ~/.oh-my-zsh"
+def install_prezto
+  if File.exist?(File.join(ENV['HOME'], ".prezto"))
+    puts "found ~/.prezto"
   else
-    print "install oh-my-zsh? [ynq] "
+    print "install prezto? ynq] "
     case $stdin.gets.chomp
     when 'y'
-      puts "installing oh-my-zsh"
-      system %Q{git clone https://github.com/robbyrussell/oh-my-zsh.git "$HOME/.oh-my-zsh"}
-      puts "installing oh-my-zsh syntax Highlighting..."
-      system %Q{mkdir ~/.oh-my-zsh/custom/plugins}
-      system %Q{git clone git://github.com/zsh-users/zsh-syntax-highlighting.git "$HOME/.oh-my-zsh/custom/plugins"}
+      puts "installing prezto"
+      system %Q{git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"}
     when 'q'
       exit
     else
-      puts "skipping oh-my-zsh, you will need to change ~/.zshrc"
+      puts "skipping prezto, you will need to change ~/.zshrc"
     end
   end
 end
