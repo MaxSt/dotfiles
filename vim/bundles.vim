@@ -12,7 +12,7 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " ctrlp (open file with fuzzy search){
-      Plug 'kien/ctrlp.vim'
+      Plug 'ctrlpvim/ctrlp.vim'
       let g:ctrlp_map = '<leader>t'
       " noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
       "let g:ctrlp_working_path_mode = 0 " Dont manage working directory

@@ -16,8 +16,8 @@ URxvt.keysym.Shift-Control-C: perl:clipboard:copy
 URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 
 !Fonts
-URxvt*font: xft:tamsyn:size=11
-URxvt*boldFont: xft:tamsyn:size=11
+URxvt*font: xft:M+1m:size=10
+URxvt*boldFont: xft:M+1m:size=10
 
 ! Colors
 
