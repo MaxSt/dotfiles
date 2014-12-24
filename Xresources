@@ -21,10 +21,10 @@ URxvt*boldFont: xft:M+1m:size=10
 
 ! Colors
 
-! Dark colors
-URxvt*color0:           #2c3e50
-URxvt*color8:           #242f38
-URxvt.background :       #242f38
+! Midnight Blue-Black
+ URxvt*color0:           #34495e
+ URxvt*color8:           #2c3e50
+ URxvt.background :      #2c3e50
 
 ! Red
 URxvt*color1:           #FF0033
@@ -35,8 +35,8 @@ URxvt*color2:           #2ecc71
 URxvt*color10:          #27ae60
 
 ! Yellow
-URxvt*color3:           #f1c40f
-URxvt*color11:          #f39c12
+URxvt*color3:           #f39c12
+URxvt*color11:          #e67e22
 
 ! Blue
 URxvt*color4:           #3498db
@@ -52,5 +52,5 @@ URxvt*color14:          #16a085
 
 ! White
 URxvt*color7:           #ecf0f1
-URxvt*color15:          #bdc3c7
-URxvt.foreground :      #bdc3c7
+URxvt*color15:          #BECDD1
+URxvt.foreground :      #BECDD1

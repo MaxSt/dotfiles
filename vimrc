@@ -19,11 +19,11 @@
       set guioptions-=m
 
       if has("gui_gtk2")
-          set guifont=Meslo\ LG\ S\ for\ Powerline\ 11
+          set guifont=M+\ 1m\ 11
       elseif has("gui_mac")
-          set guifont=Meslo\ LG\ S\ for\ Powerline:h11
+          set guifont=M+\ 1m:11
       elseif has("gui_win32") || has('win64')
-          set guifont=Meslo\ LG\ S\ for\ Powerline:h11
+          set guifont=M+\ 1m:11
       endif
     endif
     set mouse=a                                                   " automatically enable mouse usage
@@ -327,6 +327,9 @@
 
   command! -nargs=0 Reg call Reg() | normal <cr>
 
+  function! SyntaxItem()
+    return synIDattr(synID(line("."),col("."),1),"name")
+  endfunction
 " }
 
 " Plugins {
@@ -337,3 +340,4 @@
 
     filetype plugin indent on         " Automatic detect file types
 " }
+
