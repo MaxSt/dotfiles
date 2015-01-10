@@ -32,7 +32,6 @@ task :install do
       link_file(file)
     end
   end
-  install_plugvim
   install_config
   make_vim_tmp_dir
 end
@@ -88,15 +87,6 @@ def install_prezto
   end
 end
 
-def install_plugvim
-  if File.exist?(File.join(ENV['HOME'], "/dotfiles/vim/autoload/plug.vim"))
-    puts "found ~/vim/autoload/plug.vim"
-  else
-    puts "plug.vim"
-    system %Q{mkdir -p ~/.vim/autoload}
-    system %Q{curl -fLo ~/.vim/autoload/plug.vim https://raw.github.com/junegunn/vim-plug/master/plug.vim}
-  end
-end
 
 def make_vim_tmp_dir
   if !File.exists?(File.join(ENV['HOME'],".vim/tmp"))
