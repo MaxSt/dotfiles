@@ -19,38 +19,5 @@ URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 URxvt*font: xft:M+1m:size=10
 URxvt*boldFont: xft:M+1m:size=10
 
-! Colors
-
-! Midnight Blue-Black
- URxvt*color0:           #34495e
- URxvt*color8:           #2c3e50
- URxvt.background :      #2c3e50
-
-! Red
-URxvt*color1:           #FF0033
-URxvt*color9:           #C0392B
-
-! Green
-URxvt*color2:           #2ecc71
-URxvt*color10:          #27ae60
-
-! Yellow
-URxvt*color3:           #f39c12
-URxvt*color11:          #e67e22
-
-! Blue
-URxvt*color4:           #3498db
-URxvt*color12:          #2980b9
-
-! Magenta
-URxvt*color5:           #9b59b6
-URxvt*color13:          #8e44ad
-
-! Cyan
-URxvt*color6:           #1abc9c
-URxvt*color14:          #16a085
-
-! White
-URxvt*color7:           #ecf0f1
-URxvt*color15:          #BECDD1
-URxvt.foreground :      #BECDD1
+#include "/home/max/.terminalcolors/flatcolors_dark"
+!#include "/home/max/.terminalcolors/flatcolors_light"
