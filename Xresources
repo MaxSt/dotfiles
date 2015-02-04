@@ -1,23 +1,29 @@
 ! Misc settings
-
+URxvt*termName        : rxvt-256color
 URxvt*saveLines       : 4096
 URxvt*scrollBar       : false
 URxvt.urgentOnBell    : false
 URxvt*visualBell      : false
 URxvt*cursorBlink     : false
 URxvt*internalBorder  : 8
+URxvt*loginShell      : true
+
+Xft.lcdfilter: lcddefault
+!-- Xft settings -- !
+Xft.dpi: 96
+Xft.antialias: true
+Xft.rgba: rgb
+Xft.hinting: true
+Xft.hintstyle: hintslight
 
 ! Extensions
-URxvt*perl-ext-common : default,matcher,clipboard
-URxvt*matcher*button  : 1
-URxvt*url-launcher    : chromium
+URxvt*perl-ext-common :
+URxvt*perl-ext:
+URxvt*url-launcher    : firefox
 
-URxvt.keysym.Shift-Control-C: perl:clipboard:copy
-URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 
 !Fonts
-URxvt*font: xft:M+1m:size=10
-URxvt*boldFont: xft:M+1m:size=10
+URxvt.font: xft:Source Code Pro:size=10
 
 #include "/home/max/.terminalcolors/flatcolors_dark"
 !#include "/home/max/.terminalcolors/flatcolors_light"

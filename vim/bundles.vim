@@ -17,44 +17,48 @@ call plug#begin('~/.vim/plugged')
         set background=dark
     " }
 
+    " ctrl-space (tabs and buffer management){
+        let g:airline_exclude_preview=1
+        let g:ctrlspace_default_mapping_key='<space>'
+        Plug 'szw/vim-ctrlspace.git'
+    " }
+
     " ctrlp (open file with fuzzy search){
-      Plug 'ctrlpvim/ctrlp.vim'
-      let g:ctrlp_map = '<leader>t'
-      " noremap <leader>g :CtrlPTag<cr> for tags but diabled atm
-      "let g:ctrlp_working_path_mode = 0 " Dont manage working directory
-      let g:ctrlp_open_new_file = 'r' " ctrlp opens new file in current window
-      let g:ctrlp_cache_dir='~/.vim/tmp/'
-      let g:ctrlp_reuse_window='startify'
-      let g:ctrlp_open_multiple_files = 'rr'
-      let g:ctrlp_clear_cache_on_exit=1
-      let g:ctrlp_max_files = 10000
-      let g:ctrlp_follow_symlinks=1
-      nmap <leader>b :CtrlPBuffer<CR>
-      if executable('ag')
-        let g:ctrlp_user_command = {
-          \ 'types': {
-          \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
-          \ 2: ['.hg', 'hg --cwd %s locate -I .']
-          \ },
-          \ 'fallback': 'ag %s -l --nocolor -g ""'
-        \ }
-      else
-        let g:ctrlp_user_command = {
-          \ 'types': {
-            \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
-            \ 2: ['.hg', 'hg --cwd %s locate -I .']
-          \ },
-          \ 'fallback': 'find %s/.. -type f'
-        \ }
-      endif
+      " Plug 'ctrlpvim/ctrlp.vim'
+      " let g:ctrlp_map = '<leader>t'
+      " let g:ctrlp_open_new_file = 'r' " ctrlp opens new file in current window
+      " let g:ctrlp_cache_dir='~/.vim/tmp/'
+      " let g:ctrlp_reuse_window='startify'
+      " let g:ctrlp_open_multiple_files = 'rr'
+      " let g:ctrlp_clear_cache_on_exit=1
+      " let g:ctrlp_max_files = 10000
+      " let g:ctrlp_follow_symlinks=1
+      " nmap <leader>b :CtrlPBuffer<CR>
+      " if executable('ag')
+      "   let g:ctrlp_user_command = {
+      "     \ 'types': {
+      "     \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
+      "     \ 2: ['.hg', 'hg --cwd %s locate -I .']
+      "     \ },
+      "     \ 'fallback': 'ag %s -l --nocolor -g ""'
+      "   \ }
+      " else
+      "   let g:ctrlp_user_command = {
+      "     \ 'types': {
+      "       \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
+      "       \ 2: ['.hg', 'hg --cwd %s locate -I .']
+      "     \ },
+      "     \ 'fallback': 'find %s/.. -type f'
+      "   \ }
+      " endif
     " }
 
     " YouCompleteMe (Code Completion){
-        Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
-        let g:ycm_complete_in_comments_and_strings = 1
-        let g:ycm_collect_identifiers_from_comments_and_strings = 1
-        let g:ycm_autoclose_preview_window_after_completion = 1
-        let g:ycm_filepath_completion_use_working_dir = 1
+        " Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
+        " let g:ycm_complete_in_comments_and_strings = 1
+        " let g:ycm_collect_identifiers_from_comments_and_strings = 1
+        " let g:ycm_autoclose_preview_window_after_completion = 1
+        " let g:ycm_filepath_completion_use_working_dir = 1
     " }
 
     " Ultisnips (Code Snippets){
@@ -147,9 +151,6 @@ call plug#begin('~/.vim/plugged')
         " Plug 'tpope/vim-fugitive'
     " }
 
-    " Multiple Cursors (with <C-N> while searching){
-        Plug 'terryma/vim-multiple-cursors'
-    " }
 
     " Covim (Collaborative Editing){
         "Plug 'FredKSchott/CoVim.git'
@@ -261,6 +262,10 @@ call plug#begin('~/.vim/plugged')
 
     " vim-shot-f (highlight next f,t,F,T chars){
         Plug 'deris/vim-shot-f'
+    " }
+
+    " vimux (send commands to tmux){
+        Plug 'benmills/vimux'
     " }
   call plug#end()
   filetype plugin indent on

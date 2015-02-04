@@ -1,9 +1,9 @@
 ! Colors
 
 ! Midnight Blue-Black
- URxvt*color0:           #34495e
- URxvt*color8:           #2c3e50
- URxvt.background :      #2c3e50
+URxvt*color0:           #2c3e50
+URxvt*color8:           #242f38
+URxvt.background :      #242f38
 
 ! Red
 URxvt*color1:           #FF0033
