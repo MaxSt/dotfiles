@@ -20,7 +20,7 @@ call plug#begin('~/.vim/plugged')
     " ctrl-space (tabs and buffer management){
         let g:airline_exclude_preview=1
         let g:ctrlspace_default_mapping_key='<space>'
-        Plug 'szw/vim-ctrlspace.git'
+        Plug 'szw/vim-ctrlspace'
     " }
 
     " ctrlp (open file with fuzzy search){
