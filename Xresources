@@ -23,7 +23,11 @@ URxvt*url-launcher    : firefox
 
 
 !Fonts
-URxvt.font: xft:Source Code Pro:size=10
+URxvt*font: -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1
+URxvt*boldFont: -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1
+
+!URxvt*font: -*-tamsyn-medium-*-*--15-*-*-*-*-*-*
+!URxvt*boldFont: -*-tamsyn-medium-*-*--15-*-*-*-*-*-*
 
 #include "/home/max/.terminalcolors/flatcolors_dark"
 !#include "/home/max/.terminalcolors/flatcolors_light"
