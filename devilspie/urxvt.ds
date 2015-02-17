@@ -1,4 +1,6 @@
 ; generated_rule urxvt
-( begin 
-( undecorate )
+(if (is (application_name) "urxvt")
+  (begin
+    (undecorate)
+  )
 )
