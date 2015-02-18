@@ -157,23 +157,6 @@ call plug#begin('~/.vim/plugged')
     " }
 
 
-    " Startify (Vim Startscreen){
-        Plug 'mhinz/vim-startify'
-        autocmd FileType startify setlocal bt=
-        let g:startify_custom_header = [
-          \ '   ┌─────────────────────────────────┐',
-          \ '   │     ┌────────┬───┬─┬──┬──┐      │',
-          \ '   │     │        │  ─  ├─   ─┤      │',
-          \ '   │     └──┴──┴──┴───┴─┴──┴──┘      │',
-          \ '   └─────────────────────────────────┘',
-          \ '',
-          \ '',
-          \ ]
-        "Colors for Startify
-        hi def link StartifyHeader Todo
-        let g:startify_change_to_vcs_root = 1
-    " }
-
     " endwise (end structures automatically (ruby if end,...)){
         Plug 'tpope/vim-endwise'
     " }
@@ -265,7 +248,7 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " vimux (send commands to tmux){
-        Plug 'benmills/vimux'
+        "Plug 'benmills/vimux'
     " }
   call plug#end()
   filetype plugin indent on

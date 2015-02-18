@@ -1,6 +1,0 @@
-; generated_rule urxvt
-(if (is (application_name) "urxvt")
-  (begin
-    (undecorate)
-  )
-)
