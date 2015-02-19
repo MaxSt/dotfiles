@@ -3,7 +3,7 @@ require 'erb'
 
 desc "install the dot files into user's home directory"
 task :install do
-  install_prezto
+  install_zgen
   switch_to_zsh
   replace_all = false
   files = Dir['*'] - %w[Rakefile README.md config]
@@ -70,19 +70,19 @@ def switch_to_zsh
   end
 end
 
-def install_prezto
-  if File.exist?(File.join(ENV['HOME'], ".prezto"))
-    puts "found ~/.prezto"
+def install_zgen
+  if File.exist?(File.join(ENV['HOME'], ".zgen"))
+    puts "found ~/.zgen"
   else
-    print "install prezto? ynq] "
+    print "install zgen? ynq] "
     case $stdin.gets.chomp
     when 'y'
-      puts "installing prezto"
-      system %Q{git clone --recursive https://github.com/sorin-ionescu/prezto.git "${ZDOTDIR:-$HOME}/.zprezto"}
+      puts "installing zgen"
+      system %Q{git clone https://github.com/tarjoilija/zgen.git $HOME/.zgen}
     when 'q'
       exit
     else
-      puts "skipping prezto, you will need to change ~/.zshrc"
+      puts "skipping zgen, you will need to change ~/.zshrc"
     end
   end
 end
