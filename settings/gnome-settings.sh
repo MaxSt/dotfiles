@@ -22,11 +22,21 @@ gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-7 "['<Super>7
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-8 "['<Super>8']"
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-9 "['<Super>9']"
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-10 "['<Super>0']"
-gsettings set org.gnome.desktop.wm.keybindings toggle-maximized "['<Super>Space']"
+gsettings set org.gnome.desktop.wm.keybindings toggle-maximized "['<Super>o']"
 gsettings set org.gnome.desktop.wm.keybindings close "['<Alt>F4', '<Super>w']"
 
 #Preferences
 gsettings set org.gnome.desktop.wm.preferences mouse-button-modifier "'<Super>'"
 gsettings set org.gnome.desktop.wm.preferences num-workspaces "8"
 gsettings set org.gnome.desktop.wm.preferences resize-with-right-button "true"
+#disables overlay-key (standard: keyup super)
+gsettings set org.gnome.mutter overlay-key ""
+gsettings set org.gnome.mutter dynamic-workspaces "false"
+
+#Tile windows right/left
+gsettings set org.gnome.mutter.keybindings toggle-tiled-left "['<Super>Left']"
+gsettings set org.gnome.mutter.keybindings toggle-tiled-right "['<Super>Right']"
+
+gsettings set org.gnome.shell.keybindings toggle-application-view "['<Super>a']"
+gsettings set org.gnome.shell.keybindings toggle-overview "['<Super>Space']"
 
