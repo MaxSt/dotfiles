@@ -6,7 +6,7 @@ task :install do
   install_zgen
   switch_to_zsh
   replace_all = false
-  files = Dir['*'] - %w[Rakefile README.md config]
+  files = Dir['*'] - %w[Rakefile README.md config settings]
   files.each do |file|
     system %Q{mkdir -p "$HOME/.#{File.dirname(file)}"} if file =~ /\//
     if File.exist?(File.join(ENV['HOME'], ".#{file.sub(/\.erb$/, '')}"))
@@ -50,6 +50,14 @@ def link_file(file)
   else
     puts "linking ~/.#{file}"
     system %Q{ln -s "$PWD/#{file}" "$HOME/.#{file}"}
+  end
+end
+
+def link_file_to_root(file)
+  #ignore .erb files as root
+  unless file =~ /.erb$/
+    puts "linking /root/.#{file}"
+    system %Q{[ -f /root/.zgen ] && ( sudo ln -s "$PWD/#{file}" "/root/.#{file}")}
   end
 end
 
@@ -127,5 +135,18 @@ def install_config
     else
       link_file(file)
     end
+  end
+end
+
+desc "link the dot files into root home directory"
+task :linkroot do
+  puts "linking dotfiles to /root/dotfiles"
+  system %Q{sudo [ ! -e /root/dotfiles ] && ( sudo ln -s "$HOME/dotfiles" "/root/dotfiles")}
+  puts "linking zgen to /root/.zgen"
+  system %Q{sudo [ ! -e /root/.zgen ] && ( sudo ln -s "$HOME/.zgen" "/root/.zgen")}
+  replace_all = false
+  files = Dir['*'] - %w[Rakefile README.md config settings]
+  files.each do |file|
+      link_file_to_root(file)
   end
 end

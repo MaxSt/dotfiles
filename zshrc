@@ -16,6 +16,9 @@ fi
 # load zgen
 source "${HOME}/.zgen/zgen.zsh"
 
+#theme
+source "${HOME}/dotfiles/settings/maxtheme"
+
 # check if there's no init script
 if ! zgen saved; then
   echo "Creating a zgen save"
@@ -25,7 +28,7 @@ if ! zgen saved; then
   # plugins
   zgen oh-my-zsh plugins/git
   zgen oh-my-zsh plugins/sudo
-  zgen load zsh-users/zsh-syntax-highlighting
+  #zgen load zsh-users/zsh-syntax-highlighting
   zgen oh-my-zsh plugins/vi-mode
   zgen oh-my-zsh plugins/tmux
 
@@ -34,7 +37,7 @@ if ! zgen saved; then
   zgen load zsh-users/zsh-completions src
 
   # theme
-  zgen oh-my-zsh themes/arrow
+  #zgen oh-my-zsh themes/arrow
 
   # save all to init script
   zgen save
@@ -44,6 +47,7 @@ fi
 if [[ -z "$LANG" ]]; then
   export LANG='en_US.UTF-8'
 fi
+
 
 # PATH setting
 PATH=/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/local/rvm/bin:/usr/bin/vendor_perl:/usr/bin/core_perl
