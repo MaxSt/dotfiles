@@ -1,4 +1,9 @@
-xrdb -merge ~/.Xresources #update x resources db
+#!/bin/bash
+
+#set cursor
+xsetroot -cursor_name left_ptr &
+
+xrdb -merge ~/.Xresources & #update x resources db
 
 #Touchpad Palm Detect
 synclient PalmDetect=1 PalmMinZ=80 PalmMinWidth=8
@@ -19,14 +24,14 @@ stty -ixona
 dropbox start &
 
 # start compton (shadows)
- compton --config ~/.config/compton/compton.conf &
+compton --config ~/.config/compton/compton.conf &
 
 # set background image
-hsetroot -center ~/Pictures/bg
+hsetroot -center ~/Pictures/bg &
 # nitrogen --restore
 
 # start dunst (notifications with notify-send)
-dunst --config ~/.config/dunst/dunstrc &
+#dunst --config ~/.config/dunst/dunstrc &
 
 # start mudic player demon
 # mpd ~/.config/mpd/mpd.conf
@@ -35,17 +40,17 @@ dunst --config ~/.config/dunst/dunstrc &
 # Start a D-Bus session
 # Source the below file only if you do not already use the default xinitrc skeleton. 
 # Otherwise you will end up with multiple dbus sessions.
-source /etc/X11/xinit/xinitrc.d/30-dbus
+#source /etc/X11/xinit/xinitrc.d/30-dbus
 # Start GNOME Keyring
-eval $(/usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
+#eval $(/usr/bin/gnome-keyring-daemon --start --components=gpg,pkcs11,secrets,ssh)
 # You probably need to do this too:
-export GPG_AGENT_INFO SSH_AUTH_SOCK
+#export GPG_AGENT_INFO SSH_AUTH_SOCK
 
 # start pulse audio
-/usr/bin/start-pulseaudio-x11 &
+#/usr/bin/start-pulseaudio-x11 &
 
 # dont turn screen off
 xset -dpms; xset s off &
 
 sxhkd &
-exec bspwm
+exec swm

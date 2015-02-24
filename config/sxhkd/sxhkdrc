@@ -11,8 +11,8 @@ super + Return
 mod1 + Return
 	urxvt
 
-mod1 + n
-	~/focus.sh next
+super + {j,k}
+	~/Documents/contrib/focus.sh {next, prev}
 
 super + {h,l}
 	wrs {-10, 10} 0 $(pfw)
