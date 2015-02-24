@@ -2,19 +2,30 @@
 # wm independent hotkeys
 #
 #
-ctrl + Return
-	urxvt
-
 super + Return
 	urxvt
 
-mod1 + Return
-	urxvt
 
-super + {j,k}
-	~/Documents/contrib/focus.sh {next, prev}
+super + w
+  killw $(pfw)
 
-super + {h,l}
+super + {h,j,k,l}
+	~/.scripts/wm/closest.sh {h,j,k,l}
+
+super + n
+	~/.scripts/wm/focus.sh next
+
+super + space
+	~/.scripts/wm/fullscreen.sh $(pfw)
+
+super + r
+	~/.scripts/wm/rainbow.sh $(pfw)
+
+super + c
+	~/.scripts/wm/closest.sh
+
+
+super + shift + {h,l}
 	wrs {-10, 10} 0 $(pfw)
 
 mod1 + h
