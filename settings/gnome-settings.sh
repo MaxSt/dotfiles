@@ -24,6 +24,9 @@ gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-9 "['<Super>9
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-10 "['<Super>0']"
 gsettings set org.gnome.desktop.wm.keybindings toggle-maximized "['<Super>o']"
 gsettings set org.gnome.desktop.wm.keybindings close "['<Alt>F4', '<Super>w']"
+gsettings set org.gnome.desktop.wm.keybindings minimize "[]"
+gsettings set org.gnome.desktop.wm.keybindings switch-input-source "[]"
+gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>c']"
 
 #Preferences
 gsettings set org.gnome.desktop.wm.preferences mouse-button-modifier "'<Super>'"
