@@ -1,0 +1,320 @@
+# i3 config file (v4)
+#
+# Please see http://i3wm.org/docs/userguide.html for a complete reference!
+
+set $mod Mod4
+
+# Font for window titles. Will also be used by the bar unless a different font
+# is used in the bar {} block below.
+# This font is widely installed, provides lots of unicode glyphs, right-to-left
+# text rendering and scalability on retina/hidpi displays (thanks to pango).
+
+#font
+font -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
+
+# Before i3 v4.8, we used to recommend this one as the default:
+# font -misc-fixed-medium-r-normal--13-120-75-75-C-70-iso10646-1
+# The font above is very space-efficient, that is, it looks good, sharp and
+# clear in small sizes. However, its unicode glyph coverage is limited, the old
+# X core fonts rendering does not support right-to-left and this being a bitmap
+# font, it doesn’t scale on retina/hidpi displays.
+
+# Use Mouse+$mod to drag floating windows to their wanted position
+floating_modifier $mod
+
+# Floating Windows
+#for_window [class="XTerm"] floating enable
+#for_window [class="URxvt"] floating enable
+#for_window [class="Thunar"] floating enable
+#for_window [class="Nautilus"] floating enable
+#for_window [class="GParted"] floating enable
+#for_window [class="Gedit"] floating enable
+#for_window [class="Deluge"] floating enable
+#for_window [class="Filezilla"] floating enable
+#for_window [class="File-roller"] floating enable
+#for_window [class="Gnome-terminal"] floating enable
+#for_window [class="Gnome-terminal"] floating enable
+
+# 0px Border Windows
+#for_window [class="chrome"] border none
+#for_window [class="Firefox"] border none
+#for_window [class="Spotify"] border none
+
+# 1px Border Windows
+#for_window [class="URxvt" ] border 1pixel
+new_window 1pixel
+
+# Aesthetics
+bindsym $mod+Shift+n border normal
+bindsym $mod+Shift+x border none
+bindsym $mod+Shift+o border 1pixel
+
+
+# Mod+Mouse to move (isn't really needed)
+floating_modifier $mod
+
+# start a terminal
+bindsym $mod+Return exec urxvt
+
+# kill focused window
+bindsym $mod+w kill
+
+# Start dmenu
+bindsym $mod+d exec dmenu-frecency
+
+# change focus
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+# move focused window
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+bindsym $mod+Control+Left exec "i3-msg move left && i3-msg move left && i3-msg move left && i3-msg move left && i3-msg move left"
+bindsym $mod+Control+Down exec "i3-msg move down && i3-msg move down && i3-msg move down && i3-msg move down && i3-msg move down"
+bindsym $mod+Control+Up exec "i3-msg move up && i3-msg move up && i3-msg move up && i3-msg move up && i3-msg move up"
+bindsym $mod+Control+Right exec "i3-msg move right && i3-msg move right && i3-msg move right && i3-msg move right && i3-msg move right"
+
+# start firefox
+bindsym $mod+b exec firefox
+
+# start nautilus
+bindsym $mod+e exec nautilus
+
+# split in horizontal orientation
+bindsym $mod+Control+l split h
+
+# split in vertical orientation
+bindsym $mod+Control+j split v
+
+# lock computer
+bindsym $mod+Control+shift+l exec "~/.scripts/lockscreen"
+
+# enter fullscreen mode for the focused container
+bindsym $mod+f fullscreen
+
+# toggle tiling / floating
+bindsym $mod+Shift+space floating toggle
+
+# focus the parent container
+bindsym $mod+p focus parent
+
+# focus the child container
+bindsym $mod+c focus child
+
+# change focus between tiling / floating windows
+bindsym $mod+space focus mode_toggle
+
+#volume control
+bindsym $mod+plus exec "amixer set Master -q 5%+ ; killall -SIGUSR1 i3status"
+bindsym $mod+minus exec "amixer set Master -q 5%- ; killall -SIGUSR1 i3status"
+bindsym $mod+BackSpace exec "amixer set Master toggle ; killall -SIGUSR1 i3status"
+
+# switch to workspace
+bindsym $mod+1 workspace 1
+bindsym $mod+2 workspace 2
+bindsym $mod+3 workspace 3
+bindsym $mod+4 workspace 4
+bindsym $mod+5 workspace 5
+bindsym $mod+6 workspace 6
+bindsym $mod+7 workspace 7
+bindsym $mod+8 workspace 8
+bindsym $mod+9 workspace 9
+bindsym $mod+0 workspace 10
+
+# move focused container to workspace
+bindsym $mod+Shift+1 move container to workspace 1
+bindsym $mod+Shift+2 move container to workspace 2
+bindsym $mod+Shift+3 move container to workspace 3
+bindsym $mod+Shift+4 move container to workspace 4
+bindsym $mod+Shift+5 move container to workspace 5
+bindsym $mod+Shift+6 move container to workspace 6
+bindsym $mod+Shift+7 move container to workspace 7
+bindsym $mod+Shift+8 move container to workspace 8
+bindsym $mod+Shift+9 move container to workspace 9
+bindsym $mod+Shift+0 move container to workspace 10
+
+# switch to previous workspace
+bindsym $mod+z workspace back_and_forth
+
+#marks
+
+mode "mark_window" {
+                bindsym a mark a; mode default
+                bindsym b mark b; mode default
+                bindsym c mark c; mode default
+                bindsym d mark d; mode default
+                bindsym e mark e; mode default
+                bindsym f mark f; mode default
+                bindsym g mark g; mode default
+                bindsym h mark h; mode default
+                bindsym i mark i; mode default
+                bindsym j mark j; mode default
+                bindsym k mark k; mode default
+                bindsym l mark l; mode default
+                bindsym m mark m; mode default
+                bindsym n mark n; mode default
+                bindsym o mark o; mode default
+                bindsym p mark p; mode default
+                bindsym q mark q; mode default
+                bindsym r mark r; mode default
+                bindsym s mark s; mode default
+                bindsym t mark t; mode default
+                bindsym x mark x; mode default
+                bindsym y mark y; mode default
+                bindsym z mark z; mode default
+
+                bindsym Return mode "default"
+                bindsym Escape mode "default"
+}
+
+mode "go_to_window" {
+                bindsym a [con_mark="a"] focus;mode "default"
+                bindsym b [con_mark="b"] focus;mode "default"
+                bindsym c [con_mark="c"] focus;mode "default"
+                bindsym d [con_mark="d"] focus;mode "default"
+                bindsym e [con_mark="e"] focus;mode "default"
+                bindsym f [con_mark="f"] focus;mode "default"
+                bindsym g [con_mark="g"] focus;mode "default"
+                bindsym h [con_mark="h"] focus;mode "default"
+                bindsym i [con_mark="i"] focus;mode "default"
+                bindsym j [con_mark="j"] focus;mode "default"
+                bindsym k [con_mark="k"] focus;mode "default"
+                bindsym l [con_mark="l"] focus;mode "default"
+                bindsym m [con_mark="m"] focus;mode "default"
+                bindsym n [con_mark="n"] focus;mode "default"
+                bindsym o [con_mark="o"] focus;mode "default"
+                bindsym p [con_mark="p"] focus;mode "default"
+                bindsym q [con_mark="q"] focus;mode "default"
+                bindsym r [con_mark="r"] focus;mode "default"
+                bindsym s [con_mark="s"] focus;mode "default"
+                bindsym t [con_mark="t"] focus;mode "default"
+                bindsym x [con_mark="x"] focus;mode "default"
+                bindsym y [con_mark="y"] focus;mode "default"
+                bindsym z [con_mark="z"] focus;mode "default"
+                bindsym Return mode "default"
+                bindsym Escape mode "default"
+}
+
+bindsym $mod+g mode "go_to_window"
+bindsym $mod+m mode "mark_window"
+
+# reload the configuration file
+bindsym $mod+Shift+c reload
+# restart i3
+bindsym $mod+Shift+r restart
+
+#enable gabs
+#gaps inner 5
+
+
+# Colors
+
+#name                   #top    #border #text   #nextsplit
+client.focused          #2ecc71 #2ecc71 #242f38 #f39c12
+client.unfocused        #2c3e50 #2c3e50 #ecf0f1 #f39c12
+client.focused_inactive #747C84 #2c3e50 #ecf0f1 #f39c12
+client.urgent           #747C84 #2c3e50 #ecf0f1 #f39c12
+
+
+
+# start dmenu (a program launcher)
+#bindsym $mod+d exec dmenu_run
+# There also is the (new) i3-dmenu-desktop which only displays applications
+# shipping a .desktop file. It is a wrapper around dmenu, so you need that
+# installed.
+# bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
+
+# change container layout (stacked, tabbed, toggle split)
+bindsym $mod+a layout stacking
+bindsym $mod+t layout tabbed
+bindsym $mod+s layout toggle split
+
+# exit i3 (logs you out of your X session)
+bindsym $mod+Shift+w exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+
+#shutdown pc
+bindsym $mod+Shift+q exec "i3-nagbar -t warning -m 'Really shutdown?' -b 'Yes!' 'shutdown now'"
+
+# resize window (you can also use the mouse for that)
+mode "resize" {
+        # These bindings trigger as soon as you enter the resize mode
+
+        # Pressing left will shrink the window’s width.
+        # Pressing right will grow the window’s width.
+        # Pressing up will shrink the window’s height.
+        # Pressing down will grow the window’s height.
+        bindsym h resize shrink width 10 px or 10 ppt
+        bindsym j resize grow height 10 px or 10 ppt
+        bindsym k resize shrink height 10 px or 10 ppt
+        bindsym l resize grow width 10 px or 10 ppt
+
+        # same bindings, but for the arrow keys
+        bindsym Left resize shrink width 10 px or 10 ppt
+        bindsym Down resize grow height 10 px or 10 ppt
+        bindsym Up resize shrink height 10 px or 10 ppt
+        bindsym Right resize grow width 10 px or 10 ppt
+
+        # back to normal: Enter or Escape
+        bindsym Return mode "default"
+        bindsym Escape mode "default"
+}
+
+bindsym $mod+r mode "resize"
+
+# Start i3bar
+bar {
+  status_command i3status -c ~/.i3/i3status.conf
+  strip_workspace_numbers yes
+  position top
+  workspace_buttons yes
+  tray_output primary
+
+	colors {
+	    statusline  #ecf0f1
+	    background  #242f38
+
+      #name              #border #bg     #text
+	    focused_workspace  #242f38 #2ecc71 #242f38
+	    active_workspace   #242f38 #2c3e50 #ecf0f1
+	    inactive_workspace #242f38 #2c3e50 #ecf0f1
+	    urgent_workspace   #242f38 #2c3e50 #ecf0f1
+	}
+}
+
+#----------------------------------------------------------------------------------
+#execute commands
+#set multiple displays to mirror mode; set background
+exec --no-startup-id "~/.scripts/mirrordisplays; nitrogen --restore"
+
+exec --no-startup-id "dunst"
+
+#effects
+#exec --no-startup-id "compton -b --config ~/.config/compton/compton.conf"
+
+
+# disable ctrl-s freeze in terminal
+exec --no-startup-id "stty -ixona"
+
+
+#start network manager applet
+exec --no-startup-id "nm-applet"
+
+# start dropbox
+exec --no-startup-id dropbox start
+
+#Touchpad Palm Detect
+exec --no-startup-id "synclient PalmDetect=1 PalmMinZ=80 PalmMinWidth=8"
+
+#set keyboard delay and rate
+exec --no-startup-id "xset r rate 200 25"
+
+# silent bell
+exec --no-startup-id "/usr/bin/xset b off"
+
+# dont turn screen off
+exec --no-startup-id "xset -dpms; xset s off &"

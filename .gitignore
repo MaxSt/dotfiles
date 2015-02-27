@@ -15,3 +15,4 @@ config/ranger/history
 config/ranger/__pycache__
 config/ranger/tagged
 config/ranger/*.pyo
+config/dmenu-frecency/state

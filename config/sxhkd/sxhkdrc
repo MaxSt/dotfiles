@@ -5,12 +5,17 @@
 super + Return
 	urxvt
 
-
 super + w
   killw $(pfw)
 
 super + {h,j,k,l}
 	~/.scripts/wm/closest.sh {h,j,k,l}
+
+super + alt + {h,j,k,l}
+	wmv {-10 0, 0 10, 0 -10, 10 0} $(pfw)
+
+super + alt + shift + {h,j,k,l}
+	wmv {-40 0, 0 40, 0 -40, 40 0} $(pfw)
 
 super + n
 	~/.scripts/wm/focus.sh next

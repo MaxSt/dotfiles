@@ -1,0 +1,32 @@
+{
+    "cache-days": 1,
+    "dmenu": "dmenu",
+    "dmenu-args": [
+        "-i",
+        "-z",
+        "-r",
+        "-p",
+        ">",
+        "-l",
+        "10",
+        "-fn",
+        "-*-tamsyn-medium-*-*--13-*-*-*-*-*-1",
+        "-x",
+        "30",
+        "-y",
+        "30",
+        "-q",
+        "-w",
+        "450",
+        "-nf",
+        "#ecf0f1",
+        "-sb",
+        "#3498db",
+        "-nb",
+        "#2c3e50"
+    ],
+    "frecency-visits": 10,
+    "preselect-last-visit": false,
+    "scan-desktop-files": true,
+    "scan-path": false
+}
