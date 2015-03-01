@@ -3,8 +3,10 @@ require 'erb'
 
 desc "install the dot files into user's home directory"
 task :install do
-  install_zgen
-  switch_to_zsh
+  #install_zgen
+  #switch_to_zsh
+  install_oh_my_fish
+  switch_to_fish
   replace_all = false
   files = Dir['*'] - %w[Rakefile README.md config settings]
   files.each do |file|
@@ -78,6 +80,23 @@ def switch_to_zsh
   end
 end
 
+def switch_to_fish
+  if ENV["SHELL"] =~ /fish/
+    puts "using fish"
+  else
+    print "switch to fish? (recommended) [ynq] "
+    case $stdin.gets.chomp
+    when 'y'
+      puts "switching to fish"
+      system %Q{chsh -s `which fish`}
+    when 'q'
+      exit
+    else
+      puts "skipping fish"
+    end
+  end
+end
+
 def install_zgen
   if File.exist?(File.join(ENV['HOME'], ".zgen"))
     puts "found ~/.zgen"
@@ -95,6 +114,23 @@ def install_zgen
   end
 end
 
+def install_oh_my_fish
+  if File.exist?(File.join(ENV['HOME'], ".zgen"))
+    puts "found ~/.oh-my-fish"
+  else
+    print "install oh-my-fish? ynq] "
+    case $stdin.gets.chomp
+    when 'y'
+      puts "installing oh-my-fish"
+  
+      system %Q{git clone git://github.com/bpinto/oh-my-fish.git $HOME/.oh-my-fish}
+    when 'q'
+      exit
+    else
+      puts "skipping oh-my-fish"
+    end
+  end
+end
 
 def make_vim_tmp_dir
   if !File.exists?(File.join(ENV['HOME'],".vim/tmp"))

@@ -16,3 +16,5 @@ config/ranger/__pycache__
 config/ranger/tagged
 config/ranger/*.pyo
 config/dmenu-frecency/state
+config/fish/fish_history
+config/fish/fishd*

@@ -209,7 +209,7 @@ bindsym $mod+Shift+c reload
 bindsym $mod+Shift+r restart
 
 #enable gabs
-#gaps inner 5
+gaps inner 5
 
 
 # Colors
