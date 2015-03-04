@@ -2,11 +2,17 @@
     set nocompatible               " must be first line
     syntax on
 " }
-" + CompanyBase.find(session[:company_base_id]).printer_name.to_s, "
- " Windows Compatible {
-    " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization  across (heterogeneous) systems easier.
+" Windows Compatible {
+  " On Windows, also use '.vim' instead of 'vimfiles'; this makes synchronization  across (heterogeneous) systems easier.
     if has('win32') || has('win64')
       set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
+    endif
+" }
+
+" neovim {
+    if has('nvim')
+      " set poython host (default would be python3)
+      let g:python_host_prog='/usr/bin/python2'
     endif
 " }
 

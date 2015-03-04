@@ -115,7 +115,7 @@ def install_zgen
 end
 
 def install_oh_my_fish
-  if File.exist?(File.join(ENV['HOME'], ".zgen"))
+  if File.exist?(File.join(ENV['HOME'], ".oh-my-fish"))
     puts "found ~/.oh-my-fish"
   else
     print "install oh-my-fish? ynq] "
