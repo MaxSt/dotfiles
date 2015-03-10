@@ -17,10 +17,15 @@ call plug#begin('~/.vim/plugged')
         set background=dark
     " }
 
+    " fzf (fuzzy finder){
+        Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
+        noremap <leader>t :FZF!<CR>
+    " }
+
     " ctrl-space (tabs and buffer management){
-        let g:airline_exclude_preview=1
-        let g:ctrlspace_default_mapping_key='<space>'
-        Plug 'szw/vim-ctrlspace'
+        "let g:airline_exclude_preview=1
+        "let g:ctrlspace_default_mapping_key='<space>'
+        "Plug 'szw/vim-ctrlspace'
     " }
 
     " ctrlp (open file with fuzzy search){

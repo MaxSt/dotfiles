@@ -6,6 +6,7 @@ task :install do
   #install_zgen
   #switch_to_zsh
   install_oh_my_fish
+  install_fzf
   switch_to_fish
   replace_all = false
   files = Dir['*'] - %w[Rakefile README.md config settings]
@@ -171,6 +172,14 @@ def install_config
     else
       link_file(file)
     end
+  end
+end
+
+def install_fzf
+  if !File.exists?(File.join(ENV['HOME'],".fzf"))
+    puts "Installing fzf..."
+    system %Q{git clone https://github.com/junegunn/fzf.git ~/.fzf}
+    system %Q{~/.fzf/install}
   end
 end
 

@@ -61,3 +61,4 @@ function chpwd(){
   #call ls after cd
   ls;
 }
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
