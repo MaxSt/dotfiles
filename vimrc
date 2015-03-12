@@ -38,6 +38,9 @@
     set completeopt=longest,menu,preview
     scriptencoding utf-8
 
+    set ttimeout
+    set ttimeoutlen=100
+
     set noeb vb t_vb=                                             " disable peep
     set autoread                                                  " automatically load file when its changed
     " set autowrite                 " automatically write a file when leaving a modified buffer
@@ -60,7 +63,7 @@
     set wildignore+=*.xlsx,*.ico,*.png,*.jpg,*.gif,*.jpeg,*.xcf,*.xls,*.orig,*.swp,*.bak,*.pyc,*.class,*.obj,*.o,*.aux,*.odg,*.pdf
     set foldmethod=indent
     set nofoldenable
-    let mapleader = ','                                           " Use Space as leader (insetead of the default '\')
+    let mapleader = ','                                           " Use , as leader (insetead of the default '\')
     set nostartofline
     if has('mac')
       set macmeta

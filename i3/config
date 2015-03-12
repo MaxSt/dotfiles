@@ -42,7 +42,7 @@ floating_modifier $mod
 
 # 1px Border Windows
 #for_window [class="URxvt" ] border 1pixel
-new_window 1pixel
+new_window pixel 2
 
 # Aesthetics
 bindsym $mod+Shift+n border normal
@@ -82,8 +82,8 @@ bindsym $mod+Control+Right exec "i3-msg move right && i3-msg move right && i3-ms
 # start firefox
 bindsym $mod+b exec firefox
 
-# start nautilus
-bindsym $mod+e exec nautilus
+# start file-manager
+bindsym $mod+e exec thunar
 
 # split in horizontal orientation
 bindsym $mod+Control+l split h
@@ -286,35 +286,3 @@ bar {
 	}
 }
 
-#----------------------------------------------------------------------------------
-#execute commands
-#set multiple displays to mirror mode; set background
-exec --no-startup-id "~/.scripts/mirrordisplays; nitrogen --restore"
-
-exec --no-startup-id "dunst"
-
-#effects
-#exec --no-startup-id "compton -b --config ~/.config/compton/compton.conf"
-
-
-# disable ctrl-s freeze in terminal
-exec --no-startup-id "stty -ixona"
-
-
-#start network manager applet
-exec --no-startup-id "nm-applet"
-
-# start dropbox
-exec --no-startup-id dropbox start
-
-#Touchpad Palm Detect
-exec --no-startup-id "synclient PalmDetect=1 PalmMinZ=80 PalmMinWidth=8"
-
-#set keyboard delay and rate
-exec --no-startup-id "xset r rate 200 25"
-
-# silent bell
-exec --no-startup-id "/usr/bin/xset b off"
-
-# dont turn screen off
-exec --no-startup-id "xset -dpms; xset s off &"

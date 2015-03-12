@@ -209,10 +209,6 @@ call plug#begin('~/.vim/plugged')
         Plug 'wellle/targets.vim'
     " }
 
-    " sensible (defaults everyone can agree on){
-        Plug 'tpope/vim-sensible'
-    " }
-
     " pandoc-syntax (Pandoc Syntax Highlighting){
         Plug 'vim-pandoc/vim-pandoc-syntax'
     " }
