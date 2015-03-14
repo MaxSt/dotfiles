@@ -19,7 +19,7 @@ set -g status-bg colour8
 set -g status-left-bg colour8
 set -g status-left-fg colour15
 set -g status-left-length 40
-set -g status-left "#[fg=colour15,bg=colour8,bold] tmux #[fg=colour8,bg=colour2,nobold] $#S "
+set -g status-left "#[fg=colour8,bg=colour2,nobold] $#S #[fg=colour15,bg=colour8,bold][#(tmux show-buffer)][#(xsel -o -b)]"
 
 # Right side of status bar
 set -g status-right-bg colour8
