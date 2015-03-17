@@ -135,8 +135,10 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " Ack (Ack for vim){
-        Plug 'mileszs/ack.vim', {'on': 'Ack'}
-        let g:ackprg = 'ag --nogroup --nocolor --column'
+        " Plug 'mileszs/ack.vim', {'on': 'Ack'}
+        " let g:ackprg = 'ag --nogroup --nocolor --column'
+        Plug 'gabesoft/vim-ags', {'on': 'Ags'}
+        let g:ags_agexe = '/usr/bin/ag'
     " }
 
 
