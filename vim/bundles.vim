@@ -251,6 +251,11 @@ call plug#begin('~/.vim/plugged')
     " vimux (send commands to tmux){
         "Plug 'benmills/vimux'
     " }
+
+    " vimux (send commands to tmux){
+        Plug 'mxw/vim-jsx'
+        let g:jsx_ext_required = 0 " Allow JSX in normal JS files
+    " }
   call plug#end()
   filetype plugin indent on
 
