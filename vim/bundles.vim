@@ -151,7 +151,7 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " SplitJoin (splits and joins multiple code lines){
-        "Plug 'AndrewRadev/splitjoin.vim.git'
+        Plug 'AndrewRadev/splitjoin.vim'
     " }
 
     " Fugitive (Git Support for vim){

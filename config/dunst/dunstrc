@@ -1,5 +1,5 @@
 [global]
-    font = tamsyn 8
+    font = tamsyn 11
 
     # Allow a small subset of html markup:
     #   <b>bold</b>
