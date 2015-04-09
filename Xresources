@@ -17,13 +17,13 @@ Xft.hinting: true
 Xft.hintstyle: hintslight
 
 ! Extensions
-URxvt*perl-ext-common : default, matcher, clipboard
+URxvt.perl-ext-common : default, matcher, clipboard
 URxvt.keysym.Shift-Control-C: perl:clipboard:copy
 URxvt.keysym.Shift-Control-V: perl:clipboard:paste
 URxvt.iso14755: false
-URxvt.clipboard.copycmd: xsel -ib
-URxvt.clipboard.pastecmd: xsel -ob
-URxvt*url-launcher    : firefox
+URxvt.clipboard.copycmd: xclip -i selection clipboard
+URxvt.clipboard.pastecmd: xclip -o selection clipboard
+URxvt.url-launcher    : firefox
 
 
 !Fonts
