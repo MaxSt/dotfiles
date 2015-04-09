@@ -18,10 +18,13 @@
 ! yellow
 *.color3:       #f3c223
 *.color11:      #ee7c16
+*.colorIT:      #f3c223
+*.colorUL:      #f3c223
 
 ! blue
 *.color4:       #329dcd
 *.color12:      #2770ca
+*.colorBD:      #329dcd
 
 ! magenta
 *.color5:       #9348b2
@@ -34,3 +37,5 @@
 ! white
 *.color7:       #ecf0f1
 *.color15:      #a0adb0
+
+
