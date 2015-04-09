@@ -215,10 +215,10 @@ gaps inner 5
 # Colors
 
 #name                   #top    #border #text   #nextsplit
-client.focused          #2ecc71 #2ecc71 #242f38 #f39c12
-client.unfocused        #2c3e50 #2c3e50 #ecf0f1 #f39c12
-client.focused_inactive #747C84 #2c3e50 #ecf0f1 #f39c12
-client.urgent           #747C84 #2c3e50 #ecf0f1 #f39c12
+client.focused          #2ecc71 #2ecc71 #1e2c46 #f39c12
+client.unfocused        #3a4857 #3a4857 #ecf0f1 #f39c12
+client.focused_inactive #747C84 #3a4857 #ecf0f1 #f39c12
+client.urgent           #747C84 #3a4857 #ecf0f1 #f39c12
 
 
 
@@ -276,13 +276,13 @@ bar {
 
 	colors {
 	    statusline  #ecf0f1
-	    background  #242f38
+	    background  #1e2c46
 
       #name              #border #bg     #text
-	    focused_workspace  #242f38 #2ecc71 #242f38
-	    active_workspace   #242f38 #2c3e50 #ecf0f1
-	    inactive_workspace #242f38 #2c3e50 #ecf0f1
-	    urgent_workspace   #242f38 #2c3e50 #ecf0f1
+	    focused_workspace  #1e2c46 #2ecc71 #1e2c46
+	    active_workspace   #1e2c46 #3a4857 #ecf0f1
+	    inactive_workspace #1e2c46 #3a4857 #ecf0f1
+	    urgent_workspace   #1e2c46 #3a4857 #ecf0f1
 	}
 }
 
