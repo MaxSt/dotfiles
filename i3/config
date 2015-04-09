@@ -4,6 +4,27 @@
 
 set $mod Mod4
 
+# Colors
+
+set $black #3a4857
+set $dark_black #1e2c36
+set $red #ff0033
+set $dark_red #c91b19
+set $green #4ecc60
+set $dark_green #319242
+set $yellow #f3c223
+set $dark_yellow #ee7c16
+set $blue #329dcd
+set $dark_blue #2770ca
+set $magenta #9348b2
+set $dark_magenta #543c9c
+set $cyan #52eaba
+set $dark_cyan #2c7f7e
+set $white #ecf0f1
+set $dark_white #a0adb0
+
+set $maincolor #52eaba
+
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
 # This font is widely installed, provides lots of unicode glyphs, right-to-left
@@ -212,13 +233,12 @@ bindsym $mod+Shift+r restart
 gaps inner 5
 
 
-# Colors
 
-#name                   #top    #border #text   #nextsplit
-client.focused          #2ecc71 #2ecc71 #1e2c46 #f39c12
-client.unfocused        #3a4857 #3a4857 #ecf0f1 #f39c12
-client.focused_inactive #747C84 #3a4857 #ecf0f1 #f39c12
-client.urgent           #747C84 #3a4857 #ecf0f1 #f39c12
+#name                    #top        #border     #text        #nextsplit
+client.focused           $maincolor  $maincolor  $dark_black  $yellow
+client.unfocused         $black      $black      $white       $yellow
+client.focused_inactive  $black      $black      $white       $yellow
+client.urgent            $black      $black      $white       $yellow
 
 
 
@@ -275,14 +295,14 @@ bar {
   tray_output primary
 
 	colors {
-	    statusline  #ecf0f1
-	    background  #1e2c46
+    statusline          $white
+    background          $dark_black
 
-      #name              #border #bg     #text
-	    focused_workspace  #1e2c46 #2ecc71 #1e2c46
-	    active_workspace   #1e2c46 #3a4857 #ecf0f1
-	    inactive_workspace #1e2c46 #3a4857 #ecf0f1
-	    urgent_workspace   #1e2c46 #3a4857 #ecf0f1
+    #name               #border      #bg         #text
+    focused_workspace   $dark_black  $maincolor  $dark_black
+    active_workspace    $dark_black  $black      $white
+    inactive_workspace  $dark_black  $black      $white
+    urgent_workspace    $dark_black  $black      $white
 	}
 }
 
