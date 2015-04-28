@@ -130,6 +130,10 @@ bindsym $mod+c focus child
 # change focus between tiling / floating windows
 bindsym $mod+space focus mode_toggle
 
+# Brightness
+bindsym $mod+Control+minus exec "xbacklight -dec 10"
+bindsym $mod+Control+plus exec "xbacklight -inc 10"
+
 #volume control
 bindsym $mod+plus exec "amixer set Master -q 5%+ ; killall -SIGUSR1 i3status"
 bindsym $mod+minus exec "amixer set Master -q 5%- ; killall -SIGUSR1 i3status"
