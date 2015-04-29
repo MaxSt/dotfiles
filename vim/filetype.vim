@@ -6,5 +6,4 @@ au BufNewFile,BufRead .vimperatorrc set filetype=vim
 au BufNewFile,BufRead *.pandoc set filetype=pandoc
 au BufNewFile,BufRead *.tex set filetype=tex
 au BufNewFile,BufRead config set filetype=config
-au BufNewFile,BufRead *.react.js set filetype=javascript.jsx
 augroup end
