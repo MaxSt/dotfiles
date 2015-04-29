@@ -253,8 +253,7 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " better js syntax{
-        Plug 'pangloss/vim-javascript'
-        let g:javascript_enable_domhtmlcss = 1
+        Plug 'othree/yajs.vim'
     " }
 
     " jsx syntax{

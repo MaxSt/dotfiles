@@ -5,7 +5,7 @@
 #----------------------------------------------------------------------------------
 
 #set multiple displays to mirror mode; set background
-nitrogen --restore &
+~/.scripts/mirrordisplays;nitrogen --restore &
 
 dunst &
 
