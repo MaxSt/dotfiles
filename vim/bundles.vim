@@ -256,9 +256,6 @@ call plug#begin('~/.vim/plugged')
         Plug 'othree/yajs.vim'
     " }
 
-    " jsx syntax{
-        Plug 'mxw/vim-jsx'
-    " }
   call plug#end()
   filetype plugin indent on
 
