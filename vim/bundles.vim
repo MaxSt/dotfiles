@@ -59,11 +59,11 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " YouCompleteMe (Code Completion){
-        " Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
-        " let g:ycm_complete_in_comments_and_strings = 1
-        " let g:ycm_collect_identifiers_from_comments_and_strings = 1
-        " let g:ycm_autoclose_preview_window_after_completion = 1
-        " let g:ycm_filepath_completion_use_working_dir = 1
+         "Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
+         "let g:ycm_complete_in_comments_and_strings = 1
+         "let g:ycm_collect_identifiers_from_comments_and_strings = 1
+         "let g:ycm_autoclose_preview_window_after_completion = 1
+         "let g:ycm_filepath_completion_use_working_dir = 1
     " }
 
     " Ultisnips (Code Snippets){
