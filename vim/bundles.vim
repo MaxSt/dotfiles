@@ -114,7 +114,9 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " syntastic (show compiler errors after saving){
-        "Plug 'scrooloose/syntastic'
+        Plug 'scrooloose/syntastic'
+        let g:syntastic_html_checkers = []
+        let g:syntastic_javascript_checkers = ['jsxhint']
         "let g:syntastic_auto_loc_list=1
     " }
 
@@ -135,10 +137,8 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " Ack (Ack for vim){
-        " Plug 'mileszs/ack.vim', {'on': 'Ack'}
-        " let g:ackprg = 'ag --nogroup --nocolor --column'
-        Plug 'gabesoft/vim-ags', {'on': 'Ags'}
-        let g:ags_agexe = '/usr/bin/ag'
+         Plug 'mileszs/ack.vim', {'on': 'Ack'}
+         let g:ackprg = 'ag --nogroup --nocolor --column'
     " }
 
 
