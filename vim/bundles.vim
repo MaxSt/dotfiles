@@ -116,7 +116,7 @@ call plug#begin('~/.vim/plugged')
     " syntastic (show compiler errors after saving){
         Plug 'scrooloose/syntastic'
         let g:syntastic_html_checkers = []
-        let g:syntastic_javascript_checkers = ['jsxhint']
+        let g:syntastic_javascript_checkers = ['eslint']
         "let g:syntastic_auto_loc_list=1
     " }
 
