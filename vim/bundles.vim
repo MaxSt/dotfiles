@@ -114,11 +114,18 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " syntastic (show compiler errors after saving){
-        Plug 'scrooloose/syntastic'
-        let g:syntastic_html_checkers = []
-        let g:syntastic_javascript_checkers = ['eslint']
-        "let g:syntastic_auto_loc_list=1
+        " Plug 'scrooloose/syntastic'
+        " let g:syntastic_html_checkers = []
+        " let g:syntastic_javascript_checkers = ['eslint']
     " }
+
+      Plug 'benekastah/neomake'
+      let g:neomake_javascript_enabled_makers = ['eslint']
+      "let g:neomake_open_list = 1
+      if has('nvim')
+        autocmd! BufWritePost * Neomake
+      endif
+
 
     " Tabular (text filtering and alignment (:Tab /[ =,... ])){
         Plug 'godlygeek/tabular', {'on': 'Tab'}
@@ -242,6 +249,11 @@ call plug#begin('~/.vim/plugged')
         let g:incsearch#consistent_n_direction = 1
         let g:incsearch#separate_highlight = 1
 
+    " }
+
+    " vim-sneak (s is 2 char f){
+        Plug 'justinmk/vim-sneak'
+        let g:sneak#use_ic_scs = 1
     " }
 
     " vim-shot-f (highlight next f,t,F,T chars){
