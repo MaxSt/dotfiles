@@ -18,8 +18,8 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " fzf (fuzzy finder){
-        Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
-        noremap <leader>t :FZF!<CR>
+        "Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
+        "noremap <leader>t :FZF!<CR>
     " }
 
     " ctrl-space (tabs and buffer management){
@@ -29,33 +29,33 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " ctrlp (open file with fuzzy search){
-      " Plug 'ctrlpvim/ctrlp.vim'
-      " let g:ctrlp_map = '<leader>t'
-      " let g:ctrlp_open_new_file = 'r' " ctrlp opens new file in current window
-      " let g:ctrlp_cache_dir='~/.vim/tmp/'
+       Plug 'ctrlpvim/ctrlp.vim'
+       let g:ctrlp_map = '<leader>t'
+       let g:ctrlp_open_new_file = 'r' " ctrlp opens new file in current window
+       let g:ctrlp_cache_dir='~/.vim/tmp/'
       " let g:ctrlp_reuse_window='startify'
-      " let g:ctrlp_open_multiple_files = 'rr'
+       let g:ctrlp_open_multiple_files = 'rr'
       " let g:ctrlp_clear_cache_on_exit=1
-      " let g:ctrlp_max_files = 10000
-      " let g:ctrlp_follow_symlinks=1
-      " nmap <leader>b :CtrlPBuffer<CR>
-      " if executable('ag')
-      "   let g:ctrlp_user_command = {
-      "     \ 'types': {
-      "     \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
-      "     \ 2: ['.hg', 'hg --cwd %s locate -I .']
-      "     \ },
-      "     \ 'fallback': 'ag %s -l --nocolor -g ""'
-      "   \ }
-      " else
-      "   let g:ctrlp_user_command = {
-      "     \ 'types': {
-      "       \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
-      "       \ 2: ['.hg', 'hg --cwd %s locate -I .']
-      "     \ },
-      "     \ 'fallback': 'find %s/.. -type f'
-      "   \ }
-      " endif
+       let g:ctrlp_max_files = 10000
+       let g:ctrlp_follow_symlinks=1
+       nmap <leader>b :CtrlPBuffer<CR>
+       if executable('ag')
+         let g:ctrlp_user_command = {
+           \ 'types': {
+           \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
+           \ 2: ['.hg', 'hg --cwd %s locate -I .']
+           \ },
+           \ 'fallback': 'ag %s -l --nocolor -g ""'
+         \ }
+       else
+         let g:ctrlp_user_command = {
+           \ 'types': {
+             \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
+             \ 2: ['.hg', 'hg --cwd %s locate -I .']
+           \ },
+           \ 'fallback': 'find %s/.. -type f'
+         \ }
+       endif
     " }
 
     " YouCompleteMe (Code Completion){
@@ -123,7 +123,7 @@ call plug#begin('~/.vim/plugged')
       let g:neomake_javascript_enabled_makers = ['eslint']
       "let g:neomake_open_list = 1
       if has('nvim')
-        autocmd! BufWritePost * Neomake
+        autocmd! BufWritePost *.js Neomake
       endif
 
 
@@ -226,6 +226,7 @@ call plug#begin('~/.vim/plugged')
         Plug 'tommcdo/vim-exchange'
     " }
 
+
     " incsearch (Improved incremental searching for vim){
         Plug 'haya14busa/incsearch.vim'
         map /  <Plug>(incsearch-forward)
@@ -266,6 +267,11 @@ call plug#begin('~/.vim/plugged')
 
     " better js syntax{
         Plug 'othree/yajs.vim'
+    " }
+
+    " nerdtree (file explorer){
+        Plug 'scrooloose/nerdtree'
+        nmap g\ :NERDTree<CR>
     " }
 
   call plug#end()

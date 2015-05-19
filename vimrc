@@ -18,6 +18,13 @@
       tnoremap <a-j> <C-\><C-n><C-w>j
       tnoremap <a-k> <C-\><C-n><C-w>k
       tnoremap <a-l> <C-\><C-n><C-w>l
+
+      let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
+      " Hack to get C-h working in neovim
+      nmap <BS> <C-W>h
+
+      set ttimeout
+      set ttimeoutlen=0
     endif
 " }
 
@@ -42,9 +49,6 @@
     set encoding=utf-8
     set completeopt=longest,menu,preview
     scriptencoding utf-8
-
-    set ttimeout
-    set ttimeoutlen=100
 
     set noeb vb t_vb=                                             " disable peep
     set autoread                                                  " automatically load file when its changed
@@ -191,12 +195,6 @@
 
     " § for Window switching
     noremap § <C-W>
-
-    "control + hjkl to switch windows
-    noremap <C-J>     <C-W>j
-    noremap <C-K>     <C-W>k
-    noremap <C-H>     <C-W>h
-    noremap <C-L>     <C-W>l
 
     " Adjust viewports to the same size
     map <Leader>= <C-w>=

@@ -8,7 +8,7 @@ alias v="vim"
 alias g="git"
 alias l="ls"
 alias c="cd"
-alias tr="tmuxinator"
+alias mux="tmuxinator"
 if ~/.scripts/command_is_available trash-put; then
   alias rm="trash-put"
 fi
