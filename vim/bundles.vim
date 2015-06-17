@@ -282,6 +282,8 @@ call plug#begin('~/.vim/plugged')
         Plug 'scrooloose/nerdtree'
         nmap g\ :NERDTree<CR>
     " }
+        Plug 'Shougo/deoplete.nvim'
+        let g:deoplete#enable_at_startup = 1
 
   call plug#end()
   filetype plugin indent on
