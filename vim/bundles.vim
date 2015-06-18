@@ -281,6 +281,8 @@ call plug#begin('~/.vim/plugged')
     " vim-vinegar (file explorer){
         Plug 'tpope/vim-vinegar'
     " }
+        Plug 'Shougo/deoplete.nvim'
+        let g:deoplete#enable_at_startup = 1
 
   call plug#end()
   filetype plugin indent on

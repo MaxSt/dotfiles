@@ -32,5 +32,10 @@ URxvt.url-launcher    : firefox
 URxvt*font: -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
 URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
 
-#include "/home/max/.terminalcolors/flatcolors_dark"
+!URxvt*letterSpace: -2
+!URxvt*font: xft:Fira Mono:size=9
+!URxvt*boldFont: xft:Fira Mono:size=9
+
+#include "/home/max/.terminalcolors/new"
+!#include "/home/max/.terminalcolors/flatcolors_dark"
 !#include "/home/max/.terminalcolors/flatcolors_light"
