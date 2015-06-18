@@ -8,14 +8,14 @@
 pkill lemonbar
 
 # Colors
-white="FFFFFF"
-black="#181818"
+white="#FFfbfcfc"
+black="#FF2a3f44"
+background="#00000000"
 darkgrey="#282828"
-green="#8F9D6A"
+main="#FF79e8c5"
 
 # Fonts
 font="-*-tamsyn-medium-r-normal-*-12-*-*-*-*-*-*-1"
-icons="-wuncon-siji-medium-r-normal--10-100-75-75-c-80-iso10646-1"
 
 clock(){
 	# Displays the date eg "Sun 17 May 9:10 AM"
@@ -23,33 +23,34 @@ clock(){
 	echo " $date"
 }
 
-cpu(){
-	#cpuusage=$(mpstat | awk '/all/ {print $4 + $6}')
-	#echo "$cpuusage% Used"
-  echo 'cpu'
-}
+ # cpu(){
+ # 	cpuusage=$(mpstat | awk '/all/ {print $4 + $6}')
+ # 	echo "$cpuusage% Used"
+ # }
 
-memory(){
-	# Show free memory
-	free -m | awk '/Mem:/ {print " " $3" MB Used "}'
-}
+ memory(){
+ 	# Show free memory
+ 	free -m | awk '/Mem:/ {print "M " $3" MB Used "}'
+ }
 
 
-volume(){
-	volup="A4:amixer set Master 5%+:"
-	voldown="A5:amixer set Master 5%-:"
-	volmute="A:amixer set Master toggle:"
+ volume(){
+  volup="A4:amixer set Master -q 5%+:"
+  voldown="A5:amixer set Master -q 5%-:"
+  volmute="A:amixer set Master toggle:"
 
-	# Volume Indicator
-	if [[ $(amixer get Master | awk '/Mono:/ {print $6}') == "[off]" ]]; then
-		vol=$(echo " Mute")
-	else
-		mastervol=$(amixer get Master | egrep -o '[0-9]{1,3}%' | sed -e 's/%//')
-		vol=$(echo " $mastervol")
-	fi
+  #vol=$(amixer get Master | sed -n 's/^.*\[\([0-9]\+\)%.*$/\1/p')
 
-	echo "%{$volup}%{$voldown}%{$volmute} $vol %{A}%{A}%{A}"
-}
+  # Volume Indicator
+  # if [[ $(amixer get Master | awk '/Mono:/ {print $6}') == "[off]" ]]; then
+  #   vol=$(echo " Mute")
+  # else
+  #   mastervol=$(amixer get Master | egrep -o '[0-9]{1,3}%' | sed -e 's/%//')
+  #   vol=$(echo "V $mastervol")
+  # fi
+
+  echo "%{$volup}%{$voldown}%{$volmute} $vol %{A}%{A}%{A}"
+ }
 
 windowtitle(){
 	# Grabs focused window's title
@@ -77,8 +78,8 @@ workspace(){
 		wmctrl -d \
 		| awk '/ / {print $2 $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20}' ORS=''\
 		| sed -e 's/\s*  //g' \
-		-e 's/\*[ 0-9A-Za-z]*[^ -~]*/%{B#8F9D6A}  &  %{B}/g' \
-		-e 's/\-[ 0-9A-Za-z]*[^ -~]*/%{B#282828}%{A:i3-msg workspace &:}  &  %{A}%{B}/g' \
+		-e 's/\*[ 0-9A-Za-z]*[^ -~]*/%{B'$main'}%{F'$black'} & %{B'$background'}%{F'$white'}/g' \
+		-e 's/\-[ 0-9A-Za-z]*[^ -~]*/%{B'$background'}%{F'$white'}%{A:i3-msg workspace &:} & %{A}%{B}/g' \
 		-e 's/\*//g' \
 		-e 's/ -/ /g' \
 		)
@@ -92,21 +93,21 @@ while :; do
 	echo\
 		"%{l}\
 			$(workspace)\
-			%{B$black} $(windowtitle) \
+			%{B$background} $(windowtitle) \
 		%{l}\
 		%{c}\
-			%{B$green} $(echo music) \
+			%{B$main} $(echo music) \
 			%{B$darkgrey} $(volume) \
 		%{c}\
 		%{r}\
 			%{B$darkgrey} $(echo test) \
-			%{B$green} $(echo cpu) \
-			%{B$black} $(clock) \
-			%{B$black}\
+			%{B$main} $(memory) \
+			%{B$background} $(clock) \
+			%{B$background}\
 		%{r}"
 	sleep .03s
 done |
 
 # Finally, launches bar while piping the above while loop!
 # | bash is needed on the end for the click events to work.
-lemonbar -g x25 -f $font -f $icons -F \#FF$white | bash
+lemonbar -g x16 -f $font -F $white | bash
