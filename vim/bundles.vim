@@ -278,9 +278,8 @@ call plug#begin('~/.vim/plugged')
         Plug 'othree/yajs.vim'
     " }
 
-    " nerdtree (file explorer){
-        Plug 'scrooloose/nerdtree'
-        nmap g\ :NERDTree<CR>
+    " vim-vinegar (file explorer){
+        Plug 'tpope/vim-vinegar'
     " }
         Plug 'Shougo/deoplete.nvim'
         let g:deoplete#enable_at_startup = 1
