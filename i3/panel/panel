@@ -1,0 +1,29 @@
+#! /bin/bash
+mydir="$(dirname $0)"
+. $mydir/panel_fifo
+. $mydir/panel_colors
+
+PANEL_HEIGHT=16
+PANEL_UNDERLINE_SIZE=2
+PANEL_FONT_FAMILY="-*-tamsyn-medium-*-*--13-*-*-*-*-*-1"
+PANEL_ICON_FONT_FAMILY="-wuncon-siji-medium-r-normal--10-100-75-75-c-80-iso10646-1"
+
+if [ $(pgrep -cx panel) -gt 1 ] ; then
+  printf "%s\n" "The panel is already running." >&2
+  exit 1
+fi
+
+trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
+
+[ -e "$PANEL_FIFO" ] && rm "$PANEL_FIFO"
+mkfifo "$PANEL_FIFO"
+
+xtitle -sf 'T%s' > "$PANEL_FIFO" &
+clock -sf 'S% %m.%d.%Y  %H:%M' > "$PANEL_FIFO" &
+#volume -sf 'V%s %i' > "$PANEL_FIFO" &
+
+$mydir/i3out &
+
+cat "$PANEL_FIFO" | $mydir/panel_bar | lemonbar -p -g x$PANEL_HEIGHT -f "$PANEL_FONT_FAMILY" -f "$PANEL_ICON_FONT_FAMILY" -F "$PANEL_FOREGROUND" -B "$PANEL_BACKGROUND" -u $PANEL_UNDERLINE_SIZE | while read line; do eval "$line"; done &
+
+wait

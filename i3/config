@@ -44,7 +44,7 @@ font -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
 floating_modifier $mod
 
 # Floating Windows
-#for_window [class="XTerm"] floating enable
+for_window [instance="pavucontrol"] floating enable #Volume Control
 #for_window [class="URxvt"] floating enable
 #for_window [class="Thunar"] floating enable
 #for_window [class="Nautilus"] floating enable
@@ -63,7 +63,7 @@ floating_modifier $mod
 
 # 1px Border Windows
 #for_window [class="URxvt" ] border 1pixel
-new_window pixel 2
+new_window pixel 1
 
 # Aesthetics
 bindsym $mod+Shift+n border normal
@@ -140,16 +140,16 @@ bindsym $mod+minus exec "amixer set Master -q 5%- ; killall -SIGUSR1 i3status"
 bindsym $mod+BackSpace exec "amixer set Master toggle ; killall -SIGUSR1 i3status"
 
 # switch to workspace
-bindsym $mod+1 workspace 1
-bindsym $mod+2 workspace 2
-bindsym $mod+3 workspace 3
-bindsym $mod+4 workspace 4
-bindsym $mod+5 workspace 5
-bindsym $mod+6 workspace 6
-bindsym $mod+7 workspace 7
-bindsym $mod+8 workspace 8
-bindsym $mod+9 workspace 9
-bindsym $mod+0 workspace 10
+bindsym $mod+1 workspace 1; exec --no-startup-id ~/.i3/panel/i3out
+bindsym $mod+2 workspace 2; exec --no-startup-id ~/.i3/panel/i3out
+bindsym $mod+3 workspace 3; exec --no-startup-id ~/.i3/panel/i3out
+bindsym $mod+4 workspace 4; exec --no-startup-id ~/.i3/panel/i3out
+bindsym $mod+5 workspace 5; exec --no-startup-id ~/.i3/panel/i3out
+bindsym $mod+6 workspace 6; exec --no-startup-id ~/.i3/panel/i3out
+bindsym $mod+7 workspace 7; exec --no-startup-id ~/.i3/panel/i3out
+bindsym $mod+8 workspace 8; exec --no-startup-id ~/.i3/panel/i3out
+bindsym $mod+9 workspace 9; exec --no-startup-id ~/.i3/panel/i3out
+bindsym $mod+0 workspace 10; exec --no-startup-id ~/.i3/panel/i3out
 
 # move focused container to workspace
 bindsym $mod+Shift+1 move container to workspace 1
@@ -291,23 +291,28 @@ mode "resize" {
 
 bindsym $mod+r mode "resize"
 
+# My bar
+ bar {
+   i3bar_command ~/.i3/panel/panel
+ }
+
+
 # Start i3bar
-bar {
-  status_command i3status -c ~/.i3/i3status.conf
-  strip_workspace_numbers yes
-  position top
-  workspace_buttons yes
-  tray_output primary
+# bar {
+#   status_command i3status -c ~/.i3/i3status.conf
+#   strip_workspace_numbers yes
+#   position top
+#   workspace_buttons yes
+#   tray_output primary
 
-	colors {
-    statusline          $white
-    background          $dark_black
+# 	colors {
+#     statusline          $white
+#     background          $dark_black
 
-    #name               #border      #bg         #text
-    focused_workspace   $dark_black  $maincolor  $dark_black
-    active_workspace    $dark_black  $black      $white
-    inactive_workspace  $dark_black  $black      $white
-    urgent_workspace    $dark_black  $black      $white
-	}
-}
-
+#     #name               #border      #bg         #text
+#     focused_workspace   $dark_black  $maincolor  $dark_black
+#     active_workspace    $dark_black  $black      $white
+#     inactive_workspace  $dark_black  $black      $white
+#     urgent_workspace    $dark_black  $black      $white
+# 	}
+# }
