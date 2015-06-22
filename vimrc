@@ -12,7 +12,7 @@
 " neovim {
     if has('nvim')
       " set poython host (default would be python3)
-      let g:python_host_prog='/usr/bin/python2'
+      "let g:python_host_prog='/usr/bin/python2'
       tnoremap <a-space> <C-\><C-n>
       tnoremap <a-h> <C-\><C-n><C-w>h
       tnoremap <a-j> <C-\><C-n><C-w>j

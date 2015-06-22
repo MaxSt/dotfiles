@@ -10,7 +10,6 @@ endif
 call plug#begin('~/.vim/plugged')
 
  " Bundles{
-
     " Colorscheme (Colorscheme){
         Plug 'MaxSt/FlatColor'
         let g:flatcolor_termcolors=16
@@ -281,8 +280,13 @@ call plug#begin('~/.vim/plugged')
     " vim-vinegar (file explorer){
         Plug 'tpope/vim-vinegar'
     " }
+
+    " deoplete (async completion){
         Plug 'Shougo/deoplete.nvim'
         let g:deoplete#enable_at_startup = 1
+        set completeopt+=menuone
+        Plug 'ervandew/supertab'
+    " }
 
   call plug#end()
   filetype plugin indent on

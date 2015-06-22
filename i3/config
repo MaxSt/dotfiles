@@ -6,24 +6,27 @@ set $mod Mod4
 
 # Colors
 
-set $black #3a4857
-set $dark_black #1e2c36
-set $red #ff0033
-set $dark_red #c91b19
-set $green #4ecc60
-set $dark_green #319242
-set $yellow #f3c223
-set $dark_yellow #ee7c16
-set $blue #329dcd
-set $dark_blue #2770ca
-set $magenta #9348b2
-set $dark_magenta #543c9c
-set $cyan #52eaba
-set $dark_cyan #2c7f7e
-set $white #ecf0f1
-set $dark_white #a0adb0
+set $fgcolor:   #fbfcfc
+set $bgcolor:   #1e2c36
 
-set $maincolor #52eaba
+set $black #2a3f44
+set $dark_black #243b46
+set $red #ff5151
+set $dark_red #db3d3b
+set $green #76e085
+set $dark_green #44b157
+set $yellow #ffe777
+set $dark_yellow #f0994b
+set $blue #54b3de
+set $dark_blue #3577c9
+set $magenta #ae6aca
+set $dark_magenta #684fb4
+set $cyan #79e8c5
+set $dark_cyan #3e9897
+set $white #cbe3e7
+set $dark_white #bbc8e0
+
+set $maincolor #79e8c5
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -239,11 +242,11 @@ gaps outer 0
 
 
 
-#name                    #top        #border     #text        #nextsplit
-client.focused           $maincolor  $maincolor  $dark_black  $yellow
-client.unfocused         $black      $black      $white       $yellow
-client.focused_inactive  $black      $black      $white       $yellow
-client.urgent            $black      $black      $white       $yellow
+#name                    #top        #border       #text          #nextsplit
+client.focused           $maincolor  $maincolor    $dark_black    $yellow
+client.unfocused         $bgcolor    $bgcolor      $fgcolor       $yellow
+client.focused_inactive  $bgcolor    $bgcolor      $fgcolor       $yellow
+client.urgent            $bgcolor    $bgcolor      $fgcolor       $yellow
 
 
 
