@@ -39,7 +39,7 @@ clock(){
   voldown="A5:amixer set Master -q 5%-:"
   volmute="A:amixer set Master toggle:"
 
-  #vol=$(amixer get Master | sed -n 's/^.*\[\([0-9]\+\)%.*$/\1/p')
+  vol=$(amixer get Master | sed -n 's/^.*\[\([0-9]\+\)%.*$/\1/p' | uniq)
 
   # Volume Indicator
   # if [[ $(amixer get Master | awk '/Mono:/ {print $6}') == "[off]" ]]; then
@@ -105,7 +105,7 @@ while :; do
 			%{B$background} $(clock) \
 			%{B$background}\
 		%{r}"
-	sleep .03s
+	sleep 2s
 done |
 
 # Finally, launches bar while piping the above while loop!
