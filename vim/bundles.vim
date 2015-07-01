@@ -102,9 +102,9 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " delimitMate (auto-close chars){
-        " Plug 'Raimondi/delimitMate'
-        " let g:delimitMate_matchpairs = '(:),[:],{:},<:>'
-        " let g:delimitMate_quotes = "\" ' ` | %"
+         Plug 'Raimondi/delimitMate'
+         let g:delimitMate_matchpairs = '(:),[:],{:}'
+         let g:delimitMate_quotes = "\" ' ` | %"
     " }
 
     " Gundo (Undo Tree){
@@ -282,6 +282,7 @@ call plug#begin('~/.vim/plugged')
         " let g:deoplete#enable_at_startup = 1
         " set completeopt+=menuone
         Plug 'ervandew/supertab'
+        Plug 'alvan/vim-closetag'
     " }
 
   call plug#end()
