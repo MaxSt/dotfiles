@@ -187,7 +187,7 @@
     noremap <silent> <A-j> <C-W>+<esc>
     noremap <silent> <A-l> <C-w>><esc>
 
-    let g:netrw_liststyle=3         " thin (change to 3 for tree)
+    let g:netrw_liststyle=2         " thin (change to 3 for tree)
     let g:netrw_banner=0            " no banner
     let g:netrw_altv=1              " open files on right
     let g:netrw_preview=1           " open previews vertically
