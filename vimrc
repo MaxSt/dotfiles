@@ -127,6 +127,7 @@
     set incsearch                                               " show search matches as you type
     set ruler                                                   " show the cursor position
     set cmdheight=1
+
     set breakindent
     "set so=14                                                   " Keep cursor away from edges of screen.
 " }
@@ -186,11 +187,15 @@
     noremap <silent> <A-j> <C-W>+<esc>
     noremap <silent> <A-l> <C-w>><esc>
 
-    let g:netrw_liststyle=1         " thin (change to 3 for tree)
+    let g:netrw_liststyle=3         " thin (change to 3 for tree)
     let g:netrw_banner=0            " no banner
     let g:netrw_altv=1              " open files on right
     let g:netrw_preview=1           " open previews vertically
     let g:netrw_browse_split=4      " open files in previous window
+
+    " line numbers in netrw
+    let g:netrw_bufsettings = 'noma nomod nu nobl nowrap ro'
+
     noremap g\ :10Vexplore<CR>I
 
 

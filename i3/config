@@ -9,24 +9,24 @@ set $mod Mod4
 set $fgcolor:   #fbfcfc
 set $bgcolor:   #1e2c36
 
-set $black #2a3f44
-set $dark_black #243b46
-set $red #ff5151
-set $dark_red #db3d3b
-set $green #76e085
-set $dark_green #44b157
-set $yellow #ffe777
-set $dark_yellow #f0994b
-set $blue #54b3de
-set $dark_blue #3577c9
-set $magenta #ae6aca
-set $dark_magenta #684fb4
-set $cyan #79e8c5
-set $dark_cyan #3e9897
+set $black #28444a
+set $dark_black #3c515c
+set $red #ff6767
+set $dark_red #e64040
+set $green #88e094
+set $dark_green #6dc35c
+set $yellow #ffe880
+set $dark_yellow #f2a562
+set $blue #7accf0
+set $dark_blue #6097dc
+set $magenta #b585ca
+set $dark_magenta #8d73de
+set $cyan #7ee8c6
+set $dark_cyan #53d3d2
 set $white #cbe3e7
 set $dark_white #bbc8e0
 
-set $maincolor #79e8c5
+set $maincolor #7ee8c6
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.

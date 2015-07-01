@@ -17,11 +17,11 @@
         "-w",
         "450",
         "-nf",
-        "#ecf0f1",
+        "#fcfcfc",
         "-sb",
-        "#3498db",
+        "#7accf0",
         "-nb",
-        "#2c3e50"
+        "#28444a"
     ],
     "frecency-visits": 10,
     "preselect-last-visit": false,

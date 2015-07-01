@@ -284,7 +284,6 @@ call plug#begin('~/.vim/plugged')
         Plug 'ervandew/supertab'
     " }
 
-
   call plug#end()
   filetype plugin indent on
 
