@@ -1,103 +1,73 @@
-#! /bin/sh
-#
-# Example panel for LemonBoy's bar
+#! /bin/bash
+mydir="$(dirname $0)"
+. $mydir/colors
 
-. ~/.config/bspwm/colors
+shutdown="%{B#$O_V$C_RED}%{A:notify-send shutdown pressed:}%{A}%{B-}"
+
+volumecontrol="%{A:pavucontrol -t 1:}%{A}"
+
 
 while read -r line ; do
-	case $line in
-		T*)
-			# clock output
-      clock="%{B}%{F#$OPACITY$COLOR_FOREGROUND}  ${line#?}%{B}%{F}"
-			;;
-		N*)
-			# current Network
-      network="%{B}%{F#$OPACITY$COLOR_BACKGROUND} ${line#?} %{F}%{B}"
-			;;
-		V*)
-			# current Volume
-      volume="%{B#$OPACITY$COLOR_MAINCOLOR}%{F#$OPACITY$COLOR_BACKGROUND}  ${line#?} %{F}%{B}"
-			;;
-		B*)
-			# current Battery
-
-			IFS=' '
-			set -- ${line#?}
-      batstatus=$1
-      batpercent=$2
-
-      # Set Icon
-      icon=""
-      if [[ $batstatus != "Discharging" ]]; then
-        icon=""
-        batcolor=$COLOR_MAINCOLOR
-      elif [[ $batpercent -lt 10 ]]; then
-        icon=""
-        batcolor=$COLOR_LIGHTRED
-      elif [[ $batpercent -lt 40 ]]; then
-        icon=""
-        batcolor=$COLOR_DARKYELLOW
-      elif [[ $batpercent -lt 75 ]]; then
-        icon=""
-        batcolor=$COLOR_LIGHTBLUE
-      else
-        icon=""
-        batcolor=$COLOR_LIGHTCYAN
-      fi
-      battery="%{B}%{F#$OPACITY$batcolor} ${icon} ${batpercent} %{B}%{F}"
-			;;
-		A*)
-			# current Application
-      title="${line#?}"
-			;;
-		W*)
-			# bspwm internal state
-			wm_infos=""
-			IFS=':'
-			set -- ${line#?}
-			while [ $# -gt 0 ] ; do
-				item=$1
+  case $line in
+    T*)
+      # clock output
+      clock="%{F#$O_V$C_FG}%{B#$O_H$PANEL_BACKGROUND} ${line#?} %{B-}%{F-}"
+      ;;
+    # V*)
+    #   # current Volume
+      # volume="%{B#$O_V$C_MAIN}%{F#$O_V$C_BG}  ${line#?} %{F}%{B}"
+    #   ;;
+    A*)
+      # xtitle output
+      title="%{F#$O_V$C_FG}%{B#$O_H$PANEL_BACKGROUND} ${line#?} %{B-}%{F-}"
+      ;;
+    W*)
+      # bspwm internal state
+      wm_infos=""
+      IFS=':'
+      set -- ${line#?}
+      while [ $# -gt 0 ] ; do
+        item=$1
         # $name to get workspace name
-				name=${item#?}
-				case $item in
-					O*)
-						# focused occupied desktop
-            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_MAINCOLOR}%{B}%{F}"
-						;;
-					F*)
-						# focused free desktop
-            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_MAINCOLOR}%{B}%{F}"
-						;;
-					U*)
-						# focused urgent desktop
-            #wm_infos="$wm_infos %{B#$OPACITY$COLOR_BACKGROUND}%{F#$OPACITY$COLOR_FOREGROUND}%{+u}■#{-u}%{B}%{F}"
-            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_MAINCOLOR}%{B}%{F}"
-						;;
-					o*)
-						# occupied desktop
-            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_FOREGROUND}%{B}%{F}"
-						;;
-					f*)
-						# free desktop
-            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_FOREGROUND}%{B}%{F}"
-						;;
-					u*)
-						# urgent desktop
-            wm_infos="$wm_infos %{B}%{F#$OPACITY$COLOR_FOREGROUND}%{B}%{F}"
-						;;
-					L*)
-						# layout
-            layout=$(printf "%s" "${name}" | sed 's/\(.\).*/\U\1/' | sed 's/M//' | sed 's/T//')
-						;;
-				esac
-				shift
-			done
-      wm_infos="$wm_infos "
-			;;
-	esac
+        name=${item#?}
+        desktop=" ${name} "
+        switchbutton="%{A:bspc desktop -f ${name}:}"
+        case $item in
+          O*)
+            # focused occupied desktop
+            wm_infos="$wm_infos %{U#$O_V$C_MAIN}%{+u}${switchbutton}$desktop%{A}%{-u}%{U}"
+            ;;
+          F*)
+            # focused free desktop
+            wm_infos="$wm_infos %{U#$O_V$C_BLUE}%{+u}${switchbutton}$desktop%{A}%{-u}%{U}"
+            ;;
+          U*)
+            # focused urgent desktop
+            #wm_infos="$wm_infos %{B#$O_V$C_BG}%{F#$O_V$C_FG}%{+u}■#{-u}%{B}%{F}"
+            wm_infos="$wm_infos %{U#$O_V$C_RED}%{+u}${switchbutton}$desktop%{A}%{-u}%{U}"
+            ;;
+          o*)
+            # occupied desktop
+            wm_infos="$wm_infos %{U#$O_V$C_FG}%{+u}${switchbutton}$desktop%{A}%{-u}%{U}"
+            ;;
+          f*)
+            # free desktop
+            wm_infos="$wm_infos ${switchbutton}$desktop%{A}"
+            ;;
+          u*)
+            # urgent desktop
+            wm_infos="$wm_infos %{U#$O_V$C_YELLOW}%{+u}%${switchbutton}$desktop%{A}%{-u}%{U}"
+            ;;
+          L*)
+          # layout
+            layout=$(printf "%s" "$name" | sed 's/\(.\).*/\U\1/' | sed 's/M//' | sed 's/T//')
+            wm_infos="${layout}${wm_infos}"
+            ;;
+        esac
+        shift
+      done
+      ;;
+  esac
 
-  left_side=" ${layout} %{F#$OPACITY$COLOR_BACKGROUND}%{B#$OPACITY$COLOR_MAINCOLOR} ${title} %{B}%{F}"
-	printf "%s\n" " %{l}$left_side%{c}$wm_infos%{r}$network$battery$volume$clock "
+  printf "%s\n" "%{l} ${title}%{c}${wm_infos}%{r}${volumecontrol} ${clock}${shutdown}"
 done
-
-

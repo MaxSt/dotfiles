@@ -1,9 +1,15 @@
 #! /bin/sh
-export PANEL_FIFO=/tmp/panel-fifo
+mydir="$(dirname $0)"
+. $mydir/panel_fifo
+. $mydir/colors
+PANEL_HEIGHT=16
+PANEL_UNDERLINE_SIZE=2
+PANEL_FONT_FAMILY="-*-tamsyn-medium-*-*--13-*-*-*-*-*-1"
+PANEL_ICON_FONT_FAMILY="-wuncon-siji-medium-r-normal--10-100-75-75-c-80-iso10646-1"
 
-if [ $(pgrep -cx pannel) -gt 1 ] ; then
-printf "%s\n" "The panel is already running." >&2
-exit 1
+if [ $(pgrep -cx panel) -gt 1 ] ; then
+  printf "%s\n" "The panel is already running." >&2
+  exit 1
 fi
 
 trap 'trap - TERM; kill 0' INT TERM QUIT EXIT
@@ -27,16 +33,17 @@ battery -sf 'B%s %i' > "$PANEL_FIFO" || echo 'BCharging 100' > "$PANEL_FIFO" &
 xtitle -sf 'A%s' > "$PANEL_FIFO" &
 
 # volume (V)
-while true; do
-  printf "V%s\n" $(amixer | if grep -q "off"; then echo "mute"; else echo $(amixer | awk '/Front Left: Playback/ {print $5}' | sed 's/\[//g;s/\]//g');fi) > "$PANEL_FIFO"
-  sleep 0.5s;
-done &
-
-
-. ~/.config/bspwm/colors
+# while true; do
+#   printf "V%s\n" $(amixer | if grep -q "off"; then echo "mute"; else echo $(amixer | awk '/Front Left: Playback/ {print $5}' | sed 's/\[//g;s/\]//g');fi) > "$PANEL_FIFO"
+#   sleep 0.5s;
+# done &
 
 # start bar with input from fifo piped through panel_bar and then start stalonetray
-cat "$PANEL_FIFO" | ~/.config/bspwm/panel_bar | lemonbar -g x16+0+0 -F "#$OPACITY$COLOR_FOREGROUND" -B "#00000000" -f "-*-tamsyn-medium-*-*--13-*-*-*-*-*-*-1,-misc-stlarch-medium-r-normal--10-100-75-75-c-80-iso10646-1" & stalonetray -i 16 -t true -bg "#$COLOR_BACKGROUND" --icon-gravity NE --geometry 20x1-280+0 --max-geometry 30x1-0-0 --kludges force_icons_size &
+cat "$PANEL_FIFO" | $mydir/panel_bar | lemonbar -p -g x$PANEL_HEIGHT -f "$PANEL_FONT_FAMILY" -f "$PANEL_ICON_FONT_FAMILY" -F "$PANEL_FOREGROUND" -B "$PANEL_BACKGROUND" -u $PANEL_UNDERLINE_SIZE | \
+  while read -r line; do
+    eval "$line";
+  done &
+
 
 wait
 

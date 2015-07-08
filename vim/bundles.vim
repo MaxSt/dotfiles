@@ -227,7 +227,7 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " pandoc-syntax (Pandoc Syntax Highlighting){
-        Plug 'vim-pandoc/vim-pandoc-syntax'
+        Plug 'vim-pandoc/vim-pandoc-syntax', { 'for': 'pandoc' }
     " }
 
     " vim-exchange (exchange with cx){
@@ -274,7 +274,7 @@ call plug#begin('~/.vim/plugged')
     " }
 
     " better js syntax{
-        Plug 'othree/yajs.vim'
+        Plug 'othree/yajs.vim', { 'for' : ['javascript']}
     " }
 
     " deoplete (async completion){
@@ -283,9 +283,15 @@ call plug#begin('~/.vim/plugged')
         " set completeopt+=menuone
         Plug 'ervandew/supertab'
         Plug 'alvan/vim-closetag'
+
+        Plug 'airblade/vim-gitgutter'
     " }
 
   call plug#end()
   filetype plugin indent on
 
   colorscheme flatcolor
+
+  hi link GitGutterAdd DiffAdd
+  hi link GitGutterDelete DiffDelete
+  hi link GitGutterChange DiffChange
