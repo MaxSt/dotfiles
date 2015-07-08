@@ -285,6 +285,14 @@ call plug#begin('~/.vim/plugged')
         Plug 'alvan/vim-closetag'
     " }
 
+    "Vim for writing
+    Plug 'reedes/vim-pencil', {'for': ['markdown','mkd','text']}
+    augroup pencil
+      autocmd!
+      autocmd FileType markdown,mkd call pencil#init()
+      autocmd FileType text         call pencil#init()
+    augroup END
+
   call plug#end()
   filetype plugin indent on
 

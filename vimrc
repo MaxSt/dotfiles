@@ -111,6 +111,8 @@
     set expandtab                                               " tabs are spaces, not tabs
     set tabstop=2                                               " an indentation every four columns
     set softtabstop=2                                           " let backspace delete indent
+    set textwidth=80
+    set colorcolumn=+0
 
     " Better copy & paste
     " When you want to paste large blocks of code into vim, press F2 before you
