@@ -32,10 +32,14 @@ synclient PalmDetect=1 PalmMinZ=80 PalmMinWidth=8 &
 #set keyboard delay and rate
 xset r rate 200 25 &
 
-# silent bell
+#silent bell
 /usr/bin/xset b off &
 
 # dont turn screen off
 xset -dpms; xset s off &
 
-exec i3
+#set cursor to arraw
+xsetroot -cursor_name left_ptr &
+
+#exec i3
+sxhkd & exec bspwm

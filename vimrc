@@ -8,7 +8,6 @@
       set runtimepath=$HOME/.vim,$VIM/vimfiles,$VIMRUNTIME,$VIM/vimfiles/after,$HOME/.vim/after
     endif
 " }
-
 " neovim {
     if has('nvim')
       " set poython host (default would be python3)

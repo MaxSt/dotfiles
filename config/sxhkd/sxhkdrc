@@ -1,40 +1,89 @@
+# bspwm hotkeys
+#
+
+super + alt + Escape
+	bspc quit
+
+super + w
+	bspc window -c
+
+# Change layout
+super + less
+	bspc desktop -l next
+
+# Balance (Adjust the split ratios of the tree of the selected desktop so that all windows occupy the same area)
+super + greater
+	bspc desktop -B
+
+super + {s,f}
+	bspc window -t {floating,fullscreen}
+
+# Focus last {window,desktop}
+# super + {grave,Tab}
+#	bspc {window,desktop} -f last
+
+super + apostrophe
+	bspc window -s last
+
+super + {o,i}
+	bspc control --record-history off; \
+	bspc window {older,newer} -f; \
+	bspc control --record-history on
+
+super + y
+	bspc window -w last.manual
+
+super + m
+	bspc window -s biggest
+
+super + {_,shift + }{h,j,k,l}
+	bspc window -{f,s} {left,down,up,right}
+
+super + tab
+	bspc window -f next
+
+super + shift + tab
+	bspc window -f prev
+
+super + {comma,period}
+	bspc desktop -C {backward,forward}
+
+super + bracket{left,right}
+	bspc desktop -f {prev,next}
+
+super + ctrl + {h,j,k,l}
+	bspc window -p {left,down,up,right}
+
+super + ctrl + {_,shift + }space
+	bspc {window -p cancel,desktop -c}
+
+super + alt + {h,j,k,l}
+	bspc window -e {left -10,down +10,up -10,right +10}
+
+super + ctrl + {1-9}
+	bspc window -r 0.{1-9}
+
+super + {_,shift + }{1-9,0}
+	bspc {desktop -f,window -d} ^{1-9,10}
+
+~button1
+	bspc pointer -g focus
+
+super + button{1-3}
+	bspc pointer -g {move,resize_side,resize_corner}
+
+super + !button{1-3}
+	bspc pointer -t %i %i
+
+super + @button{1-3}e
+	bspc pointer -u
+
 #
 # wm independent hotkeys
 #
 #
 super + Return
 	urxvt
-
-super + w
-  killw $(pfw)
-
-super + {h,j,k,l}
-	~/.scripts/wm/closest.sh {h,j,k,l}
-
-super + alt + {h,j,k,l}
-	wmv {-10 0, 0 10, 0 -10, 10 0} $(pfw)
-
-super + alt + shift + {h,j,k,l}
-	wmv {-40 0, 0 40, 0 -40, 40 0} $(pfw)
-
-super + n
-	~/.scripts/wm/focus.sh next
-
-super + space
-	~/.scripts/wm/fullscreen.sh $(pfw)
-
-super + r
-	~/.scripts/wm/rainbow.sh $(pfw)
-
-super + c
-	~/.scripts/wm/closest.sh
-
-
-super + shift + {h,l}
-	wrs {-10, 10} 0 $(pfw)
-
-mod1 + h
-	wrs -10 0 $(pfw)
 
 super + r
 	urxvt -e ranger
@@ -45,8 +94,11 @@ super + t
 super + b
 	firefox
 
-super + n
-	nautilus
+super + e
+	thunar
+
+super + d
+  dmenu-frecency
 
 
 # make sxhkd reload its configuration files:
