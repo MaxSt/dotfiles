@@ -28,4 +28,3 @@ bspc rule -a mplayer2 floating=on
 
 # start barpannel
 ~/.config/bspwm/panel &
-stalonetray &

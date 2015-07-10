@@ -43,6 +43,8 @@ cat "$PANEL_FIFO" | $mydir/panel_bar | lemonbar -p -g x$PANEL_HEIGHT -f "$PANEL_
   while read -r line; do
     eval "$line";
   done &
+sleep 1
+stalonetray &
 
 
 wait

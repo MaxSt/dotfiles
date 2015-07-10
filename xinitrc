@@ -32,6 +32,9 @@ synclient PalmDetect=1 PalmMinZ=80 PalmMinWidth=8 &
 #set keyboard delay and rate
 xset r rate 200 25 &
 
+# Disables Mouse Accel
+xset m 0/0 0 &
+
 #silent bell
 /usr/bin/xset b off &
 
