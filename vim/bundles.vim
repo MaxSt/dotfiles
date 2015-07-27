@@ -119,6 +119,9 @@ call plug#begin('~/.vim/plugged')
   " vim-commentary (Comment and Uncomment with gcc)
   Plug 'tpope/vim-commentary'
 
+  " vim-repeat
+  Plug 'tpope/vim-repeat'
+
   " Ack (Ack for vim)
   Plug 'mileszs/ack.vim', {'on': 'Ack'}
   let g:ackprg = 'ag --nogroup --nocolor --column'
@@ -139,7 +142,6 @@ call plug#begin('~/.vim/plugged')
 
   " Covim (Collaborative Editing)
   "Plug 'FredKSchott/CoVim.git'
-
 
   " endwise (end structures automatically (ruby if end,...))
   Plug 'tpope/vim-endwise'
@@ -227,9 +229,11 @@ call plug#begin('~/.vim/plugged')
   Plug 'othree/yajs.vim', { 'for' : ['javascript']}
 
   " deoplete (async completion)
-  " Plug 'Shougo/deoplete.nvim'
-  " let g:deoplete#enable_at_startup = 1
-  " set completeopt+=menuone
+   " Plug 'Shougo/deoplete.nvim'
+   " Plug 'Shougo/neco-syntax'
+   " Plug 'Shougo/neoinclude.vim'
+   " let g:deoplete#enable_at_startup = 1
+   " set completeopt+=menuone
 
   " supertab (tab complete/tab insert)
   Plug 'ervandew/supertab'
@@ -253,6 +257,8 @@ call plug#begin('~/.vim/plugged')
     autocmd FileType markdown,mkd call pencil#init()
     autocmd FileType text         call pencil#init()
   augroup END
+
+  Plug 'ReplaceWithRegister'
 
 call plug#end()
 filetype plugin indent on
