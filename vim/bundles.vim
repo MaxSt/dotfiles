@@ -122,6 +122,10 @@ call plug#begin('~/.vim/plugged')
   " vim-repeat
   Plug 'tpope/vim-repeat'
 
+  " search for, substitute, and abbreviate multiple variants of a word 
+  " and camel/snake case conversion
+  Plug 'tpope/vim-abolish'
+
   " Ack (Ack for vim)
   Plug 'mileszs/ack.vim', {'on': 'Ack'}
   let g:ackprg = 'ag --nogroup --nocolor --column'
@@ -244,6 +248,9 @@ call plug#begin('~/.vim/plugged')
 
   " show git adds/changes/deletes
   Plug 'airblade/vim-gitgutter'
+
+  " indent navigation (=],...)
+  Plug 'jeetsukumaran/vim-indentwise'
   "
   "File Explorer
   Plug 'scrooloose/nerdtree'

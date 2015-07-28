@@ -166,8 +166,8 @@
     "Map Q to repeat last recorded Macro
     noremap Q @@
 
-    " Select last inserted text with <leader> i
-    nmap <leader>i `[v`]
+    " Select last inserted text
+    nmap gp `[v`]
 
 
     " select Visual again after shifting
