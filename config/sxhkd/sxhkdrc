@@ -105,6 +105,6 @@ super + d
 super + Escape
   pkill -USR1 -x sxhkd
 
-# Turn screen off
+# Turn screen off and lock it
 super + x
-  xset dpms force standby
+ lockscreen;xset dpms force standby
