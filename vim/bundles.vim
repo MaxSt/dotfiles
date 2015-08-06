@@ -84,6 +84,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'Raimondi/delimitMate'
   let g:delimitMate_matchpairs = '(:),[:],{:}'
   let g:delimitMate_quotes = "\" ' ` | %"
+  let g:delimitMate_expand_cr = 1
 
   " Gundo (Undo Tree)
   Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
@@ -182,7 +183,7 @@ call plug#begin('~/.vim/plugged')
   " vim-over (substitute preview)
   " Plug 'osyo-manga/vim-over'
 
-  " vim-tmux-navigator (c-hjkl navigation in vim and tmux)
+  " vim-tmux-navigator (c-hjkl navigation in vim and tmux, c-\ = previous)
   Plug 'christoomey/vim-tmux-navigator'
 
   " targets (more text objects z.b in])
@@ -220,11 +221,12 @@ call plug#begin('~/.vim/plugged')
 
 
   " vim-sneak (s is 2 char f)
-  Plug 'justinmk/vim-sneak'
-  let g:sneak#use_ic_scs = 1
+  "Plug 'justinmk/vim-sneak'
+  "let g:sneak#use_ic_scs = 1
 
   " vim-shot-f (highlight next f,t,F,T chars)
-  Plug 'deris/vim-shot-f'
+  "Plug 'deris/vim-shot-f'
+  "Plug 'unblevable/quick-scope'
 
   " vimux (send commands to tmux)
   "Plug 'benmills/vimux'
