@@ -32,9 +32,6 @@ gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>c']"
 gsettings set org.gnome.desktop.wm.preferences mouse-button-modifier "'<Super>'"
 gsettings set org.gnome.desktop.wm.preferences num-workspaces "8"
 gsettings set org.gnome.desktop.wm.preferences resize-with-right-button "true"
-#disables overlay-key (standard: keyup super)
-gsettings set org.gnome.mutter overlay-key ""
-gsettings set org.gnome.mutter dynamic-workspaces "false"
 
 #Tile windows right/left
 gsettings set org.gnome.mutter.keybindings toggle-tiled-left "['<Super>Left']"
