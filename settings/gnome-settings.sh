@@ -22,11 +22,12 @@ gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-7 "['<Super>7
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-8 "['<Super>8']"
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-9 "['<Super>9']"
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-10 "['<Super>0']"
-gsettings set org.gnome.desktop.wm.keybindings toggle-maximized "['<Super>o']"
+gsettings set org.gnome.desktop.wm.keybindings toggle-maximized "['<Super>m']"
 gsettings set org.gnome.desktop.wm.keybindings close "['<Alt>F4', '<Super>w']"
 gsettings set org.gnome.desktop.wm.keybindings minimize "[]"
 gsettings set org.gnome.desktop.wm.keybindings switch-input-source "[]"
 gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>c']"
+gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>d']"
 
 #Preferences
 gsettings set org.gnome.desktop.wm.preferences mouse-button-modifier "'<Super>'"
@@ -34,11 +35,14 @@ gsettings set org.gnome.desktop.wm.preferences num-workspaces "8"
 gsettings set org.gnome.desktop.wm.preferences resize-with-right-button "true"
 
 #Tile windows right/left
-gsettings set org.gnome.mutter.keybindings toggle-tiled-left "['<Super>Left']"
-gsettings set org.gnome.mutter.keybindings toggle-tiled-right "['<Super>Right']"
+gsettings set org.gnome.mutter.keybindings toggle-tiled-left "['<Super>h','<Super>Left']"
+gsettings set org.gnome.mutter.keybindings toggle-tiled-right "['<Super>l','<Super>Right']"
 
+#gnome shell keybindings
 gsettings set org.gnome.shell.keybindings toggle-application-view "['<Super>a']"
 gsettings set org.gnome.shell.keybindings toggle-overview "['<Super>Space']"
+gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>v']"
+gsettings set org.gnome.settings-daemon.plugins.media-keys screensaver "<Shift><Super>l"
 
 
 #define custom keybindings
