@@ -220,6 +220,8 @@ call plug#begin('~/.vim/plugged')
   let g:incsearch#separate_highlight = 1
 
 
+  Plug 'easymotion/vim-easymotion'
+  map s <Plug>(easymotion-s)
   " vim-sneak (s is 2 char f)
   "Plug 'justinmk/vim-sneak'
   "let g:sneak#use_ic_scs = 1
