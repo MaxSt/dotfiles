@@ -10,6 +10,7 @@
     ~/.scripts: scripts
     ~/.terminalcolors: terminalcolors
     ~/.Xresources: Xresources
+    ~/.Xdefaults: Xresources
     ~/.zshrc: zshrc
     ~/.zlogin: zlogin
     ~/.local/share/themes:
