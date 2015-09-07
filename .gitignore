@@ -1,15 +1,12 @@
 .DS_Store
-*~
 .*.swp
 .netrwhist
 vim/autoload/plug.vim*
 vim/plugged/*
-vim/plugged/**/*
 vim/session/*
-vim/session/**/*
 vim/spell/*
 vim/tmp/*
-vim/tmp/**/*
+!vim/tmp/gitkeep
 config/ranger/bookmarks
 config/ranger/history
 config/ranger/__pycache__

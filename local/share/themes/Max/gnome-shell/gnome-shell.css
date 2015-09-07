@@ -1,0 +1,10 @@
+#panel {
+    font-family: Cantarell, Sans-Serif;
+    font-weight: bold;
+    font-size: 10pt;
+    background-color: #1e2c36;
+}
+
+#panel .panel-button {
+    color: #fbfcfc;
+}

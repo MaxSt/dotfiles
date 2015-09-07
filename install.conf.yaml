@@ -1,0 +1,29 @@
+- clean: ['~']
+
+- link:
+    ~/.tmux.conf: tmux.conf
+    ~/.tmux: tmux
+    ~/.vim: vim
+    ~/.nvim: vim
+    ~/.vimrc: vimrc
+    ~/.nvimrc: vimrc
+    ~/.scripts: scripts
+    ~/.terminalcolors: terminalcolors
+    ~/.Xresources: Xresources
+    ~/.zshrc: zshrc
+    ~/.zlogin: zlogin
+    ~/.local/share/themes:
+      create: true
+      path: local/share/themes
+    ~/.config/ranger:
+      create: true
+      path: config/ranger
+
+- shell:
+  - [git submodule update --init --recursive, Installing submodules]
+  - ["test -e ~/.zgen || git clone https://github.com/tarjoilija/zgen.git $HOME/.zgen", "installing zgen..." ]
+  - zsh:
+    command: "chsh -s /usr/bin/zsh"
+    stdin: true
+    stdout: true
+    stderr: true
