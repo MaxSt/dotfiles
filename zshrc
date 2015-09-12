@@ -8,6 +8,7 @@ alias v="vim"
 alias g="git"
 alias l="ls"
 alias c="cd"
+alias dc="docker-compose"
 alias mux="tmuxinator"
 if ~/.scripts/command_is_available trash-put; then
   alias rm="trash-put"
@@ -28,9 +29,11 @@ if ! zgen saved; then
   # plugins
   zgen oh-my-zsh plugins/git
   zgen oh-my-zsh plugins/sudo
-  #zgen load zsh-users/zsh-syntax-highlighting
+  zgen load zsh-users/zsh-syntax-highlighting
   zgen oh-my-zsh plugins/vi-mode
   zgen oh-my-zsh plugins/tmux
+  zgen oh-my-zsh plugins/docker
+  zgen oh-my-zsh plugins/docker-compose
 
 
   # completions

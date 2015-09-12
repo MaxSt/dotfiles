@@ -29,6 +29,9 @@ gsettings set org.gnome.desktop.wm.keybindings switch-input-source "[]"
 gsettings set org.gnome.desktop.wm.keybindings move-to-center "['<Super>c']"
 gsettings set org.gnome.desktop.wm.keybindings show-desktop "['<Super>d']"
 
+#disable bell
+gsettings set org.gnome.desktop.wm.preferences audible-bell false
+
 #Preferences
 gsettings set org.gnome.desktop.wm.preferences mouse-button-modifier "'<Super>'"
 gsettings set org.gnome.desktop.wm.preferences num-workspaces "8"

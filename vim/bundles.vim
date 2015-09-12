@@ -260,13 +260,13 @@ call plug#begin('~/.vim/plugged')
   let NERDTreeShowLineNumbers=1
   noremap \ :NERDTreeToggle<CR>
 
-  "Vim for writing
-  Plug 'reedes/vim-pencil', {'for': ['markdown','mkd','text']}
-  augroup pencil
-    autocmd!
-    autocmd FileType markdown,mkd call pencil#init()
-    autocmd FileType text         call pencil#init()
-  augroup END
+  " "Vim for writing
+  " Plug 'reedes/vim-pencil', {'for': ['markdown','mkd','text']}
+  " augroup pencil
+  "   autocmd!
+  "   autocmd FileType markdown,mkd call pencil#init()
+  "   autocmd FileType text         call pencil#init()
+  " augroup END
 
   Plug 'ReplaceWithRegister'
 
