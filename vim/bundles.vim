@@ -53,17 +53,10 @@ call plug#begin('~/.vim/plugged')
   " Ultisnips (Code Snippets)
   Plug 'SirVer/ultisnips'
   noremap gu :UltiSnipsEdit!<CR>
-  function! g:UltiSnips_Complete()
-      call UltiSnips#ExpandSnippet()
-      if g:ulti_expand_res == 0
-        call UltiSnips#JumpForwards()
-        if g:ulti_jump_forwards_res == 0
-          return "\<CR>"
-        endif
-      endif
-      return ""
-  endfunction
-  au BufEnter * exec "inoremap <silent> <CR> <C-R>=g:UltiSnips_Complete()<cr>"
+  let g:UltiSnipsExpandTrigger='<tab>'
+  let g:UltiSnipsListSnippets='<c-s>'
+  let g:UltiSnipsJumpForwardTrigger='<tab>'
+  let g:UltiSnipsJumpBackwardTrigger='<c-m>'
 
   " airline  (StatusBar)
   Plug 'bling/vim-airline'

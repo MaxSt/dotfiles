@@ -17,12 +17,14 @@ Xft.hinting: true
 Xft.hintstyle: hintslight
 
 ! Extensions
-URxvt.perl-ext-common : default,clipboard
+URxvt.perl-ext-common : default,clipboard,resize-font
 URxvt.keysym.M-c:   perl:clipboard:copy
 URxvt.keysym.M-v:   perl:clipboard:paste
 URxvt.clipboard.copycmd:  xclip -i -selection clipboard
 URxvt.clipboard.pastecmd: xclip -o -selection clipboard
 URxvt.url-launcher    : firefox
+URxvt.resize-font.smaller: M-Down
+URxvt.resize-font.bigger: M-Up
 
 
 !Fonts
@@ -32,8 +34,13 @@ URxvt.url-launcher    : firefox
 !URxvt*boldFont: -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1,-*-stlarch-medium-r-*--10-*-*-*-*-*
 
 ! Tamsyn
-URxvt*font:    -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
-URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
+!URxvt*font:    -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
+!URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
+
+! Tamsyn
+URxvt*letterSpace: -1
+URxvt*font:    xft:Hack:size=10
+URxvt*boldFont: xft:Hack:size=10
 
 ! Fira Mono
 !URxvt*letterSpace: -2
