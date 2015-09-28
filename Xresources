@@ -18,12 +18,14 @@ Xft.rgba: rgb
 Xft.hintstyle: hintfull
 
 ! Extensions
-URxvt.perl-ext-common : default,clipboard
+URxvt.perl-ext-common : default,clipboard,resize-font
 URxvt.keysym.M-c:   perl:clipboard:copy
 URxvt.keysym.M-v:   perl:clipboard:paste
 URxvt.clipboard.copycmd:  xclip -i -selection clipboard
 URxvt.clipboard.pastecmd: xclip -o -selection clipboard
 URxvt.url-launcher    : firefox
+URxvt.resize-font.smaller: M-Down
+URxvt.resize-font.bigger: M-Up
 
 
 !Fonts
