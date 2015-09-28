@@ -8,13 +8,14 @@ URxvt*cursorBlink     : false
 URxvt*internalBorder  : 8
 URxvt*loginShell      : true
 
-Xft.lcdfilter: lcddefault
 !-- Xft settings -- !
+Xft.lcdfilter: lcddefault
+Xft.antialias: 1
 Xft.dpi: 96
-Xft.antialias: true
+Xft.autohint: 0
+Xft.hinting: 1
 Xft.rgba: rgb
-Xft.hinting: true
-Xft.hintstyle: hintslight
+Xft.hintstyle: hintfull
 
 ! Extensions
 URxvt.perl-ext-common : default,clipboard
@@ -32,13 +33,13 @@ URxvt.url-launcher    : firefox
 !URxvt*boldFont: -lucy-tewi-medium-r-normal--11-90-75-75-p-58-iso10646-1,-*-stlarch-medium-r-*--10-*-*-*-*-*
 
 ! Tamsyn
-URxvt*font:    -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
-URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
+!URxvt*font:    -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
+!URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
 
-! Fira Mono
-!URxvt*letterSpace: -2
-!URxvt*font: xft:Fira Mono:size=9
-!URxvt*boldFont: xft:Fira Mono:size=9
+! Hack
+URxvt*letterSpace: -2
+URxvt*font: xft:Hack:size=10
+URxvt*boldFont: xft:Hack:size=10
 
 #include "/home/max/.terminalcolors/new"
 !#include "/home/max/.terminalcolors/flatcolors_dark"

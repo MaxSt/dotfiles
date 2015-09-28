@@ -236,14 +236,16 @@ call plug#begin('~/.vim/plugged')
   Plug 'othree/yajs.vim', { 'for' : ['javascript']}
 
   " deoplete (async completion)
-   " Plug 'Shougo/deoplete.nvim'
-   " Plug 'Shougo/neco-syntax'
-   " Plug 'Shougo/neoinclude.vim'
-   " let g:deoplete#enable_at_startup = 1
-   " set completeopt+=menuone
+  " Plug 'Shougo/deoplete.nvim'
+  " Plug 'Shougo/neco-syntax'
+  " Plug 'Shougo/neoinclude.vim'
+  " let g:deoplete#enable_at_startup = 1
+  " set completeopt+=menuone
 
   " supertab (tab complete/tab insert)
   Plug 'ervandew/supertab'
+  let g:SuperTabDefaultCompletionType = "<c-n>"
+
 
   " Close html tags
   Plug 'alvan/vim-closetag'
