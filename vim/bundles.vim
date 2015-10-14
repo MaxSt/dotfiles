@@ -73,15 +73,10 @@ call plug#begin('~/.vim/plugged')
   let g:airline_theme='luna'
   let g:airline#extensions#whitespace#enabled = 0 "no Whitespace detection
 
-  " delimitMate (auto-close chars)
-  Plug 'Raimondi/delimitMate'
-  let g:delimitMate_matchpairs = '(:),[:],{:}'
-  let g:delimitMate_quotes = "\" ' ` | %"
-  let g:delimitMate_expand_cr = 1
+  Plug 'cohama/lexima.vim' "(auto-close chars)
 
-  " Gundo (Undo Tree)
-  Plug 'sjl/gundo.vim', {'on': 'GundoToggle'}
-  nnoremap  <leader>u :GundoToggle<CR>
+  Plug 'mbbill/undotree', {'on': 'UndotreeToggle'} " (Undo Tree)
+  noremap <leader>u :UndotreeToggle<Cr>
 
   "Neomake (async make/lint)
   Plug 'benekastah/neomake'
@@ -141,8 +136,6 @@ call plug#begin('~/.vim/plugged')
   " Covim (Collaborative Editing)
   "Plug 'FredKSchott/CoVim.git'
 
-  " endwise (end structures automatically (ruby if end,...))
-  Plug 'tpope/vim-endwise'
 
   " eunuch (unix commands inside vim)
   Plug 'tpope/vim-eunuch'
@@ -168,10 +161,6 @@ call plug#begin('~/.vim/plugged')
 
   " textobject indent (textobject for same indent level)
   Plug 'kana/vim-textobj-indent'
-
-  " vim-over (substitute preview)
-  " Plug 'osyo-manga/vim-over'
-
 
   " vim-over (substitute preview)
   " Plug 'osyo-manga/vim-over'
