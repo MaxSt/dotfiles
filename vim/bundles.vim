@@ -14,34 +14,40 @@ call plug#begin('~/.vim/plugged')
   let g:flatcolor_termcolors=16
   set background=dark
 
-  " ctrlp (open file with fuzzy search)
-  Plug 'ctrlpvim/ctrlp.vim'
-  let g:ctrlp_map = '<leader>t'
-  let g:ctrlp_open_new_file = 'r' " ctrlp opens new file in current window
-  let g:ctrlp_cache_dir='~/.vim/tmp/'
-  " let g:ctrlp_reuse_window='startify'
-  let g:ctrlp_open_multiple_files = 'rr'
-  " let g:ctrlp_clear_cache_on_exit=1
-  let g:ctrlp_max_files = 10000
-  let g:ctrlp_follow_symlinks=1
-  nmap <leader>b :CtrlPBuffer<CR>
-  if executable('ag')
-    let g:ctrlp_user_command = {
-      \ 'types': {
-      \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
-      \ 2: ['.hg', 'hg --cwd %s locate -I .']
-      \ },
-      \ 'fallback': 'ag %s -l --nocolor -g ""'
-    \ }
-  else
-    let g:ctrlp_user_command = {
-      \ 'types': {
-        \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
-        \ 2: ['.hg', 'hg --cwd %s locate -I .']
-      \ },
-      \ 'fallback': 'find %s/.. -type f'
-    \ }
-  endif
+  " " ctrlp (open file with fuzzy search)
+  " Plug 'ctrlpvim/ctrlp.vim'
+  " let g:ctrlp_map = '<leader>t'
+  " let g:ctrlp_open_new_file = 'r' " ctrlp opens new file in current window
+  " let g:ctrlp_cache_dir='~/.vim/tmp/'
+  " " let g:ctrlp_reuse_window='startify'
+  " let g:ctrlp_open_multiple_files = 'rr'
+  " " let g:ctrlp_clear_cache_on_exit=1
+  " let g:ctrlp_max_files = 10000
+  " let g:ctrlp_follow_symlinks=1
+  " nmap <leader>b :CtrlPBuffer<CR>
+  " if executable('ag')
+  "   let g:ctrlp_user_command = {
+  "     \ 'types': {
+  "     \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
+  "     \ 2: ['.hg', 'hg --cwd %s locate -I .']
+  "     \ },
+  "     \ 'fallback': 'ag %s -l --nocolor -g ""'
+  "   \ }
+  " else
+  "   let g:ctrlp_user_command = {
+  "     \ 'types': {
+  "       \ 1: ['.git', 'cd %s && git ls-files . -co --exclude-standard'],
+  "       \ 2: ['.hg', 'hg --cwd %s locate -I .']
+  "     \ },
+  "     \ 'fallback': 'find %s/.. -type f'
+  "   \ }
+  " endif
+
+  Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
+  nmap <leader>t :FZF<CR>
+  set rtp+=~/.fzf
+
+
 
   " YouCompleteMe (Code Completion)
   "Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
@@ -116,8 +122,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-abolish'
 
   " Ack (Ack for vim)
-  Plug 'mileszs/ack.vim', {'on': 'Ack'}
-  let g:ackprg = 'ag --nogroup --nocolor --column'
+  Plug 'dyng/ctrlsf.vim'
+  " Plug 'mileszs/ack.vim', {'on': 'Ack'}
+  " let g:ackprg = 'ag --nogroup --nocolor --column'
 
 
   " Trailertrash (identify and Irradicate unwanted whitespace at the end of the line (:Trim))
