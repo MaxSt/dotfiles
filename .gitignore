@@ -1,6 +1,7 @@
 .DS_Store
 .*.swp
 .netrwhist
+vim/shada/*
 vim/autoload/plug.vim*
 vim/plugged/*
 vim/session/*
