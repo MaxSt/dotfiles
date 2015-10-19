@@ -12,11 +12,19 @@
     if has('nvim')
       " set poython host (default would be python3)
       "let g:python_host_prog='/usr/bin/python2'
-      tnoremap <a-space> <C-\><C-n>
-      tnoremap <a-h> <C-\><C-n><C-w>h
-      tnoremap <a-j> <C-\><C-n><C-w>j
-      tnoremap <a-k> <C-\><C-n><C-w>k
-      tnoremap <a-l> <C-\><C-n><C-w>l
+      highlight TermCursor ctermbg=1 guibg=#ff6767
+
+      " Terminal settings
+      tnoremap <C-\> <C-\><C-n>
+
+     " Window navigation function
+      " Make ctrl-h/j/k/l move between windows and auto-insert in terminals
+
+      :au BufEnter * if &buftype == 'terminal' | :startinsert | endif
+      " tnoremap <c-h> <C-\><C-n><C-w>h
+      " tnoremap <c-j> <C-\><C-n><C-w>j
+      " tnoremap <c-k> <C-\><C-n><C-w>k
+      " tnoremap <c-l> <C-\><C-n><C-w>l
 
       let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
       " Hack to get C-h working in neovim
