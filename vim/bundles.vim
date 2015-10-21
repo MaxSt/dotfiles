@@ -170,8 +170,11 @@ call plug#begin('~/.vim/plugged')
   " textobject user (define your own text objects)
   Plug 'kana/vim-textobj-user'
 
-  " textobject indent (textobject for same indent level)
+  " textobject indent (textobject [i] for same indent level)
   Plug 'kana/vim-textobj-indent'
+
+  " textobject indent (textobject [/] for last search pattern)
+  Plug 'kana/vim-textobj-lastpat'
 
   " vim-over (substitute preview)
   " Plug 'osyo-manga/vim-over'
@@ -212,6 +215,14 @@ call plug#begin('~/.vim/plugged')
   let g:incsearch#consistent_n_direction = 1
   let g:incsearch#separate_highlight = 1
 
+  Plug 'haya14busa/vim-asterisk'
+  "stay as default
+  map *  <Plug>(asterisk-z*)
+  map #  <Plug>(asterisk-z#)
+  map g* <Plug>(asterisk-gz*)
+  map g# <Plug>(asterisk-gz#)
+  "keep cursor position when iterating over matches
+  let g:asterisk#keeppos = 1
 
   Plug 'easymotion/vim-easymotion'
   " vim-sneak (s is 2 char f)

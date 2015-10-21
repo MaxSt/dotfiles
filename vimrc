@@ -249,33 +249,9 @@
     " go to end of search highlight
     noremap <silent> <leader>e /<c-r>//e<cr>:let @/='<c-r>/'<cr>
 
-    "Put the searched word in the middle of the screen.
-    nnoremap <silent>n nzz
-    nnoremap <silent>N Nzz
-    nnoremap <silent>* *zz
-
-    " match closest and lets you type while autocomplete
-
-    " activate/deaktivate Hightlight search
-    function! ToggleHighlight()
-    let Myhl= &hlsearch
-    if &hlsearch
-        let Myhl=" nohlsearch"
-    else
-        let Myhl=" hlsearch"
-    endif
-    exe" setlocal " . Myhl
-    :endfunction
-
-    " Alias the ToggleHighlight function
-    command! ToggleHighlight call ToggleHighlight()
-
     " Easy vimrc editing with :EditVim
     command! VimEdit :edit ~/.vimrc
     noremap g. :VimEdit<CR>
-
-    " Map ToggleHighlight function to ,d
-    nnoremap <silent> <leader>d :nohlsearch<CR>
 
     " diable visualbell
     autocmd GUIEnter * set vb t_vb=                               " for your GUI
@@ -290,63 +266,10 @@
 
     nnoremap <silent> <leader>s :set spell!<CR>
 
-
     "Opens the help page on the current window if cursor is in a help page or opens another tab if it's not
     command! -nargs=1 -complete=help Help if &ft=~"help" | help <args> | else | tab help <args> | endif
 
 " }
-
-" Shell command {
-  function! s:RunShellCommand(cmdline)
-      botright new
-
-      setlocal buftype=nofile
-      setlocal bufhidden=delete
-      setlocal nobuflisted
-      setlocal noswapfile
-      setlocal nowrap
-      setlocal filetype=shell
-      setlocal syntax=shell
-
-      call setline(1, a:cmdline)
-      call setline(2, substitute(a:cmdline, '.', '=', 'g'))
-      execute 'silent $read !' . escape(a:cmdline, '%#')
-      setlocal nomodifiable
-      1
-  endfunction
-
-  command! -complete=file -nargs=+ Shell call s:RunShellCommand(<q-args>)
-  " e.g. Grep current file for <search_term>: Shell grep -Hn <search_term> %
-
-  " Define a command to make it easier to use
-  command! -nargs=+ QFDo call QFDo(<q-args>)
-
-  " Quick Fix Do (do command for all quick fix lines)
-  " Function that does the work
-  function! QFDo(command)
-      " Create a dictionary so that we can
-      " get the list of buffers rather than the
-      " list of lines in buffers (easy way
-      " to get unique entries)
-      let buffer_numbers = {}
-      " For each entry, use the buffer number as
-      " a dictionary key (won't get repeats)
-      for fixlist_entry in getqflist()
-          let buffer_numbers[fixlist_entry['bufnr']] = 1
-      endfor
-      " Make it into a list as it seems cleaner
-      let buffer_number_list = keys(buffer_numbers)
-
-      " For each buffer
-      for num in buffer_number_list
-          " Select the buffer
-          exe 'buffer' num
-          " Run the command that's passed as an argument
-          exe a:command
-          " Save if necessary
-          update
-      endfor
-  endfunction
 
   "Display the numbered registers, press a key and paste it to the buffer
   function! Reg()
@@ -357,6 +280,7 @@
     redraw
     normal! k
   endfunction
+
 
   command! -nargs=0 Reg call Reg() | normal <cr>
 
