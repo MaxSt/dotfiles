@@ -50,11 +50,15 @@ call plug#begin('~/.vim/plugged')
 
 
   " YouCompleteMe (Code Completion)
-  "Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
-  "let g:ycm_complete_in_comments_and_strings = 1
-  "let g:ycm_collect_identifiers_from_comments_and_strings = 1
-  "let g:ycm_autoclose_preview_window_after_completion = 1
-  "let g:ycm_filepath_completion_use_working_dir = 1
+  " Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
+  " let g:ycm_complete_in_comments_and_strings = 1
+  " let g:ycm_collect_identifiers_from_comments_and_strings = 1
+  " let g:ycm_autoclose_preview_window_after_completion = 1
+  " let g:ycm_filepath_completion_use_working_dir = 1
+
+  "let g:ycm_add_preview_to_completeopt=0
+  "let g:ycm_confirm_extra_conf=0
+  "set completeopt-=preview
 
   " Ultisnips (Code Snippets)
   Plug 'SirVer/ultisnips'
@@ -137,7 +141,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'AndrewRadev/splitjoin.vim'
 
   " Fugitive (Git Support for vim)
-  " Plug 'tpope/vim-fugitive'
+   Plug 'tpope/vim-fugitive'
 
 
   " Covim (Collaborative Editing)
@@ -222,7 +226,9 @@ call plug#begin('~/.vim/plugged')
   "Plug 'benmills/vimux'
 
   " better js syntax{
-  Plug 'othree/yajs.vim', { 'for' : ['javascript']}
+  "Plug 'othree/yajs.vim', { 'for' : ['javascript']}
+  "
+  Plug 'sheerun/vim-polyglot'
 
   " deoplete (async completion)
   " Plug 'Shougo/deoplete.nvim'
