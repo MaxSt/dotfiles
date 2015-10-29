@@ -4,7 +4,7 @@
     ~/.tmux.conf: tmux.conf
     ~/.tmux: tmux
     ~/.vim: vim
-    ~/.nvim: vim
+    ~/.config/nvim: vim
     ~/.vimrc: vimrc
     ~/.nvimrc: vimrc
     ~/.scripts: scripts
