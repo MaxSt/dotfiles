@@ -66,7 +66,7 @@ call plug#begin('~/.vim/plugged')
   let g:UltiSnipsExpandTrigger='<tab>'
   let g:UltiSnipsListSnippets='<c-s>'
   let g:UltiSnipsJumpForwardTrigger='<tab>'
-  let g:UltiSnipsJumpBackwardTrigger='<c-m>'
+  let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
 
   " airline  (StatusBar)
   Plug 'bling/vim-airline'

@@ -6,7 +6,6 @@
     ~/.vim: vim
     ~/.config/nvim: vim
     ~/.vimrc: vimrc
-    ~/.nvimrc: vimrc
     ~/.scripts: scripts
     ~/.terminalcolors: terminalcolors
     ~/.Xresources: Xresources
