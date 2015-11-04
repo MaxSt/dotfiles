@@ -103,6 +103,7 @@ call plug#begin('~/.vim/plugged')
   "let g:neomake_open_list = 1
   if has('nvim')
     autocmd! BufWritePost *.js Neomake
+    autocmd! BufWritePost *.jsx Neomake
   endif
 
 
@@ -277,6 +278,8 @@ call plug#begin('~/.vim/plugged')
   " augroup END
 
   Plug 'ReplaceWithRegister'
+
+  Plug 'junegunn/vim-peekaboo'
 
 call plug#end()
 filetype plugin indent on

@@ -40,8 +40,8 @@ URxvt.resize-font.bigger: M-Up
 
 ! Hack
 URxvt*letterSpace: -2
-URxvt*font: xft:Hack:size=10
-URxvt*boldFont: xft:Hack:size=10
+URxvt*font: xft:Hack:size=11
+URxvt*boldFont: xft:Hack:size=11
 
 #include "/home/max/.terminalcolors/new"
 !#include "/home/max/.terminalcolors/flatcolors_dark"
