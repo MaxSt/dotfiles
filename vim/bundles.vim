@@ -153,9 +153,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-eunuch'
 
 
-  " IndentLine (Show vertical line at each indent Level)
-  let g:indentLine_char = '┆'
-  Plug 'Yggdroot/indentLine'
+  " automatically sets conceallevel --> deactive
+  " " IndentLine (Show vertical line at each indent Level)
+  " let g:indentLine_char = '┆'
+  " Plug 'Yggdroot/indentLine'
 
   " Emmet (Zen Coding)
   " Plug 'mattn/emmet-vim'
@@ -280,6 +281,12 @@ call plug#begin('~/.vim/plugged')
   Plug 'ReplaceWithRegister'
 
   Plug 'junegunn/vim-peekaboo'
+
+  Plug 'lervag/vimtex', {'for': 'tex'}
+  let g:vimtex_fold_enabled=0
+  let g:vimtex_mappings_enabled=0
+  autocmd FileType tex,bib noremap <buffer> <space>v :VimtexView<cr>
+  autocmd FileType tex,bib noremap <buffer> <space>t :VimtexTocOpen<cr>
 
 call plug#end()
 filetype plugin indent on
