@@ -44,11 +44,11 @@
       set guioptions-=m
 
       if has("gui_gtk2")
-          set guifont=M+\ 1m\ 11
+          set guifont=Hack\ 11
       elseif has("gui_mac")
-          set guifont=M+\ 1m:11
+          set guifont=Hack:11
       elseif has("gui_win32") || has('win64')
-          set guifont=M+\ 1m:11
+          set guifont=Hack:11
       endif
     endif
     set mouse=a                                                   " automatically enable mouse usage
