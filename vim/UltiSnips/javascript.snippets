@@ -11,21 +11,21 @@ ${1:key}: ${2:value},${0}
 endsnippet
 
 snippet if "if" !b
-if(${1:expression}){
+if ( ${1:expression} ) {
 	${2}
 }${0}
 endsnippet
 
 snippet else "else" !b
-else{
+else {
 	${1}
 }${0}
 endsnippet
 
 snippet ife "if - else" !b
-if(${1:expression}){
+if ( ${1:expression} ) {
 	${2}
-}else{
+} else {
 	${3}
 }${0}
 endsnippet
@@ -35,9 +35,9 @@ snippet $ "JQuery Selector" !b
 endsnippet
 
 snippet log "Log" !b
-console.log($1)$0
+console.log($1);$0
 endsnippet
 
 snippet logc "Log" !b
-console.log('$1:', $1)$0
+console.log('$1:', $1);$0
 endsnippet

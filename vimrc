@@ -102,8 +102,8 @@
     set guioptions-=r
     set guioptions-=e
 
-    set cursorline                                                " highlight current line (performance issues)
-    set nocursorcolumn                                            " highlight current column (performance issues)
+    set nocursorline                                                " highlight current line
+    set nocursorcolumn                                            " highlight current column
 
     set laststatus=2                                              " Always show the statusline
 
