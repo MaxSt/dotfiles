@@ -282,6 +282,9 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'junegunn/vim-peekaboo'
 
+  Plug 'guns/vim-sexp', {'for': 'clojure'}
+  Plug 'tpope/vim-sexp-mappings-for-regular-people', {'for': 'clojure'}
+
   Plug 'lervag/vimtex', {'for': 'tex'}
   let g:vimtex_fold_enabled=0
   let g:vimtex_mappings_enabled=0
