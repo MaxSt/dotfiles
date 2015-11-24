@@ -80,6 +80,7 @@
     set foldmethod=indent
     set nofoldenable
     let mapleader = ','                                           " Use , as leader (insetead of the default '\')
+    let maplocalleader = ','
     set nostartofline
     if has('mac')
       set macmeta

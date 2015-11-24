@@ -261,6 +261,14 @@ call plug#begin('~/.vim/plugged')
 
   " show git adds/changes/deletes
   Plug 'airblade/vim-gitgutter'
+  let g:gitgutter_sign_column_always = 1
+  let g:gitgutter_map_keys = 0
+  "jump to next/previous hunk(change)
+  nmap ]c <Plug>GitGutterNextHunk
+  nmap [c <Plug>GitGutterPrevHunk
+  "stage and revert hunk
+  nmap <Leader>ga <Plug>GitGutterStageHunk
+  nmap <Leader>gu <Plug>GitGutterRevertHunk
 
   " indent navigation (=],...)
   Plug 'jeetsukumaran/vim-indentwise'
@@ -283,6 +291,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/vim-peekaboo'
 
   Plug 'guns/vim-sexp', {'for': 'clojure'}
+  " no insert mode mappings
+  let g:sexp_enable_insert_mode_mappings = 0
   Plug 'tpope/vim-sexp-mappings-for-regular-people', {'for': 'clojure'}
 
   Plug 'lervag/vimtex', {'for': 'tex'}
