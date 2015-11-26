@@ -68,20 +68,11 @@ call plug#begin('~/.vim/plugged')
   let g:UltiSnipsJumpForwardTrigger='<tab>'
   let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
 
-  " airline  (StatusBar)
-  Plug 'bling/vim-airline'
-  " tabline
-  " let g:airline#extensions#tabline#enabled = 1
-  "let g:airline#extensions#tabline#tab_nr_type = 1 " tab number
-  "let g:airline#extensions#tabline#buffer_nr_show = 1
-  "let g:airline#extensions#tabline#show_tab_nr = 1
-  "let g:airline#extensions#tabline#buffer_nr_format = '%s:'
-  "let g:airline_exclude_preview = 1
-  let g:airline_left_sep=' '
-  let g:airline_right_sep=' '
-  let g:airline_powerline_fonts = 0
-  let g:airline_theme='luna'
-  let g:airline#extensions#whitespace#enabled = 0 "no Whitespace detection
+  " lightline  (StatusBar)
+  Plug 'itchyny/lightline.vim'
+  let g:lightline = {
+  \   'colorscheme': 'wombat',
+  \ }
 
   Plug 'cohama/lexima.vim' "(auto-close chars)
 
@@ -300,6 +291,7 @@ call plug#begin('~/.vim/plugged')
   let g:vimtex_mappings_enabled=0
   autocmd FileType tex,bib noremap <buffer> <space>v :VimtexView<cr>
   autocmd FileType tex,bib noremap <buffer> <space>t :VimtexTocOpen<cr>
+
 
 call plug#end()
 filetype plugin indent on
