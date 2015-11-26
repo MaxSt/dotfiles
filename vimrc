@@ -92,7 +92,8 @@
     set wildmenu                                                  " show menu in commandline (tabs)
     set tabpagemax=15                                             " only show 15 tabs
     set ttyfast                                                   " Improves redrawing
-    set number                                                    " Views Line Numbers
+    set nonumber                                                    " Views Line Numbers
+    set numberwidth=1
     set relativenumber                                            " Views Line Numbers
     set linespace=0                                               " No extra spaces between rows
     set winminheight=0                                            " Windows can be 0 line high

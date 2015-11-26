@@ -252,8 +252,12 @@ call plug#begin('~/.vim/plugged')
 
   " show git adds/changes/deletes
   Plug 'airblade/vim-gitgutter'
-  let g:gitgutter_sign_column_always = 1
+  "let g:gitgutter_sign_column_always = 1
+
+  "turn off signs
   let g:gitgutter_map_keys = 0
+  let g:gitgutter_highlight_lines = 0
+  let g:gitgutter_signs = 0
   "jump to next/previous hunk(change)
   nmap ]c <Plug>GitGutterNextHunk
   nmap [c <Plug>GitGutterPrevHunk
