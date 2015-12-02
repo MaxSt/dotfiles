@@ -5,7 +5,7 @@ URxvt*scrollBar       : false
 URxvt.urgentOnBell    : false
 URxvt*visualBell      : false
 URxvt*cursorBlink     : false
-URxvt*internalBorder  : 8
+URxvt*internalBorder  : 5
 URxvt*loginShell      : true
 
 !-- Xft settings -- !
@@ -40,8 +40,8 @@ URxvt.resize-font.bigger: M-Up
 
 ! Hack
 URxvt*letterSpace: -2
-URxvt*font: xft:Hack:size=11
-URxvt*boldFont: xft:Hack:size=11
+URxvt*font: xft:Hack:size=12
+URxvt*boldFont: xft:Hack:size=12
 
 #include "/home/max/.terminalcolors/new"
 !#include "/home/max/.terminalcolors/flatcolors_dark"
