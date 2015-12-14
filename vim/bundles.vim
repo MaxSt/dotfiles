@@ -235,10 +235,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'sheerun/vim-polyglot'
 
   " deoplete (async completion)
-  " Plug 'Shougo/deoplete.nvim'
+   Plug 'Shougo/deoplete.nvim'
   " Plug 'Shougo/neco-syntax'
   " Plug 'Shougo/neoinclude.vim'
-  " let g:deoplete#enable_at_startup = 1
+   let g:deoplete#enable_at_startup = 1
   " set completeopt+=menuone
 
   " supertab (tab complete/tab insert)
@@ -285,10 +285,13 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'junegunn/vim-peekaboo'
 
-  Plug 'guns/vim-sexp', {'for': 'clojure'}
-  " no insert mode mappings
-  let g:sexp_enable_insert_mode_mappings = 0
-  Plug 'tpope/vim-sexp-mappings-for-regular-people', {'for': 'clojure'}
+  " Plug 'guns/vim-sexp', {'for': 'clojure'}
+  " " no insert mode mappings
+  " let g:sexp_enable_insert_mode_mappings = 0
+  " Plug 'tpope/vim-sexp-mappings-for-regular-people', {'for': 'clojure'}
+
+  Plug 'neovim/node-host'
+  Plug 'snoe/nvim-parinfer.js'
 
   Plug 'lervag/vimtex', {'for': 'tex'}
   let g:vimtex_fold_enabled=0
