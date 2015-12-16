@@ -71,7 +71,9 @@ call plug#begin('~/.vim/plugged')
   " lightline  (StatusBar)
   Plug 'itchyny/lightline.vim'
   let g:lightline = {
-  \   'colorscheme': 'wombat',
+    \'colorscheme': 'flatcolor',
+    \'separator': { 'left': '▓', 'right': '▓' },
+    \'subseparator': { 'left': '❱', 'right': '❱' }
   \ }
 
   Plug 'cohama/lexima.vim' "(auto-close chars)
