@@ -1,12 +1,6 @@
-" node plugins
-call remote#host#RegisterPlugin('node', '/home/max/.vim/plugged/nvim-parinfer.js/rplugin/node/nvim-parinfer.js', [
-      \ {'sync': 1, 'name': 'ParinferIndent', 'type': 'function', 'opts': {'eval': '[getpos(''.''), bufnr(''.''), getline(1,line(''$''))]'}},
-     \ ])
-
-
 " python3 plugins
 call remote#host#RegisterPlugin('python3', '/home/max/.vim/plugged/deoplete.nvim/rplugin/python3/deoplete.py', [
-      \ {'sync': 1, 'name': 'DeopleteInitializePython', 'opts': {}, 'type': 'command'},
+      \ {'sync': 1, 'name': 'DeopleteInitializePython', 'type': 'command', 'opts': {}},
      \ ])
 
 

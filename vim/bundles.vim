@@ -226,7 +226,8 @@ call plug#begin('~/.vim/plugged')
 
   " vim-shot-f (highlight next f,t,F,T chars)
   "Plug 'deris/vim-shot-f'
-  "Plug 'unblevable/quick-scope'
+  Plug 'unblevable/quick-scope'
+  let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
   " vimux (send commands to tmux)
   "Plug 'benmills/vimux'
@@ -292,8 +293,9 @@ call plug#begin('~/.vim/plugged')
   " let g:sexp_enable_insert_mode_mappings = 0
   " Plug 'tpope/vim-sexp-mappings-for-regular-people', {'for': 'clojure'}
 
-  Plug 'neovim/node-host'
-  Plug 'snoe/nvim-parinfer.js'
+   Plug 'neovim/node-host'
+   Plug 'snoe/nvim-parinfer.js'
+   let g:parinfer_mode = "indent"
 
   Plug 'lervag/vimtex', {'for': 'tex'}
   let g:vimtex_fold_enabled=0
