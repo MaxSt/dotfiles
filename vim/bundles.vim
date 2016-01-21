@@ -293,6 +293,8 @@ call plug#begin('~/.vim/plugged')
   " let g:sexp_enable_insert_mode_mappings = 0
   " Plug 'tpope/vim-sexp-mappings-for-regular-people', {'for': 'clojure'}
 
+   Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
+
    Plug 'neovim/node-host'
    Plug 'snoe/nvim-parinfer.js'
    let g:parinfer_mode = "indent"
