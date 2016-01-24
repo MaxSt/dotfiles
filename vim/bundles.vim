@@ -72,9 +72,35 @@ call plug#begin('~/.vim/plugged')
   Plug 'itchyny/lightline.vim'
   let g:lightline = {
     \'colorscheme': 'flatcolor',
+    \'active': {
+      \'left': [ [ 'mode' ],
+      \          [ 'readonly', 'filename', 'modified', 'parinfermode' ] ]
+    \},
+    \'component': {
+      \'readonly': '%{&filetype=="help"?"":&readonly?"L":""}',
+      \'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
+      \'fugitive': '%{exists("*fugitive#head")?fugitive#head():""}'
+    \},
+    \'component_function': {
+      \'parinfermode': 'LightLineParinferMode'
+    \},
     \'separator': { 'left': '▓', 'right': '▓' },
     \'subseparator': { 'left': '❱', 'right': '❱' }
   \ }
+
+  function! LightLineParinferMode()
+    if &filetype == "clojure"
+      if g:parinfer_mode == "off"
+        return "o"
+      elseif g:parinfer_mode == "indent"
+        return "⇆"
+      else
+        return "❪❫"
+      endif
+    else
+      return ""
+    endif
+  endfunction
 
   Plug 'cohama/lexima.vim' "(auto-close chars)
 
@@ -297,7 +323,17 @@ call plug#begin('~/.vim/plugged')
 
    Plug 'neovim/node-host'
    Plug 'snoe/nvim-parinfer.js'
-   let g:parinfer_mode = "indent"
+   let g:parinfer_airline_integration = 0
+
+   function! ToggleParinferMode()
+     if g:parinfer_mode == "indent"
+       let g:parinfer_mode = "paren"
+     else
+       let g:parinfer_mode = "indent"
+     endif
+   endfunction
+   noremap <silent> gm :call ToggleParinferMode()<CR>
+
 
   Plug 'lervag/vimtex', {'for': 'tex'}
   let g:vimtex_fold_enabled=0
