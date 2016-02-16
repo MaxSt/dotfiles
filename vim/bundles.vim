@@ -84,7 +84,7 @@ call plug#begin('~/.vim/plugged')
     \'component_function': {
       \'parinfermode': 'LightLineParinferMode'
     \},
-    \'separator': { 'left': '▓', 'right': '▓' },
+    \'separator': { 'left': '░', 'right': '░' },
     \'subseparator': { 'left': '❱', 'right': '❱' }
   \ }
 
