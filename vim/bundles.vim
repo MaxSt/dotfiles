@@ -201,7 +201,7 @@ call plug#begin('~/.vim/plugged')
   " Plug 'osyo-manga/vim-over'
 
   " vim-tmux-navigator (c-hjkl navigation in vim and tmux, c-\ = previous)
-  Plug 'christoomey/vim-tmux-navigator'
+  "Plug 'christoomey/vim-tmux-navigator'
 
   " targets (more text objects z.b in])
   Plug 'wellle/targets.vim'
@@ -329,7 +329,7 @@ call plug#begin('~/.vim/plugged')
      if g:parinfer_mode == "indent"
        let g:parinfer_mode = "paren"
      else
-       let g:parinfer_mode = "indent"
+       let g:parinfer_mode = ""
      endif
    endfunction
    noremap <silent> gm :call ToggleParinferMode()<CR>
@@ -341,6 +341,7 @@ call plug#begin('~/.vim/plugged')
   autocmd FileType tex,bib noremap <buffer> <space>v :VimtexView<cr>
   autocmd FileType tex,bib noremap <buffer> <space>t :VimtexTocOpen<cr>
 
+  Plug 'kassio/neoterm'
 
 call plug#end()
 filetype plugin indent on
