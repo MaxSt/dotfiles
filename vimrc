@@ -131,9 +131,9 @@ if has('nvim')
   :au BufEnter * if &buftype == 'terminal' | :startinsert | endif
   tnoremap <esc><esc> <c-\><c-n>
   " " Workaround since <C-h> isn't working in neovim right now
-  " tnoremap <c-j> <C-\><C-n><C-w>j
-  " tnoremap <c-k> <C-\><C-n><C-w>k
-  " tnoremap <c-l> <C-\><C-n><C-w>l
+  "tnoremap <c-j> <C-\><C-n><C-w>j
+  "tnoremap <c-k> <C-\><C-n><C-w>k
+  "tnoremap <c-l> <C-\><C-n><C-w>l
 
   let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 
@@ -168,6 +168,15 @@ endif
 " ============================================================================
 " MAPPINGS {{{
 " ============================================================================
+" store relative line number jumps in jumplist
+" NOTE: m' stores current position in jumplist
+" NOTE: thanks to osse and bairui in #vim IRC!
+nnoremap <silent> k :<C-U>execute 'normal!' (v:count>1 ? "m'".v:count.'k' : 'k')<Enter>
+nnoremap <silent> j :<C-U>execute 'normal!' (v:count>1 ? "m'".v:count.'j' : 'j')<Enter>
+
+" switch 0 and ^
+noremap 0 ^
+noremap ^ 0
 
 " Buffer swtiching with [Bufferindex]!
 nnoremap ! :<C-u>b<C-r>=v:count<CR><CR> " nnoremap #! :b #<CR>
@@ -179,12 +188,8 @@ nnoremap ! :<C-u>b<C-r>=v:count<CR><CR> " nnoremap #! :b #<CR>
 noremap <leader>m :marks<CR>
 
 "go to marks 'exact
-noremap ~ '
+noremap ` '
 noremap ' `
-
-"` for window prefix
-noremap ` <C-W>
-noremap <tab> <C-W><C-W>
 
 "Map Q to repeat last recorded Macro
 noremap Q @@
@@ -236,7 +241,7 @@ noremap <silent> <leader>e /<c-r>//e<cr>:let @/='<c-r>/'<cr>
 command! VimEdit :edit ~/.vimrc
 noremap g. :VimEdit<CR>
 
-nnoremap <silent> <leader>s :set spell!<CR>
+nnoremap <silent> <leader>l :set spell!<CR>
 
 "Opens the help page on the current window if cursor is in a help page or opens another tab if it's not
 command! -nargs=1 -complete=help Help if &ft=~"help" | help <args> | else | tab help <args> | endif

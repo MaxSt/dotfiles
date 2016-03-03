@@ -201,7 +201,7 @@ call plug#begin('~/.vim/plugged')
   " Plug 'osyo-manga/vim-over'
 
   " vim-tmux-navigator (c-hjkl navigation in vim and tmux, c-\ = previous)
-  "Plug 'christoomey/vim-tmux-navigator'
+  Plug 'christoomey/vim-tmux-navigator'
 
   " targets (more text objects z.b in])
   Plug 'wellle/targets.vim'
@@ -245,15 +245,27 @@ call plug#begin('~/.vim/plugged')
   "keep cursor position when iterating over matches
   let g:asterisk#keeppos = 1
 
-  Plug 'easymotion/vim-easymotion'
-  " vim-sneak (s is 2 char f)
-  "Plug 'justinmk/vim-sneak'
-  "let g:sneak#use_ic_scs = 1
-
   " vim-shot-f (highlight next f,t,F,T chars)
   "Plug 'deris/vim-shot-f'
-  Plug 'unblevable/quick-scope'
-  let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+  "Plug 'saihoooooooo/glowshi-ft.vim'
+  " Plug 'justinmk/vim-sneak'
+  "replace 'f' with 1-char Sneak
+  " nmap f <Plug>Sneak_f
+  " nmap F <Plug>Sneak_F
+  " xmap f <Plug>Sneak_f
+  " xmap F <Plug>Sneak_F
+  " omap f <Plug>Sneak_f
+  " omap F <Plug>Sneak_F
+  "replace 't' with 1-char Sneak
+  " nmap t <Plug>Sneak_t
+  " nmap T <Plug>Sneak_T
+  " xmap t <Plug>Sneak_t
+  " xmap T <Plug>Sneak_T
+  " omap t <Plug>Sneak_t
+  " omap T <Plug>Sneak_T
+
+  "Plug 'unblevable/quick-scope'
+  "let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
   " vimux (send commands to tmux)
   "Plug 'benmills/vimux'
@@ -318,10 +330,13 @@ call plug#begin('~/.vim/plugged')
   " " no insert mode mappings
   " let g:sexp_enable_insert_mode_mappings = 0
   " Plug 'tpope/vim-sexp-mappings-for-regular-people', {'for': 'clojure'}
+   Plug 'guns/vim-clojure-static'
+   let g:clojure_align_multiline_strings = 1
+   let g:clojure_align_subforms = 1
 
    Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 
-   Plug 'neovim/node-host'
+   Plug 'neovim/node-host', { 'dir': '~/.vim/plugged/node-host', 'do': 'npm install' }
    Plug 'snoe/nvim-parinfer.js'
    let g:parinfer_airline_integration = 0
 
@@ -334,6 +349,8 @@ call plug#begin('~/.vim/plugged')
    endfunction
    noremap <silent> gm :call ToggleParinferMode()<CR>
 
+   Plug 'vim-scripts/dbext.vim', { 'for': 'sql' }
+   source ~/.vim/tmp/dbconf.vim
 
   Plug 'lervag/vimtex', {'for': 'tex'}
   let g:vimtex_fold_enabled=0
