@@ -194,9 +194,6 @@ call plug#begin('~/.vim/plugged')
   " textobject indent (textobject [i] for same indent level)
   Plug 'kana/vim-textobj-indent'
 
-  " textobject indent (textobject [/] for last search pattern)
-  Plug 'kana/vim-textobj-lastpat'
-
   " vim-over (substitute preview)
   " Plug 'osyo-manga/vim-over'
 
@@ -326,31 +323,37 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'junegunn/vim-peekaboo'
 
+  if has('nvim')
+    Plug 'neovim/node-host', { 'dir': '~/.vim/plugged/node-host', 'do': 'npm install' }
+  end
+
   " Plug 'guns/vim-sexp', {'for': 'clojure'}
   " " no insert mode mappings
   " let g:sexp_enable_insert_mode_mappings = 0
   " Plug 'tpope/vim-sexp-mappings-for-regular-people', {'for': 'clojure'}
-   Plug 'guns/vim-clojure-static'
-   let g:clojure_align_multiline_strings = 1
-   let g:clojure_align_subforms = 1
+  Plug 'guns/vim-clojure-static'
+  let g:clojure_align_multiline_strings = 1
+  let g:clojure_align_subforms = 1
 
-   Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
+  Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 
-   Plug 'neovim/node-host', { 'dir': '~/.vim/plugged/node-host', 'do': 'npm install' }
-   Plug 'snoe/nvim-parinfer.js'
-   let g:parinfer_airline_integration = 0
+  if has('nvim')
+    Plug 'snoe/clj-refactor.nvim', { 'for': 'clojure' }
+    Plug 'snoe/nvim-parinfer.js', { 'for': 'clojure' }
+    let g:parinfer_airline_integration = 0
 
-   function! ToggleParinferMode()
-     if g:parinfer_mode == "indent"
-       let g:parinfer_mode = "paren"
-     else
-       let g:parinfer_mode = ""
-     endif
-   endfunction
-   noremap <silent> gm :call ToggleParinferMode()<CR>
+    function! ToggleParinferMode()
+      if g:parinfer_mode == "indent"
+        let g:parinfer_mode = "paren"
+      else
+        let g:parinfer_mode = "indent"
+      endif
+    endfunction
+    noremap <silent> gm :call ToggleParinferMode()<CR>
+  end
 
-   Plug 'vim-scripts/dbext.vim', { 'for': 'sql' }
-   source ~/.vim/tmp/dbconf.vim
+  Plug 'vim-scripts/dbext.vim', { 'for': 'sql' }
+  source ~/.vim/tmp/dbconf.vim
 
   Plug 'lervag/vimtex', {'for': 'tex'}
   let g:vimtex_fold_enabled=0
@@ -358,7 +361,10 @@ call plug#begin('~/.vim/plugged')
   autocmd FileType tex,bib noremap <buffer> <space>v :VimtexView<cr>
   autocmd FileType tex,bib noremap <buffer> <space>t :VimtexTocOpen<cr>
 
-  Plug 'kassio/neoterm'
+
+  if has('nvim')
+    Plug 'kassio/neoterm'
+  end
 
 call plug#end()
 filetype plugin indent on

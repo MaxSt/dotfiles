@@ -1,4 +1,31 @@
 " node plugins
+call remote#host#RegisterPlugin('node', '/home/max/.vim/plugged/clj-refactor.nvim/rplugin/node/clj-refactor.js', [
+      \ {'sync': 0, 'name': 'CAddDeclaration', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CCycleColl', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CCycleIf', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CCyclePrivacy', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CCycleThread', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CExpandLet', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CExtractDef', 'type': 'command', 'opts': {'nargs': 1, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CFunctionFromExample', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CIntroduceLet', 'type': 'command', 'opts': {'nargs': 1, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CMoveToLet', 'type': 'command', 'opts': {'nargs': 1, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CThread', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CThreadFirstAll', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CThreadLast', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CThreadLastAll', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CUnwindAll', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CUnwindThread', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CFormatAll', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CFormatForm', 'type': 'command', 'opts': {'nargs': 0, 'eval': 'getpos(''.'')'}},
+      \ {'sync': 0, 'name': 'CAddMissingLibSpec', 'type': 'command', 'opts': {'nargs': 0, 'eval': '[getpos(''.''), expand(''<cword>'')]'}},
+      \ {'sync': 0, 'name': 'CCleanNS', 'type': 'command', 'opts': {'nargs': 0, 'eval': '[getpos(''.''), expand(''%:p''), (exists(''g:clj_refactor_prune_ns_form'') ? g:clj_refactor_prune_ns_form : 1), (exists(''g:clj_refactor_prefix_rewriting'') ? g:clj_refactor_prefix_rewriting : 1)]'}},
+      \ {'sync': 0, 'name': 'CRenameFile', 'type': 'command', 'opts': {'complete': 'file', 'nargs': 1, 'eval': 'expand(''%:p'')'}},
+      \ {'sync': 0, 'name': 'CRenameDir', 'type': 'command', 'opts': {'complete': 'dir', 'nargs': 1, 'eval': 'expand(''%:p:h'')'}},
+      \ {'sync': 0, 'name': 'CRenameSymbol', 'type': 'command', 'opts': {'nargs': 1, 'eval': '[getcwd(), expand(''%:p''), fireplace#ns(), expand(''<cword>''), fireplace#info(expand(''<cword>'')), getpos(''.'')]'}},
+      \ {'sync': 0, 'name': 'CExtractFunction', 'type': 'command', 'opts': {'nargs': 1, 'eval': '[expand(''%:p''), getpos(''.'')]'}},
+      \ {'sync': 1, 'name': 'CMagicRequires', 'type': 'command', 'opts': {'nargs': 0, 'eval': '[getpos(''.''), expand(''%:p''), expand(''<cword>'')]'}},
+     \ ])
 call remote#host#RegisterPlugin('node', '/home/max/.vim/plugged/nvim-parinfer.js/rplugin/node/nvim-parinfer.js', [
       \ {'sync': 1, 'name': 'ParinferIndent', 'type': 'function', 'opts': {'eval': '[getpos(''.''), bufnr(''.''), getline(1,line(''$'')), g:parinfer_mode]'}},
      \ ])
