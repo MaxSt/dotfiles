@@ -44,10 +44,9 @@ call plug#begin('~/.vim/plugged')
   " endif
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
+  Plug 'junegunn/fzf.vim'
   nmap <leader>t :FZF<CR>
   set rtp+=~/.fzf
-
-
 
   " YouCompleteMe (Code Completion)
   " Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
