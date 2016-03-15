@@ -45,8 +45,10 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
   Plug 'junegunn/fzf.vim'
-  nmap <leader>t :FZF<CR>
   set rtp+=~/.fzf
+  let g:fzf_layout = {} "tab layout
+let g:fzf_command_prefix = 'Fz'
+  nmap <leader>t :FzFiles<CR>
 
   " YouCompleteMe (Code Completion)
   " Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
@@ -364,7 +366,6 @@ call plug#begin('~/.vim/plugged')
   if has('nvim')
     Plug 'kassio/neoterm'
   end
-
 call plug#end()
 filetype plugin indent on
 
