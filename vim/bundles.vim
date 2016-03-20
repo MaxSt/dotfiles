@@ -47,8 +47,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf.vim'
   set rtp+=~/.fzf
   let g:fzf_layout = {} "tab layout
-let g:fzf_command_prefix = 'Fz'
-  nmap <leader>t :FzFiles<CR>
+  nmap <leader>t :FZF<CR>
 
   " YouCompleteMe (Code Completion)
   " Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
