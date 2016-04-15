@@ -94,6 +94,8 @@ call plug#begin('~/.vim/plugged')
         return "o"
       elseif g:parinfer_mode == "indent"
         return "⇆"
+      elseif g:parinfer_mode == "hybrid"
+        return "✱"
       else
         return "❪❫"
       endif
@@ -341,12 +343,15 @@ call plug#begin('~/.vim/plugged')
     Plug 'snoe/clj-refactor.nvim', { 'for': 'clojure' }
     Plug 'snoe/nvim-parinfer.js', { 'for': 'clojure' }
     let g:parinfer_airline_integration = 0
+    let g:parinfer_mode = "hybrid"
 
     function! ToggleParinferMode()
       if g:parinfer_mode == "indent"
         let g:parinfer_mode = "paren"
-      else
+      elseif g:parinfer_mode == "paren"
         let g:parinfer_mode = "indent"
+      else
+        let g:parinfer_mode = "hybrid"
       endif
     endfunction
     noremap <silent> gm :call ToggleParinferMode()<CR>
@@ -361,6 +366,7 @@ call plug#begin('~/.vim/plugged')
   autocmd FileType tex,bib noremap <buffer> <space>v :VimtexView<cr>
   autocmd FileType tex,bib noremap <buffer> <space>t :VimtexTocOpen<cr>
 
+  Plug 'ap/vim-css-color', { 'for': ['css', 'sass', 'scss', 'vim'] }
 
   if has('nvim')
     Plug 'kassio/neoterm'

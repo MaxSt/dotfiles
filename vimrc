@@ -102,6 +102,7 @@ set hlsearch                                                " highlight search t
 set incsearch                                               " show search matches as you type
 set ruler                                                   " show the cursor position
 set cmdheight=1
+set diffopt+=vertical                                       " diffs vertical
 
 "set undofile (undo after re- opening vim)
 if exists("+undofile")
