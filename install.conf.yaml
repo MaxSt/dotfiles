@@ -18,6 +18,7 @@
     ~/.config/ranger:
       create: true
       path: config/ranger
+    ~/.spacemacs.d: spacemacs.d
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
