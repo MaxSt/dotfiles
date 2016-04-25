@@ -264,6 +264,7 @@ you should place you code here."
   ;(define-key evil-normal-state-map (kbd "]b") 'spacemacs/next-useful-buffer) ; ]b to next buffer
   ;(define-key evil-normal-state-map (kbd "[b") 'spacemacs/previous-useful-buffer) ; [b to previous buffer
 
+  (global-aggressive-indent-mode 1)
 
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 2)
