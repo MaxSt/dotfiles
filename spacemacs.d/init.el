@@ -37,6 +37,7 @@ values."
      version-control
      restclient
      unimpaired
+     ranger
      ;; (shell :variables
      ;;        shell-default-height 30
      ;;        shell-default-position 'bottom)
@@ -116,7 +117,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Hack"
-                               :size 16
+                               :size 12
                                :weight normal
                                :width normal
                                :powerline-scale 1.5)
@@ -261,11 +262,12 @@ This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place you code here."
   (define-key evil-normal-state-map (kbd "gs") 'save-buffer) ; gs to save
-  ;(define-key evil-normal-state-map (kbd "]b") 'spacemacs/next-useful-buffer) ; ]b to next buffer
-  ;(define-key evil-normal-state-map (kbd "[b") 'spacemacs/previous-useful-buffer) ; [b to previous buffer
+  ;;(define-key evil-normal-state-map (kbd "]b") 'spacemacs/next-useful-buffer) ; ]b to next buffer
+  ;;(define-key evil-normal-state-map (kbd "[b") 'spacemacs/previous-useful-buffer) ; [b to previous buffer
 
-  (global-aggressive-indent-mode 1)
+  ;;(global-aggressive-indent-mode 1) ;auto indent when something changed
 
+  ;; tab configuration
   (setq-default indent-tabs-mode nil)
   (setq-default tab-width 2)
   (setq-default
