@@ -265,6 +265,16 @@ you should place you code here."
   ;;(define-key evil-normal-state-map (kbd "]b") 'spacemacs/next-useful-buffer) ; ]b to next buffer
   ;;(define-key evil-normal-state-map (kbd "[b") 'spacemacs/previous-useful-buffer) ; [b to previous buffer
 
+  (set-face-attribute
+   'linum nil
+   :height 85
+   :weight 'light)
+
+  (set-face-attribute
+   'linum-relative-current-face nil
+   :height 90
+   :weight 'bold)
+
   ;;(global-aggressive-indent-mode 1) ;auto indent when something changed
 
   ;; tab configuration
