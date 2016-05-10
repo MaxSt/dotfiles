@@ -118,7 +118,7 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Hack"
-                               :size 14
+                               :size 15
                                :weight normal
                                :width normal
                                :powerline-scale 1.5)
@@ -266,17 +266,9 @@ you should place you code here."
   ;;(define-key evil-normal-state-map (kbd "]b") 'spacemacs/next-useful-buffer) ; ]b to next buffer
   ;;(define-key evil-normal-state-map (kbd "[b") 'spacemacs/previous-useful-buffer) ; [b to previous buffer
 
-  (set-face-attribute
-   'linum nil
-   :height 85
-   :weight 'light)
-
-  (set-face-attribute
-   'linum-relative-current-face nil
-   :height 90
-   :weight 'bold)
 
   ;;(global-aggressive-indent-mode 1) ;auto indent when something changed
+  (setq linum-relative-format "%3s")
 
   ;; tab configuration
   (setq-default indent-tabs-mode nil)

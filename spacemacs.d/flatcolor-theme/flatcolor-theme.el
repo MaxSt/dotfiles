@@ -78,8 +78,10 @@
    `(font-lock-warning-face ((t (:foreground ,fc-dark-yellow))))
 
    ;; linum-mode
+   ;; `(linum ((t (:height ,85 :weight ,'light :background ,fc-dark-black :foreground ,fc-black))))
+   ;; `(linum-relative-current-face ((t (:height ,90 :weight ,'bold :background ,fc-blue :foreground ,fc-bg :weight bold))))
    `(linum ((t (:background ,fc-dark-black :foreground ,fc-black))))
-   `(linum-relative-current-face ((t (:background ,fc-blue :foreground ,fc-bg :weight normal))))
+   `(linum-relative-current-face ((t (:background ,fc-blue :foreground ,fc-bg :weight bold))))
 
    ;; Search
    `(match ((t (:foreground ,fc-dark-purple :background ,fc-red))))
