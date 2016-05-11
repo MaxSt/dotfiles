@@ -75,11 +75,13 @@
    `(font-lock-string-face ((t (:foreground ,fc-yellow))))
    `(font-lock-type-face ((t (:foreground ,fc-blue))))
    `(font-lock-variable-name-face ((t (:foreground ,fc-dark-blue))))
-   `(font-lock-warning-face ((t (:foreground ,fc-dark-black))))
+   `(font-lock-warning-face ((t (:foreground ,fc-dark-yellow))))
 
    ;; linum-mode
+   ;; `(linum ((t (:height ,85 :weight ,'light :background ,fc-dark-black :foreground ,fc-black))))
+   ;; `(linum-relative-current-face ((t (:height ,90 :weight ,'bold :background ,fc-blue :foreground ,fc-bg :weight bold))))
    `(linum ((t (:background ,fc-dark-black :foreground ,fc-black))))
-   `(linum-relative-current-face ((t (:background ,fc-blue :foreground ,fc-bg :weight normal))))
+   `(linum-relative-current-face ((t (:background ,fc-blue :foreground ,fc-bg :weight bold))))
 
    ;; Search
    `(match ((t (:foreground ,fc-dark-purple :background ,fc-red))))
@@ -155,7 +157,7 @@
    ;; IDO
    `(ido-subdir ((t (:foreground ,fc-blue))))
    `(ido-first-match ((t (:foreground ,fc-dark-red :weight bold))))
-   `(ido-only-match ((t (:foreground ,fc-dark-black :weight bold))))
+   `(ido-only-match ((t (:foreground ,fc-red :weight bold))))
    `(ido-indicator ((t (:foreground ,fc-dark-black :background ,fc-dark-purple))))
    `(ido-virtual ((t (:foreground ,fc-blue))))
 
@@ -196,7 +198,7 @@
 
    `(diff-added ((t (:foreground ,fc-dark-yellow))))
    `(diff-changed ((t (:foreground ,fc-dark-green))))
-   `(diff-removed ((t (:foreground ,fc-dark-black))))
+   `(diff-removed ((t (:foreground ,fc-dark-red))))
    `(diff-header ((t (:background ,fc-red))))
    `(diff-file-header ((t (:background ,fc-green))))
    `(diff-hunk-header ((t (:background ,fc-red :foreground ,fc-dark-cyan))))
@@ -211,7 +213,7 @@
    ;; undo-tree
    `(undo-tree-visualizer-default-face ((t (:foreground ,fc-cyan))))
    `(undo-tree-visualizer-current-face ((t (:foreground ,fc-dark-yellow :weight bold))))
-   `(undo-tree-visualizer-active-branch-face ((t (:foreground ,fc-dark-black))))
+   `(undo-tree-visualizer-active-branch-face ((t (:foreground ,fc-blue))))
    `(undo-tree-visualizer-register-face ((t (:foreground ,fc-dark-green))))
 
    ;; auctex
@@ -228,7 +230,7 @@
    `(font-latex-sedate-face ((t (:foreground ,fc-dark-blue))))
    `(font-latex-string-face ((t (:foreground ,fc-dark-green))))
    `(font-latex-verbatim-face ((t (:foreground ,fc-dark-red))))
-   `(font-latex-warning-face ((t (:foreground ,fc-dark-black))))
+   `(font-latex-warning-face ((t (:foreground ,fc-dark-red))))
 
 
 ;;;;; powerline
@@ -242,18 +244,18 @@
    `(diredp-dir-heading ((t (:foreground nil :background nil :inherit heading))))
    `(diredp-dir-priv ((t (:foreground ,fc-dark-blue :background nil))))
    `(diredp-exec-priv ((t (:foreground ,fc-dark-purple :background nil))))
-   `(diredp-executable-tag ((t (:foreground ,fc-dark-black :background nil))))
+   `(diredp-executable-tag ((t (:foreground ,fc-dark-red :background nil))))
    `(diredp-file-name ((t (:foreground ,fc-dark-green))))
    `(diredp-file-suffix ((t (:foreground ,fc-dark-yellow))))
    `(diredp-flag-mark-line ((t (:background nil :inherit highlight))))
    `(diredp-ignored-file-name ((t (:foreground ,fc-blue))))
    `(diredp-link-priv ((t (:background nil :foreground ,fc-dark-cyan))))
-   `(diredp-mode-line-flagged ((t (:foreground ,fc-dark-black))))
+   `(diredp-mode-line-flagged ((t (:foreground ,fc-red))))
    `(diredp-mode-line-marked ((t (:foreground ,fc-dark-yellow))))
    `(diredp-no-priv ((t (:background nil))))
    `(diredp-number ((t (:foreground ,fc-dark-green))))
    `(diredp-other-priv ((t (:background nil :foreground ,fc-dark-cyan))))
-   `(diredp-rare-priv ((t (:foreground ,fc-dark-black :background nil))))
+   `(diredp-rare-priv ((t (:foreground ,fc-blue :background nil))))
    `(diredp-read-priv ((t (:foreground ,fc-dark-yellow :background nil))))
    `(diredp-symlink ((t (:foreground ,fc-dark-cyan))))
    `(diredp-write-priv ((t (:foreground ,fc-dark-green :background nil))))
@@ -277,12 +279,12 @@
    `(compilation-line-number ((t (:foreground ,fc-dark-green))))
    `(compilation-message-face ((t (:foreground ,fc-dark-purple))))
    `(compilation-mode-line-exit ((t (:foreground ,fc-dark-yellow))))
-   `(compilation-mode-line-fail ((t (:foreground ,fc-dark-black))))
+   `(compilation-mode-line-fail ((t (:foreground ,fc-dark-red))))
    `(compilation-mode-line-run ((t (:foreground ,fc-dark-purple))))
 
    ;; Grep
    `(grep-context-face ((t (:foreground ,fc-blue))))
-   `(grep-error-face ((t (:foreground ,fc-dark-black :weight bold :underline t))))
+   `(grep-error-face ((t (:foreground ,fc-dark-red :weight bold :underline t))))
    `(grep-hit-face ((t (:foreground ,fc-dark-purple))))
    `(grep-match-face ((t (:foreground nil :background nil :inherit match))))
 
@@ -293,7 +295,7 @@
    `(cscope-function-face ((t (:foreground ,fc-dark-purple))))
    `(cscope-line-number-face ((t (:foreground ,fc-dark-green))))
    `(cscope-mouse-face ((t (:background ,fc-red :foreground ,fc-blue))))
-   `(cscope-separator-face ((t (:foreground ,fc-dark-black :overline t :underline t :weight bold))))
+   `(cscope-separator-face ((t (:foreground ,fc-red :overline t :underline t :weight bold))))
 
    ;; mark-multiple
    `(mm/master-face ((t (:inherit region :foreground nil :background nil))))
@@ -323,9 +325,9 @@
    `(org-scheduled-today ((t (:foreground ,fc-dark-yellow))))
    `(org-special-keyword ((t (:foreground ,fc-dark-red))))
    `(org-table ((t (:foreground ,fc-dark-cyan))))
-   `(org-todo ((t (:foreground ,fc-dark-black))))
+   `(org-todo ((t (:foreground ,fc-red))))
    `(org-upcoming-deadline ((t (:foreground ,fc-dark-red))))
-   `(org-warning ((t (:weight bold :foreground ,fc-dark-black))))
+   `(org-warning ((t (:weight bold :foreground ,fc-dark-yellow))))
    ;`(org-level-1 ((t (:height 2.0))))
    ;`(org-level-2 ((t (:height 1.5))))
 
@@ -344,7 +346,7 @@
    `(js2-external-variable-face ((t (:foreground ,fc-dark-cyan))))
    `(js2-function-param-face ((t (:foreground ,fc-dark-purple))))
    `(js2-instance-member-face ((t (:foreground ,fc-dark-purple))))
-   `(js2-private-function-call-face ((t (:foreground ,fc-dark-black))))
+   `(js2-private-function-call-face ((t (:foreground ,fc-green))))
 
    ;; js3-mode
    `(js3-warning-face ((t (:underline ,fc-dark-red))))
@@ -357,7 +359,7 @@
    `(js3-jsdoc-html-tag-name-face ((t (:foreground ,fc-dark-purple))))
    `(js3-jsdoc-html-tag-delimiter-face ((t (:foreground ,fc-dark-yellow))))
    `(js3-instance-member-face ((t (:foreground ,fc-dark-purple))))
-   `(js3-private-function-call-face ((t (:foreground ,fc-dark-black))))
+   `(js3-private-function-call-face ((t (:foreground ,fc-green))))
 
    ;; nxml
    `(nxml-name-face ((t (:foreground unspecified :inherit font-lock-constant-face))))
@@ -391,14 +393,14 @@
    `(jabber-chat-prompt-system ((t (:foreground ,fc-dark-green :weight bold))))
    `(jabber-chat-text-local ((t (:foreground ,fc-dark-green))))
    `(jabber-chat-text-foreign ((t (:foreground ,fc-dark-red))))
-   `(jabber-chat-text-error ((t (:foreground ,fc-dark-black))))
+   `(jabber-chat-text-error ((t (:foreground ,fc-dark-red))))
 
    `(jabber-roster-user-online ((t (:foreground ,fc-dark-yellow))))
    `(jabber-roster-user-xa ((t :foreground ,fc-blue)))
    `(jabber-roster-user-dnd ((t :foreground ,fc-dark-green)))
    `(jabber-roster-user-away ((t (:foreground ,fc-dark-red))))
    `(jabber-roster-user-chatty ((t (:foreground ,fc-dark-cyan))))
-   `(jabber-roster-user-error ((t (:foreground ,fc-dark-black))))
+   `(jabber-roster-user-error ((t (:foreground ,fc-dark-red))))
    `(jabber-roster-user-offline ((t (:foreground ,fc-blue))))
 
    `(jabber-rare-time-face ((t (:foreground ,fc-blue))))
@@ -433,7 +435,7 @@
    `(gnus-summary-high-read ((t (:foreground ,fc-dark-yellow :weight normal))))
    `(gnus-summary-high-ancient ((t (:foreground ,fc-dark-yellow :weight normal))))
    `(gnus-summary-high-ticked ((t (:foreground ,fc-dark-red :weight normal))))
-   `(gnus-summary-cancelled ((t (:foreground ,fc-dark-black :background nil :weight normal))))
+   `(gnus-summary-cancelled ((t (:foreground ,fc-dark-red :background nil :weight normal))))
 
    `(gnus-group-mail-low ((t (:foreground ,fc-blue))))
    `(gnus-group-mail-low-empty ((t (:foreground ,fc-blue))))
@@ -463,7 +465,7 @@
    `(gnus-group-news-6-empty ((t (:inherit gnus-group-news-6 :foreground ,fc-blue))))
 
    `(erc-direct-msg-face ((t (:foreground ,fc-dark-red))))
-   `(erc-error-face ((t (:foreground ,fc-dark-black))))
+   `(erc-error-face ((t (:foreground ,fc-dark-red))))
    `(erc-header-face ((t (:foreground ,fc-cyan :background ,fc-blue))))
    `(erc-input-face ((t (:foreground ,fc-dark-yellow))))
    `(erc-keyword-face ((t (:foreground ,fc-dark-green))))
@@ -481,7 +483,7 @@
    `(helm-action ((t (:foreground ,fc-purple))))
    `(helm-buffer-directory ((t (:foreground ,fc-blue :background nil :weight bold))))
    `(helm-buffer-file ((t (:foreground ,fc-dark-blue))))
-   `(helm-buffer-not-saved ((t (:foreground ,fc-dark-black))))
+   `(helm-buffer-not-saved ((t (:foreground ,fc-dark-red))))
    `(helm-buffer-process ((t (:foreground ,fc-yellow))))
    `(helm-buffer-saved-out ((t (:foreground ,fc-dark-gray))))
    `(helm-buffer-size ((t (:foreground ,fc-dark-red))))
@@ -501,10 +503,10 @@
    `(helm-header ((t (:foreground ,fc-dark-green :background ,fc-black :underline nil))))
    `(helm-match ((t (:foreground ,fc-dark-green))))
    `(helm-moccur-buffer ((t (:foreground ,fc-dark-blue))))
-   `(helm-selection ((t (:foreground nil :background ,fc-green :underline nil))))
+   `(helm-selection ((t (:foreground ,fc-dark-black :background ,fc-cyan :underline nil))))
    `(helm-selection-line ((t (:foreground nil :background ,fc-green))))
    `(helm-separator ((t (:foreground ,fc-green))))
-   `(helm-source-header ((t (:foreground ,fc-purple :background ,fc-blue :weight bold))))
+   `(helm-source-header ((t (:foreground ,fc-dark-black :background ,fc-dark-blue :weight bold))))
    `(helm-visible-mark ((t (:foreground ,fc-black :background ,fc-dark-yellow))))
 
    `(custom-variable-tag ((t (:foreground ,fc-dark-purple))))
