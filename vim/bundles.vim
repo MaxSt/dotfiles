@@ -349,9 +349,9 @@ call plug#begin('~/.vim/plugged')
       if g:parinfer_mode == "indent"
         let g:parinfer_mode = "paren"
       elseif g:parinfer_mode == "paren"
-        let g:parinfer_mode = "indent"
-      else
         let g:parinfer_mode = "hybrid"
+      else
+        let g:parinfer_mode = "indent"
       endif
     endfunction
     noremap <silent> gm :call ToggleParinferMode()<CR>

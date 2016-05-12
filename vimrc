@@ -122,6 +122,7 @@ if has('nvim')
   " set poython host (default would be python3)
   "let g:python_host_prog='/usr/bin/python2'
   highlight TermCursor ctermbg=1 guibg=#ff6767
+  let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
   " Terminal settings
   tnoremap <C-\> <C-\><C-n>
