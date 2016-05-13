@@ -8,4 +8,5 @@ au BufNewFile,BufRead *.tex set filetype=tex
 au BufNewFile,BufRead config set filetype=config
 au BufNewFile,BufRead *.jbuilder set filetype=ruby
 au BufNewFile,BufRead *.xdefaults set filetype=xdefaults
+au BufNewFile,BufRead build.boot set filetype=clojure
 augroup end
