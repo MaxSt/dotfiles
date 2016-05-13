@@ -7,4 +7,5 @@ au BufNewFile,BufRead *.pandoc set filetype=pandoc
 au BufNewFile,BufRead *.tex set filetype=tex
 au BufNewFile,BufRead config set filetype=config
 au BufNewFile,BufRead *.jbuilder set filetype=ruby
+au BufNewFile,BufRead *.xdefaults set filetype=xdefaults
 augroup end

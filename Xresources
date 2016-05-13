@@ -43,5 +43,4 @@ URxvt*letterSpace: -2
 URxvt*font: xft:Hack:size=12
 URxvt*boldFont: xft:Hack:size=12
 
-!#include "/home/max/.terminalcolors/flatcolors"
-#include "/home/max/.terminalcolors/flatcolors_purple"
+#include "/home/max/.terminalcolors/flatcolors.xdefaults"

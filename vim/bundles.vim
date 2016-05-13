@@ -366,7 +366,7 @@ call plug#begin('~/.vim/plugged')
   autocmd FileType tex,bib noremap <buffer> <space>v :VimtexView<cr>
   autocmd FileType tex,bib noremap <buffer> <space>t :VimtexTocOpen<cr>
 
-  Plug 'ap/vim-css-color', { 'for': ['css', 'sass', 'scss', 'vim'] }
+  Plug 'ap/vim-css-color'
 
   if has('nvim')
     Plug 'kassio/neoterm'
