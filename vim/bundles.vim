@@ -109,22 +109,22 @@ call plug#begin('~/.vim/plugged')
   Plug 'mbbill/undotree', {'on': 'UndotreeToggle'} " (Undo Tree)
   noremap <leader>u :UndotreeToggle<Cr>
 
-  "Neomake (async make/lint)
-  Plug 'benekastah/neomake'
-  let g:neomake_javascript_enabled_makers = ['eslint']
-
-  let g:neomake_warning_sign = {
-      \ 'text': '?',
-      \ 'texthl': 'WarningMsg'
-      \ }
-  let g:neomake_error_sign = {
-      \ 'text': '!',
-      \ 'texthl': 'ErrorMsg'
-      \ }
-  "let g:neomake_open_list = 1
   if has('nvim')
-    autocmd! BufWritePost *.js Neomake
-    autocmd! BufWritePost *.jsx Neomake
+    "Neomake (async make/lint)
+    Plug 'benekastah/neomake'
+    let g:neomake_javascript_enabled_makers = ['eslint']
+
+    let g:neomake_warning_sign = {
+        \ 'text': '?',
+        \ 'texthl': 'WarningMsg'
+        \ }
+    let g:neomake_error_sign = {
+        \ 'text': '!',
+        \ 'texthl': 'ErrorMsg'
+        \ }
+    "let g:neomake_open_list = 1
+    autocmd BufEnter,BufWritePost *.js Neomake
+    autocmd BufEnter,BufWritePost *.jsx Neomake
   endif
 
 
