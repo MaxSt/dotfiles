@@ -146,9 +146,6 @@ call plug#begin('~/.vim/plugged')
   endif
 
 
-  " Tabular (text filtering and alignment (:Tab /[ =,... ]))
-  Plug 'godlygeek/tabular', {'on': 'Tab'}
-
   " Surround (surrounding text ( cs[motion], insert: ysi[motion], entire line: yss))
   Plug 'tpope/vim-surround'
 
@@ -357,6 +354,10 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 
+  Plug 'guns/vim-sexp', { 'for': 'clojure' }
+  let g:sexp_enable_insert_mode_mappings = 0
+  Plug 'tpope/vim-sexp-mappings-for-regular-people', { 'for': 'clojure' }
+
   if has('nvim')
     Plug 'snoe/clj-refactor.nvim', { 'for': 'clojure' }
     Plug 'snoe/nvim-parinfer.js', { 'for': 'clojure' }
@@ -385,6 +386,13 @@ call plug#begin('~/.vim/plugged')
   autocmd FileType tex,bib noremap <buffer> <space>t :VimtexTocOpen<cr>
 
   Plug 'ap/vim-css-color'
+
+  Plug 'junegunn/vim-easy-align'
+  " Start interactive EasyAlign in visual mode (e.g. vipga)
+  xmap ga <Plug>(EasyAlign)
+
+  " Start interactive EasyAlign for a motion/text object (e.g. gaip)
+  nmap ga <Plug>(EasyAlign)
 
   if has('nvim')
     Plug 'kassio/neoterm'
