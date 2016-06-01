@@ -46,26 +46,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
   Plug 'junegunn/fzf.vim'
   set rtp+=~/.fzf
-  let g:fzf_layout = {} "tab layout
+  "let g:fzf_layout = {} "tab layout
 
-  nmap <leader>t :FZF<CR>
-    function! s:buflist()
-      redir => ls
-      silent ls
-      redir END
-      return split(ls, '\n')
-    endfunction
-
-    function! s:bufopen(e)
-      execute 'buffer' matchstr(a:e, '^[ 0-9]*')
-    endfunction
-
-    nnoremap <silent> <Leader>b :call fzf#run({
-    \   'source':  reverse(<sid>buflist()),
-    \   'sink':    function('<sid>bufopen'),
-    \   'options': '+m',
-    \   'down':    len(<sid>buflist()) + 2
-    \ })<CR>
+  nnoremap <silent> <leader>t :Files<CR>
+  nnoremap <silent> <Leader>b :Buffers<CR>
 
   " YouCompleteMe (Code Completion)
   " Plug 'Valloric/YouCompleteMe', {'do': './install.sh'}
@@ -324,9 +308,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'jeetsukumaran/vim-indentwise'
   "
   "File Explorer
-  Plug 'scrooloose/nerdtree'
-  let NERDTreeShowLineNumbers=1
-  noremap \ :NERDTreeToggle<CR>
+  "Plug 'scrooloose/nerdtree'
+  "let NERDTreeShowLineNumbers=1
+  "noremap \ :NERDTreeToggle<CR>
+  Plug 'justinmk/vim-dirvish'
 
   " "Vim for writing
   " Plug 'reedes/vim-pencil', {'for': ['markdown','mkd','text']}

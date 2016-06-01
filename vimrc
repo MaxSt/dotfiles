@@ -42,6 +42,11 @@ set nobackup
 set nowritebackup
 set backupdir=~/.vim/tmp
 
+"open horizontal split below
+set splitbelow
+"open vertical split right
+set splitright
+
 set noswapfile
 set noautowrite
 set lazyredraw
@@ -131,7 +136,6 @@ if has('nvim')
   " Make ctrl-h/j/k/l move between windows and auto-insert in terminals
 
   :au BufEnter * if &buftype == 'terminal' | :startinsert | endif
-  tnoremap <esc><esc> <c-\><c-n>
   " " Workaround since <C-h> isn't working in neovim right now
   "tnoremap <c-j> <C-\><C-n><C-w>j
   "tnoremap <c-k> <C-\><C-n><C-w>k
