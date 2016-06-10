@@ -283,9 +283,6 @@ you should place you code here."
    web-mode-css-indent-offset 2
    web-mode-code-indent-offset 2
    web-mode-attr-indent-offset 2)
-
-  (spacemacs/toggle-evil-cleverparens-on)
-  (add-hook 'clojure-mode-hook #'evil-cleverparens-mode)
 )
 
 ;; Do not write anything past this comment. This is where Emacs will

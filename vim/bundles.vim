@@ -147,9 +147,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-abolish'
 
   " Ack (Ack for vim)
-  Plug 'dyng/ctrlsf.vim'
+  "Plug 'dyng/ctrlsf.vim'
   " Plug 'mileszs/ack.vim', {'on': 'Ack'}
   " let g:ackprg = 'ag --nogroup --nocolor --column'
+  Plug 'eugen0329/vim-esearch'
 
 
   " Trailertrash (identify and Irradicate unwanted whitespace at the end of the line (:Trim))
@@ -329,13 +330,18 @@ call plug#begin('~/.vim/plugged')
     Plug 'neovim/node-host', { 'dir': '~/.vim/plugged/node-host', 'do': 'npm install' }
   end
 
-  " Plug 'guns/vim-sexp', {'for': 'clojure'}
-  " " no insert mode mappings
-  " let g:sexp_enable_insert_mode_mappings = 0
-  " Plug 'tpope/vim-sexp-mappings-for-regular-people', {'for': 'clojure'}
   Plug 'guns/vim-clojure-static'
   let g:clojure_align_multiline_strings = 1
   let g:clojure_align_subforms = 1
+  "Plug 'guns/vim-clojure-highlight'
+
+  Plug 'luochen1990/rainbow'
+  let g:rainbow_conf = {
+  \   'guifgs': ['#95ffa4', '#91ddff', '#ffe9aa', '#aaffe4', '#c991e1', '#ff8080'],
+  \   'operators': '_,_',
+  \   'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold']
+  \}
+  let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 
   Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
 
@@ -346,14 +352,15 @@ call plug#begin('~/.vim/plugged')
   if has('nvim')
     Plug 'snoe/clj-refactor.nvim', { 'for': 'clojure' }
     Plug 'snoe/nvim-parinfer.js', { 'for': 'clojure' }
+    autocmd FileType clojure let b:lexima_disabled = 1
     let g:parinfer_airline_integration = 0
-    let g:parinfer_mode = "hybrid"
+    let g:parinfer_mode = "indent"
 
     function! ToggleParinferMode()
       if g:parinfer_mode == "indent"
         let g:parinfer_mode = "paren"
-      elseif g:parinfer_mode == "paren"
-        let g:parinfer_mode = "hybrid"
+      " elseif g:parinfer_mode == "paren"
+      "   let g:parinfer_mode = "hybrid"
       else
         let g:parinfer_mode = "indent"
       endif
