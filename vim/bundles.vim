@@ -45,6 +45,7 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
   Plug 'junegunn/fzf.vim'
+  let g:fzf_layout = { 'window': 'execute (tabpagenr()-1)."tabnew"' }
   set rtp+=~/.fzf
   "let g:fzf_layout = {} "tab layout
 

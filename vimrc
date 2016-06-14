@@ -135,11 +135,12 @@ if has('nvim')
   " Window navigation function
   " Make ctrl-h/j/k/l move between windows and auto-insert in terminals
 
-  :au BufEnter * if &buftype == 'terminal' | :startinsert | endif
+  ":au BufEnter * if &buftype == 'terminal' | :startinsert | endif
   " " Workaround since <C-h> isn't working in neovim right now
-  "tnoremap <c-j> <C-\><C-n><C-w>j
-  "tnoremap <c-k> <C-\><C-n><C-w>k
-  "tnoremap <c-l> <C-\><C-n><C-w>l
+  tnoremap <c-h> <C-\><C-n><C-w>h
+  tnoremap <c-j> <C-\><C-n><C-w>j
+  tnoremap <c-k> <C-\><C-n><C-w>k
+  tnoremap <c-l> <C-\><C-n><C-w>l
 
   let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 
