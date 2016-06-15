@@ -42,14 +42,16 @@ call plug#begin('~/.vim/plugged')
   "     \ 'fallback': 'find %s/.. -type f'
   "   \ }
   " endif
+  "
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
   Plug 'junegunn/fzf.vim'
-  let g:fzf_layout = { 'window': 'execute (tabpagenr()-1)."tabnew"' }
+  "let g:fzf_layout = { 'window': 'execute (tabpagenr()-1)."tabnew"' }
+  let g:fzf_prefer_tmux=1
   set rtp+=~/.fzf
   "let g:fzf_layout = {} "tab layout
 
-  nnoremap <silent> <leader>t :Files<CR>
+  nnoremap <silent> <leader>t :GitFiles<CR>
   nnoremap <silent> <Leader>b :Buffers<CR>
 
   " YouCompleteMe (Code Completion)
@@ -386,6 +388,13 @@ call plug#begin('~/.vim/plugged')
 
   " Start interactive EasyAlign for a motion/text object (e.g. gaip)
   nmap ga <Plug>(EasyAlign)
+
+  Plug 'jpalardy/vim-slime'
+  let g:slime_target = "tmux"
+  let g:slime_no_mappings  = 1
+  xmap <leader>e <Plug>SlimeRegionSend
+  nmap <leader>e <Plug>SlimeMotionSend
+  nmap <leader>ee <Plug>SlimeLineSend
 
   if has('nvim')
     Plug 'kassio/neoterm'

@@ -46,6 +46,7 @@ set backupdir=~/.vim/tmp
 set splitbelow
 "open vertical split right
 set splitright
+set noequalalways
 
 set noswapfile
 set noautowrite
