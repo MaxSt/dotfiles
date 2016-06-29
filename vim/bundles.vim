@@ -1,4 +1,4 @@
-" Easy bundles editing with :EditBundles
+  " Easy bundles editing with :EditBundles
 command! BundlesEdit :edit ~/.vim/bundles.vim
 noremap gb :BundlesEdit<CR>
 
@@ -79,35 +79,36 @@ call plug#begin('~/.vim/plugged')
     \'colorscheme': 'flatcolor',
     \'active': {
       \'left': [ [ 'mode' ],
-      \          [ 'readonly', 'filename', 'modified', 'parinfermode' ] ]
+       \          [ 'readonly', 'filename', 'modified'] ]
     \},
     \'component': {
       \'readonly': '%{&filetype=="help"?"":&readonly?"L":""}',
       \'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
       \'fugitive': '%{exists("*fugitive#head")?fugitive#head():""}'
     \},
-    \'component_function': {
-      \'parinfermode': 'LightLineParinferMode'
-    \},
     \'separator': { 'left': '░', 'right': '░' },
     \'subseparator': { 'left': '❱', 'right': '❱' }
   \ }
+      " \          [ 'readonly', 'filename', 'modified', 'parinfermode' ] ]
+    " \'component_function': {
+    "   \'parinfermode': 'LightLineParinferMode'
+    " \},
 
-  function! LightLineParinferMode()
-    if &filetype == "clojure"
-      if g:parinfer_mode == "off"
-        return "o"
-      elseif g:parinfer_mode == "indent"
-        return "⇆"
-      elseif g:parinfer_mode == "hybrid"
-        return "✱"
-      else
-        return "❪❫"
-      endif
-    else
-      return ""
-    endif
-  endfunction
+  " function! LightLineParinferMode()
+  "   if &filetype == "clojure"
+  "     if g:parinfer_mode == "off"
+  "       return "o"
+  "     elseif g:parinfer_mode == "indent"
+  "       return "⇆"
+  "     elseif g:parinfer_mode == "hybrid"
+  "       return "✱"
+  "     else
+  "       return "❪❫"
+  "     endif
+  "   else
+  "     return ""
+  "   endif
+  " endfunction
 
   Plug 'cohama/lexima.vim' "(auto-close chars)
 
@@ -352,23 +353,27 @@ call plug#begin('~/.vim/plugged')
   let g:sexp_enable_insert_mode_mappings = 0
   Plug 'tpope/vim-sexp-mappings-for-regular-people', { 'for': 'clojure' }
 
+  Plug 'vim-scripts/paredit.vim', { 'for': 'clojure' }
+  let g:paredit_leader = '\'
+  let g:paredit_electric_return = 0
+
   if has('nvim')
     Plug 'snoe/clj-refactor.nvim', { 'for': 'clojure' }
-    Plug 'snoe/nvim-parinfer.js', { 'for': 'clojure' }
-    autocmd FileType clojure let b:lexima_disabled = 1
-    let g:parinfer_airline_integration = 0
-    let g:parinfer_mode = "indent"
+    " Plug 'snoe/nvim-parinfer.js', { 'for': 'clojure' }
+    " autocmd FileType clojure let b:lexima_disabled = 1
+    " let g:parinfer_airline_integration = 0
+    " let g:parinfer_mode = "indent"
 
-    function! ToggleParinferMode()
-      if g:parinfer_mode == "indent"
-        let g:parinfer_mode = "paren"
-      " elseif g:parinfer_mode == "paren"
-      "   let g:parinfer_mode = "hybrid"
-      else
-        let g:parinfer_mode = "indent"
-      endif
-    endfunction
-    noremap <silent> gm :call ToggleParinferMode()<CR>
+    " function! ToggleParinferMode()
+    "   if g:parinfer_mode == "indent"
+    "     let g:parinfer_mode = "paren"
+    "   " elseif g:parinfer_mode == "paren"
+    "   "   let g:parinfer_mode = "hybrid"
+    "   else
+    "     let g:parinfer_mode = "indent"
+    "   endif
+    " endfunction
+    " noremap <silent> gm :call ToggleParinferMode()<CR>
   end
 
   Plug 'vim-scripts/dbext.vim', { 'for': 'sql' }
