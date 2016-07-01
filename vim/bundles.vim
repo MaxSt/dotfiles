@@ -180,7 +180,9 @@ call plug#begin('~/.vim/plugged')
 
   " automatically sets conceallevel --> deactive
   " " IndentLine (Show vertical line at each indent Level)
+  " Performance Problems
   " let g:indentLine_char = '┆'
+  " let g:indentLine_indentLevel = 30
   " Plug 'Yggdroot/indentLine'
 
   " Emmet (Zen Coding)
@@ -353,9 +355,9 @@ call plug#begin('~/.vim/plugged')
   let g:sexp_enable_insert_mode_mappings = 0
   Plug 'tpope/vim-sexp-mappings-for-regular-people', { 'for': 'clojure' }
 
-  Plug 'vim-scripts/paredit.vim', { 'for': 'clojure' }
-  let g:paredit_leader = '\'
-  let g:paredit_electric_return = 0
+  " Plug 'vim-scripts/paredit.vim', { 'for': 'clojure' }
+  " let g:paredit_leader = '\'
+  " let g:paredit_electric_return = 0
 
   if has('nvim')
     Plug 'snoe/clj-refactor.nvim', { 'for': 'clojure' }
@@ -404,6 +406,9 @@ call plug#begin('~/.vim/plugged')
   if has('nvim')
     Plug 'kassio/neoterm'
   end
+
+
+  Plug 'chrisbra/csv.vim', { 'for': 'csv' }
 call plug#end()
 filetype plugin indent on
 
