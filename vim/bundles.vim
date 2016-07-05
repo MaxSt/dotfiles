@@ -403,6 +403,8 @@ call plug#begin('~/.vim/plugged')
   nmap <leader>e <Plug>SlimeMotionSend
   nmap <leader>ee <Plug>SlimeLineSend
 
+  Plug 'kopischke/vim-fetch'
+
   if has('nvim')
     Plug 'kassio/neoterm'
   end
