@@ -234,14 +234,6 @@ vnoremap <Leader>P "+P
 "Make Y behave Like D or C
 noremap Y y$
 
-"J and K to Jump to beginning of Line
-noremap J +
-noremap K -
-"to Join lines
-noremap <leader>j J
-"to show help under cursor
-noremap <leader>k K
-
 "write file with gs
 noremap gs :w<CR>
 

@@ -405,10 +405,11 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'kopischke/vim-fetch'
 
+  Plug 'junegunn/gv.vim'
+
   if has('nvim')
     Plug 'kassio/neoterm'
   end
-
 
   Plug 'chrisbra/csv.vim', { 'for': 'csv' }
 call plug#end()
