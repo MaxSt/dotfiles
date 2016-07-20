@@ -151,10 +151,11 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-abolish'
 
   " Ack (Ack for vim)
-  "Plug 'dyng/ctrlsf.vim'
-  " Plug 'mileszs/ack.vim', {'on': 'Ack'}
-  " let g:ackprg = 'ag --nogroup --nocolor --column'
-  Plug 'eugen0329/vim-esearch'
+  " Plug 'dyng/ctrlsf.vim'
+  " noremap <leader>s :CtrlSF 
+   Plug 'mileszs/ack.vim', {'on': 'Ack'}
+   let g:ackprg = 'ag --nogroup --nocolor --column'
+  "Plug 'eugen0329/vim-esearch'
 
 
   " Trailertrash (identify and Irradicate unwanted whitespace at the end of the line (:Trim))
