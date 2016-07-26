@@ -169,6 +169,7 @@ call plug#begin('~/.vim/plugged')
 
   " Fugitive (Git Support for vim)
    Plug 'tpope/vim-fugitive'
+   autocmd BufReadPost fugitive://* set bufhidden=delete
 
 
   " Covim (Collaborative Editing)
@@ -316,10 +317,10 @@ call plug#begin('~/.vim/plugged')
   Plug 'jeetsukumaran/vim-indentwise'
   "
   "File Explorer
-  "Plug 'scrooloose/nerdtree'
-  "let NERDTreeShowLineNumbers=1
-  "noremap \ :NERDTreeToggle<CR>
-  Plug 'justinmk/vim-dirvish'
+  Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+  let NERDTreeShowLineNumbers=1
+  noremap \ :NERDTreeToggle<CR>
+  "Plug 'justinmk/vim-dirvish'
 
   " "Vim for writing
   " Plug 'reedes/vim-pencil', {'for': ['markdown','mkd','text']}
@@ -413,6 +414,8 @@ call plug#begin('~/.vim/plugged')
   end
 
   Plug 'chrisbra/csv.vim', { 'for': 'csv' }
+
+  Plug 'rhysd/vim-grammarous'
 call plug#end()
 filetype plugin indent on
 
