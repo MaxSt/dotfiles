@@ -39,8 +39,13 @@ URxvt.resize-font.bigger: M-Up
 !URxvt*boldFont: -*-tamsyn-medium-*-*--13-*-*-*-*-*-1
 
 ! Hack
-URxvt*letterSpace: -2
-URxvt*font: xft:Hack:size=12
-URxvt*boldFont: xft:Hack:size=12
+URxvt*letterSpace: -1
+URxvt*font: xft:Iosevka:size=12
+URxvt*boldFont: xft:Iosevka:size=12
+
+! Hack
+/* URxvt*letterSpace: -2 */
+/* URxvt*font: xft:Hack:size=12 */
+/* URxvt*boldFont: xft:Hack:size=12 */
 
 #include "/home/max/.terminalcolors/flatcolors.xdefaults"

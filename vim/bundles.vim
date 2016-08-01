@@ -78,16 +78,16 @@ call plug#begin('~/.vim/plugged')
   let g:lightline = {
     \'colorscheme': 'flatcolor',
     \'active': {
-      \'left': [ [ 'mode' ],
+      \'left': [ [ 'mode', 'fugitive' ],
        \          [ 'readonly', 'filename', 'modified'] ]
     \},
     \'component': {
-      \'readonly': '%{&filetype=="help"?"":&readonly?"L":""}',
+      \'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
       \'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
       \'fugitive': '%{exists("*fugitive#head")?fugitive#head():""}'
     \},
     \'separator': { 'left': '░', 'right': '░' },
-    \'subseparator': { 'left': '❱', 'right': '❱' }
+    \'subseparator': { 'left': '〉', 'right': '〉' }
   \ }
       " \          [ 'readonly', 'filename', 'modified', 'parinfermode' ] ]
     " \'component_function': {

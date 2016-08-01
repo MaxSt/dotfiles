@@ -13,7 +13,7 @@ if has('patch-7.3.541')
   set formatoptions+=j
 endif
 if has('patch-7.4.338')
-  let &showbreak = '↳ '
+  let &showbreak = '→ '
   set breakindent
   set breakindentopt=sbr
 endif
