@@ -416,6 +416,8 @@ call plug#begin('~/.vim/plugged')
   Plug 'chrisbra/csv.vim', { 'for': 'csv' }
 
   Plug 'rhysd/vim-grammarous'
+
+  Plug 'justinmk/vim-gtfo'
 call plug#end()
 filetype plugin indent on
 
