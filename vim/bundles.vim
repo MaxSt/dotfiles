@@ -319,6 +319,7 @@ call plug#begin('~/.vim/plugged')
   "File Explorer
   Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
   let NERDTreeShowLineNumbers=1
+  let NERDTreeQuitOnOpen=1
   noremap \ :NERDTreeToggle<CR>
   "Plug 'justinmk/vim-dirvish'
 
