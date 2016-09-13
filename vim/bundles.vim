@@ -317,10 +317,25 @@ call plug#begin('~/.vim/plugged')
   Plug 'jeetsukumaran/vim-indentwise'
   "
   "File Explorer
-  Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
+  Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeFocus' }
   let NERDTreeShowLineNumbers=1
-  let NERDTreeQuitOnOpen=1
-  noremap \ :NERDTreeToggle<CR>
+  let NERDTreeMinimalUI=1
+  let NERDTreeQuitOnOpen=0
+  noremap \ :NERDTreeFocus<CR>
+
+  Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeFocus' }
+  let g:NERDTreeIndicatorMapCustom = {
+        \ "Modified"  : "~",
+        \ "Staged"    : "✚",
+        \ "Untracked" : "U",
+        \ "Renamed"   : "r",
+        \ "Unmerged"  : "═",
+        \ "Deleted"   : "✖",
+        \ "Dirty"     : "✗",
+        \ "Clean"     : "✔︎",
+        \ "Unknown"   : "?"
+        \ }
+
   "Plug 'justinmk/vim-dirvish'
 
   " "Vim for writing
