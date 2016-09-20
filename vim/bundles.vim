@@ -406,6 +406,7 @@ call plug#begin('~/.vim/plugged')
   autocmd FileType tex,bib noremap <buffer> <space>t :VimtexTocOpen<cr>
 
   Plug 'ap/vim-css-color'
+  autocmd FileType clojure call css_color#init('hex', 'extended', 'clojureString')
 
   Plug 'junegunn/vim-easy-align'
   " Start interactive EasyAlign in visual mode (e.g. vipga)
