@@ -46,6 +46,7 @@ call plug#begin('~/.vim/plugged')
 
   Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': 'yes \| ./install' }
   Plug 'junegunn/fzf.vim'
+  let g:fzf_layout = { 'window': 'enew' }
   "let g:fzf_layout = { 'window': 'execute (tabpagenr()-1)."tabnew"' }
   let g:fzf_prefer_tmux=1
   set rtp+=~/.fzf
@@ -363,7 +364,10 @@ call plug#begin('~/.vim/plugged')
   let g:rainbow_conf = {
   \   'guifgs': ['#95ffa4', '#91ddff', '#ffe9aa', '#aaffe4', '#c991e1', '#ff8080'],
   \   'operators': '_,_',
-  \   'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold']
+  \   'parentheses': ['start=/(/ end=/)/ fold', 'start=/\[/ end=/\]/ fold', 'start=/{/ end=/}/ fold'],
+  \   'separately': {
+    \       'html': 0
+    \   }
   \}
   let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 
