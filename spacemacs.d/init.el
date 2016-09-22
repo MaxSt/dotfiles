@@ -295,13 +295,17 @@ you should place you code here."
  '(ansi-color-names-vector
    ["#4f4e6b" "#121028" "#ffb378" "#62d196" "#906cff" "#63f2f1" "#906cff" "#c991e1"])
  '(ansi-term-color-vector
-   [unspecified "#4f4e6b" "#121028" "#ffb378" "#62d196" "#906cff" "#63f2f1" "#906cff" "#c991e1"])
+   [unspecified "#4f4e6b" "#121028" "#ffb378" "#62d196" "#906cff" "#63f2f1" "#906cff" "#c991e1"] t)
  '(custom-safe-themes
    (quote
-    ("f2c9801d7ef8420e5fff053cd06d17c6bc74ea9304a1f1f6b6b0b456a444a6d9" default))))
+    ("f2c9801d7ef8420e5fff053cd06d17c6bc74ea9304a1f1f6b6b0b456a444a6d9" default)))
+ '(package-selected-packages
+   (quote
+    (request gitignore-mode fringe-helper git-gutter+ flx inflections edn paredit peg highlight spinner epl bind-map xterm-color ws-butler window-numbering toc-org spacemacs-theme spaceline powerline restclient ranger persp-mode ox-twbs orgit org-pomodoro alert org-plus-contrib open-junk-file neotree markdown-toc markdown-mode magit-gitflow leuven-theme info+ indent-guide hl-todo highlight-numbers help-fns+ helm-themes helm-projectile helm-make projectile helm-descbinds helm-c-yasnippet helm-ag google-translate gitconfig-mode git-messenger expand-region exec-path-from-shell evil-surround evil-search-highlight-persist evil-mc evil-matchit evil-magit magit magit-popup evil-iedit-state iedit evil-exchange eshell-prompt-extras diff-hl company-quickhelp cider-eval-sexp-fu auto-yasnippet auto-compile ace-link ace-jump-helm-line auto-complete avy cider clojure-mode multiple-cursors yasnippet s anzu smartparens git-gutter git-commit with-editor dash company helm helm-core popup async hydra quelpa package-build use-package which-key evil volatile-highlights vi-tilde-fringe undo-tree sql-indent smooth-scrolling smeargle shell-pop restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters queue pos-tip popwin pkg-info pcre2el parent-mode paradox page-break-lines packed org-repo-todo org-present org-bullets multi-term move-text mmm-mode macrostep lorem-ipsum log4e linum-relative ido-vertical-mode hungry-delete htmlize highlight-parentheses highlight-indentation helm-swoop helm-mode-manager helm-gitignore helm-flyspell helm-flx helm-company goto-chg golden-ratio gnuplot gntp gitattributes-mode git-timemachine git-gutter-fringe git-gutter-fringe+ gh-md flx-ido fill-column-indicator fancy-battery evil-visualstar evil-tutor evil-numbers evil-nerd-commenter evil-lisp-state evil-indent-plus evil-escape evil-cleverparens evil-args evil-anzu eval-sexp-fu esh-help elisp-slime-nav diminish define-word company-statistics clj-refactor clean-aindent-mode buffer-move bracketed-paste bind-key auto-highlight-symbol auto-dictionary aggressive-indent adaptive-wrap ace-window ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(company-tooltip-common ((t (:inherit company-tooltip :weight bold :underline nil))))
+ '(company-tooltip-common-selection ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))

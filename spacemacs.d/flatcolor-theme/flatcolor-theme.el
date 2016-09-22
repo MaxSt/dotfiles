@@ -7,10 +7,10 @@
 
 (deftheme flatcolor)
 
-(let ((fc-bg "#171338")
+(let ((fc-bg "#1e1c31")
       (fc-fg "#fbfcfc")
-      (fc-black "#4f4e6b")
-      (fc-dark-black "#121028")
+      (fc-black "#565575")
+      (fc-dark-black "#100e23")
       (fc-red "#ff8080")
       (fc-dark-red "#ff5458")
       (fc-green "#95ffa4")

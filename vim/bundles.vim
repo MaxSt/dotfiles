@@ -420,7 +420,7 @@ call plug#begin('~/.vim/plugged')
   nmap ga <Plug>(EasyAlign)
 
   Plug 'jpalardy/vim-slime'
-  let g:slime_target = "tmux"
+  let g:slime_target = "neovim"
   let g:slime_no_mappings  = 1
   xmap <leader>e <Plug>SlimeRegionSend
   nmap <leader>e <Plug>SlimeMotionSend
@@ -439,6 +439,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'rhysd/vim-grammarous'
 
   Plug 'justinmk/vim-gtfo'
+
 call plug#end()
 filetype plugin indent on
 
