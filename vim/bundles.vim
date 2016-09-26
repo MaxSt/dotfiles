@@ -319,6 +319,8 @@ call plug#begin('~/.vim/plugged')
   "
   "File Explorer
   Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeFocus' }
+  let g:NERDTreeDirArrowExpandable = '▸'
+  let g:NERDTreeDirArrowCollapsible = '▼'
   let NERDTreeShowLineNumbers=1
   let NERDTreeMinimalUI=1
   let NERDTreeQuitOnOpen=0
@@ -355,10 +357,6 @@ call plug#begin('~/.vim/plugged')
     Plug 'neovim/node-host', { 'dir': '~/.vim/plugged/node-host', 'do': 'npm install' }
   end
 
-  Plug 'guns/vim-clojure-static'
-  let g:clojure_align_multiline_strings = 1
-  let g:clojure_align_subforms = 1
-  "Plug 'guns/vim-clojure-highlight'
 
   Plug 'luochen1990/rainbow'
   let g:rainbow_conf = {
@@ -371,10 +369,24 @@ call plug#begin('~/.vim/plugged')
   \}
   let g:rainbow_active = 1 "0 if you want to enable it later via :RainbowToggle
 
+
+  Plug 'guns/vim-clojure-static', { 'for': 'clojure' }
+  let g:clojure_align_multiline_strings = 1
+  let g:clojure_align_subforms = 1
+  "
+  Plug 'clojure-vim/async-clj-omni', { 'for': 'clojure' }
+
   Plug 'tpope/vim-fireplace', { 'for': 'clojure' }
+  "Plug 'guns/vim-clojure-highlight', {'for': 'clojue'}
+  Plug 'guns/vim-clojure-highlight'
+
+  "deoplete clojure
+  Plug 'SevereOverfl0w/vim-clj-async', {'for': 'clojure'}
+  let g:deoplete#keyword_patterns = {}
+  let g:deoplete#keyword_patterns.clojure = '[\w!$%&*+/:<=>?@\^_~\-\.]*'
 
   Plug 'guns/vim-sexp', { 'for': 'clojure' }
-  let g:sexp_enable_insert_mode_mappings = 0
+  "let g:sexp_enable_insert_mode_mappings = 0
   Plug 'tpope/vim-sexp-mappings-for-regular-people', { 'for': 'clojure' }
 
   " Plug 'vim-scripts/paredit.vim', { 'for': 'clojure' }
@@ -383,21 +395,21 @@ call plug#begin('~/.vim/plugged')
 
   if has('nvim')
     Plug 'snoe/clj-refactor.nvim', { 'for': 'clojure' }
-    " Plug 'snoe/nvim-parinfer.js', { 'for': 'clojure' }
-    " autocmd FileType clojure let b:lexima_disabled = 1
-    " let g:parinfer_airline_integration = 0
-    " let g:parinfer_mode = "indent"
+     " Plug 'snoe/nvim-parinfer.js', { 'for': 'clojure' }
+     " autocmd FileType clojure let b:lexima_disabled = 1
+     " let g:parinfer_airline_integration = 0
+     " let g:parinfer_mode = "indent"
 
-    " function! ToggleParinferMode()
-    "   if g:parinfer_mode == "indent"
-    "     let g:parinfer_mode = "paren"
-    "   " elseif g:parinfer_mode == "paren"
-    "   "   let g:parinfer_mode = "hybrid"
-    "   else
-    "     let g:parinfer_mode = "indent"
-    "   endif
-    " endfunction
-    " noremap <silent> gm :call ToggleParinferMode()<CR>
+     " function! ToggleParinferMode()
+     "   if g:parinfer_mode == "indent"
+     "     let g:parinfer_mode = "paren"
+     "   " elseif g:parinfer_mode == "paren"
+     "   "   let g:parinfer_mode = "hybrid"
+     "   else
+     "     let g:parinfer_mode = "indent"
+     "   endif
+     " endfunction
+     " noremap <silent> gm :call ToggleParinferMode()<CR>
   end
 
   Plug 'vim-scripts/dbext.vim', { 'for': 'sql' }
