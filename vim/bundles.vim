@@ -384,7 +384,7 @@ call plug#begin('~/.vim/plugged')
   if has('nvim')
     Plug 'snoe/clj-refactor.nvim', { 'for': 'clojure' }
     " Plug 'snoe/nvim-parinfer.js', { 'for': 'clojure' }
-    " autocmd FileType clojure let b:lexima_disabled = 1
+    autocmd FileType clojure let b:lexima_disabled = 1
     " let g:parinfer_airline_integration = 0
     " let g:parinfer_mode = "indent"
 
