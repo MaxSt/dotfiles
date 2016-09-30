@@ -154,8 +154,9 @@ call plug#begin('~/.vim/plugged')
   " Ack (Ack for vim)
   " Plug 'dyng/ctrlsf.vim'
   " noremap <leader>s :CtrlSF 
-   Plug 'mileszs/ack.vim', {'on': 'Ack'}
-   let g:ackprg = 'ag --nogroup --nocolor --column'
+  " Plug 'mileszs/ack.vim', {'on': 'Ack'}
+  " let g:ackprg = 'ag --nogroup --nocolor --column'
+  Plug 'mhinz/vim-grepper'
   "Plug 'eugen0329/vim-esearch'
 
 
@@ -318,28 +319,29 @@ call plug#begin('~/.vim/plugged')
   Plug 'jeetsukumaran/vim-indentwise'
   "
   "File Explorer
-  Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeFocus' }
-  let g:NERDTreeDirArrowExpandable = '▸'
-  let g:NERDTreeDirArrowCollapsible = '▼'
-  let NERDTreeShowLineNumbers=1
-  let NERDTreeMinimalUI=1
-  let NERDTreeQuitOnOpen=0
-  noremap \ :NERDTreeFocus<CR>
+  " Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeFocus' }
+  " let g:NERDTreeDirArrowExpandable = '▸'
+  " let g:NERDTreeDirArrowCollapsible = '▼'
+  " let NERDTreeShowLineNumbers=1
+  " let NERDTreeMinimalUI=1
+  " let NERDTreeQuitOnOpen=0
+  " noremap \ :NERDTreeFocus<CR>
 
-  Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeFocus' }
-  let g:NERDTreeIndicatorMapCustom = {
-        \ "Modified"  : "~",
-        \ "Staged"    : "✚",
-        \ "Untracked" : "U",
-        \ "Renamed"   : "r",
-        \ "Unmerged"  : "═",
-        \ "Deleted"   : "✖",
-        \ "Dirty"     : "✗",
-        \ "Clean"     : "✔︎",
-        \ "Unknown"   : "?"
-        \ }
+  " Plug 'Xuyuanp/nerdtree-git-plugin', { 'on': 'NERDTreeFocus' }
+  " let g:NERDTreeIndicatorMapCustom = {
+  "       \ "Modified"  : "~",
+  "       \ "Staged"    : "✚",
+  "       \ "Untracked" : "U",
+  "       \ "Renamed"   : "r",
+  "       \ "Unmerged"  : "═",
+  "       \ "Deleted"   : "✖",
+  "       \ "Dirty"     : "✗",
+  "       \ "Clean"     : "✔︎",
+  "       \ "Unknown"   : "?"
+  "       \ }
 
-  "Plug 'justinmk/vim-dirvish'
+  Plug 'justinmk/vim-dirvish'
+  nmap \ <Plug>(dirvish_up)
 
   " "Vim for writing
   " Plug 'reedes/vim-pencil', {'for': ['markdown','mkd','text']}
