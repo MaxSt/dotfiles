@@ -74,26 +74,26 @@ call plug#begin('~/.vim/plugged')
   let g:UltiSnipsJumpForwardTrigger='<tab>'
   let g:UltiSnipsJumpBackwardTrigger='<s-tab>'
 
-  " lightline  (StatusBar)
-  Plug 'itchyny/lightline.vim'
-  let g:lightline = {
-    \'colorscheme': 'flatcolor',
-    \'active': {
-      \'left': [ [ 'mode', 'fugitive' ],
-       \          [ 'readonly', 'filename', 'modified'] ]
-    \},
-    \'component': {
-      \'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
-      \'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-      \'fugitive': '%{exists("*fugitive#head")?fugitive#head():""}'
-    \},
-    \'separator': { 'left': '░', 'right': '░' },
-    \'subseparator': { 'left': '〉', 'right': '〉' }
-  \ }
-      " \          [ 'readonly', 'filename', 'modified', 'parinfermode' ] ]
-    " \'component_function': {
-    "   \'parinfermode': 'LightLineParinferMode'
-    " \},
+  " " lightline  (StatusBar)
+  " Plug 'itchyny/lightline.vim'
+  " let g:lightline = {
+  "   \'colorscheme': 'flatcolor',
+  "   \'active': {
+  "     \'left': [ [ 'mode', 'fugitive' ],
+  "      \          [ 'readonly', 'filename', 'modified'] ]
+  "   \},
+  "   \'component': {
+  "     \'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
+  "     \'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
+  "     \'fugitive': '%{exists("*fugitive#head")?fugitive#head():""}'
+  "   \},
+  "   \'separator': { 'left': '░', 'right': '░' },
+  "   \'subseparator': { 'left': '〉', 'right': '〉' }
+  " \ }
+  "     " \          [ 'readonly', 'filename', 'modified', 'parinfermode' ] ]
+  "   " \'component_function': {
+  "   "   \'parinfermode': 'LightLineParinferMode'
+  "   " \},
 
   " function! LightLineParinferMode()
   "   if &filetype == "clojure"
@@ -147,13 +147,13 @@ call plug#begin('~/.vim/plugged')
   " vim-repeat
   Plug 'tpope/vim-repeat'
 
-  " search for, substitute, and abbreviate multiple variants of a word 
+  " search for, substitute, and abbreviate multiple variants of a word
   " and camel/snake case conversion
   Plug 'tpope/vim-abolish'
 
   " Ack (Ack for vim)
   " Plug 'dyng/ctrlsf.vim'
-  " noremap <leader>s :CtrlSF 
+  " noremap <leader>s :CtrlSF
   " Plug 'mileszs/ack.vim', {'on': 'Ack'}
   " let g:ackprg = 'ag --nogroup --nocolor --column'
   Plug 'mhinz/vim-grepper'
@@ -453,6 +453,11 @@ call plug#begin('~/.vim/plugged')
   Plug 'rhysd/vim-grammarous'
 
   Plug 'justinmk/vim-gtfo'
+
+  Plug 'vim-airline/vim-airline'
+  let g:airline#extensions#tabline#enabled = 1
+  let g:airline_left_sep='░'
+  let g:airline_right_sep='░'
 
 call plug#end()
 filetype plugin indent on

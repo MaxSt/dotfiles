@@ -118,10 +118,10 @@ values."
    ;; Default font. `powerline-scale' allows to quickly tweak the mode-line
    ;; size to make separators look not too crappy.
    dotspacemacs-default-font '("Iosevka"
-                               :size 15
+                               :size 16
                                :weight normal
                                :width normal
-                               :powerline-scale 1)
+                               :powerline-scale 1.3)
    ;; The leader key
    dotspacemacs-leader-key "SPC"
    ;; The leader key accessible in `emacs state' and `insert state'
@@ -262,6 +262,7 @@ layers configuration.
 This is the place where most of your configurations should be done. Unless it is
 explicitly specified that a variable should be set before a package is loaded,
 you should place you code here."
+  (setq powerline-default-separator 'slant)
   (define-key evil-normal-state-map (kbd "gs") 'save-buffer) ; gs to save
   ;;(define-key evil-normal-state-map (kbd "]b") 'spacemacs/next-useful-buffer) ; ]b to next buffer
   ;;(define-key evil-normal-state-map (kbd "[b") 'spacemacs/previous-useful-buffer) ; [b to previous buffer
