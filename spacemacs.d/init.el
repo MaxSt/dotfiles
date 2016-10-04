@@ -11,11 +11,24 @@ values."
    ;; `+distribution'. For now available distributions are `spacemacs-base'
    ;; or `spacemacs'. (default 'spacemacs)
    dotspacemacs-distribution 'spacemacs
+   ;; Lazy installation of layers (i.e. layers are installed only when a file
+   ;; with a supported type is opened). Possible values are `all', `unused'
+   ;; and `nil'. `unused' will lazy install only unused layers (i.e. layers
+   ;; not listed in variable `dotspacemacs-configuration-layers'), `all' will
+   ;; lazy install any layer that support lazy installation even the layers
+   ;; listed in `dotspacemacs-configuration-layers'. `nil' disable the lazy
+   ;; installation feature and you have to explicitly list a layer in the
+   ;; variable `dotspacemacs-configuration-layers' to install it.
+   ;; (default 'unused)
+   dotspacemacs-enable-lazy-installation 'unused
+   ;; If non-nil then Spacemacs will ask for confirmation before installing
+   ;; a layer lazily. (default t)
+   dotspacemacs-ask-for-lazy-installation t
+   ;; If non-nil layers with lazy install support are lazy installed.
    ;; List of additional paths where to look for configuration layers.
    ;; Paths must have a trailing slash (i.e. `~/.mycontribs/')
    dotspacemacs-configuration-layer-path '()
-   ;; List of configuration layers to load. If it is the symbol `all' instead
-   ;; of a list then all discovered layers will be installed.
+   ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
    '(
      ;; ----------------------------------------------------------------
@@ -38,6 +51,7 @@ values."
      restclient
      unimpaired
      ranger
+     ivy
      evil-cleverparens
      ;; (shell :variables
      ;;        shell-default-height 30
@@ -50,13 +64,19 @@ values."
    ;; wrapped in a layer. If you need some configuration for these
    ;; packages, then consider creating a layer. You can also put the
    ;; configuration in `dotspacemacs/user-config'.
-   dotspacemacs-additional-packages '(ox-twbs)
-   ;; A list of packages and/or extensions that will not be install and loaded.
+   dotspacemacs-additional-packages '()
+   ;; A list of packages that cannot be updated.
+   dotspacemacs-frozen-packages '()
+   ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages '()
-   ;; If non-nil spacemacs will delete any orphan packages, i.e. packages that
-   ;; are declared in a layer which is not a member of
-   ;; the list `dotspacemacs-configuration-layers'. (default t)
-   dotspacemacs-delete-orphan-packages t))
+   ;; Defines the behaviour of Spacemacs when installing packages.
+   ;; Possible values are `used-only', `used-but-keep-unused' and `all'.
+   ;; `used-only' installs only explicitly used packages and uninstall any
+   ;; unused packages as well as their unused dependencies.
+   ;; `used-but-keep-unused' installs only the used packages but won't uninstall
+   ;; them if they become unused. `all' installs *all* packages supported by
+   ;; Spacemacs and never uninstall them. (default is `used-only')
+   dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
   "Initialization function.
@@ -77,7 +97,9 @@ values."
    ;; Maximum allowed time in seconds to contact an ELPA repository.
    dotspacemacs-elpa-timeout 5
    ;; If non nil then spacemacs will check for updates at startup
-   ;; when the current branch is not `develop'. (default t)
+   ;; when the current branch is not `develop'. Note that checking for
+   ;; new versions works via git commands, thus it calls GitHub services
+   ;; whenever you start Emacs. (default nil)
    dotspacemacs-check-for-update nil
    ;; One of `vim', `emacs' or `hybrid'. Evil is always enabled but if the
    ;; variable is `emacs' then the `holy-mode' is enabled at startup. `hybrid'
@@ -106,7 +128,9 @@ values."
    ;; Press <SPC> T n to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
    dotspacemacs-themes '(flatcolor)
-                         ; spacemacs-dark
+   ;; dotspacemacs-themes '(spacemacs-dark)
+                         ; spacemacs-d
+ark
                          ; spacemacs-light
                          ; solarized-light
                          ; solarized-dark
@@ -302,7 +326,24 @@ you should place you code here."
     ("f2c9801d7ef8420e5fff053cd06d17c6bc74ea9304a1f1f6b6b0b456a444a6d9" default)))
  '(package-selected-packages
    (quote
-    (request gitignore-mode fringe-helper git-gutter+ flx inflections edn paredit peg highlight spinner epl bind-map xterm-color ws-butler window-numbering toc-org spacemacs-theme spaceline powerline restclient ranger persp-mode ox-twbs orgit org-pomodoro alert org-plus-contrib open-junk-file neotree markdown-toc markdown-mode magit-gitflow leuven-theme info+ indent-guide hl-todo highlight-numbers help-fns+ helm-themes helm-projectile helm-make projectile helm-descbinds helm-c-yasnippet helm-ag google-translate gitconfig-mode git-messenger expand-region exec-path-from-shell evil-surround evil-search-highlight-persist evil-mc evil-matchit evil-magit magit magit-popup evil-iedit-state iedit evil-exchange eshell-prompt-extras diff-hl company-quickhelp cider-eval-sexp-fu auto-yasnippet auto-compile ace-link ace-jump-helm-line auto-complete avy cider clojure-mode multiple-cursors yasnippet s anzu smartparens git-gutter git-commit with-editor dash company helm helm-core popup async hydra quelpa package-build use-package which-key evil volatile-highlights vi-tilde-fringe undo-tree sql-indent smooth-scrolling smeargle shell-pop restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters queue pos-tip popwin pkg-info pcre2el parent-mode paradox page-break-lines packed org-repo-todo org-present org-bullets multi-term move-text mmm-mode macrostep lorem-ipsum log4e linum-relative ido-vertical-mode hungry-delete htmlize highlight-parentheses highlight-indentation helm-swoop helm-mode-manager helm-gitignore helm-flyspell helm-flx helm-company goto-chg golden-ratio gnuplot gntp gitattributes-mode git-timemachine git-gutter-fringe git-gutter-fringe+ gh-md flx-ido fill-column-indicator fancy-battery evil-visualstar evil-tutor evil-numbers evil-nerd-commenter evil-lisp-state evil-indent-plus evil-escape evil-cleverparens evil-args evil-anzu eval-sexp-fu esh-help elisp-slime-nav diminish define-word company-statistics clj-refactor clean-aindent-mode buffer-move bracketed-paste bind-key auto-highlight-symbol auto-dictionary aggressive-indent adaptive-wrap ace-window ac-ispell))))
+    (wgrep smex ivy-hydra flyspell-correct-ivy counsel-projectile counsel swiper
+           ivy uuidgen org-projectile org org-download ob-http link-hint
+           git-link flyspell-correct-helm flyspell-correct eyebrowse
+           evil-visual-mark-mode evil-unimpaired evil-ediff eshell-z dumb-jump f
+           column-enforce-mode color-identifiers-mode clojure-snippets seq
+           request gitignore-mode fringe-helper git-gutter+ flx inflections edn
+           paredit peg highlight spinner epl bind-map xterm-color ws-butler
+           window-numbering toc-org spacemacs-theme spaceline powerline
+           restclient ranger persp-mode ox-twbs orgit org-pomodoro alert
+           org-plus-contrib open-junk-file neotree markdown-toc markdown-mode
+           magit-gitflow leuven-theme info+ indent-guide hl-todo
+           highlight-numbers help-fns+ helm-themes helm-projectile helm-make
+           projectile helm-descbinds helm-c-yasnippet helm-ag google-translate
+           gitconfig-mode git-messenger expand-region exec-path-from-shell
+           evil-surround evil-search-highlight-persist evil-mc evil-matchit
+           evil-magit magit magit-popup evil-iedit-state iedit evil-exchange
+           eshell-prompt-extras 
+diff-hl company-quickhelp cider-eval-sexp-fu auto-yasnippet auto-compile ace-link ace-jump-helm-line auto-complete avy cider clojure-mode multiple-cursors yasnippet s anzu smartparens git-gutter git-commit with-editor dash company helm helm-core popup async hydra quelpa package-build use-package which-key evil volatile-highlights vi-tilde-fringe undo-tree sql-indent smooth-scrolling smeargle shell-pop restart-emacs rainbow-mode rainbow-identifiers rainbow-delimiters queue pos-tip popwin pkg-info pcre2el parent-mode paradox page-break-lines packed org-repo-todo org-present org-bullets multi-term move-text mmm-mode macrostep lorem-ipsum log4e linum-relative ido-vertical-mode hungry-delete htmlize highlight-parentheses highlight-indentation helm-swoop helm-mode-manager helm-gitignore helm-flyspell helm-flx helm-company goto-chg golden-ratio gnuplot gntp gitattributes-mode git-timemachine git-gutter-fringe git-gutter-fringe+ gh-md flx-ido fill-column-indicator fancy-battery evil-visualstar evil-tutor evil-numbers evil-nerd-commenter evil-lisp-state evil-indent-plus evil-escape evil-cleverparens evil-args evil-anzu eval-sexp-fu esh-help elisp-slime-nav diminish define-word company-statistics clj-refactor clean-aindent-mode buffer-move bracketed-paste bind-key auto-highlight-symbol auto-dictionary aggressive-indent adaptive-wrap ace-window ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
