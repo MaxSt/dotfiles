@@ -52,7 +52,8 @@ call plug#begin('~/.vim/plugged')
   set rtp+=~/.fzf
   "let g:fzf_layout = {} "tab layout
 
-  nnoremap <silent> <leader>t :GitFiles<CR>
+  nnoremap <silent> <leader>t :Files<CR>
+  nnoremap <silent> <leader>g :GitFiles<CR>
   nnoremap <silent> <Leader>b :Buffers<CR>
 
   " YouCompleteMe (Code Completion)
@@ -383,12 +384,12 @@ call plug#begin('~/.vim/plugged')
   Plug 'guns/vim-clojure-highlight'
 
   "deoplete clojure
-  Plug 'SevereOverfl0w/vim-clj-async', {'for': 'clojure'}
+  Plug 'clojure-vim/async-clj-omni'
   let g:deoplete#keyword_patterns = {}
   let g:deoplete#keyword_patterns.clojure = '[\w!$%&*+/:<=>?@\^_~\-\.]*'
 
   Plug 'guns/vim-sexp', { 'for': 'clojure' }
-  "let g:sexp_enable_insert_mode_mappings = 0
+  let g:sexp_enable_insert_mode_mappings = 0
   Plug 'tpope/vim-sexp-mappings-for-regular-people', { 'for': 'clojure' }
 
   " Plug 'vim-scripts/paredit.vim', { 'for': 'clojure' }
@@ -396,9 +397,9 @@ call plug#begin('~/.vim/plugged')
   " let g:paredit_electric_return = 0
 
   if has('nvim')
-    Plug 'snoe/clj-refactor.nvim', { 'for': 'clojure' }
+    Plug 'clojure-vim/clj-refactor.nvim', { 'for': 'clojure' }
     " Plug 'snoe/nvim-parinfer.js', { 'for': 'clojure' }
-    autocmd FileType clojure let b:lexima_disabled = 1
+    " autocmd FileType clojure let b:lexima_disabled = 1
     " let g:parinfer_airline_integration = 0
     " let g:parinfer_mode = "indent"
 
@@ -455,9 +456,14 @@ call plug#begin('~/.vim/plugged')
   Plug 'justinmk/vim-gtfo'
 
   Plug 'vim-airline/vim-airline'
-  let g:airline#extensions#tabline#enabled = 1
+  "let g:airline#extensions#tabline#enabled = 1
   let g:airline_left_sep='░'
   let g:airline_right_sep='░'
+
+  Plug 'vladh/tagbar'
+
+  Plug 'machakann/vim-highlightedyank'
+  highlight link HighlightedyankRegion Folded
 
 call plug#end()
 filetype plugin indent on
