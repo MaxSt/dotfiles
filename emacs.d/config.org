@@ -636,7 +636,8 @@ If inside a pair with spaces, e.g. `( | )` delete both spaces symmetrically''"
   :ensure t
   :init
   (progn
-    (add-hook 'prog-mode-hook 'nlinum-relative-mode)
+    ;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
+    (global-nlinum-relative-mode t)
     (setq nlinum-relative-current-symbol "")
     (setq nlinum-relative-redisplay-delay 0)
     (nlinum-relative-setup-evil)
