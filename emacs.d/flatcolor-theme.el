@@ -260,11 +260,11 @@
      `(iedit-occurrence            ((,c (:foreground ,magenta :bold ,bold :inverse-video t))))
      `(iedit-read-only-occurrence  ((,c (:inherit region))))
      ;; ivy
-     `(ivy-current-match           ((,c (:background ,blue))))
-     `(ivy-minibuffer-match-face-1 ((,c (:background ,black :foreground ,grey))))
-     `(ivy-minibuffer-match-face-2 ((,c (:background ,black :foreground ,magenta :bold ,bold))))
-     `(ivy-minibuffer-match-face-3 ((,c (:background ,black :foreground ,green   :bold ,bold))))
-     `(ivy-minibuffer-match-face-4 ((,c (:background ,black :foreground ,yellow  :bold ,bold))))
+     `(ivy-current-match           ((,c (:background ,blue :foreground ,black))))
+     `(ivy-minibuffer-match-face-1 ((,c (:background ,cyan :foreground ,black))))
+     `(ivy-minibuffer-match-face-2 ((,c (:background ,magenta :foreground ,black :bold ,bold))))
+     `(ivy-minibuffer-match-face-3 ((,c (:background ,green :foreground ,black   :bold ,bold))))
+     `(ivy-minibuffer-match-face-4 ((,c (:background ,yellow :foreground ,black  :bold ,bold))))
      `(ivy-virtual                 ((,c (:foreground ,fg))))
      ;; neotree
      `(neo-root-dir-face           ((,c (:foreground ,green :background ,bg))))

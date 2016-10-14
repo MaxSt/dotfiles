@@ -11,6 +11,9 @@ auto-save-list/
 undo/*
 !undo/.gitkeep
 
+desktop/*
+!desktop/.gitkeep
+
 local/*
 !local/.gitkeep
 

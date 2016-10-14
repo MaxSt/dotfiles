@@ -1,40 +1,68 @@
 #+TITLE: My GNU Emacs configuration
-#+STARTUP: indent 
-#+OPTIONS: H:5 num:nil tags:nil toc:nil timestamps:t
+#+OPTIONS: toc:4 h:4
 #+LAYOUT: post
 #+DESCRIPTION: Loading emacs configuration using org-babel
 #+TAGS: emacs
 #+CATEGORIES: editing
 
 * Package Config
+** Package + use-package
 #+BEGIN_SRC emacs-lisp
-(require 'package)
-(add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
+  (require 'package)
+  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
+  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+  (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
 
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(require 'use-package)
+  (unless (package-installed-p 'use-package)
+    (package-refresh-contents)
+    (package-install 'use-package))
+  (require 'use-package)
 #+END_SRC
-
 * Defaults
 #+BEGIN_SRC emacs-lisp
 (setq
- package-enable-at-startup nil
- inhibit-startup-screen t
- x-select-enable-clipboard t
- make-backup-files nil)
+   package-enable-at-startup nil
+   inhibit-startup-screen t
+   x-select-enable-clipboard t
+   tab-stop-list (number-sequence 2 120 2))
+(setq-default truncate-lines nil) ; line wrap
+(setq-default indent-tabs-mode nil)
+#+END_SRC
+** Save desktop Files (Sessions)
+#+BEGIN_SRC emacs-lisp
+;; Automatically save and restore sessions
+(setq desktop-dirname             "~/.emacs.d/desktop/"
+      desktop-base-file-name      "emacs.desktop"
+      desktop-base-lock-name      "lock"
+      desktop-path                (list desktop-dirname)
+      desktop-save                t
+      desktop-files-not-to-save   "^$" ;reload tramp paths
+      desktop-load-locked-desktop nil)
+(desktop-save-mode 1)
 
-(set-default 'truncate-lines nil) ; line wrap
+#+END_SRC
+ 
+** Backups
+#+BEGIN_SRC emacs-lisp
+(setq
+ make-backup-files t
+ version-control t   ; use numbers for backup files
+ kept-new-versions 10
+ kept-old-versions 0
+ delete-old-versions t
+ backup-by-copying t
+ vc-make-backup-files t
+ backup-directory-alist '(("." . "~/.emacs.d/backup")))
+(setq backup-directory-alist '(("." . "~/.emacs.d/backup")))
+#+END_SRC
 
+** Disable Lockfiles
+These are the Files creating in the current Directory for files that have not been saved yet #File#
+#+BEGIN_SRC emacs-lisp
+(setq create-lockfiles nil)
 #+END_SRC
 
 * GUI
-
-
-
 #+BEGIN_SRC emacs-lisp
 
 (set-default-font "Iosevka-11")
@@ -42,305 +70,301 @@
 (scroll-bar-mode -1)
 (tool-bar-mode -1)     ; disable the tool-bar
 (menu-bar-mode -1)     ; disable the menu-bar
-(desktop-save-mode 1)  ; restore last active session
 (global-linum-mode -1)  ; dont show line-numbers everywhere
 (show-paren-mode)
 (electric-pair-mode 1)
 
-
 (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
 (set-fringe-bitmap-face 'tilde 'fringe)
-
-#+END_SRC
-
-
-#+BEGIN_SRC emacs-lisp
-(require 'dired-x)
-(setq org-src-fontify-natively t) ;enable syntax highlighting in org-babel source code
 #+END_SRC
 
 * custom Functions
 #+BEGIN_SRC emacs-lisp
-(defconst org-config-file "~/.emacs.d/config.org")
+  (defconst org-config-file "~/.emacs.d/config.org")
 
-(defun my-funcs/reload-dotfile ()
-  "Reload '~/.emacs.d/init.el'."
-  (interactive)
-  (load-file "~/.emacs.d/init.el"))
+  (defun my-funcs/reload-dotfile ()
+    "Reload '~/.emacs.d/init.el'."
+    (interactive)
+    (load-file "~/.emacs.d/init.el"))
 
-(defun my-funcs/open-dotfile ()
-  "Open '~/.emacs.d/config.org."
-  (interactive)
-  (find-file org-config-file))
+  (defun my-funcs/open-dotfile ()
+    "Open '~/.emacs.d/config.org."
+    (interactive)
+    (find-file org-config-file))
 
-(defconst my-funcs/pairs '(("(" . ")") ("[" . "]") ("{" . "}")))
+  ;(defconst my-funcs/pairs '(("(" . ")") ("[" . "]") ("{" . "}")))
 
-(defun my-funcs/get-pair ()
-  "Get the according pair around the point or return nil if point is not inside an adjacent pair."
-  (let ((preceding (string (preceding-char)))
-	(following (string (following-char))))
-    (let ((match (cdr (assoc preceding my-funcs/pairs))))
-	(if (equal following match)
-	    match
-	  nil))))
+  ;; (defun my-funcs/get-pair ()
+  ;;   "Get the according pair around the point or return nil if point is not inside an adjacent pair."
+  ;;   (let ((preceding (string (preceding-char)))
+  ;;         (following (string (following-char))))
+  ;;     (let ((match (cdr (assoc preceding my-funcs/pairs))))
+  ;;         (if (equal following match)
+  ;;             match
+  ;;           nil))))
 
-(defun my-funcs/smart-space ()
-  "Insert a space at point, and if inside and adjacent pair, also insert another space to keep whitespace balanced."
-  (interactive) (when (my-funcs/get-pair)
-    (insert " ")
-    (backward-char))
-  (insert " "))
+  ;; (defun my-funcs/smart-space ()
+  ;;   "Insert a space at point, and if inside and adjacent pair, also insert another space to keep whitespace balanced."
+  ;;   (interactive) (when (my-funcs/get-pair)
+  ;;     (insert " ")
+  ;;     (backward-char))
+  ;;   (insert " "))
 
-(defun my-funcs/smart-delete ()
-  "Delete a character. If inside an adjacent pair, also delete the according closing character.
-If inside a pair with spaces, e.g. `( | )` delete both spaces symmetrically''"
-  (interactive)
-  (let ((preceding (string (preceding-char)))
-	(following (string (following-char))))
-    (if (and (equal preceding " ") (equal following " "))
-	(let ((before (string (char-before (- (point) 1))))
-	      (after (string (char-after (+ (point) 1)))))
-	  (let ((match (cdr (assoc before my-funcs/pairs))))
-	    (if (equal after match)
-		(progn
-		  ; between spaces and brackets -> delete both spaces first
-		  (delete-backward-char 1)
-		  (delete-char 1))
-	      ; between spaces, but not between brackets -> normal delete
-	      (delete-backward-char 1))))
-      ;; we're not even between spaces, perform "normal" delete, optionally deleting a pair
-      (if (my-funcs/get-pair)
- 	  (electric-pair-delete-pair 1)
-	(delete-backward-char 1)))))
+  ;; (defun my-funcs/smart-delete ()
+  ;;   "Delete a character. If inside an adjacent pair, also delete the according closing character.
+  ;; If inside a pair with spaces, e.g. `( | )` delete both spaces symmetrically''"
+  ;;   (interactive)
+  ;;   (let ((preceding (string (preceding-char)))
+  ;;         (following (string (following-char))))
+  ;;     (if (and (equal preceding " ") (equal following " "))
+  ;;         (let ((before (string (char-before (- (point) 1))))
+  ;;               (after (string (char-after (+ (point) 1)))))
+  ;;           (let ((match (cdr (assoc before my-funcs/pairs))))
+  ;;             (if (equal after match)
+  ;;                 (progn
+  ;;                   ; between spaces and brackets -> delete both spaces first
+  ;;                   (delete-backward-char 1)
+  ;;                   (delete-char 1))
+  ;;               ; between spaces, but not between brackets -> normal delete
+  ;;               (delete-backward-char 1))))
+  ;;       ;; we're not even between spaces, perform "normal" delete, optionally deleting a pair
+  ;;       (if (my-funcs/get-pair)
+  ;;           (electric-pair-delete-pair 1)
+  ;;         (delete-backward-char 1)))))
 
 
-(defun my-funcs/dired-up-directory ()
-  "Take dired up one directory, but behave like dired-find-alternative-file (leave no orphan buffer)"
-  (interactive)
-  (let ((old (current-buffer)))
-    (dired-up-directory)
-    (kill-buffer old)))
+  ;; (defun my-funcs/dired-up-directory ()
+  ;;   "Take dired up one directory, but behave like dired-find-alternative-file (leave no orphan buffer)"
+  ;;   (interactive)
+  ;;   (let ((old (current-buffer)))
+  ;;     (dired-up-directory)
+  ;;     (kill-buffer old)))
 
-(defun my-funcs/check-expansion ()
-  "checks wether or not expansion should be done"
-  (save-excursion
-    (if (looking-at "\\_>") t
-      (backward-char 1)
-      (if (looking-at "\\.") t
-    (backward-char 1)
-    (if (looking-at "->") t nil)))))
+  ;; (defun my-funcs/check-expansion ()
+  ;;   "checks wether or not expansion should be done"
+  ;;   (save-excursion
+  ;;     (if (looking-at "\\_>") t
+  ;;       (backward-char 1)
+  ;;       (if (looking-at "\\.") t
+  ;;     (backward-char 1)
+  ;;     (if (looking-at "->") t nil)))))
 
-(defun my-funcs/do-yas-expand ()
-  (let ((yas/fallback-behavior 'return-nil))
-    (yas/expand)))
-(defun my-funcs/tab-indent-or-complete ()
-  (interactive)
-  (message "checking wether or not to indent!")
-  (cond
-   ((minibufferp)
-    (minibuffer-complete))
-   (t
-    (indent-for-tab-command)
-    (if (or (not yas/minor-mode)
-        (null (my-funcs/do-yas-expand)))
-    (if (my-funcs/check-expansion)
-        (progn
-          (company-manual-begin)
-          (if (null company-candidates)
-          (progn
-            (company-abort)
-            (indent-for-tab-command)))))))))
+  ;; (defun my-funcs/do-yas-expand ()
+  ;;   (let ((yas/fallback-behavior 'return-nil))
+  ;;     (yas/expand)))
 
-(defun my-funcs/tab-complete-or-next-field ()
-  (interactive)
-  (if (or (not yas/minor-mode)
-      (null (my-funcs/do-yas-expand)))
-      (if company-candidates
-      (company-complete-selection)
-    (if (my-funcs/check-expansion)
-      (progn
-        (company-manual-begin)
-        (if (null company-candidates)
-        (progn
-          (company-abort)
-          (yas-next-field))))
-      (yas-next-field)))))
+  ;; (defun my-funcs/tab-indent-or-complete ()
+  ;;   (interactive)
+  ;;   (message "checking wether or not to indent!")
+  ;;   (cond
+  ;;    ((minibufferp)
+  ;;     (minibuffer-complete))
+  ;;    (t
+  ;;     (indent-for-tab-command)
+  ;;     (if (or (not yas/minor-mode)
+  ;;         (null (my-funcs/do-yas-expand)))
+  ;;     (if (my-funcs/check-expansion)
+  ;;         (progn
+  ;;           (company-manual-begin)
+  ;;           (if (null company-candidates)
+  ;;           (progn
+  ;;             (company-abort)
+  ;;             (indent-for-tab-command)))))))))
 
-(defun my-funcs/expand-snippet-or-complete-selection ()
-  (interactive)
-  (if (or (not yas/minor-mode)
-      (null (my-funcs/do-yas-expand))
-      (company-abort))
-      (company-complete-selection)))
+  ;; (defun my-funcs/tab-complete-or-next-field ()
+  ;;   (interactive)
+  ;;   (if (or (not yas/minor-mode)
+  ;;       (null (my-funcs/do-yas-expand)))
+  ;;       (if company-candidates
+  ;;       (company-complete-selection)
+  ;;     (if (my-funcs/check-expansion)
+  ;;       (progn
+  ;;         (company-manual-begin)
+  ;;         (if (null company-candidates)
+  ;;         (progn
+  ;;           (company-abort)
+  ;;           (yas-next-field))))
+  ;;       (yas-next-field)))))
 
-(defun my-funcs/abort-company-or-yas ()
-  (interactive)
-  (if (null company-candidates)
-      (yas-abort-snippet)
-    (company-abort)))
+  ;; (defun my-funcs/expand-snippet-or-complete-selection ()
+  ;;   (interactive)
+  ;;   (if (or (not yas/minor-mode)
+  ;;       (null (my-funcs/do-yas-expand))
+  ;;       (company-abort))
+  ;;       (company-complete-selection)))
 
-(defun my-funcs/open-snippet-dir ()
-  (interactive)
-  (let* ((dir (file-name-as-directory (car yas-snippet-dirs)))
-	(path (concat dir (symbol-name major-mode))))
-    (dired path)))
+  ;; (defun my-funcs/abort-company-or-yas ()
+  ;;   (interactive)
+  ;;   (if (null company-candidates)
+  ;;       (yas-abort-snippet)
+  ;;     (company-abort)))
 
-(defun my-funcs/resize-window-down ()
-  "Resize a window downwards."
-  (interactive)
-  (if (window-in-direction 'below)
-      (enlarge-window 1)
-    (shrink-window 1)))
+  (defun my-funcs/open-snippet-dir ()
+    (interactive)
+    (let* ((dir (file-name-as-directory (car yas-snippet-dirs)))
+          (path (concat dir (symbol-name major-mode))))
+      (dired path)))
 
-(defun my-funcs/resize-window-up ()
-  "Resize a window upwards."
-  (interactive)
-  (if (window-in-direction 'above)
-      (enlarge-window 1)
-    (shrink-window 1)))
+  (defun my-funcs/resize-window-down ()
+    "Resize a window downwards."
+    (interactive)
+    (if (window-in-direction 'below)
+        (enlarge-window 1)
+      (shrink-window 1)))
 
-(defun my-funcs/resize-window-left ()
-  "Resize a window leftwards."
-  (interactive)
-  (if (window-in-direction 'left)
-      (enlarge-window-horizontally 1)
-    (shrink-window-horizontally 1)))
+  (defun my-funcs/resize-window-up ()
+    "Resize a window upwards."
+    (interactive)
+    (if (window-in-direction 'above)
+        (enlarge-window 1)
+      (shrink-window 1)))
 
-(defun my-funcs/resize-window-right ()
-  "Resize a window rightwards."
-  (interactive)
-  (if (window-in-direction 'right)
-      (enlarge-window-horizontally 1)
-    (shrink-window-horizontally 1)))
+  (defun my-funcs/resize-window-left ()
+    "Resize a window leftwards."
+    (interactive)
+    (if (window-in-direction 'left)
+        (enlarge-window-horizontally 1)
+      (shrink-window-horizontally 1)))
+
+  (defun my-funcs/resize-window-right ()
+    "Resize a window rightwards."
+    (interactive)
+    (if (window-in-direction 'right)
+        (enlarge-window-horizontally 1)
+      (shrink-window-horizontally 1)))
 #+END_SRC
 
 * Package config
 ** Evil
 #+BEGIN_SRC emacs-lisp
-(use-package evil
-  :ensure t
-  :config
-  (define-key evil-insert-state-map (kbd "SPC") 'my-funcs/smart-space)
-  (define-key evil-insert-state-map (kbd "DEL") 'my-funcs/smart-delete)
-  (define-key evil-insert-state-map [tab] 'my-funcs/tab-indent-or-complete)
-  ; (define-key evil-insert-state-map (kbd "TAB") 'my-funcs/tab-indent-or-complete)
-  (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-  (evil-define-key 'normal emacs-lisp-mode-map (kbd "K") 'elisp-slime-nav-describe-elisp-thing-at-point)
-  (evil-define-key 'normal dired-mode-map
-    (kbd "h") 'my-funcs/dired-up-directory
-    (kbd "RET") 'dired-find-alternate-file
-    (kbd "l") 'dired-find-alternate-file
-    (kbd "m") 'dired-mark
-    (kbd "u") 'dired-unmark
-    (kbd "U") 'dired-unmark-all-marks
-    (kbd "C") 'dired-create-directory
-    (kbd "n") 'evil-search-next
-    (kbd "N") 'evil-search-previous
-    (kbd "y") 'dired-do-copy
-    (kbd "q") 'kill-this-buffer)
-  (use-package evil-surround
+  (use-package evil
     :ensure t
     :config
-    (global-evil-surround-mode))
-  (use-package evil-numbers
-    :ensure t
-    :config
-    (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
-    (define-key evil-normal-state-map (kbd "C-x") 'evil-numbers/dec-at-pt))
-  (use-package evil-args
-    :ensure t
-    :config
-    (define-key evil-inner-text-objects-map "i" 'evil-inner-arg)
-    (define-key evil-outer-text-objects-map "a" 'evil-outer-arg))
-  (use-package evil-matchit
-    :ensure t
-    :config
-    (global-evil-matchit-mode 1))
-  (use-package evil-mc
-    :ensure t
-    :config
-    (global-evil-mc-mode 1))
-  (use-package evil-org
-    :ensure t)
-  (use-package evil-exchange
-    :ensure t
-    :config
-    (setq evil-exchange-key (kbd "gx"))
-    (evil-exchange-install))
-  (use-package evil-commentary
-    :ensure t
-    :config
-    (evil-commentary-mode))
+    ;; (define-key evil-insert-state-map (kbd "SPC") 'my-funcs/smart-space)
+    ;; (define-key evil-insert-state-map (kbd "DEL") 'my-funcs/smart-delete)
+    ;; (define-key evil-insert-state-map [tab] 'my-funcs/tab-indent-or-complete)
+    ; (define-key evil-insert-state-map (kbd "TAB") 'my-funcs/tab-indent-or-complete)
+    ;; (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+    ;; (evil-define-key 'normal emacs-lisp-mode-map (kbd "K") 'elisp-slime-nav-describe-elisp-thing-at-point)
+    ;; (evil-define-key 'normal dired-mode-map
+      ;; (kbd "h") 'my-funcs/dired-up-directory
+      ;; (kbd "RET") 'dired-find-alternate-file
+      ;; (kbd "l") 'dired-find-alternate-file
+      ;; (kbd "m") 'dired-mark
+      ;; (kbd "u") 'dired-unmark
+      ;; (kbd "U") 'dired-unmark-all-marks
+      ;; (kbd "C") 'dired-create-directory
+      ;; (kbd "n") 'evil-search-next
+      ;; (kbd "N") 'evil-search-previous
+      ;; (kbd "y") 'dired-do-copy
+      ;; (kbd "q") 'kill-this-buffer)
+    (use-package evil-surround
+      :ensure t
+      :config
+      (global-evil-surround-mode))
+    (use-package evil-numbers
+      :ensure t
+      :config
+      (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
+      (define-key evil-normal-state-map (kbd "C-x") 'evil-numbers/dec-at-pt))
+    ;; (use-package evil-args
+      ;; :ensure t
+      ;; :config
+      ;; (define-key evil-inner-text-objects-map "i" 'evil-inner-arg)
+      ;; (define-key evil-outer-text-objects-map "a" 'evil-outer-arg))
+    (use-package evil-matchit
+      :ensure t
+      :config
+      (global-evil-matchit-mode 1))
 
-  (use-package neotree
-    :ensure t
-    :config
-    (define-key evil-normal-state-map (kbd "\\") 'neotree-toggle)
-    (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
-    (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
-    (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter))
+    ;; multiple cursors
+    ;;(gru to delete all cursors)
+    ;; C-N to next cursor
+    (use-package evil-mc
+      :ensure t
+      :config
+      (global-evil-mc-mode 1))
 
-  (use-package evil-leader
-    :ensure t
-    :config
-    (evil-leader/set-leader "SPC")
-    (evil-leader/set-key
-      ":" 'helm-M-x
-      "~" 'my-term-funcs/toggle-term
-      "TAB" 'my-window-funcs/switch-to-last-buffer
-      "b b" 'helm-buffers-list
-      "b n" 'next-buffer
-      "b p" 'previous-buffer
-      "b d" 'kill-this-buffer
-      "f f" 'helm-find-files
-      "e l" 'eval-last-sexp
-      "e b" 'eval-buffer
-      "e f" 'eval-defun
-      "f r" 'helm-recentf
-      "f s" 'save-buffer
-      "f d" 'dired-jump
-      "p p" 'helm-projectile-switch-project
-      "p f" 'helm-projectile-find-file-dwim
-      "p d" 'helm-projectile-find-dir
-      "p a" 'helm-projectile-ag
-      "t u" 'undo-tree-visualize
-      "w q" 'evil-window-delete
-      "w o" 'delete-other-windows
-      "w |" 'split-window-right
-      "w -" 'split-window-below
-      "w r" 'hydra-window-resize/body
-      "z"   'zoom-window-zoom
-      ". s" 'my-funcs/open-snippet-dir
-      ". e" 'my-funcs/open-dotfile
-      ". r" 'my-funcs/reload-dotfile
-      "? k" 'describe-key
-      "? v" 'describe-variable
-      "? f" 'describe-function
-      "? m" 'describe-mode)
-    ;(global-set-key (kbd "C-j") 'my-window-funcs/window-down)
-    ;(global-set-key (kbd "C-k") 'my-window-funcs/window-up)
-    ;(global-set-key (kbd "C-h") 'my-window-funcs/window-left)
-    ;(global-set-key (kbd "C-l") 'my-window-funcs/window-right)
+    ;; (use-package evil-org
+    ;;   :ensure t)
+
+    ;;gx to mark exchange second time to do it
+    ;;gX to cancel
+    (use-package evil-exchange
+      :ensure t
+      :config
+      (evil-exchange-install))
+
+    (use-package evil-commentary
+      :ensure t
+      :config
+      (evil-commentary-mode))
+
+    (use-package neotree
+      :ensure t
+      :config
+      (define-key evil-normal-state-map (kbd "\\") 'neotree-toggle)
+      (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
+      (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
+      (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter))
+    (use-package evil-leader
+      :ensure t
+      :config
+      (evil-leader/set-leader "SPC")
+      (evil-leader/set-key
+        "f" 'avy-goto-char
+        "s" 'swiper
+        "~" 'my-term-funcs/toggle-term
+        "TAB" 'my-window-funcs/switch-to-last-buffer
+        "b" 'ivy-switch-buffer
+        "o" 'find-file
+        ;"b p" 'previous-buffer
+        ;"b d" 'kill-this-buffer
+        "e l" 'eval-last-sexp
+        "e b" 'eval-buffer
+        "e f" 'eval-defun
+        ;"f d" 'dired-jump
+        "t u" 'undo-tree-visualize
+        "w q" 'evil-window-delete
+        "w o" 'delete-other-windows
+        "w v" 'split-window-right
+        "w s" 'split-window-below
+        "w r" 'hydra-window-resize/body
+        "z"   'zoom-window-zoom
+        ". s" 'my-funcs/open-snippet-dir
+        ". e" 'my-funcs/open-dotfile
+        ". r" 'my-funcs/reload-dotfile
+        "? k" 'describe-key
+        "? v" 'describe-variable
+        "? f" 'describe-function
+        "? m" 'describe-mode)
+      ;(global-set-key (kbd "C-j") 'my-window-funcs/window-down)
+      ;(global-set-key (kbd "C-k") 'my-window-funcs/window-up)
+      ;(global-set-key (kbd "C-h") 'my-window-funcs/window-left)
+      ;(global-set-key (kbd "C-l") 'my-window-funcs/window-right)
+      (global-evil-leader-mode))
+
+    ;;evil mappings
     (define-key evil-normal-state-map (kbd "gs") 'save-buffer) ; gs to save
-    (global-evil-leader-mode))
-  (evil-mode 1)) ; evil-leader must be enabled before evil
 
-(use-package which-key
-  :ensure t
-  :config
-  (which-key-add-key-based-replacements
-    "SPC TAB" "Last active buffer"
-    "SPC :"   "Execute ex-command"
-    "SPC ~"   "Toggle terminal"
-    "SPC b"   "Buffers"
-    "SPC e"   "Evaluate"
-    "SPC f"   "Files"
-    "SPC p"   "Projects"
-    "SPC t"   "Toggles"
-    "SPC w"   "Windows"
-    "SPC ."   "Dotfiles"
-    "SPC ?"   "Get help")
-  (which-key-mode))
+    (evil-mode 1)) ; evil-leader must be enabled before evil
+
+  (use-package which-key
+    :ensure t
+    :config
+    ;; (which-key-add-key-based-replacements
+    ;;   "SPC TAB" "Last active buffer"
+    ;;   "SPC :"   "Execute ex-command"
+    ;;   "SPC ~"   "Toggle terminal"
+    ;;   "SPC b"   "Buffers"
+    ;;   "SPC e"   "Evaluate"
+    ;;   "SPC f"   "Files"
+    ;;   "SPC p"   "Projects"
+    ;;   "SPC t"   "Toggles"
+    ;;   "SPC w"   "Windows"
+    ;;   "SPC ."   "Dotfiles"
+    ;;   "SPC ?"   "Get help")
+    (which-key-mode))
 #+END_SRC
 
 ** Terminal
@@ -429,53 +453,53 @@ If inside a pair with spaces, e.g. `( | )` delete both spaces symmetrically''"
 	      (kbd "\C-w") 'term-send-backward-kill-word)))
 #+END_SRC
 
-** helm
-#+BEGIN_SRC emacs-lisp
-(use-package helm
-  :ensure t
-  :config
-  (setq helm-buffers-fuzzy-matching t
-	helm-recentf-fuzzy-match    t)
-  (setq helm-quick-update t
-        ;; Speedier without fuzzy matching
-        helm-mode-fuzzy-match t
-        helm-buffers-fuzzy-matching t
-        helm-apropos-fuzzy-match t
-        helm-M-x-fuzzy-match t
-        helm-recentf-fuzzy-match t
-        helm-projectile-fuzzy-match nil
-        ;; Display extraineous helm UI elements
-        helm-display-header-line nil
-        helm-ff-auto-update-initial-value nil
-        helm-find-files-doc-header nil
-        ;; Don't override evil-ex's completion
-        helm-mode-handle-completion-in-region nil
-        helm-candidate-number-limit 50
-        ;; Don't wrap item cycling
-        helm-move-to-line-cycle-in-source t)
+# ** helm
+# #+BEGIN_SRC emacs-lisp
+# (use-package helm
+#   :ensure t
+#   :config
+#   (setq helm-buffers-fuzzy-matching t
+# 	helm-recentf-fuzzy-match    t)
+#   (setq helm-quick-update t
+#         ;; Speedier without fuzzy matching
+#         helm-mode-fuzzy-match t
+#         helm-buffers-fuzzy-matching t
+#         helm-apropos-fuzzy-match t
+#         helm-M-x-fuzzy-match t
+#         helm-recentf-fuzzy-match t
+#         helm-projectile-fuzzy-match nil
+#         ;; Display extraineous helm UI elements
+#         helm-display-header-line nil
+#         helm-ff-auto-update-initial-value nil
+#         helm-find-files-doc-header nil
+#         ;; Don't override evil-ex's completion
+#         helm-mode-handle-completion-in-region nil
+#         helm-candidate-number-limit 50
+#         ;; Don't wrap item cycling
+#         helm-move-to-line-cycle-in-source t)
 
-  (define-key helm-map (kbd "C-j") 'helm-next-line)
-  (define-key helm-map (kbd "C-k") 'helm-previous-line)
-  (define-key helm-map (kbd "C-w") 'backward-kill-word)
-  (define-key helm-map (kbd "TAB") 'helm-execute-persistent-action) ; complete with tab
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (helm-mode 1)
+#   (define-key helm-map (kbd "C-j") 'helm-next-line)
+#   (define-key helm-map (kbd "C-k") 'helm-previous-line)
+#   (define-key helm-map (kbd "C-w") 'backward-kill-word)
+#   (define-key helm-map (kbd "TAB") 'helm-execute-persistent-action) ; complete with tab
+#   (global-set-key (kbd "M-x") 'helm-M-x)
+#   (helm-mode 1)
 
-  ;;always bottom 40% height
-  (add-to-list 'display-buffer-alist
-	       `(,(rx bos "*helm" (* not-newline) "*" eos)
-		 (display-buffer-in-side-window)
-		 (inhibit-same-window . t)
-		 (window-height . 0.4)))
+#   ;;always bottom 40% height
+#   (add-to-list 'display-buffer-alist
+# 	       `(,(rx bos "*helm" (* not-newline) "*" eos)
+# 		 (display-buffer-in-side-window)
+# 		 (inhibit-same-window . t)
+# 		 (window-height . 0.4)))
 
-  (use-package helm-projectile
-    :ensure t
-    :config
-    (helm-projectile-on))
-  (use-package helm-ag
-    :ensure t
-    :config))
-#+END_SRC
+#   (use-package helm-projectile
+#     :ensure t
+#     :config
+#     (helm-projectile-on))
+#   (use-package helm-ag
+#     :ensure t
+#     :config))
+# #+END_SRC
 
 ** flycheck
 #+BEGIN_SRC emacs-lisp
@@ -495,13 +519,13 @@ If inside a pair with spaces, e.g. `( | )` delete both spaces symmetrically''"
 (use-package yasnippet
   :ensure t
   :config
-  (define-key yas-minor-mode-map [tab] nil)
-  (define-key yas-minor-mode-map (kbd "TAB") nil)
+  ;(define-key yas-minor-mode-map [tab] nil)
+  ;(define-key yas-minor-mode-map (kbd "TAB") nil)
 
-  (define-key yas-keymap [tab] 'my-funcs/tab-complete-or-next-field)
-  (define-key yas-keymap (kbd "TAB") 'my-funcs/tab-complete-or-next-field)
-  (define-key yas-keymap [(control tab)] 'yas-next-field)
-  (define-key yas-keymap (kbd "C-g") 'my-funcs/abort-company-or-yas)
+  ;(define-key yas-keymap [tab] 'my-funcs/tab-complete-or-next-field)
+  ;(define-key yas-keymap (kbd "TAB") 'my-funcs/tab-complete-or-next-field)
+  ;(define-key yas-keymap [(control tab)] 'yas-next-field)
+  ;(define-key yas-keymap (kbd "C-g") 'my-funcs/abort-company-or-yas)
 
   (yas-global-mode 1))
 #+END_SRC
@@ -518,9 +542,8 @@ If inside a pair with spaces, e.g. `( | )` delete both spaces symmetrically''"
   (define-key company-active-map (kbd "C-n") #'company-select-next)
   (define-key company-active-map (kbd "C-p") #'company-select-previous)
   (define-key company-active-map (kbd "C-w") #'backward-kill-word)
-
-  (define-key company-active-map [tab] 'my-funcs/expand-snippet-or-complete-selection)
-  (define-key company-active-map (kbd "TAB") 'my-funcs/expand-snippet-or-complete-selection)
+  ;(define-key company-active-map [tab] 'my-funcs/expand-snippet-or-complete-selection)
+  ;(define-key company-active-map (kbd "TAB") 'my-funcs/expand-snippet-or-complete-selection)
   (nconc company-backends '(company-yasnippet))
   (global-company-mode))
 #+END_SRC
@@ -545,40 +568,43 @@ If inside a pair with spaces, e.g. `( | )` delete both spaces symmetrically''"
 
 ** git
 #+BEGIN_SRC emacs-lisp
-(use-package git-gutter
-  :ensure t
-  :config
-  (use-package git-gutter-fringe
-    :ensure t)
-  (use-package fringe-helper
-    :ensure t)
-  (require 'fringe-helper)
-  (require 'git-gutter-fringe)
+  (use-package git-gutter
+    :ensure t
+    :config
+    (use-package git-gutter-fringe
+      :ensure t)
+    (use-package fringe-helper
+      :ensure t)
+    (require 'fringe-helper)
+    (require 'git-gutter-fringe)
 
-  (fringe-mode 3)
-  ;; (push `(left-fringe  . 3) default-frame-alist)
-  ;; (push `(right-fringe . 3) default-frame-alist)
-  ;; ;; slightly larger default frame size on startup
-  ;; (push '(width . 120) default-frame-alist)
-  ;; (push '(height . 40) default-frame-alist)
-  ;; (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
-  ;; (set-fringe-bitmap-face 'tilde 'fringe)
+    (fringe-mode 3)
+    ;; (push `(left-fringe  . 3) default-frame-alist)
+    ;; (push `(right-fringe . 3) default-frame-alist)
+    ;; ;; slightly larger default frame size on startup
+    ;; (push '(width . 120) default-frame-alist)
+    ;; (push '(height . 40) default-frame-alist)
+    ;; (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
+    ;; (set-fringe-bitmap-face 'tilde 'fringe)
 
-;; colored fringe "bars"
-  (define-fringe-bitmap 'git-gutter-fr:added
-    [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
-    nil nil 'center)
-  (define-fringe-bitmap 'git-gutter-fr:modified
-    [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
-    nil nil 'center)
-  (define-fringe-bitmap 'git-gutter-fr:deleted
-    [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
-    nil nil 'center)
+  ;; colored fringe "bars"
+    (define-fringe-bitmap 'git-gutter-fr:added
+      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
+      nil nil 'center)
+    (define-fringe-bitmap 'git-gutter-fr:modified
+      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
+      nil nil 'center)
+    (define-fringe-bitmap 'git-gutter-fr:deleted
+      [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
+      nil nil 'center)
 
-  (advice-add 'evil-force-normal-state :after 'git-gutter)
-  (add-hook 'focus-in-hook 'git-gutter:update-all-windows)
+    (advice-add 'evil-force-normal-state :after 'git-gutter)
+    (add-hook 'focus-in-hook 'git-gutter:update-all-windows))
 
-  )
+  (use-package magit
+    :ensure t
+    :config)
+
 #+END_SRC
 
 ** clojure
@@ -594,163 +620,186 @@ If inside a pair with spaces, e.g. `( | )` delete both spaces symmetrically''"
   :ensure t)
 #+END_SRC
 
-* Rest
+** Org Mode
+enable syntax highlighting in org-babel source code
+#+BEGIN_SRC emacs-lisp
+  (setq org-src-fontify-natively t)
+#+END_SRC
+*  Rest
 #+BEGIN_SRC emacs-lisp
 (use-package smartparens
-  :ensure t
-  :config
-  (use-package evil-smartparens
     :ensure t
     :config
-    (add-hook 'clojure-mode-hook #'evil-smartparens-mode)
+    (use-package evil-smartparens
+      :ensure t
+      :config
+      (add-hook 'clojure-mode-hook #'evil-smartparens-mode)
+      )
+    (smartparens-global-mode 1))
+
+
+  ; general-purpose string-manipulation library
+  (use-package s
+    :ensure t
+    :config)
+
+  (use-package projectile
+    :ensure t
+    :config
+    (setq projectile-switch-project-action 'projectile-dired)
+    (projectile-global-mode))
+
+  (use-package beacon
+    :ensure t
+    :config
+    (beacon-mode +1)
+    (setq beacon-color (face-attribute 'highlight :background nil t)
+          beacon-blink-when-buffer-changes t
+          beacon-blink-when-point-moves-vertically 10))
+
+  ;; (use-package nlinum
+  ;;   :ensure t
+  ;;   :init
+  ;;   (progn
+  ;;     (setq nlinum-format "%3d ")
+  ;;     ))
+
+  ;; (use-package nlinum-relative
+  ;;   :ensure t
+  ;;   :init
+  ;;   (progn
+  ;;     ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
+  ;;     (global-nlinum-relative-mode t)
+  ;;     (setq nlinum-relative-current-symbol "")
+  ;;     (setq nlinum-relative-redisplay-delay 0)
+  ;;     (nlinum-relative-setup-evil)))
+
+
+  (use-package zoom-window
+    :ensure t
+    :config
+    (setq zoom-window-mode-line-color "pink"))
+
+  ;; default values for indentation (possibly overwritten by editorconfig)
+  (setq
+   js2-basic-offset 2
+   js-indent-level 2
+   js-expr-indent-offset -2)
+
+  (use-package rainbow-delimiters
+    :ensure t
+    :config)
+
+  (use-package undo-tree
+    :ensure t
+    :config
+    (setq undo-tree-auto-save-history t
+          undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+    (global-undo-tree-mode))
+
+  ;; (use-package flatui-theme
+  ;;   :ensure t
+  ;;   :config
+  ;;   (load-theme 'flatui t))
+
+
+  (use-package all-the-icons
+    :ensure t)
+
+  (use-package doom-themes
+    :ensure t
+    :config
+    (setq doom-neotree-enable-variable-pitch t
+          doom-neotree-file-icons t
+          doom-neotree-line-spacing 3)
+    ;(load-theme 'doom-one t)
+    ;; brighter source buffers
+    ;(add-hook 'find-file-hook 'doom-buffer-mode)
+    ;; Custom neotree theme
+    (when window-system
+      (require 'doom-neotree)))
+
+  ; for keeping track of recent files, provides helm-recentf with data
+  (use-package recentf
+    :ensure t
+    :config)
+
+  (use-package elisp-slime-nav
+    :ensure t
+    :config
+    (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode) (eldoc-mode))))
+
+  (setq-default
+   ;mode-line-default-help-echo nil ; don't say anything on mode-line mouseover
+   indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
+   indicate-empty-lines nil        ; don't show empty lines
+   fringes-outside-margins t       ; switches order of fringe and margin
+   ;; Keep cursors and highlights in current window only
+   cursor-in-non-selected-windows nil
+   highlight-nonselected-windows nil
+   ;; Disable bidirectional text support for slight performance bonus
+   bidi-display-reordering nil
+   ;; Remove continuation arrow on right fringe
+   ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+   ;;                              fringe-indicator-alist)
+
+   blink-matching-paren nil ; don't blink--too distracting
+   )
+
+  (defun what-face (pos)
+    "Tells you the name of the face (point) is on."
+    (interactive "d")
+    (let ((hl-line-p (bound-and-true-p hl-line-mode)))
+      (if hl-line-p (hl-line-mode -1))
+      (let ((face (or (get-char-property (point) 'read-face-name)
+                      (get-char-property (point) 'face))))
+        (if face (message "Face: %s" face) (message "No face at %d" pos)))
+      (if hl-line-p (hl-line-mode 1))))
+
+  (load-theme 'flatcolor t)
+
+  (use-package rainbow-mode
+    :ensure t
+    :config)
+
+  (use-package eyebrowse
+    :ensure t
+    :config
+    (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
+    (eyebrowse-mode t))
+
+  (use-package highlight-symbol
+    :ensure t
+    :config
+    (setq highlight-symbol-idle-delay 0.5)
+    (highlight-symbol-mode t)
     )
-  (smartparens-global-mode 1))
 
-; general-purpose string-manipulation library
-(use-package s
-  :ensure t
-  :config)
+  (use-package ivy
+    :ensure t
+    :config
+    (ivy-mode t))
 
-(use-package projectile
-  :ensure t
-  :config
-  (setq projectile-switch-project-action 'projectile-dired)
-  (projectile-global-mode))
+  (use-package counsel
+    :ensure t
+    :config)
 
-(use-package beacon
-  :ensure t
-  :config
-  (beacon-mode +1)
-  (setq beacon-color (face-attribute 'highlight :background nil t)
-        beacon-blink-when-buffer-changes t
-        beacon-blink-when-point-moves-vertically 10))
+  (use-package swiper
+    :ensure t
+    :config
+    (ivy-mode t))
 
-(use-package nlinum
-  :ensure t
-  :init
-  (progn
-    (setq nlinum-format "%3d ")
-    ))
+  (use-package avy
+    :ensure t
+    :config)
 
-(use-package nlinum-relative
-  :ensure t
-  :init
-  (progn
-    ;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
-    (global-nlinum-relative-mode t)
-    (setq nlinum-relative-current-symbol "")
-    (setq nlinum-relative-redisplay-delay 0)
-    (nlinum-relative-setup-evil)
-    ))
+  (add-hook 'js2-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
 
+  ;; Don't litter my init file
+  (setq custom-file "~/.emacs.d/local/custom-set.el")
+  (load custom-file 'noerror)
 
-(use-package zoom-window
-  :ensure t
-  :config
-  (setq zoom-window-mode-line-color "blue"))
-
-;; default values for indentation (possibly overwritten by editorconfig)
-(setq
- js2-basic-offset 2
- js-indent-level 2
- js-expr-indent-offset -2)
-
-(use-package rainbow-delimiters
-  :ensure t
-  :config)
-
-(use-package undo-tree
-  :ensure t
-  :config
-  (setq undo-tree-auto-save-history t
-	undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-  (global-undo-tree-mode))
-
-;; (use-package flatui-theme
-;;   :ensure t
-;;   :config
-;;   (load-theme 'flatui t))
-
-
-(use-package all-the-icons
-  :ensure t)
-
-(use-package doom-themes
-  :ensure t
-  :config
-  (setq doom-neotree-enable-variable-pitch t
-        doom-neotree-file-icons t
-        doom-neotree-line-spacing 3)
-  ;(load-theme 'doom-one t)
-  ;; brighter source buffers
-  ;(add-hook 'find-file-hook 'doom-buffer-mode)
-  ;; Custom neotree theme
-  (when window-system
-    (require 'doom-neotree)))
-
-; for keeping track of recent files, provides helm-recentf with data
-(use-package recentf
-  :ensure t
-  :config)
-
-(use-package elisp-slime-nav
-  :ensure t
-  :config
-  (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode) (eldoc-mode))))
-
-(setq-default
- ;mode-line-default-help-echo nil ; don't say anything on mode-line mouseover
- indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
- indicate-empty-lines nil        ; don't show empty lines
- fringes-outside-margins t       ; switches order of fringe and margin
- ;; Keep cursors and highlights in current window only
- cursor-in-non-selected-windows nil
- highlight-nonselected-windows nil
- ;; Disable bidirectional text support for slight performance bonus
- bidi-display-reordering nil
- ;; Remove continuation arrow on right fringe
- ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
- ;;                              fringe-indicator-alist)
-
- blink-matching-paren nil ; don't blink--too distracting
- )
-
-(defun what-face (pos)
-  "Tells you the name of the face (point) is on."
-  (interactive "d")
-  (let ((hl-line-p (bound-and-true-p hl-line-mode)))
-    (if hl-line-p (hl-line-mode -1))
-    (let ((face (or (get-char-property (point) 'read-face-name)
-                    (get-char-property (point) 'face))))
-      (if face (message "Face: %s" face) (message "No face at %d" pos)))
-    (if hl-line-p (hl-line-mode 1))))
-
-(load-theme 'flatcolor t)
-
-(use-package rainbow-mode
-  :ensure t
-  :config)
-
-(use-package eyebrowse
-  :ensure t
-  :config
-  (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
-  (eyebrowse-mode t))
-
-(use-package highlight-symbol
-  :ensure t
-  :config
-  (setq highlight-symbol-idle-delay 0.5)
-  (highlight-symbol-mode t)
-  )
-
-(add-hook 'js2-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
-(add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
-
-;; Don't litter my init file
-(setq custom-file "~/.emacs.d/local/custom-set.el")
-(load custom-file 'noerror)
-
-(put 'dired-find-alternate-file 'disabled nil)
+  (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
