@@ -335,6 +335,7 @@ These are the Files creating in the current Directory for files that have not be
         ". e" 'my-funcs/open-dotfile
         ". r" 'my-funcs/reload-dotfile
         "? k" 'describe-key
+        "? SPC" 'which-key-show-top-level
         "? v" 'describe-variable
         "? f" 'describe-function
         "? m" 'describe-mode)
@@ -346,6 +347,8 @@ These are the Files creating in the current Directory for files that have not be
 
     ;;evil mappings
     (define-key evil-normal-state-map (kbd "gs") 'save-buffer) ; gs to save
+    ;; g. to open config file
+    (define-key evil-normal-state-map (kbd "g.") 'my-funcs/open-dotfile)
 
     (evil-mode 1)) ; evil-leader must be enabled before evil
 
@@ -609,15 +612,42 @@ These are the Files creating in the current Directory for files that have not be
 
 ** clojure
 #+BEGIN_SRC emacs-lisp
-(use-package clojure-mode
-  :ensure t
-  :mode ("\\.clj$" "\\.cljs$" "\\build.boot$")
-  :config)
+  (use-package clojure-mode
+    :ensure t
+    :mode ("\\.clj$" "\\.cljs$" "\\build.boot$")
+    :config)
 
-(use-package clj-refactor
-  :ensure t)
-(use-package cider
-  :ensure t)
+  (use-package clj-refactor
+    :ensure t)
+  (use-package cider
+    :ensure t
+    :config
+    (autoload 'cider--make-result-overlay "cider-overlays")
+
+    (defun my-funcs/eval-overlay (value point)
+      (cider--make-result-overlay (format "%S" value)
+        :where point
+        :duration 'command)
+      ;; Preserve the return value.
+      value)
+
+    (advice-add 'eval-region :around
+                (lambda (f beg end &rest r)
+                  (my-funcs/eval-overlay
+                   (apply f beg end r)
+                   end)))
+
+    (advice-add 'eval-last-sexp :filter-return
+                (lambda (r)
+                  (my-funcs/eval-overlay r (point))))
+
+    (advice-add 'eval-defun :filter-return
+                (lambda (r)
+                  (my-funcs/eval-overlay
+                   r
+                   (save-excursion
+                     (end-of-defun)
+                     (point))))))
 #+END_SRC
 
 ** Org Mode
