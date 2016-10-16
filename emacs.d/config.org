@@ -275,188 +275,221 @@ These are the Files creating in the current Directory for files that have not be
 ** Evil
 #+BEGIN_SRC emacs-lisp
 
-    (use-package evil
+  (use-package evil
+    :ensure t
+    :config
+
+    ;;todo only for elisp!
+    (evil-define-operator evil-eval-elisp-text-object (beg end)
+      "Evil operator for evaluating code."
+      :move-point nil
+      (save-excursion
+        (let (eval-str
+              value)
+          (setq eval-str (buffer-substring beg end))
+          (setq value (eval (car (read-from-string eval-str))))
+          (my-funcs/eval-overlay value end)
+          (message (format "%s" value)))))
+
+    (evil-define-operator evil-eval-clojure-text-object (beg end)
+      "Evil operator for evaluating code."
+      :move-point nil
+      (save-excursion
+        (cider-eval-region beg end)))
+
+    ;; (define-key evil-insert-state-map (kbd "SPC") 'my-funcs/smart-space)
+    ;; (define-key evil-insert-state-map (kbd "DEL") 'my-funcs/smart-delete)
+    ;; (define-key evil-insert-state-map [tab] 'my-funcs/tab-indent-or-complete)
+    ; (define-key evil-insert-state-map (kbd "TAB") 'my-funcs/tab-indent-or-complete)
+    ;; (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
+    ;; (evil-define-key 'normal emacs-lisp-mode-map (kbd "K") 'elisp-slime-nav-describe-elisp-thing-at-point)
+    ;; (evil-define-key 'normal dired-mode-map
+      ;; (kbd "h") 'my-funcs/dired-up-directory
+      ;; (kbd "RET") 'dired-find-alternate-file
+      ;; (kbd "l") 'dired-find-alternate-file
+      ;; (kbd "m") 'dired-mark
+      ;; (kbd "u") 'dired-unmark
+      ;; (kbd "U") 'dired-unmark-all-marks
+      ;; (kbd "C") 'dired-create-directory
+      ;; (kbd "n") 'evil-search-next
+      ;; (kbd "N") 'evil-search-previous
+      ;; (kbd "y") 'dired-do-copy
+      ;; (kbd "q") 'kill-this-buffer)
+    (use-package evil-surround
       :ensure t
       :config
-
-      ;;todo only for elisp!
-      (evil-define-operator evil-eval-text-object (beg end)
-        "Evil operator for evaluating code."
-        :move-point nil
-        (save-excursion
-          (let (eval-str
-                value)
-            (setq eval-str (buffer-substring beg end))
-            (setq value (eval (car (read-from-string eval-str))))
-            (my-funcs/eval-overlay value (point))
-            (message (format "%s" value))
-          )))
-
-      ;; (define-key evil-insert-state-map (kbd "SPC") 'my-funcs/smart-space)
-      ;; (define-key evil-insert-state-map (kbd "DEL") 'my-funcs/smart-delete)
-      ;; (define-key evil-insert-state-map [tab] 'my-funcs/tab-indent-or-complete)
-      ; (define-key evil-insert-state-map (kbd "TAB") 'my-funcs/tab-indent-or-complete)
-      ;; (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-      ;; (evil-define-key 'normal emacs-lisp-mode-map (kbd "K") 'elisp-slime-nav-describe-elisp-thing-at-point)
-      ;; (evil-define-key 'normal dired-mode-map
-        ;; (kbd "h") 'my-funcs/dired-up-directory
-        ;; (kbd "RET") 'dired-find-alternate-file
-        ;; (kbd "l") 'dired-find-alternate-file
-        ;; (kbd "m") 'dired-mark
-        ;; (kbd "u") 'dired-unmark
-        ;; (kbd "U") 'dired-unmark-all-marks
-        ;; (kbd "C") 'dired-create-directory
-        ;; (kbd "n") 'evil-search-next
-        ;; (kbd "N") 'evil-search-previous
-        ;; (kbd "y") 'dired-do-copy
-        ;; (kbd "q") 'kill-this-buffer)
-      (use-package evil-surround
-        :ensure t
-        :config
-        (global-evil-surround-mode))
-      (use-package evil-numbers
-        :ensure t
-        :config
-        (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
-        (define-key evil-normal-state-map (kbd "C-x") 'evil-numbers/dec-at-pt))
-      ;; (use-package evil-args
-        ;; :ensure t
-        ;; :config
-        ;; (define-key evil-inner-text-objects-map "i" 'evil-inner-arg)
-        ;; (define-key evil-outer-text-objects-map "a" 'evil-outer-arg))
-      (use-package evil-matchit
-        :ensure t
-        :config
-        (global-evil-matchit-mode 1))
-
-      ;; multiple cursors
-      ;;(gru to delete all cursors)
-      ;; C-N to next cursor
-      (use-package evil-mc
-        :ensure t
-        :config
-        (global-evil-mc-mode 1))
-
-      ;; (use-package evil-org
-      ;;   :ensure t)
-
-      ;;gx to mark exchange second time to do it
-      ;;gX to cancel
-      (use-package evil-exchange
-        :ensure t
-        :config
-        (evil-exchange-install))
-
-      (use-package evil-commentary
-        :ensure t
-        :config
-        (evil-commentary-mode))
-
-      (use-package neotree
-        :ensure t
-        :config
-        (define-key evil-normal-state-map (kbd "\\") 'neotree-toggle)
-        (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
-        (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
-        (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter))
-
-
-      (use-package evil-leader
-        :ensure t
-        :config
-        (evil-leader/set-leader "SPC")
-        (evil-leader/set-key
-          "f" 'avy-goto-char
-          "s" 'swiper
-          "~" 'my-term-funcs/toggle-term
-          "TAB" 'my-window-funcs/switch-to-last-buffer
-          "b" 'ivy-switch-buffer
-          "o" 'find-file
-          ;"b p" 'previous-buffer
-          ;"b d" 'kill-this-buffer
-          "e" 'evil-eval-text-object
-          ;"f d" 'dired-jump
-          "t u" 'undo-tree-visualize
-          "w q" 'evil-window-delete
-          "w o" 'delete-other-windows
-          "w v" 'split-window-right
-          "w s" 'split-window-below
-          "w r" 'hydra-window-resize/body
-          "z"   'zoom-window-zoom
-          ". s" 'my-funcs/open-snippet-dir
-          ". e" 'my-funcs/open-dotfile
-          ". r" 'my-funcs/reload-dotfile
-          "h k" 'describe-key
-          "h SPC" 'which-key-show-top-level
-          "h v" 'describe-variable
-          "h f" 'describe-function
-          "h m" 'describe-mode)
-        ;(global-set-key (kbd "C-j") 'my-window-funcs/window-down)
-        ;(global-set-key (kbd "C-k") 'my-window-funcs/window-up)
-        ;(global-set-key (kbd "C-h") 'my-window-funcs/window-left)
-        ;(global-set-key (kbd "C-l") 'my-window-funcs/window-right)
-        (global-evil-leader-mode))
-
-      ;;evil mappings
-      (define-key evil-normal-state-map (kbd "gs") 'save-buffer) ; gs to save
-      ;; g. to open config file
-      (define-key evil-normal-state-map (kbd "g.") 'my-funcs/open-dotfile)
-      (define-key evil-normal-state-map (kbd "] SPC") (lambda ()
-                                                        (interactive)
-                                                        (save-excursion
-                                                          (evil-open-below 1))
-                                                        (evil-normal-state)))
-      (define-key evil-normal-state-map (kbd "[ SPC") (lambda ()
-                                                        (interactive)
-                                                        (save-excursion
-                                                          (evil-open-above 1))
-                                                        (evil-normal-state)))
-
-      ;;Evil smartparens text objects
-      (evil-define-text-object evil-a-sexp (count &optional beg end type)
-       "outer sexp"
-       (evil-range (progn
-                     (save-excursion
-                       (sp-beginning-of-sexp)
-                       (- (point) 1)))
-                   (progn
-                     (save-excursion
-                       (sp-end-of-sexp)
-                       (+ (point) 1)))))
-
-      (evil-define-text-object evil-i-sexp (count &optional beg end type)
-       "inner sexp"
-       (evil-range (progn
-                     (save-excursion
-                       (sp-beginning-of-sexp)
-                       (point)))
-                   (progn
-                     (save-excursion
-                       (sp-end-of-sexp)
-                       (point)))))
-
-      (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
-      (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
-
-      (evil-mode 1)) ; evil-leader must be enabled before evil
-
-
-    (use-package which-key
+      (global-evil-surround-mode))
+    (use-package evil-numbers
       :ensure t
       :config
-      ;; (which-key-add-key-based-replacements
-      ;;   "SPC TAB" "Last active buffer"
-      ;;   "SPC :"   "Execute ex-command"
-      ;;   "SPC ~"   "Toggle terminal"
-      ;;   "SPC b"   "Buffers"
-      ;;   "SPC e"   "Evaluate"
-      ;;   "SPC f"   "Files"
-      ;;   "SPC p"   "Projects"
-      ;;   "SPC t"   "Toggles"
-      ;;   "SPC w"   "Windows"
-      ;;   "SPC ."   "Dotfiles"
-      ;;   "SPC ?"   "Get help")
-      (which-key-mode))
+      (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
+      (define-key evil-normal-state-map (kbd "C-x") 'evil-numbers/dec-at-pt))
+    ;; (use-package evil-args
+      ;; :ensure t
+      ;; :config
+      ;; (define-key evil-inner-text-objects-map "i" 'evil-inner-arg)
+      ;; (define-key evil-outer-text-objects-map "a" 'evil-outer-arg))
+    (use-package evil-matchit
+      :ensure t
+      :config
+      (global-evil-matchit-mode 1))
+
+    ;; multiple cursors
+    ;;(gru to delete all cursors)
+    ;; C-N to next cursor
+    (use-package evil-mc
+      :ensure t
+      :config
+      (global-evil-mc-mode 1))
+
+    ;; (use-package evil-org
+    ;;   :ensure t)
+
+    ;;gx to mark exchange second time to do it
+    ;;gX to cancel
+    (use-package evil-exchange
+      :ensure t
+      :config
+      (evil-exchange-install))
+
+    (use-package evil-commentary
+      :ensure t
+      :config
+      (evil-commentary-mode))
+
+    (use-package neotree
+      :ensure t
+      :config
+      (define-key evil-normal-state-map (kbd "\\") 'neotree-toggle)
+      (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
+      (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
+      (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter))
+
+
+    (use-package evil-leader
+      :ensure t
+      :config
+      (evil-leader/set-leader "SPC")
+      (evil-leader/set-key
+        "f" 'avy-goto-char
+        "s" 'swiper
+        "~" 'my-term-funcs/toggle-term
+        "TAB" 'my-window-funcs/switch-to-last-buffer
+        "b" 'ivy-switch-buffer
+        "o" 'find-file
+        ;"b p" 'previous-buffer
+        ;"b d" 'kill-this-buffer
+        ;"e" 'evil-eval-text-object
+        ;"f d" 'dired-jump
+        "t u" 'undo-tree-visualize
+        "w q" 'evil-window-delete
+        "w o" 'delete-other-windows
+        "w v" 'split-window-right
+        "w s" 'split-window-below
+        "w r" 'hydra-window-resize/body
+        "z"   'zoom-window-zoom
+        ". s" 'my-funcs/open-snippet-dir
+        ". e" 'my-funcs/open-dotfile
+        ". r" 'my-funcs/reload-dotfile
+        "h k" 'describe-key
+        "h SPC" 'which-key-show-top-level
+        "h v" 'describe-variable
+        "h f" 'describe-function
+        "h m" 'describe-mode)
+      (evil-leader/set-key-for-mode 'emacs-lisp-mode "e" 'evil-eval-elisp-text-object)
+      (evil-leader/set-key-for-mode 'lisp-interaction-mode "e" 'evil-eval-elisp-text-object)
+      (evil-leader/set-key-for-mode 'clojure-mode "e" 'evil-eval-clojure-text-object)
+      (evil-leader/set-key-for-mode 'cider-clojure-interaction-mode "e" 'evil-eval-clojure-text-object)
+      ;(global-set-key (kbd "C-j") 'my-window-funcs/window-down)
+      ;(global-set-key (kbd "C-k") 'my-window-funcs/window-up)
+      ;(global-set-key (kbd "C-h") 'my-window-funcs/window-left)
+      ;(global-set-key (kbd "C-l") 'my-window-funcs/window-right)
+      (global-evil-leader-mode))
+
+    ;;evil mappings
+    (define-key evil-normal-state-map (kbd "gs") 'save-buffer) ; gs to save
+    ;; g. to open config file
+    (define-key evil-normal-state-map (kbd "g.") 'my-funcs/open-dotfile)
+    (define-key evil-normal-state-map (kbd "] SPC") (lambda ()
+                                                      (interactive)
+                                                      (save-excursion
+                                                        (evil-open-below 1))
+                                                      (evil-normal-state)))
+    (define-key evil-normal-state-map (kbd "[ SPC") (lambda ()
+                                                      (interactive)
+                                                      (save-excursion
+                                                        (evil-open-above 1))
+                                                      (evil-normal-state)))
+
+    ;;Evil smartparens text objects
+    (evil-define-text-object evil-a-sexp (count &optional beg end type)
+     "outer sexp"
+     (evil-range (progn
+                   (save-excursion
+                     (sp-beginning-of-sexp)
+                     (- (point) 1)))
+                 (progn
+                   (save-excursion
+                     (sp-end-of-sexp)
+                     (+ (point) 1)))))
+
+    (evil-define-text-object evil-i-sexp (count &optional beg end type)
+     "inner sexp"
+     (evil-range (progn
+                   (save-excursion
+                     (sp-beginning-of-sexp)
+                     (point)))
+                 (progn
+                   (save-excursion
+                     (sp-end-of-sexp)
+                     (point)))))
+
+    (evil-define-text-object evil-a-top-level-sexp (count &optional beg end type)
+     "outer top level sexp"
+     (evil-range (progn
+                   (save-excursion
+                     (beginning-of-defun)
+                     (- (point) 1)))
+                 (progn
+                   (save-excursion
+                     (end-of-defun)
+                     (+ (point) 1)))))
+
+    (evil-define-text-object evil-i-top-level-sexp (count &optional beg end type)
+     "inner top level sexp"
+     (evil-range (progn
+                   (save-excursion
+                     (beginning-of-defun)
+                     (point)))
+                 (progn
+                   (save-excursion
+                     (end-of-defun)
+                     (point)))))
+
+    (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
+    (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
+    (define-key evil-outer-text-objects-map "F" 'evil-a-top-level-sexp)
+    (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
+
+    (evil-mode 1)) ; evil-leader must be enabled before evil
+
+
+  (use-package which-key
+    :ensure t
+    :config
+    ;; (which-key-add-key-based-replacements
+    ;;   "SPC TAB" "Last active buffer"
+    ;;   "SPC :"   "Execute ex-command"
+    ;;   "SPC ~"   "Toggle terminal"
+    ;;   "SPC b"   "Buffers"
+    ;;   "SPC e"   "Evaluate"
+    ;;   "SPC f"   "Files"
+    ;;   "SPC p"   "Projects"
+    ;;   "SPC t"   "Toggles"
+    ;;   "SPC w"   "Windows"
+    ;;   "SPC ."   "Dotfiles"
+    ;;   "SPC ?"   "Get help")
+    (which-key-mode))
 #+END_SRC
    
 ** Terminal
