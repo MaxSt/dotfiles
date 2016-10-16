@@ -26,7 +26,8 @@
    x-select-enable-clipboard t
    tab-stop-list (number-sequence 2 120 2))
 (setq-default truncate-lines nil) ; line wrap
-(setq-default indent-tabs-mode nil)
+(setq-default indent-tabs-mode nil
+              tab-width 2)
 #+END_SRC
 ** Save desktop Files (Sessions)
 #+BEGIN_SRC emacs-lisp
@@ -237,9 +238,17 @@ These are the Files creating in the current Directory for files that have not be
 * Package config
 ** Evil
 #+BEGIN_SRC emacs-lisp
+
   (use-package evil
     :ensure t
     :config
+
+    ;;todo only for elisp!
+    (evil-define-operator evil-eval-text-object (beg end)
+      "Evil operator for evaluating code."
+      :move-point nil
+     (eval-region beg end t))
+
     ;; (define-key evil-insert-state-map (kbd "SPC") 'my-funcs/smart-space)
     ;; (define-key evil-insert-state-map (kbd "DEL") 'my-funcs/smart-delete)
     ;; (define-key evil-insert-state-map [tab] 'my-funcs/tab-indent-or-complete)
@@ -307,6 +316,8 @@ These are the Files creating in the current Directory for files that have not be
       (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
       (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
       (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter))
+
+
     (use-package evil-leader
       :ensure t
       :config
@@ -321,6 +332,7 @@ These are the Files creating in the current Directory for files that have not be
         ;"b p" 'previous-buffer
         ;"b d" 'kill-this-buffer
         "e l" 'eval-last-sexp
+        "e r" 'evil-eval-text-object
         "e b" 'eval-buffer
         "e f" 'eval-defun
         ;"f d" 'dired-jump
@@ -334,11 +346,11 @@ These are the Files creating in the current Directory for files that have not be
         ". s" 'my-funcs/open-snippet-dir
         ". e" 'my-funcs/open-dotfile
         ". r" 'my-funcs/reload-dotfile
-        "? k" 'describe-key
-        "? SPC" 'which-key-show-top-level
-        "? v" 'describe-variable
-        "? f" 'describe-function
-        "? m" 'describe-mode)
+        "h k" 'describe-key
+        "h SPC" 'which-key-show-top-level
+        "h v" 'describe-variable
+        "h f" 'describe-function
+        "h m" 'describe-mode)
       ;(global-set-key (kbd "C-j") 'my-window-funcs/window-down)
       ;(global-set-key (kbd "C-k") 'my-window-funcs/window-up)
       ;(global-set-key (kbd "C-h") 'my-window-funcs/window-left)
@@ -349,8 +361,45 @@ These are the Files creating in the current Directory for files that have not be
     (define-key evil-normal-state-map (kbd "gs") 'save-buffer) ; gs to save
     ;; g. to open config file
     (define-key evil-normal-state-map (kbd "g.") 'my-funcs/open-dotfile)
+    (define-key evil-normal-state-map (kbd "] SPC") (lambda ()
+                                                      (interactive)
+                                                      (save-excursion
+                                                        (evil-open-below 1))
+                                                      (evil-normal-state)))
+    (define-key evil-normal-state-map (kbd "[ SPC") (lambda ()
+                                                      (interactive)
+                                                      (save-excursion
+                                                        (evil-open-above 1))
+                                                      (evil-normal-state)))
+
+    ;;Evil smartparens text objects
+    (evil-define-text-object evil-a-sexp (count &optional beg end type)
+     "outer sexp"
+     (evil-range (progn
+                   (save-excursion
+                     (sp-beginning-of-sexp)
+                     (- (point) 1)))
+                 (progn
+                   (save-excursion
+                     (sp-end-of-sexp)
+                     (+ (point) 1)))))
+
+    (evil-define-text-object evil-i-sexp (count &optional beg end type)
+     "inner sexp"
+     (evil-range (progn
+                   (save-excursion
+                     (sp-beginning-of-sexp)
+                     (point)))
+                 (progn
+                   (save-excursion
+                     (sp-end-of-sexp)
+                     (point)))))
+
+    (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
+    (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
 
     (evil-mode 1)) ; evil-leader must be enabled before evil
+
 
   (use-package which-key
     :ensure t
@@ -624,6 +673,7 @@ These are the Files creating in the current Directory for files that have not be
   (use-package cider
     :ensure t
     :config
+
     (autoload 'cider--make-result-overlay "cider-overlays")
 
     (defun my-funcs/eval-overlay (value point)
@@ -633,11 +683,13 @@ These are the Files creating in the current Directory for files that have not be
       ;; Preserve the return value.
       value)
 
+
     (advice-add 'eval-region :around
                 (lambda (f beg end &rest r)
                   (my-funcs/eval-overlay
                    (apply f beg end r)
                    end)))
+
 
     (advice-add 'eval-last-sexp :filter-return
                 (lambda (r)
@@ -650,12 +702,37 @@ These are the Files creating in the current Directory for files that have not be
                    (save-excursion
                      (end-of-defun)
                      (point))))))
+
 #+END_SRC
 
 ** Org Mode
 enable syntax highlighting in org-babel source code
 #+BEGIN_SRC emacs-lisp
   (setq org-src-fontify-natively t)
+#+END_SRC
+
+evil keybindings in org-mode
+#+BEGIN_SRC emacs-lisp
+  (evil-define-key 'normal org-mode-map
+    (kbd "TAB") 'org-cycle
+    ">" 'org-shiftmetaright
+    "<" 'org-shiftmetaleft
+    (kbd "RET") (lambda ()
+                  (interactive)
+                  (org-edit-special)
+                  (evil-normal-state)))
+  ;; key for exiting src edit mode
+  (evil-define-key 'normal org-src-mode-map
+    (kbd "RET") 'org-edit-src-exit)
+#+END_SRC
+
+open source code in same window
+#+BEGIN_SRC emacs-lisp
+  (setq org-src-window-setup 'current-window)
+#+END_SRC
+
+#+BEGIN_SRC emacs-lisp
+
 #+END_SRC
 *  Rest
 #+BEGIN_SRC emacs-lisp
@@ -835,3 +912,4 @@ enable syntax highlighting in org-babel source code
 
   (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
+   

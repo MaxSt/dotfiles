@@ -25,6 +25,7 @@
       (green          "#95ffa4")
       (green-d           "#62d196"))
 
+
   (let* ((bg             "#1e1c31")
          (bg-d           (if window-system "#1e1c31" "#22252c"))
          (fg             grey)
@@ -98,7 +99,7 @@
      `(default                ((,c (:background ,bg-d :foreground ,fg))))
      `(fringe                 ((,c (:inherit default :foreground ,comments))))
      `(region                 ((,c (:background ,region))))
-     `(highlight              ((,c (:background ,blue :foreground ,black))))
+     `(highlight              ((,c (:background ,highlight :foreground ,black))))
      `(hl-line                ((,c (:background ,bg))))
      `(cursor                 ((,c (:background ,blue))))
      `(shadow                 ((,c (:foreground ,grey))))
@@ -112,7 +113,7 @@
      `(match                  ((,c (:foreground ,green :background ,black :bold ,bold))))
      `(trailing-whitespace    ((,c (:background ,doc-comments))))
      `(vertical-border        ((,c (:foreground ,vertical-bar :background ,vertical-bar))))
-     `(show-paren-match       ((,c (:foreground ,blue :inverse-video t))))
+     `(show-paren-match       ((,c (:background ,blue-d :foreground ,black))))
      `(linum
        ((((type graphic)) :background ,black :foreground ,grey-dd :bold nil)
         (t                :background ,black :foreground ,grey-dd :bold nil)))
@@ -322,6 +323,15 @@
      `(term-color-blue ((,c (:foreground ,blue :background ,blue-d))))
 
      `(term-color-magenta ((,c (:foreground ,magenta :background ,magenta-d))))
+
+
+     ;; smartparens
+     `(sp-pair-overlay-face ((,c ())))
+
+     ;;evil-mc-cursor
+     `(evil-mc-cursor-default-face ((,c (:background ,yellow :foreground ,black))))
+
+
 
      ;;
      ;; Language-specific
