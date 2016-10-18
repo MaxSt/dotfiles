@@ -5,18 +5,16 @@ projectile-bookmarks.eld
 config.el
 recentf
 
+desktop/
+eshell/
 elpa/
 auto-save-list/
 
 undo/*
 !undo/.gitkeep
 
-desktop/*
-!desktop/.gitkeep
-
 local/*
 !local/.gitkeep
 
 backup/*
 !backup/.gitkeep
-

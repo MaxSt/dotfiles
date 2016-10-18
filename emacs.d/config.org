@@ -20,41 +20,27 @@
 #+END_SRC
 * Defaults
 #+BEGIN_SRC emacs-lisp
-(setq
-   package-enable-at-startup nil
-   inhibit-startup-screen t
-   x-select-enable-clipboard t
-   tab-stop-list (number-sequence 2 120 2))
-(setq-default truncate-lines nil) ; line wrap
-(setq-default indent-tabs-mode nil
-              tab-width 2)
+  (setq
+     package-enable-at-startup nil
+     inhibit-startup-screen t
+     x-select-enable-clipboard t
+     column-number-mode t
+     tab-stop-list (number-sequence 2 120 2))
+  (setq-default truncate-lines nil) ; line wrap
+  (setq-default indent-tabs-mode nil
+                tab-width 2)
 #+END_SRC
-** Save desktop Files (Sessions)
-#+BEGIN_SRC emacs-lisp
-;; Automatically save and restore sessions
-(setq desktop-dirname             "~/.emacs.d/desktop/"
-      desktop-base-file-name      "emacs.desktop"
-      desktop-base-lock-name      "lock"
-      desktop-path                (list desktop-dirname)
-      desktop-save                t
-      desktop-files-not-to-save   "^$" ;reload tramp paths
-      desktop-load-locked-desktop nil)
-(desktop-save-mode 1)
-
-#+END_SRC
- 
 ** Backups
 #+BEGIN_SRC emacs-lisp
-(setq
- make-backup-files t
- version-control t   ; use numbers for backup files
- kept-new-versions 10
- kept-old-versions 0
- delete-old-versions t
- backup-by-copying t
- vc-make-backup-files t
- backup-directory-alist '(("." . "~/.emacs.d/backup")))
-(setq backup-directory-alist '(("." . "~/.emacs.d/backup")))
+  (setq
+   make-backup-files t
+   version-control t   ; use numbers for backup files
+   kept-new-versions 10
+   kept-old-versions 0
+   delete-old-versions t
+   backup-by-copying t
+   vc-make-backup-files t
+   backup-directory-alist '(("." . "~/.emacs.d/backup")))
 #+END_SRC
 
 ** Disable Lockfiles
@@ -235,6 +221,85 @@ These are the Files creating in the current Directory for files that have not be
       (shrink-window-horizontally 1)))
 #+END_SRC
 
+** Session save/restore
+#+BEGIN_SRC emacs-lisp
+  (require 'desktop)
+
+  (defvar my-desktop-session-dir
+    (concat (getenv "HOME") "/.emacs.d/desktop/")
+    "*Directory to save desktop sessions in")
+
+  (defvar my-desktop-session-name-hist nil
+    "Desktop session name history")
+
+  (defun my-desktop-save (&optional name)
+    "Save desktop by name."
+    (interactive)
+    (unless name
+      (setq name (my-desktop-get-session-name "Save session" t)))
+    (when name
+      (make-directory (concat my-desktop-session-dir name) t)
+      (desktop-save (concat my-desktop-session-dir name) t)))
+
+  (defun my-desktop-save-and-clear ()
+    "Save and clear desktop."
+    (interactive)
+    (call-interactively 'my-desktop-save)
+    (desktop-clear)
+    (setq desktop-dirname nil))
+
+  (defun my-desktop-read (&optional name)
+    "Read desktop by name."
+    (interactive)
+    (unless name
+      (setq name (my-desktop-get-session-name "Load session")))
+    (when name
+      (desktop-clear)
+      (desktop-read (concat my-desktop-session-dir name))))
+
+  (defun my-desktop-change (&optional name)
+    "Change desktops by name."
+    (interactive)
+    (let ((name (my-desktop-get-current-name)))
+      (when name
+        (my-desktop-save name))
+      (call-interactively 'my-desktop-read)))
+
+  (defun my-desktop-name ()
+    "Return the current desktop name."
+    (interactive)
+    (let ((name (my-desktop-get-current-name)))
+      (if name
+          (message (concat "Desktop name: " name))
+        (message "No named desktop loaded"))))
+
+  (defun my-desktop-get-current-name ()
+    "Get the current desktop name."
+    (when desktop-dirname
+      (let ((dirname (substring desktop-dirname 0 -1)))
+        (when (string= (file-name-directory dirname) my-desktop-session-dir)
+          (file-name-nondirectory dirname)))))
+
+  (defun my-desktop-get-session-name (prompt &optional use-default)
+    "Get a session name."
+    (let* ((default (and use-default (my-desktop-get-current-name)))
+           (full-prompt (concat prompt (if default
+                                           (concat " (default " default "): ")
+                                         ": "))))
+      (completing-read full-prompt (and (file-exists-p my-desktop-session-dir)
+                                        (directory-files my-desktop-session-dir))
+                       nil nil nil my-desktop-session-name-hist default)))
+
+  (defun my-desktop-kill-emacs-hook ()
+    "Save desktop before killing emacs."
+    (when (file-exists-p (concat my-desktop-session-dir "last-session"))
+      (setq desktop-file-modtime
+            (nth 5 (file-attributes (desktop-full-file-name (concat my-desktop-session-dir "last-session"))))))
+    (my-desktop-save "last-session"))
+
+  (add-hook 'kill-emacs-hook 'my-desktop-kill-emacs-hook)
+
+#+END_SRC
 * Package config
 ** clojure
 #+BEGIN_SRC emacs-lisp
@@ -466,12 +531,21 @@ These are the Files creating in the current Directory for files that have not be
                      (end-of-defun)
                      (point)))))
 
-    (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
-    (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
-    (define-key evil-outer-text-objects-map "F" 'evil-a-top-level-sexp)
-    (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
+    ;; (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
+    ;; (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
+    ;; (define-key evil-outer-text-objects-map "F" 'evil-a-top-level-sexp)
+    ;; (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
 
     (evil-mode 1)) ; evil-leader must be enabled before evil
+
+  (use-package evil-cleverparens
+    :ensure t
+    :config)
+
+  (add-hook 'clojure-mode-hook #'evil-cleverparens-mode)
+  (add-hook 'emacs-lisp-mode-hook #'evil-cleverparens-mode)
+  (add-hook 'lisp-interaction-mode-hook #'evil-cleverparens-mode)
+  (add-hook 'cider-interaction-mode-hook #'evil-cleverparens-mode)
 
 
   (use-package which-key
@@ -490,6 +564,7 @@ These are the Files creating in the current Directory for files that have not be
     ;;   "SPC ."   "Dotfiles"
     ;;   "SPC ?"   "Get help")
     (which-key-mode))
+
 #+END_SRC
    
 ** Terminal
@@ -765,180 +840,199 @@ open source code in same window
 #+END_SRC
 *  Rest
 #+BEGIN_SRC emacs-lisp
-(use-package smartparens
-    :ensure t
-    :config
-    (use-package evil-smartparens
+    (use-package smartparens
       :ensure t
-      :config
-      (add-hook 'clojure-mode-hook #'evil-smartparens-mode)
-      )
-    (smartparens-global-mode 1))
+        :config
+        ;; no '' pair in emacs-lisp-mode
+        (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+        (sp-local-pair 'clojure-mode "'" nil :actions nil)
+        (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
+        (sp-local-pair 'cider-interaction-mode "'" nil :actions nil)
+        (smartparens-global-mode 1))
 
 
-  ; general-purpose string-manipulation library
-  (use-package s
-    :ensure t
-    :config)
+      ; general-purpose string-manipulation library
+      (use-package s
+        :ensure t
+        :config)
 
-  (use-package projectile
-    :ensure t
-    :config
-    (setq projectile-switch-project-action 'projectile-dired)
-    (projectile-global-mode))
+      (use-package projectile
+        :ensure t
+        :config
+        (setq projectile-switch-project-action 'projectile-dired)
+        (setq projectile-completion-system 'ivy)
+        (projectile-global-mode))
 
-  (use-package beacon
-    :ensure t
-    :config
-    (beacon-mode +1)
-    (setq beacon-color (face-attribute 'highlight :background nil t)
-          beacon-blink-when-buffer-changes t
-          beacon-blink-when-point-moves-vertically 10))
+      (use-package beacon
+        :ensure t
+        :config
+        (beacon-mode +1)
+        (setq beacon-color (face-attribute 'highlight :background nil t)
+              beacon-blink-when-buffer-changes t
+              beacon-blink-when-point-moves-vertically 10))
 
-  ;; (use-package nlinum
-  ;;   :ensure t
-  ;;   :init
-  ;;   (progn
-  ;;     (setq nlinum-format "%3d ")
-  ;;     ))
+      ;; (use-package nlinum
+      ;;   :ensure t
+      ;;   :init
+      ;;   (progn
+      ;;     (setq nlinum-format "%3d ")
+      ;;     ))
 
-  ;; (use-package nlinum-relative
-  ;;   :ensure t
-  ;;   :init
-  ;;   (progn
-  ;;     ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
-  ;;     (global-nlinum-relative-mode t)
-  ;;     (setq nlinum-relative-current-symbol "")
-  ;;     (setq nlinum-relative-redisplay-delay 0)
-  ;;     (nlinum-relative-setup-evil)))
-
-
-  (use-package zoom-window
-    :ensure t
-    :config
-    (setq zoom-window-mode-line-color "pink"))
-
-  ;; default values for indentation (possibly overwritten by editorconfig)
-  (setq
-   js2-basic-offset 2
-   js-indent-level 2
-   js-expr-indent-offset -2)
-
-  (use-package rainbow-delimiters
-    :ensure t
-    :config)
-
-  (use-package undo-tree
-    :ensure t
-    :config
-    (setq undo-tree-auto-save-history t
-          undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-    (global-undo-tree-mode))
-
-  ;; (use-package flatui-theme
-  ;;   :ensure t
-  ;;   :config
-  ;;   (load-theme 'flatui t))
+      ;; (use-package nlinum-relative
+      ;;   :ensure t
+      ;;   :init
+      ;;   (progn
+      ;;     ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
+      ;;     (global-nlinum-relative-mode t)
+      ;;     (setq nlinum-relative-current-symbol "")
+      ;;     (setq nlinum-relative-redisplay-delay 0)
+      ;;     (nlinum-relative-setup-evil)))
 
 
-  (use-package all-the-icons
-    :ensure t)
+      (use-package zoom-window
+        :ensure t
+        :config
+        (setq zoom-window-mode-line-color "pink"))
 
-  (use-package doom-themes
-    :ensure t
-    :config
-    (setq doom-neotree-enable-variable-pitch t
-          doom-neotree-file-icons t
-          doom-neotree-line-spacing 3)
-    ;(load-theme 'doom-one t)
-    ;; brighter source buffers
-    ;(add-hook 'find-file-hook 'doom-buffer-mode)
-    ;; Custom neotree theme
-    (when window-system
-      (require 'doom-neotree)))
+      ;; default values for indentation (possibly overwritten by editorconfig)
+      (setq
+       js2-basic-offset 2
+       js-indent-level 2
+       js-expr-indent-offset -2)
 
-  ; for keeping track of recent files, provides helm-recentf with data
-  (use-package recentf
-    :ensure t
-    :config)
+      (use-package rainbow-delimiters
+        :ensure t
+        :config)
 
-  (use-package elisp-slime-nav
-    :ensure t
-    :config
-    (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode) (eldoc-mode))))
+      (use-package undo-tree
+        :ensure t
+        :config
+        (setq undo-tree-auto-save-history t
+              undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+        (global-undo-tree-mode))
 
-  (setq-default
-   ;mode-line-default-help-echo nil ; don't say anything on mode-line mouseover
-   indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
-   indicate-empty-lines nil        ; don't show empty lines
-   fringes-outside-margins t       ; switches order of fringe and margin
-   ;; Keep cursors and highlights in current window only
-   cursor-in-non-selected-windows nil
-   highlight-nonselected-windows nil
-   ;; Disable bidirectional text support for slight performance bonus
-   bidi-display-reordering nil
-   ;; Remove continuation arrow on right fringe
-   ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-   ;;                              fringe-indicator-alist)
+      ;; (use-package flatui-theme
+      ;;   :ensure t
+      ;;   :config
+      ;;   (load-theme 'flatui t))
 
-   blink-matching-paren nil ; don't blink--too distracting
-   )
 
-  (defun what-face (pos)
-    "Tells you the name of the face (point) is on."
-    (interactive "d")
-    (let ((hl-line-p (bound-and-true-p hl-line-mode)))
-      (if hl-line-p (hl-line-mode -1))
-      (let ((face (or (get-char-property (point) 'read-face-name)
-                      (get-char-property (point) 'face))))
-        (if face (message "Face: %s" face) (message "No face at %d" pos)))
-      (if hl-line-p (hl-line-mode 1))))
+      (use-package all-the-icons
+        :ensure t)
 
-  (load-theme 'flatcolor t)
+      (use-package doom-themes
+        :ensure t
+        :config
+        (setq doom-neotree-enable-variable-pitch t
+              doom-neotree-file-icons t
+              doom-neotree-line-spacing 3)
+        ;(load-theme 'doom-one t)
+        ;; brighter source buffers
+        ;(add-hook 'find-file-hook 'doom-buffer-mode)
+        ;; Custom neotree theme
+        (when window-system
+          (require 'doom-neotree)))
 
-  (use-package rainbow-mode
-    :ensure t
-    :config)
+      ; for keeping track of recent files, provides helm-recentf with data
+      (use-package recentf
+        :ensure t
+        :config)
 
-  (use-package eyebrowse
-    :ensure t
-    :config
-    (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
-    (eyebrowse-mode t))
+      (use-package elisp-slime-nav
+        :ensure t
+        :config
+        (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode) (eldoc-mode))))
 
-  (use-package highlight-symbol
-    :ensure t
-    :config
-    (setq highlight-symbol-idle-delay 0.5)
-    (highlight-symbol-mode t)
-    )
+      (setq-default
+       ;mode-line-default-help-echo nil ; don't say anything on mode-line mouseover
+       indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
+       indicate-empty-lines nil        ; don't show empty lines
+       fringes-outside-margins t       ; switches order of fringe and margin
+       ;; Keep cursors and highlights in current window only
+       cursor-in-non-selected-windows nil
+       highlight-nonselected-windows nil
+       ;; Disable bidirectional text support for slight performance bonus
+       bidi-display-reordering nil
+       ;; Remove continuation arrow on right fringe
+       ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+       ;;                              fringe-indicator-alist)
 
-  (use-package ivy
-    :ensure t
-    :config
-    (ivy-mode t))
+       blink-matching-paren nil ; don't blink--too distracting
+       )
 
-  (use-package counsel
-    :ensure t
-    :config)
+      (defun what-face (pos)
+        "Tells you the name of the face (point) is on."
+        (interactive "d")
+        (let ((hl-line-p (bound-and-true-p hl-line-mode)))
+          (if hl-line-p (hl-line-mode -1))
+          (let ((face (or (get-char-property (point) 'read-face-name)
+                          (get-char-property (point) 'face))))
+            (if face (message "Face: %s" face) (message "No face at %d" pos)))
+          (if hl-line-p (hl-line-mode 1))))
 
-  (use-package swiper
-    :ensure t
-    :config
-    (ivy-mode t))
+      (load-theme 'flatcolor t)
 
-  (use-package avy
-    :ensure t
-    :config)
+      (use-package rainbow-mode
+        :ensure t
+        :config)
 
-  (add-hook 'js2-mode-hook 'rainbow-delimiters-mode)
-  (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
-  (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+      (use-package eyebrowse
+        :ensure t
+        :config
+        (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
+        (eyebrowse-mode t))
 
-  ;; Don't litter my init file
-  (setq custom-file "~/.emacs.d/local/custom-set.el")
-  (load custom-file 'noerror)
+      (use-package highlight-symbol
+        :ensure t
+        :config
+        (setq highlight-symbol-idle-delay 1)
+        (highlight-symbol-mode t)
+        )
 
-  (put 'dired-find-alternate-file 'disabled nil)
+      (use-package ivy
+        :ensure t
+        :config
+        ;; fuzzy match
+        (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+        (ivy-mode t))
+
+      (use-package counsel
+        :ensure t
+        :config)
+
+      (use-package swiper
+        :ensure t
+        :config
+        (ivy-mode t))
+
+      (use-package avy
+        :ensure t
+        :config)
+
+      (add-hook 'js2-mode-hook 'rainbow-delimiters-mode)
+      (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
+      (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+
+      ;; Don't litter my init file
+      (setq custom-file "~/.emacs.d/local/custom-set.el")
+      (load custom-file 'noerror)
+
+
+    (defun powerline-mode-icon ()
+      (let ((icon (all-the-icons-icon-for-buffer)))
+        (unless (symbolp icon) ;; This implies it's the major mode
+          (format " %s"
+                  (propertize icon
+                              'help-echo (format "Major-mode: `%s`" major-mode)
+                              'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
+
+    (setq-default mode-line-format
+          (append 
+           (list
+            ;; value of `mode-name'
+            '(:eval (powerline-mode-icon)))
+           mode-line-format))
+
+      (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
    

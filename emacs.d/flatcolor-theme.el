@@ -65,10 +65,10 @@
          ;; mode line
          (modeline-fg    fg)
          (modeline-fg-l  blue)
-         (modeline-bg    (if window-system current-line current-line))
+         (modeline-bg    magenta-d)
          (modeline-bg-l  (if window-system blue current-line))
          (modeline-fg-inactive grey)
-         (modeline-bg-inactive (if window-system bg-d current-line))
+         (modeline-bg-inactive black)
          ;; vcs
          (vc-modified    yellow-d)
          (vc-added       green)
@@ -192,7 +192,7 @@
      `(company-scrollbar-bg        ((,c (:background ,black))))
      `(company-scrollbar-fg        ((,c (:background ,blue))))
      `(company-preview             ((,c (:foreground ,blue))))
-     `(company-preview-common      ((,c (:foreground ,magenta :background ,grey-d))))
+     `(company-preview-common      ((,c (:foreground ,magenta :background ,black))))
      `(company-preview-search      ((,c (:inherit company-tooltip-search))))
      ;; diff-hl
      `(diff-hl-change              ((,c (:foreground ,vc-modified))))
@@ -321,12 +321,14 @@
      `(term-color-green ((,c (:foreground ,green :background ,green-d))))
      `(term-color-cyan ((,c (:foreground ,cyan :background ,cyan-d))))
      `(term-color-blue ((,c (:foreground ,blue :background ,blue-d))))
-
      `(term-color-magenta ((,c (:foreground ,magenta :background ,magenta-d))))
 
 
      ;; smartparens
      `(sp-pair-overlay-face ((,c ())))
+
+     ;; highlight-symbol
+     `(highlight-symbol-face ((,c (:underline t))))
 
      ;;evil-mc-cursor
      `(evil-mc-cursor-default-face ((,c (:background ,yellow :foreground ,black))))
