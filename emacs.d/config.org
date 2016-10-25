@@ -40,6 +40,7 @@
    delete-old-versions t
    backup-by-copying t
    vc-make-backup-files t
+   auto-save-default nil
    backup-directory-alist '(("." . "~/.emacs.d/backup")))
 #+END_SRC
 
@@ -880,159 +881,162 @@ open source code in same window
       (setq projectile-completion-system 'ivy)
       (projectile-global-mode))
 
-    (use-package beacon
-      :ensure t
-      :config
-      (beacon-mode +1)
-      (setq beacon-color (face-attribute 'highlight :background nil t)
-            beacon-blink-when-buffer-changes t
-            beacon-blink-when-point-moves-vertically 10))
+  (use-package ag
+    :ensure t)
 
-    ;; (use-package nlinum
-    ;;   :ensure t
-    ;;   :init
-    ;;   (progn
-    ;;     (setq nlinum-format "%3d ")
-    ;;     ))
+  (use-package beacon
+    :ensure t
+    :config
+    (beacon-mode +1)
+    (setq beacon-color (face-attribute 'highlight :background nil t)
+          beacon-blink-when-buffer-changes t
+          beacon-blink-when-point-moves-vertically 10))
 
-    ;; (use-package nlinum-relative
-    ;;   :ensure t
-    ;;   :init
-    ;;   (progn
-    ;;     ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
-    ;;     (global-nlinum-relative-mode t)
-    ;;     (setq nlinum-relative-current-symbol "")
-    ;;     (setq nlinum-relative-redisplay-delay 0)
-    ;;     (nlinum-relative-setup-evil)))
+  ;; (use-package nlinum
+  ;;   :ensure t
+  ;;   :init
+  ;;   (progn
+  ;;     (setq nlinum-format "%3d ")
+  ;;     ))
 
-
-    (use-package zoom-window
-      :ensure t
-      :config
-      (setq zoom-window-mode-line-color "pink"))
-
-    ;; default values for indentation (possibly overwritten by editorconfig)
-    (setq
-     js2-basic-offset 2
-     js-indent-level 2
-     js-expr-indent-offset -2)
-
-    (use-package rainbow-delimiters
-      :ensure t
-      :config)
-
-    (use-package undo-tree
-      :ensure t
-      :config
-      (setq undo-tree-auto-save-history t
-            undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-      (global-undo-tree-mode))
-
-    ;; (use-package flatui-theme
-    ;;   :ensure t
-    ;;   :config
-    ;;   (load-theme 'flatui t))
+  ;; (use-package nlinum-relative
+  ;;   :ensure t
+  ;;   :init
+  ;;   (progn
+  ;;     ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
+  ;;     (global-nlinum-relative-mode t)
+  ;;     (setq nlinum-relative-current-symbol "")
+  ;;     (setq nlinum-relative-redisplay-delay 0)
+  ;;     (nlinum-relative-setup-evil)))
 
 
-    (use-package all-the-icons
-      :ensure t)
+  (use-package zoom-window
+    :ensure t
+    :config
+    (setq zoom-window-mode-line-color "pink"))
 
-    (use-package doom-themes
-      :ensure t
-      :config
-      (setq doom-neotree-enable-variable-pitch t
-            doom-neotree-file-icons t
-            doom-neotree-line-spacing 3)
-      ;(load-theme 'doom-one t)
-      ;; brighter source buffers
-      ;(add-hook 'find-file-hook 'doom-buffer-mode)
-      ;; Custom neotree theme
-      (when window-system
-        (require 'doom-neotree)))
+  ;; default values for indentation (possibly overwritten by editorconfig)
+  (setq
+   js2-basic-offset 2
+   js-indent-level 2
+   js-expr-indent-offset -2)
 
-    ; for keeping track of recent files, provides helm-recentf with data
-    (use-package recentf
-      :ensure t
-      :config)
+  (use-package rainbow-delimiters
+    :ensure t
+    :config)
 
-    (use-package elisp-slime-nav
-      :ensure t
-      :config
-      (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode) (eldoc-mode))))
+  (use-package undo-tree
+    :ensure t
+    :config
+    (setq undo-tree-auto-save-history t
+          undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+    (global-undo-tree-mode))
 
-    (setq-default
-     ;mode-line-default-help-echo nil ; don't say anything on mode-line mouseover
-     indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
-     indicate-empty-lines nil        ; don't show empty lines
-     fringes-outside-margins t       ; switches order of fringe and margin
-     ;; Keep cursors and highlights in current window only
-     cursor-in-non-selected-windows nil
-     highlight-nonselected-windows nil
-     ;; Disable bidirectional text support for slight performance bonus
-     bidi-display-reordering nil
-     ;; Remove continuation arrow on right fringe
-     ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-     ;;                              fringe-indicator-alist)
+  ;; (use-package flatui-theme
+  ;;   :ensure t
+  ;;   :config
+  ;;   (load-theme 'flatui t))
 
-     blink-matching-paren nil ; don't blink--too distracting
-     )
 
-    (defun what-face (pos)
-      "Tells you the name of the face (point) is on."
-      (interactive "d")
-      (let ((hl-line-p (bound-and-true-p hl-line-mode)))
-        (if hl-line-p (hl-line-mode -1))
-        (let ((face (or (get-char-property (point) 'read-face-name)
-                        (get-char-property (point) 'face))))
-          (if face (message "Face: %s" face) (message "No face at %d" pos)))
-        (if hl-line-p (hl-line-mode 1))))
+  (use-package all-the-icons
+    :ensure t)
 
-    (load-theme 'flatcolor t)
+  (use-package doom-themes
+    :ensure t
+    :config
+    (setq doom-neotree-enable-variable-pitch t
+          doom-neotree-file-icons t
+          doom-neotree-line-spacing 3)
+                                          ;(load-theme 'doom-one t)
+    ;; brighter source buffers
+                                          ;(add-hook 'find-file-hook 'doom-buffer-mode)
+    ;; Custom neotree theme
+    (when window-system
+      (require 'doom-neotree)))
 
-    (use-package rainbow-mode
-      :ensure t
-      :config)
+                                          ; for keeping track of recent files, provides helm-recentf with data
+  (use-package recentf
+    :ensure t
+    :config)
 
-    (use-package eyebrowse
-      :ensure t
-      :config
-      (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
-      (eyebrowse-mode t))
+  (use-package elisp-slime-nav
+    :ensure t
+    :config
+    (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode) (eldoc-mode))))
 
-    (use-package highlight-symbol
-      :ensure t
-      :config
-      (setq highlight-symbol-idle-delay 1)
-      (highlight-symbol-mode t)
-      )
+  (setq-default
+                                          ;mode-line-default-help-echo nil ; don't say anything on mode-line mouseover
+   indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
+   indicate-empty-lines nil        ; don't show empty lines
+   fringes-outside-margins t       ; switches order of fringe and margin
+   ;; Keep cursors and highlights in current window only
+   cursor-in-non-selected-windows nil
+   highlight-nonselected-windows nil
+   ;; Disable bidirectional text support for slight performance bonus
+   bidi-display-reordering nil
+   ;; Remove continuation arrow on right fringe
+   ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+   ;;                              fringe-indicator-alist)
 
-    (use-package ivy
-      :ensure t
-      :config
-      ;; fuzzy match
-      (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
-      (ivy-mode t))
+   blink-matching-paren nil ; don't blink--too distracting
+   )
 
-    (use-package counsel
-      :ensure t
-      :config)
+  (defun what-face (pos)
+    "Tells you the name of the face (point) is on."
+    (interactive "d")
+    (let ((hl-line-p (bound-and-true-p hl-line-mode)))
+      (if hl-line-p (hl-line-mode -1))
+      (let ((face (or (get-char-property (point) 'read-face-name)
+                      (get-char-property (point) 'face))))
+        (if face (message "Face: %s" face) (message "No face at %d" pos)))
+      (if hl-line-p (hl-line-mode 1))))
 
-    (use-package swiper
-      :ensure t
-      :config
-      (ivy-mode t))
+  (load-theme 'flatcolor t)
 
-    (use-package avy
-      :ensure t
-      :config)
+  (use-package rainbow-mode
+    :ensure t
+    :config)
 
-    (add-hook 'js2-mode-hook 'rainbow-delimiters-mode)
-    (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
-    (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+  (use-package eyebrowse
+    :ensure t
+    :config
+    (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
+    (eyebrowse-mode t))
 
-    ;; Don't litter my init file
-    (setq custom-file "~/.emacs.d/local/custom-set.el")
-    (load custom-file 'noerror)
+  (use-package highlight-symbol
+    :ensure t
+    :config
+    (setq highlight-symbol-idle-delay 1)
+    (highlight-symbol-mode t)
+    )
+
+  (use-package ivy
+    :ensure t
+    :config
+    ;; fuzzy match
+    (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+    (ivy-mode t))
+
+  (use-package counsel
+    :ensure t
+    :config)
+
+  (use-package swiper
+    :ensure t
+    :config
+    (ivy-mode t))
+
+  (use-package avy
+    :ensure t
+    :config)
+
+  (add-hook 'js2-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
+  (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+
+  ;; Don't litter my init file
+  (setq custom-file "~/.emacs.d/local/custom-set.el")
+  (load custom-file 'noerror)
 
 
   (defun powerline-mode-icon ()
@@ -1044,12 +1048,12 @@ open source code in same window
                             'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
 
   (setq-default mode-line-format
-        (append 
-         (list
-          ;; value of `mode-name'
-          '(:eval (powerline-mode-icon)))
-         mode-line-format))
+                (append 
+                 (list
+                  ;; value of `mode-name'
+                  '(:eval (powerline-mode-icon)))
+                 mode-line-format))
 
-    (put 'dired-find-alternate-file 'disabled nil)
+  (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
    
