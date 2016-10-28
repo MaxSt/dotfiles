@@ -323,7 +323,12 @@ These are the Files creating in the current Directory for files that have not be
   (use-package cider
     :ensure t
     :config
-
+    (use-package cider-hydra
+      :ensure t
+      :config
+      (add-hook 'cider-mode-hook #'cider-hydra-mode))
+    (setq cider-repl-display-in-current-window t)
+    (setq cider-repl-use-pretty-printing t)
     (autoload 'cider--make-result-overlay "cider-overlays")
 
     (defun my-funcs/eval-overlay (value point)
@@ -480,8 +485,10 @@ These are the Files creating in the current Directory for files that have not be
       (evil-leader/set-key-for-mode 'emacs-lisp-mode "e" 'evil-eval-elisp-text-object)
       (evil-leader/set-key-for-mode 'lisp-interaction-mode "e" 'evil-eval-elisp-text-object)
       (evil-leader/set-key-for-mode 'clojure-mode "e" 'evil-eval-clojure-text-object)
+      (evil-leader/set-key-for-mode 'clojurescript-mode "e" 'evil-eval-clojure-text-object)
       (evil-leader/set-key-for-mode 'cider-clojure-interaction-mode "e" 'evil-eval-clojure-text-object)
       (evil-leader/set-key-for-mode 'clojure-mode "r" 'hydra-cljr-help-menu/body)
+      (evil-leader/set-key-for-mode 'clojurescript-mode "r" 'hydra-cljr-help-menu/body)
       (evil-leader/set-key-for-mode 'cider-clojure-interaction-mode "r" 'hydra-cljr-help-menu/body)
       ;(global-set-key (kbd "C-j") 'my-window-funcs/window-down)
       ;(global-set-key (kbd "C-k") 'my-window-funcs/window-up)
@@ -491,6 +498,11 @@ These are the Files creating in the current Directory for files that have not be
 
     ;;evil mappings
     (define-key evil-normal-state-map (kbd "gs") 'save-buffer) ; gs to save
+    (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
+    (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
+    (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
+    (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
+
     ;; g. to open config file
     (define-key evil-normal-state-map (kbd "g.") 'my-funcs/open-dotfile)
     (define-key evil-normal-state-map (kbd "] SPC") (lambda ()
@@ -884,13 +896,13 @@ open source code in same window
   (use-package ag
     :ensure t)
 
-  (use-package beacon
-    :ensure t
-    :config
-    (beacon-mode +1)
-    (setq beacon-color (face-attribute 'highlight :background nil t)
-          beacon-blink-when-buffer-changes t
-          beacon-blink-when-point-moves-vertically 10))
+  ;; (use-package beacon
+  ;;   :ensure t
+  ;;   :config
+  ;;   (beacon-mode +1)
+  ;;   (setq beacon-color (face-attribute 'highlight :background nil t)
+  ;;         beacon-blink-when-buffer-changes t
+  ;;         beacon-blink-when-point-moves-vertically 10))
 
   ;; (use-package nlinum
   ;;   :ensure t
@@ -909,11 +921,6 @@ open source code in same window
   ;;     (setq nlinum-relative-redisplay-delay 0)
   ;;     (nlinum-relative-setup-evil)))
 
-
-  (use-package zoom-window
-    :ensure t
-    :config
-    (setq zoom-window-mode-line-color "pink"))
 
   ;; default values for indentation (possibly overwritten by editorconfig)
   (setq
