@@ -314,11 +314,12 @@ These are the Files creating in the current Directory for files that have not be
     :config
     (defun my-clojure-mode-hook ()
       (clj-refactor-mode 1)
-      (yas-minor-mode 1) ; for adding require/use/import statements
+      (rainbow-delimiters-mode 1)
+      (yas-minor-mode 1)      ; for adding require/use/import statements
       ;; This choice of keybinding leaves cider-macroexpand-1 unbound
       (cljr-add-keybindings-with-prefix "C-c C-m"))
-
-  (add-hook 'clojure-mode-hook #'my-clojure-mode-hook))
+  )
+  (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
 
   (use-package cider
     :ensure t
@@ -911,15 +912,14 @@ open source code in same window
   ;;     (setq nlinum-format "%3d ")
   ;;     ))
 
-  ;; (use-package nlinum-relative
-  ;;   :ensure t
-  ;;   :init
-  ;;   (progn
-  ;;     ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
-  ;;     (global-nlinum-relative-mode t)
-  ;;     (setq nlinum-relative-current-symbol "")
-  ;;     (setq nlinum-relative-redisplay-delay 0)
-  ;;     (nlinum-relative-setup-evil)))
+  (use-package nlinum-relative
+    :ensure t
+    :init
+    (progn
+      ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
+      (global-nlinum-relative-mode t)
+      (setq nlinum-relative-current-symbol "")
+      (nlinum-relative-setup-evil)))
 
 
   ;; default values for indentation (possibly overwritten by editorconfig)
