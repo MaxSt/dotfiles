@@ -351,11 +351,11 @@ These are the Files creating in the current Directory for files that have not be
                      (end-of-defun)
                      (point))))))
 
-  (use-package aggressive-indent
-    :ensure t
-    :config
-    (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
-    )
+  ;; (use-package aggressive-indent
+  ;;   :ensure t
+  ;;   :config
+  ;;   (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+  ;;   )
 
 #+END_SRC
 
