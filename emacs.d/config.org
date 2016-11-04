@@ -306,20 +306,11 @@ These are the Files creating in the current Directory for files that have not be
 #+BEGIN_SRC emacs-lisp
   (use-package clojure-mode
     :ensure t
-    :mode ("\\.clj$" "\\.cljs$" "\\build.boot$")
     :config)
 
   (use-package clj-refactor
     :ensure t
-    :config
-    (defun my-clojure-mode-hook ()
-      (clj-refactor-mode 1)
-      (rainbow-delimiters-mode 1)
-      (yas-minor-mode 1)      ; for adding require/use/import statements
-      ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-      (cljr-add-keybindings-with-prefix "C-c C-m"))
-  )
-  (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
+    :config)
 
   (use-package cider
     :ensure t
@@ -328,6 +319,7 @@ These are the Files creating in the current Directory for files that have not be
       :ensure t
       :config
       (add-hook 'cider-mode-hook #'cider-hydra-mode))
+
     (setq cider-repl-display-in-current-window t)
     (setq cider-repl-use-pretty-printing t)
     (autoload 'cider--make-result-overlay "cider-overlays")
@@ -357,6 +349,15 @@ These are the Files creating in the current Directory for files that have not be
   ;;   (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
   ;;   )
 
+    (defun my-clojure-mode-hook ()
+      (clj-refactor-mode 1)
+      (rainbow-delimiters-mode 1)
+      (yas-minor-mode 1)      ; for adding require/use/import statements
+      ;; This choice of keybinding leaves cider-macroexpand-1 unbound
+      (cljr-add-keybindings-with-prefix "C-c C-m"))
+
+  (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
+  (add-hook 'cider-repl-mode-hook #'my-clojure-mode-hook)
 #+END_SRC
 
 ** Evil
@@ -473,11 +474,13 @@ These are the Files creating in the current Directory for files that have not be
         "w o" 'delete-other-windows
         "w v" 'split-window-right
         "w s" 'split-window-below
+        "w f" 'ace-select-window
+        "w c" 'ace-swap-window
         "w r" 'hydra-window-resize/body
-        "z"   'zoom-window-zoom
         ". s" 'my-funcs/open-snippet-dir
         ". e" 'my-funcs/open-dotfile
         ". r" 'my-funcs/reload-dotfile
+        "p" 'hydra-projectile/body
         "h k" 'describe-key
         "h SPC" 'which-key-show-top-level
         "h v" 'describe-variable
@@ -577,6 +580,7 @@ These are the Files creating in the current Directory for files that have not be
   (add-hook 'emacs-lisp-mode-hook #'evil-cleverparens-mode)
   (add-hook 'lisp-interaction-mode-hook #'evil-cleverparens-mode)
   (add-hook 'cider-interaction-mode-hook #'evil-cleverparens-mode)
+  (add-hook 'cider-repl-mode-hook #'evil-cleverparens-mode)
 
 
   (use-package which-key
@@ -781,20 +785,38 @@ These are the Files creating in the current Directory for files that have not be
 
 ** hydra
 #+BEGIN_SRC emacs-lisp
-(use-package hydra
-  :ensure t
-  :config
-  (defhydra hydra-zoom ()
-    "Zoom"
-    ("+" text-scale-increase "in")
-    ("-" text-scale-decrease "out"))
+  (use-package hydra
+    :ensure t
+    :config
+    (defhydra hydra-zoom ()
+      "Zoom"
+      ("+" text-scale-increase "in")
+      ("-" text-scale-decrease "out"))
 
-  (defhydra hydra-window-resize ()
-    "Window resizing"
-    ("j" my-funcs/resize-window-down "down")
-    ("k" my-funcs/resize-window-up "up")
-    ("l" my-funcs/resize-window-right "right")
-    ("h" my-funcs/resize-window-left "left")))
+    (defhydra hydra-window-resize ()
+      "Window resizing"
+      ("j" my-funcs/resize-window-down "down")
+      ("k" my-funcs/resize-window-up "up")
+      ("l" my-funcs/resize-window-right "right")
+      ("h" my-funcs/resize-window-left "left")))
+
+  (defhydra hydra-projectile (:color teal :columns 4)
+    "Projectile"
+    ("f"   projectile-find-file                "Find File")
+    ("r"   projectile-recentf                  "Recent Files")
+    ("z"   projectile-cache-current-file       "Cache Current File")
+    ("x"   projectile-remove-known-project     "Remove Known Project")
+
+    ("d"   projectile-find-dir                 "Find Directory")
+    ("b"   projectile-switch-to-buffer         "Switch to Buffer")
+    ("c"   projectile-invalidate-cache         "Clear Cache")
+    ("X"   projectile-cleanup-known-projects   "Cleanup Known Projects")
+
+    ("o"   projectile-multi-occur              "Multi Occur")
+    ("p"   projectile-switch-project           "Switch Project")
+    ("k"   projectile-kill-buffers             "Kill Buffers")
+    ("q"   nil "Cancel" :color blue))
+
 #+END_SRC
 
 ** git
@@ -879,6 +901,7 @@ open source code in same window
       (sp-local-pair 'clojure-mode "'" nil :actions nil)
       (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
       (sp-local-pair 'cider-interaction-mode "'" nil :actions nil)
+      (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
       (smartparens-global-mode 1))
 
 
@@ -1004,6 +1027,10 @@ open source code in same window
     :ensure t
     :config)
 
+  (use-package command-log-mode
+    :ensure t
+    :config)
+
   (use-package eyebrowse
     :ensure t
     :config
@@ -1060,6 +1087,27 @@ open source code in same window
                   ;; value of `mode-name'
                   '(:eval (powerline-mode-icon)))
                  mode-line-format))
+
+  (add-to-list 'ispell-local-dictionary-alist '("deutsch-hunspell"
+                                                "[[:alpha:]]"
+                                                "[^[:alpha:]]"
+                                                "[']"
+                                                t
+                                                ("-d" "de_DE"); Dictionary file name
+                                                nil
+                                                iso-8859-1))
+
+  (add-to-list 'ispell-local-dictionary-alist '("english-hunspell"
+                                                "[[:alpha:]]"
+                                                "[^[:alpha:]]"
+                                                "[']"
+                                                t
+                                                ("-d" "en_US")
+                                                nil
+                                                iso-8859-1))
+
+  (setq ispell-program-name "hunspell"          ; Use hunspell to correct mistakes
+        ispell-dictionary   "deutsch-hunspell") ; Default dictionary to use
 
   (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
