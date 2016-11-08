@@ -871,8 +871,8 @@ enable syntax highlighting in org-babel source code
   (use-package ox-reveal
     :ensure t)
 
-  (setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
-  (setq org-reveal-mathjax t)
+  ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+  ;;(setq org-reveal-mathjax t)
 
   (use-package htmlize
   :ensure t)
