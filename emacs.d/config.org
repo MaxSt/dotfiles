@@ -21,14 +21,35 @@
 * Defaults
 #+BEGIN_SRC emacs-lisp
   (setq
-     package-enable-at-startup nil
-     inhibit-startup-screen t
-     x-select-enable-clipboard t
-     column-number-mode t
-     tab-stop-list (number-sequence 2 120 2))
+   package-enable-at-startup nil
+   inhibit-startup-screen t
+   x-select-enable-clipboard t
+   column-number-mode t
+   tab-stop-list (number-sequence 2 120 2))
   (setq-default truncate-lines nil) ; line wrap
   (setq-default indent-tabs-mode nil
                 tab-width 2)
+
+  ;; the blinking cursor is nothing, but an annoyance
+  (blink-cursor-mode -1)
+
+  ;; disable the annoying bell ring
+  (setq ring-bell-function 'ignore)
+  ;; reduce the frequency of garbage collection by making it happen on
+  ;; each 50MB of allocated data (the default is on every 0.76MB)
+  (setq gc-cons-threshold 50000000)
+
+  ;; enable y/n answers
+  (fset 'yes-or-no-p 'y-or-n-p)
+
+  ;; revert buffers automatically when underlying files are changed externally
+  (global-auto-revert-mode t)
+
+  (prefer-coding-system 'utf-8)
+  (set-default-coding-systems 'utf-8)
+  (set-terminal-coding-system 'utf-8)
+  (set-keyboard-coding-system 'utf-8)
+
 #+END_SRC
 ** Backups
 #+BEGIN_SRC emacs-lisp
@@ -343,11 +364,10 @@ These are the Files creating in the current Directory for files that have not be
                      (end-of-defun)
                      (point))))))
 
-  ;; (use-package aggressive-indent
-  ;;   :ensure t
-  ;;   :config
-  ;;   (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
-  ;;   )
+  (use-package aggressive-indent
+    :ensure t
+    :config
+    (global-aggressive-indent-mode +1))
 
     (defun my-clojure-mode-hook ()
       (clj-refactor-mode 1)
@@ -459,6 +479,9 @@ These are the Files creating in the current Directory for files that have not be
         (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
         (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter))
 
+
+      ;; prevent esc-key from translating to meta-key in terminal mode
+      (setq evil-esc-delay 0)
 
       (use-package evil-leader
         :ensure t
@@ -1173,4 +1196,7 @@ open source code in same window
       (ispell-hunspell-add-multi-dic "de_AT,en_US"))
 
     (put 'dired-find-alternate-file 'disabled nil)
+    
+;;TODO saveplace
+;;TODO savehist
 #+END_SRC
