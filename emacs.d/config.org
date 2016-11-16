@@ -4,6 +4,7 @@
 #+DESCRIPTION: Loading emacs configuration using org-babel
 #+TAGS: emacs
 #+CATEGORIES: editing
+#+PROPERTY: header-args:emacs-lisp :results silent
 
 * Package Config
 ** Package + use-package
@@ -19,7 +20,9 @@
   (require 'use-package)
 #+END_SRC
 * Defaults
+
 #+BEGIN_SRC emacs-lisp
+
   (setq
    package-enable-at-startup nil
    inhibit-startup-screen t
@@ -32,6 +35,23 @@
 
   ;; the blinking cursor is nothing, but an annoyance
   (blink-cursor-mode -1)
+
+
+  (setq-default
+   indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
+   indicate-empty-lines nil        ; don't show empty lines
+   fringes-outside-margins t       ; switches order of fringe and margin
+   ;; Keep cursors and highlights in current window only
+   cursor-in-non-selected-windows nil
+   highlight-nonselected-windows nil
+   ;; Disable bidirectional text support for slight performance bonus
+   bidi-display-reordering nil
+   ;; Remove continuation arrow on right fringe
+   ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+   ;;                              fringe-indicator-alist)
+
+   blink-matching-paren nil ; don't blink--too distracting
+   )
 
   ;; disable the annoying bell ring
   (setq ring-bell-function 'ignore)
@@ -49,6 +69,16 @@
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
+
+  (with-eval-after-load "ispell"
+    (setq ispell-program-name "hunspell")
+    (setq ispell-dictionary "de_AT,en_US")
+    ;; ispell-set-spellchecker-params has to be called
+    ;; before ispell-hunspell-add-multi-dic will work
+    (ispell-set-spellchecker-params)
+    (ispell-hunspell-add-multi-dic "de_AT,en_US"))
+
+  (put 'dired-find-alternate-file 'disabled nil)
 
 #+END_SRC
 ** Backups
@@ -73,20 +103,38 @@ These are the Files creating in the current Directory for files that have not be
 
 * GUI
 #+BEGIN_SRC emacs-lisp
+  (set-default-font "Iosevka-11")
 
-(set-default-font "Iosevka-11")
+  (scroll-bar-mode -1)
+  (tool-bar-mode -1)     ; disable the tool-bar
+  (menu-bar-mode -1)     ; disable the menu-bar
+  (global-linum-mode -1)  ; dont show line-numbers everywhere
+  (show-paren-mode)
+  (electric-pair-mode 1)
 
-(scroll-bar-mode -1)
-(tool-bar-mode -1)     ; disable the tool-bar
-(menu-bar-mode -1)     ; disable the menu-bar
-(global-linum-mode -1)  ; dont show line-numbers everywhere
-(show-paren-mode)
-(electric-pair-mode 1)
-
-(define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
-(set-fringe-bitmap-face 'tilde 'fringe)
+  (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
+  (set-fringe-bitmap-face 'tilde 'fringe)
 #+END_SRC
 
+** Themes
+#+begin_src emacs-lisp
+  (load-theme 'flatcolor t)
+  (use-package all-the-icons
+    :ensure t)
+
+  (use-package doom-themes
+    :ensure t
+    :config
+    (setq doom-neotree-enable-variable-pitch t
+          doom-neotree-file-icons t
+          doom-neotree-line-spacing 3)
+    ;;(load-theme 'doom-one t)
+    ;; brighter source buffers
+    ;;(add-hook 'find-file-hook 'doom-buffer-mode)
+    ;; Custom neotree theme
+    (when window-system
+      (require 'doom-neotree)))
+#+end_src
 * custom Functions
 #+BEGIN_SRC emacs-lisp
   (defconst org-config-file "~/.emacs.d/config.org")
@@ -101,112 +149,6 @@ These are the Files creating in the current Directory for files that have not be
     (interactive)
     (find-file org-config-file))
 
-  ;(defconst my-funcs/pairs '(("(" . ")") ("[" . "]") ("{" . "}")))
-
-  ;; (defun my-funcs/get-pair ()
-  ;;   "Get the according pair around the point or return nil if point is not inside an adjacent pair."
-  ;;   (let ((preceding (string (preceding-char)))
-  ;;         (following (string (following-char))))
-  ;;     (let ((match (cdr (assoc preceding my-funcs/pairs))))
-  ;;         (if (equal following match)
-  ;;             match
-  ;;           nil))))
-
-  ;; (defun my-funcs/smart-space ()
-  ;;   "Insert a space at point, and if inside and adjacent pair, also insert another space to keep whitespace balanced."
-  ;;   (interactive) (when (my-funcs/get-pair)
-  ;;     (insert " ")
-  ;;     (backward-char))
-  ;;   (insert " "))
-
-  ;; (defun my-funcs/smart-delete ()
-  ;;   "Delete a character. If inside an adjacent pair, also delete the according closing character.
-  ;; If inside a pair with spaces, e.g. `( | )` delete both spaces symmetrically''"
-  ;;   (interactive)
-  ;;   (let ((preceding (string (preceding-char)))
-  ;;         (following (string (following-char))))
-  ;;     (if (and (equal preceding " ") (equal following " "))
-  ;;         (let ((before (string (char-before (- (point) 1))))
-  ;;               (after (string (char-after (+ (point) 1)))))
-  ;;           (let ((match (cdr (assoc before my-funcs/pairs))))
-  ;;             (if (equal after match)
-  ;;                 (progn
-  ;;                   ; between spaces and brackets -> delete both spaces first
-  ;;                   (delete-backward-char 1)
-  ;;                   (delete-char 1))
-  ;;               ; between spaces, but not between brackets -> normal delete
-  ;;               (delete-backward-char 1))))
-  ;;       ;; we're not even between spaces, perform "normal" delete, optionally deleting a pair
-  ;;       (if (my-funcs/get-pair)
-  ;;           (electric-pair-delete-pair 1)
-  ;;         (delete-backward-char 1)))))
-
-
-  ;; (defun my-funcs/dired-up-directory ()
-  ;;   "Take dired up one directory, but behave like dired-find-alternative-file (leave no orphan buffer)"
-  ;;   (interactive)
-  ;;   (let ((old (current-buffer)))
-  ;;     (dired-up-directory)
-  ;;     (kill-buffer old)))
-
-  ;; (defun my-funcs/check-expansion ()
-  ;;   "checks wether or not expansion should be done"
-  ;;   (save-excursion
-  ;;     (if (looking-at "\\_>") t
-  ;;       (backward-char 1)
-  ;;       (if (looking-at "\\.") t
-  ;;     (backward-char 1)
-  ;;     (if (looking-at "->") t nil)))))
-
-  ;; (defun my-funcs/do-yas-expand ()
-  ;;   (let ((yas/fallback-behavior 'return-nil))
-  ;;     (yas/expand)))
-
-  ;; (defun my-funcs/tab-indent-or-complete ()
-  ;;   (interactive)
-  ;;   (message "checking wether or not to indent!")
-  ;;   (cond
-  ;;    ((minibufferp)
-  ;;     (minibuffer-complete))
-  ;;    (t
-  ;;     (indent-for-tab-command)
-  ;;     (if (or (not yas/minor-mode)
-  ;;         (null (my-funcs/do-yas-expand)))
-  ;;     (if (my-funcs/check-expansion)
-  ;;         (progn
-  ;;           (company-manual-begin)
-  ;;           (if (null company-candidates)
-  ;;           (progn
-  ;;             (company-abort)
-  ;;             (indent-for-tab-command)))))))))
-
-  ;; (defun my-funcs/tab-complete-or-next-field ()
-  ;;   (interactive)
-  ;;   (if (or (not yas/minor-mode)
-  ;;       (null (my-funcs/do-yas-expand)))
-  ;;       (if company-candidates
-  ;;       (company-complete-selection)
-  ;;     (if (my-funcs/check-expansion)
-  ;;       (progn
-  ;;         (company-manual-begin)
-  ;;         (if (null company-candidates)
-  ;;         (progn
-  ;;           (company-abort)
-  ;;           (yas-next-field))))
-  ;;       (yas-next-field)))))
-
-  ;; (defun my-funcs/expand-snippet-or-complete-selection ()
-  ;;   (interactive)
-  ;;   (if (or (not yas/minor-mode)
-  ;;       (null (my-funcs/do-yas-expand))
-  ;;       (company-abort))
-  ;;       (company-complete-selection)))
-
-  ;; (defun my-funcs/abort-company-or-yas ()
-  ;;   (interactive)
-  ;;   (if (null company-candidates)
-  ;;       (yas-abort-snippet)
-  ;;     (company-abort)))
 
   (defun my-funcs/open-snippet-dir ()
     (interactive)
@@ -241,6 +183,17 @@ These are the Files creating in the current Directory for files that have not be
     (if (window-in-direction 'right)
         (enlarge-window-horizontally 1)
       (shrink-window-horizontally 1)))
+
+
+  (defun my-funcs/what-face (pos)
+    "Tells you the name of the face (point) is on."
+    (interactive "d")
+    (let ((hl-line-p (bound-and-true-p hl-line-mode)))
+      (if hl-line-p (hl-line-mode -1))
+      (let ((face (or (get-char-property (point) 'read-face-name)
+                      (get-char-property (point) 'face))))
+        (if face (message "Face: %s" face) (message "No face at %d" pos)))
+      (if hl-line-p (hl-line-mode 1))))
 #+END_SRC
 
 ** Session save/restore
@@ -322,6 +275,206 @@ These are the Files creating in the current Directory for files that have not be
   (add-hook 'kill-emacs-hook 'my-desktop-kill-emacs-hook)
 
 #+END_SRC
+* Evil
+** initialize
+  #+BEGIN_SRC emacs-lisp
+    (use-package evil
+      :ensure t
+      :config
+      ;; prevent esc-key from translating to meta-key in terminal mode
+      (setq evil-esc-delay 0)
+      (evil-mode 1)
+      )
+  #+end_src
+   
+** custom text objects
+*** sexp
+   #+BEGIN_SRC emacs-lisp
+        
+     ;;Evil smartparens text objects
+     (evil-define-text-object evil-a-sexp (count &optional beg end type)
+       "outer sexp"
+       (evil-range (progn
+                     (save-excursion
+                       (sp-beginning-of-sexp)
+                       (- (point) 1)))
+                   (progn
+                     (save-excursion
+                       (sp-end-of-sexp)
+                       (+ (point) 1)))))
+     (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
+
+     (evil-define-text-object evil-i-sexp (count &optional beg end type)
+       "inner sexp"
+       (evil-range (progn
+                     (save-excursion
+                       (sp-beginning-of-sexp)
+                       (point)))
+                   (progn
+                     (save-excursion
+                       (sp-end-of-sexp)
+                       (point)))))
+     (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
+
+     (evil-define-text-object evil-a-top-level-sexp (count &optional beg end type)
+       "outer top level sexp"
+       (evil-range (progn
+                     (save-excursion
+                       (beginning-of-defun)
+                       (- (point) 1)))
+                   (progn
+                     (save-excursion
+                       (end-of-defun)
+                       (+ (point) 1)))))
+     (define-key evil-outer-text-objects-map "F" 'evil-a-top-level-sexp)
+
+     (evil-define-text-object evil-i-top-level-sexp (count &optional beg end type)
+       "inner top level sexp"
+       (evil-range (progn
+                     (save-excursion
+                       (beginning-of-defun)
+                       (point)))
+                   (progn
+                     (save-excursion
+                       (end-of-defun)
+                       (point)))))
+     (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
+   #+end_src
+*** line text object
+    no mapping for that object 
+   #+begin_src emacs-lisp
+
+     (evil-define-text-object evil-i-line (count &optional beg end type)
+       "inner line"
+       (evil-range (progn
+                     (save-excursion
+                       (back-to-indentation)
+                       (point)))
+                   (progn
+                     (save-excursion
+                       (end-of-line)
+                       (point)))))
+
+     (evil-define-text-object evil-a-line (count &optional beg end type)
+       "outer line"
+       (evil-range (progn
+                     (save-excursion
+                       (evil-beginning-of-line)
+                       (point)))
+                   (progn
+                     (save-excursion
+                       (end-of-line)
+                       (point)))))
+
+   #+END_SRC
+** General (keybindings)
+   [[https://github.com/noctuid/general.el][general.el]]
+   #+BEGIN_SRC emacs-lisp
+     (use-package general
+       :ensure t
+       :config
+       ;; bind a key globally in normal state; keymaps must be quoted
+       (setq general-default-keymaps 'evil-normal-state-map))
+
+
+
+     ;;evil mappings
+     (general-define-key :keymaps 'normal
+                         "gs" 'save-buffer
+                         "C-h" 'evil-window-left
+                         "C-h" 'evil-window-right
+                         "C-k" 'evil-window-up
+                         "C-j" 'evil-window-down
+                         "g ." 'my-funcs/open-dotfile
+                         "] SPC" (lambda ()
+                                    (interactive)
+                                    (save-excursion
+                                      (evil-open-below 1))
+                                    (evil-normal-state))
+                         "[ SPC" (lambda ()
+                                    (interactive)
+                                    (save-excursion
+                                      (evil-open-above 1))
+                                    (evil-normal-state))
+                         )
+
+     ;; named prefix key
+     (setq my-leader ",")
+     (general-define-key :prefix my-leader
+                         ;;"r" 'restart-emacs
+                         "p" 'hydra-projectile/body
+
+                         "h k" 'describe-key
+                         "h SPC" 'which-key-show-top-level
+                         "h v" 'describe-variable
+                         "h f" 'describe-function
+                         "h m" 'describe-mode
+
+                         "w q" 'evil-window-delete
+                         "w o" 'delete-other-windows
+                         "w v" 'split-window-right
+                         "w s" 'split-window-below
+                         "w f" 'ace-select-window
+                         "w c" 'ace-swap-window
+
+                         ". s" 'my-funcs/open-snippet-dir
+                         "g s" 'magit-status
+                         "l" 'evil-avy-goto-line
+                         "u" 'undo-tree-visualize
+                         "b" 'ivy-switch-buffer
+                         "f" 'find-file)
+
+   #+END_SRC
+** evil-surround
+#+begin_src emacs-lisp
+    (use-package evil-surround
+      :ensure t
+      :config
+      (global-evil-surround-mode))
+#+end_src
+
+** evil-numbers
+   increment and decrement numbers with c-a and c-x
+#+begin_src emacs-lisp
+    (use-package evil-numbers
+      :ensure t
+      :config
+      (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
+      (define-key evil-normal-state-map (kbd "C-x") 'evil-numbers/dec-at-pt))
+#+end_src
+
+** evil-matchit
+   % to jump between matched tags
+#+begin_src emacs-lisp
+    (use-package evil-matchit
+      :ensure t
+      :config
+      (global-evil-matchit-mode 1))
+#+end_src
+
+** evil-exchange
+#+begin_src emacs-lisp
+  ;;gx to mark exchange second time to do it
+  ;;gX to cancel
+  (use-package evil-exchange
+    :ensure t
+    :general
+    :config)
+    (general-define-key "c" (general-key-dispatch 'evil-change
+                              :name general-dispatch-evil-change-exchange
+                              "x" 'evil-exchange
+                              "X" 'evil-exchange-cancel))
+    
+#+end_src
+
+** evil-commentary
+#+begin_src emacs-lisp
+    (use-package evil-commentary
+      :ensure t
+      :config
+      (evil-commentary-mode))
+#+end_src
+
 * Package config
 ** clojure
 #+BEGIN_SRC emacs-lisp
@@ -364,274 +517,52 @@ These are the Files creating in the current Directory for files that have not be
                      (end-of-defun)
                      (point))))))
 
-  (use-package aggressive-indent
+  (evil-define-operator evil-eval-clojure-text-object (beg end)
+    "Evil operator for evaluating code."
+    :move-point nil
+    (save-excursion
+      (cider-eval-region beg end)))
+
+
+  (general-define-key :keymaps '(clojure-mode cider-repl-mode cider-interaction-mode)
+                      :states '(normal)
+                      "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+                            "p" (general-key-dispatch 'evil-eval-clojure-text-object
+                                  "p" (lambda ()
+                                         (interactive)
+                                         (let* ((range (evil-a-line))
+                                                (beg (elt range 0))
+                                                (end (elt range 1)))
+                                           (evil-eval-elisp-text-object beg end))))
+                            "c" 'evil-change-whole-line
+                            ;; could be used for other operators where there
+                            ;; isn't an existing command for the linewise version:
+                            ;; "c" (general-simulate-keys ('evil-change "c"))
+                            ))
+
+
+#+end_src
+
+** neotree
+#+begin_src emacs-lisp
+  (use-package neotree
     :ensure t
-    :config
-    (global-aggressive-indent-mode +1))
-
-    (defun my-clojure-mode-hook ()
-      (clj-refactor-mode 1)
-      (rainbow-delimiters-mode 1)
-      (yas-minor-mode 1)      ; for adding require/use/import statements
-      ;; This choice of keybinding leaves cider-macroexpand-1 unbound
-      (cljr-add-keybindings-with-prefix "C-c C-m"))
-
-  (add-hook 'clojure-mode-hook #'my-clojure-mode-hook)
-  (add-hook 'cider-repl-mode-hook #'my-clojure-mode-hook)
-#+END_SRC
-** zoom-frm
-#+BEGIN_SRC emacs-lisp
-  (use-package zoom-frm
-     :ensure t
-     :config)
-#+END_SRC
-
-** Evil
-  #+BEGIN_SRC emacs-lisp
-
-    (use-package evil
-      :ensure t
-      :config
-
-      ;;todo only for elisp!
-      (evil-define-operator evil-eval-elisp-text-object (beg end)
-        "Evil operator for evaluating code."
-        :move-point nil
-        (save-excursion
-          (let (eval-str
-                value)
-            (setq eval-str (buffer-substring beg end))
-            (setq value (eval (car (read-from-string eval-str))))
-            (my-funcs/eval-overlay value end)
-            (message (format "%s" value)))))
-
-      (evil-define-operator evil-eval-clojure-text-object (beg end)
-        "Evil operator for evaluating code."
-        :move-point nil
-        (save-excursion
-          (cider-eval-region beg end)))
-
-      ;; (define-key evil-insert-state-map (kbd "SPC") 'my-funcs/smart-space)
-      ;; (define-key evil-insert-state-map (kbd "DEL") 'my-funcs/smart-delete)
-      ;; (define-key evil-insert-state-map [tab] 'my-funcs/tab-indent-or-complete)
-      ; (define-key evil-insert-state-map (kbd "TAB") 'my-funcs/tab-indent-or-complete)
-      ;; (define-key evil-normal-state-map (kbd "C-u") 'evil-scroll-up)
-      ;; (evil-define-key 'normal emacs-lisp-mode-map (kbd "K") 'elisp-slime-nav-describe-elisp-thing-at-point)
-      ;; (evil-define-key 'normal dired-mode-map
-        ;; (kbd "h") 'my-funcs/dired-up-directory
-        ;; (kbd "RET") 'dired-find-alternate-file
-        ;; (kbd "l") 'dired-find-alternate-file
-        ;; (kbd "m") 'dired-mark
-        ;; (kbd "u") 'dired-unmark
-        ;; (kbd "U") 'dired-unmark-all-marks
-        ;; (kbd "C") 'dired-create-directory
-        ;; (kbd "n") 'evil-search-next
-        ;; (kbd "N") 'evil-search-previous
-        ;; (kbd "y") 'dired-do-copy
-        ;; (kbd "q") 'kill-this-buffer)
-      (use-package evil-surround
-        :ensure t
-        :config
-        (global-evil-surround-mode))
-      (use-package evil-numbers
-        :ensure t
-        :config
-        (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
-        (define-key evil-normal-state-map (kbd "C-x") 'evil-numbers/dec-at-pt))
-      ;; (use-package evil-args
-        ;; :ensure t
-        ;; :config
-        ;; (define-key evil-inner-text-objects-map "i" 'evil-inner-arg)
-        ;; (define-key evil-outer-text-objects-map "a" 'evil-outer-arg))
-      (use-package evil-matchit
-        :ensure t
-        :config
-        (global-evil-matchit-mode 1))
-
-      ;; multiple cursors
-      ;;(gru to delete all cursors)
-      ;; C-N to next cursor
-      (use-package evil-mc
-        :ensure t
-        :config
-        (global-evil-mc-mode 1))
-
-      ;; (use-package evil-org
-      ;;   :ensure t)
-
-      ;;gx to mark exchange second time to do it
-      ;;gX to cancel
-      (use-package evil-exchange
-        :ensure t
-        :config
-        (evil-exchange-install))
-
-      (use-package evil-commentary
-        :ensure t
-        :config
-        (evil-commentary-mode))
-
-      (use-package neotree
-        :ensure t
-        :config
-        (define-key evil-normal-state-map (kbd "\\") 'neotree-toggle)
-        (evil-define-key 'normal neotree-mode-map (kbd "TAB") 'neotree-enter)
-        (evil-define-key 'normal neotree-mode-map (kbd "q") 'neotree-hide)
-        (evil-define-key 'normal neotree-mode-map (kbd "RET") 'neotree-enter))
-
-
-      ;; prevent esc-key from translating to meta-key in terminal mode
-      (setq evil-esc-delay 0)
-
-      (use-package evil-leader
-        :ensure t
-        :config
-        (evil-leader/set-leader "SPC")
-        (evil-leader/set-key
-          "f" 'evil-avy-goto-char-in-line
-          "l" 'evil-avy-goto-line
-          "s" 'swiper
-          "~" 'my-term-funcs/toggle-term
-          "TAB" 'my-window-funcs/switch-to-last-buffer
-          "b" 'ivy-switch-buffer
-          "o" 'find-file
-          ;"b p" 'previous-buffer
-          ;"b d" 'kill-this-buffer
-          ;"e" 'evil-eval-text-object
-          ;"f d" 'dired-jump
-          "z" 'hydra-zoom/body
-          "t u" 'undo-tree-visualize
-          "w q" 'evil-window-delete
-          "w o" 'delete-other-windows
-          "w v" 'split-window-right
-          "w s" 'split-window-below
-          "w f" 'ace-select-window
-          "w c" 'ace-swap-window
-          "w r" 'hydra-window-resize/body
-          ". s" 'my-funcs/open-snippet-dir
-          ". e" 'my-funcs/open-dotfile
-          ". r" 'my-funcs/reload-dotfile
-          "p" 'hydra-projectile/body
-          "h k" 'describe-key
-          "h SPC" 'which-key-show-top-level
-          "h v" 'describe-variable
-          "h f" 'describe-function
-          "h m" 'describe-mode)
-        (evil-leader/set-key-for-mode 'emacs-lisp-mode "e" 'evil-eval-elisp-text-object)
-        (evil-leader/set-key-for-mode 'lisp-interaction-mode "e" 'evil-eval-elisp-text-object)
-        (evil-leader/set-key-for-mode 'clojure-mode "e" 'evil-eval-clojure-text-object)
-        (evil-leader/set-key-for-mode 'clojurescript-mode "e" 'evil-eval-clojure-text-object)
-        (evil-leader/set-key-for-mode 'cider-clojure-interaction-mode "e" 'evil-eval-clojure-text-object)
-        (evil-leader/set-key-for-mode 'clojure-mode "r" 'hydra-cljr-help-menu/body)
-        (evil-leader/set-key-for-mode 'clojurescript-mode "r" 'hydra-cljr-help-menu/body)
-        (evil-leader/set-key-for-mode 'cider-clojure-interaction-mode "r" 'hydra-cljr-help-menu/body)
-        ;(global-set-key (kbd "C-j") 'my-window-funcs/window-down)
-        ;(global-set-key (kbd "C-k") 'my-window-funcs/window-up)
-        ;(global-set-key (kbd "C-h") 'my-window-funcs/window-left)
-        ;(global-set-key (kbd "C-l") 'my-window-funcs/window-right)
-        (global-evil-leader-mode))
-
-      ;;evil mappings
-      (define-key evil-normal-state-map (kbd "gs") 'save-buffer) ; gs to save
-      (define-key evil-normal-state-map (kbd "C-h") 'evil-window-left)
-      (define-key evil-normal-state-map (kbd "C-j") 'evil-window-down)
-      (define-key evil-normal-state-map (kbd "C-k") 'evil-window-up)
-      (define-key evil-normal-state-map (kbd "C-l") 'evil-window-right)
-
-      ;; g. to open config file
-      (define-key evil-normal-state-map (kbd "g.") 'my-funcs/open-dotfile)
-      (define-key evil-normal-state-map (kbd "] SPC") (lambda ()
-                                                        (interactive)
-                                                        (save-excursion
-                                                          (evil-open-below 1))
-                                                        (evil-normal-state)))
-      (define-key evil-normal-state-map (kbd "[ SPC") (lambda ()
-                                                        (interactive)
-                                                        (save-excursion
-                                                          (evil-open-above 1))
-                                                        (evil-normal-state)))
-
-      ;;Evil smartparens text objects
-      (evil-define-text-object evil-a-sexp (count &optional beg end type)
-       "outer sexp"
-       (evil-range (progn
-                     (save-excursion
-                       (sp-beginning-of-sexp)
-                       (- (point) 1)))
-                   (progn
-                     (save-excursion
-                       (sp-end-of-sexp)
-                       (+ (point) 1)))))
-
-      (evil-define-text-object evil-i-sexp (count &optional beg end type)
-       "inner sexp"
-       (evil-range (progn
-                     (save-excursion
-                       (sp-beginning-of-sexp)
-                       (point)))
-                   (progn
-                     (save-excursion
-                       (sp-end-of-sexp)
-                       (point)))))
-
-      (evil-define-text-object evil-a-top-level-sexp (count &optional beg end type)
-       "outer top level sexp"
-       (evil-range (progn
-                     (save-excursion
-                       (beginning-of-defun)
-                       (- (point) 1)))
-                   (progn
-                     (save-excursion
-                       (end-of-defun)
-                       (+ (point) 1)))))
-
-      (evil-define-text-object evil-i-top-level-sexp (count &optional beg end type)
-       "inner top level sexp"
-       (evil-range (progn
-                     (save-excursion
-                       (beginning-of-defun)
-                       (point)))
-                   (progn
-                     (save-excursion
-                       (end-of-defun)
-                       (point)))))
-
-      ;; (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
-      ;; (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
-      ;; (define-key evil-outer-text-objects-map "F" 'evil-a-top-level-sexp)
-      ;; (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
-
-      (evil-mode 1)) ; evil-leader must be enabled before evil
-
-    (use-package evil-cleverparens
-      :ensure t
-      :config)
-
-    (add-hook 'clojure-mode-hook #'evil-cleverparens-mode)
-    (add-hook 'emacs-lisp-mode-hook #'evil-cleverparens-mode)
-    (add-hook 'lisp-interaction-mode-hook #'evil-cleverparens-mode)
-    (add-hook 'cider-interaction-mode-hook #'evil-cleverparens-mode)
-    (add-hook 'cider-repl-mode-hook #'evil-cleverparens-mode)
-
-
+    :general
+    (:keymaps 'neotree-mode-map
+              "TAB" 'neotree-enter
+              "q" 'neotree-hide
+              "RET" 'neotree-enter)
+    (:keymaps 'evil-normal-state-map
+              "\\" 'neotree-toggle))
+#+end_src
+** which-key
+#+begin_src emacs-lisp
     (use-package which-key
       :ensure t
       :config
-      ;; (which-key-add-key-based-replacements
-      ;;   "SPC TAB" "Last active buffer"
-      ;;   "SPC :"   "Execute ex-command"
-      ;;   "SPC ~"   "Toggle terminal"
-      ;;   "SPC b"   "Buffers"
-      ;;   "SPC e"   "Evaluate"
-      ;;   "SPC f"   "Files"
-      ;;   "SPC p"   "Projects"
-      ;;   "SPC t"   "Toggles"
-      ;;   "SPC w"   "Windows"
-      ;;   "SPC ."   "Dotfiles"
-      ;;   "SPC ?"   "Get help")
       (which-key-mode))
-
 #+END_SRC
+   
 ** Terminal
 #+BEGIN_SRC emacs-lisp
 (use-package multi-term
@@ -778,7 +709,7 @@ These are the Files creating in the current Directory for files that have not be
   )
 #+END_SRC
 
-** yasnippet
+** Yasnippet
 #+BEGIN_SRC emacs-lisp
 (use-package yasnippet
   :ensure t
@@ -869,7 +800,7 @@ These are the Files creating in the current Directory for files that have not be
     ;; (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
     ;; (set-fringe-bitmap-face 'tilde 'fringe)
 
-  ;; colored fringe "bars"
+    ;; colored fringe "bars"
     (define-fringe-bitmap 'git-gutter-fr:added
       [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
       nil nil 'center)
@@ -887,22 +818,41 @@ These are the Files creating in the current Directory for files that have not be
     :ensure t
     :config
     (use-package evil-magit
-      :ensure t))
+      :ensure t)
+    ;; full screen magit-status
+    (defadvice magit-status (around magit-fullscreen activate)
+      (window-configuration-to-register :magit-fullscreen)
+      ad-do-it
+      (delete-other-windows))
+
+    (defun magit-quit-session ()
+      "Restores the previous window configuration and kills the magit buffer"
+      (interactive)
+      (kill-buffer)
+      (jump-to-register :magit-fullscreen)))
 
 #+END_SRC
 
 ** Org Mode
-enable syntax highlighting in org-babel source code
+   enable syntax highlighting in org-babel source code
 #+BEGIN_SRC emacs-lisp
   (setq org-src-fontify-natively t)
 #+END_SRC
-
-***  org-bullets (pretty bullets)
+   set org default directory
+#+BEGIN_SRC emacs-lisp
+(setq org-agenda-files '("~/Dropbox/org/"))
+(setq org-directory "~/Dropbox/org")
+#+END_SRC
+   
+*** agenda keybindings
+*** org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
     :ensure t
     :config
-    (org-bullets-mode))
+    (add-hook 'org-mode-hook
+              (lambda ()
+                (org-bullets-mode 1))))
 #+END_SRC
 
 *** org-Reveal (HTML presentations)
@@ -916,26 +866,40 @@ enable syntax highlighting in org-babel source code
   :ensure t)
 #+END_SRC
 
-evil keybindings in org-mode
+*** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
-  (evil-define-key 'normal org-mode-map
-    (kbd "TAB") 'org-cycle
-    ">" 'org-shiftmetaright
-    "<" 'org-shiftmetaleft
-    (kbd "RET") (lambda ()
-                  (interactive)
-                  (org-edit-special)
-                  (evil-normal-state)))
+  (general-define-key :keymaps 'org-mode-map
+                      :states '(normal)
+                      "TAB" 'org-cycle
+                      "<" 'org-metaleft
+                      ">" 'org-metaright
+
+                      ;; "o" '(lambda ()
+                      ;;        (interactive)
+                      ;;        (end-of-line)
+                      ;;        (org-meta-return)
+                      ;;        (evil-append nil))
+
+                      "RET" (lambda ()
+                               (interactive)
+                               (if (org-in-src-block-p)
+                                   (org-edit-special)
+                                 (org-open-at-point))
+                               (evil-normal-state)))
+
   ;; key for exiting src edit mode
-  (evil-define-key 'normal org-src-mode-map
-    (kbd "RET") 'org-edit-src-exit)
+  (general-define-key :keymaps 'org-src-mode-map
+                      :states '(normal)
+                      "RET" 'org-edit-src-exit)
+
 #+END_SRC
 
-open source code in same window
+*** open source code in same window
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
 #+END_SRC
-** AucTex
+** Latex
+*** AucTex
 #+BEGIN_SRC emacs-lisp
   (use-package auctex-latexmk
     :ensure t
@@ -956,195 +920,59 @@ open source code in same window
      :config
      (popwin-mode 1))
 #+END_SRC
-*  Rest
-#+BEGIN_SRC emacs-lisp
-    (use-package smartparens
-      :ensure t
-        :config
-        ;; no '' pair in emacs-lisp-mode
-        (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-        (sp-local-pair 'clojure-mode "'" nil :actions nil)
-        (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
-        (sp-local-pair 'cider-interaction-mode "'" nil :actions nil)
-        (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
-        (smartparens-global-mode 1))
+** projectile
+#+begin_src emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (setq projectile-switch-project-action 'projectile-dired)
+    (setq projectile-completion-system 'ivy)
+    (projectile-global-mode))
+#+end_src
 
+** ag
+#+begin_src emacs-lisp
+  (use-package ag
+    :ensure t)
 
-      ; general-purpose string-manipulation library
-      (use-package s
-        :ensure t
-        :config)
-
-      (use-package projectile
-        :ensure t
-        :config
-        (setq projectile-switch-project-action 'projectile-dired)
-        (setq projectile-completion-system 'ivy)
-        (projectile-global-mode))
-
-    (use-package ag
-      :ensure t)
-
-    ;; (use-package beacon
-    ;;   :ensure t
-    ;;   :config
-    ;;   (beacon-mode +1)
-    ;;   (setq beacon-color (face-attribute 'highlight :background nil t)
-    ;;         beacon-blink-when-buffer-changes t
-    ;;         beacon-blink-when-point-moves-vertically 10))
-
-    ;; (use-package nlinum
-    ;;   :ensure t
-    ;;   :init
-    ;;   (progn
-    ;;     (setq nlinum-format "%3d ")
-    ;;     ))
-
-    ;; (use-package nlinum-relative
-    ;;   :ensure t
-    ;;   :init
-    ;;   (progn
-    ;;     ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
-    ;;     (global-nlinum-relative-mode t)
-    ;;     (setq nlinum-relative-current-symbol "")
-    ;;     (nlinum-relative-setup-evil)))
-
-
-    ;; default values for indentation (possibly overwritten by editorconfig)
-    (setq
-     js2-basic-offset 2
-     js-indent-level 2
-     js-expr-indent-offset -2)
-
-    (use-package rainbow-delimiters
-      :ensure t
-      :config)
-
-    (use-package undo-tree
-      :ensure t
-      :config
-      (setq undo-tree-auto-save-history t
-            undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-      (global-undo-tree-mode))
-
-    ;; (use-package flatui-theme
-    ;;   :ensure t
-    ;;   :config
-    ;;   (load-theme 'flatui t))
-
-
-    (use-package all-the-icons
-      :ensure t)
-
-    (use-package doom-themes
-      :ensure t
-      :config
-      (setq doom-neotree-enable-variable-pitch t
-            doom-neotree-file-icons t
-            doom-neotree-line-spacing 3)
-                                            ;(load-theme 'doom-one t)
-      ;; brighter source buffers
-                                            ;(add-hook 'find-file-hook 'doom-buffer-mode)
-      ;; Custom neotree theme
-      (when window-system
-        (require 'doom-neotree)))
-
-                                            ; for keeping track of recent files, provides helm-recentf with data
-    (use-package recentf
-      :ensure t
-      :config)
-
-    (use-package elisp-slime-nav
-      :ensure t
-      :config
-      (add-hook 'emacs-lisp-mode-hook (lambda () (elisp-slime-nav-mode) (eldoc-mode))))
-
-    (setq-default
-     ;mode-line-default-help-echo nil ; don't say anything on mode-line mouseover
-     indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
-     indicate-empty-lines nil        ; don't show empty lines
-     fringes-outside-margins t       ; switches order of fringe and margin
-     ;; Keep cursors and highlights in current window only
-     cursor-in-non-selected-windows nil
-     highlight-nonselected-windows nil
-     ;; Disable bidirectional text support for slight performance bonus
-     bidi-display-reordering nil
-     ;; Remove continuation arrow on right fringe
-     ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-     ;;                              fringe-indicator-alist)
-
-     blink-matching-paren nil ; don't blink--too distracting
-     )
-
-    (defun what-face (pos)
-      "Tells you the name of the face (point) is on."
-      (interactive "d")
-      (let ((hl-line-p (bound-and-true-p hl-line-mode)))
-        (if hl-line-p (hl-line-mode -1))
-        (let ((face (or (get-char-property (point) 'read-face-name)
-                        (get-char-property (point) 'face))))
-          (if face (message "Face: %s" face) (message "No face at %d" pos)))
-        (if hl-line-p (hl-line-mode 1))))
-
-    (load-theme 'flatcolor t)
-
-    (use-package rainbow-mode
-      :ensure t
-      :config)
-
-    (use-package command-log-mode
-      :ensure t
-      :config)
-
-    (use-package eyebrowse
-      :ensure t
-      :config
-      (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
-      (eyebrowse-mode t))
-
-    (use-package highlight-symbol
-      :ensure t
-      :config
-      (setq highlight-symbol-idle-delay 1)
-      (highlight-symbol-mode t)
-      )
-
-    (use-package ivy
-      :ensure t
-      :config
-      ;; fuzzy match
-      (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
-      (ivy-mode t))
-
-    (use-package counsel
-      :ensure t
-      :config)
-
-    (use-package swiper
-      :ensure t
-      :config
-      (ivy-mode t))
-
-    (use-package avy
-      :ensure t
-      :config)
+#+end_src
+** rainbow-delimiters
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :ensure t
+    :config
 
     (add-hook 'js2-mode-hook 'rainbow-delimiters-mode)
     (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
     (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+    )
+#+end_src
 
-    ;; Don't litter my init file
-    (setq custom-file "~/.emacs.d/local/custom-set.el")
-    (load custom-file 'noerror)
-
-
-    (defun powerline-mode-icon ()
-      (let ((icon (all-the-icons-icon-for-buffer)))
-        (unless (symbolp icon) ;; This implies it's the major mode
-          (format " %s"
-                  (propertize icon
-                              'help-echo (format "Major-mode: `%s`" major-mode)
-                              'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
+** undo-tree
+#+begin_src emacs-lisp
+  (use-package undo-tree
+    :ensure t
+    :config
+    (setq undo-tree-auto-save-history t
+          undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
+    (global-undo-tree-mode))
+#+end_src
+** recentf
+   for keeping track of recent files, provides helm-recentf with data
+   #+begin_src emacs-lisp
+     (use-package recentf
+       :ensure t
+       :config)
+   #+end_src
+** powerline
+#+BEGIN_SRC emacs-lisp
+  (defun powerline-mode-icon ()
+    (let ((icon (all-the-icons-icon-for-buffer)))
+      (unless (symbolp icon) ;; This implies it's the major mode
+        (format " %s"
+                (propertize icon
+                            'help-echo (format "Major-mode: `%s`" major-mode)
+                            'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
 
   (use-package powerline
     :ensure t
@@ -1177,26 +1005,112 @@ open source code in same window
                                                :v-adjust -0.1)
                          " "))
                       pltheme)))))
+#+END_SRC
+** ivy
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy
+    :ensure t
+    :config
+    ;; fuzzy match
+    (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+    (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
+    (ivy-mode t))
+
+  (use-package counsel
+    :ensure t
+    :config)
+
+  (use-package swiper
+    :ensure t
+    :config
+    (ivy-mode t))
+
+  (use-package avy
+    :ensure t
+    :config)
+
+#+END_SRC
+** rainbow-mode
+#+begin_src emacs-lisp
+  (use-package rainbow-mode
+    :ensure t
+    :config)
+#+end_src
+
+** command-log-mode
+#+begin_src emacs-lisp
+  (use-package command-log-mode
+    :ensure t
+    :config)
+#+end_src
+
+** eyebrowse
+#+begin_src emacs-lisp
+  (use-package eyebrowse
+    :ensure t
+    :config
+    (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
+    (eyebrowse-mode t))
+#+end_src
+
+** highlight-symbol
+#+begin_src emacs-lisp
+  (use-package highlight-symbol
+    :ensure t
+    :config
+    (setq highlight-symbol-idle-delay 1)
+    (highlight-symbol-mode t)
+    )
+#+end_src
+*  Temp
+#+begin_src emacs-lisp
+  ;; (use-package nlinum
+  ;;   :ensure t
+  ;;   :init
+  ;;   (progn
+  ;;     (setq nlinum-format "%3d ")
+  ;;     ))
+
+  ;; (use-package nlinum-relative
+  ;;   :ensure t
+  ;;   :init
+  ;;   (progn
+  ;;     ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
+  ;;     (global-nlinum-relative-mode t)
+  ;;     (setq nlinum-relative-current-symbol "")
+  ;;     (nlinum-relative-setup-evil)))
 
 
-    ;; (setq-default mode-line-format
-    ;;               (append 
-    ;;                (list
-    ;;                 ;; value of `mode-name'
-    ;;                 '(:eval (powerline-mode-icon)))
-    ;;                mode-line-format))
+  ;; default values for indentation (possibly overwritten by editorconfig)
+  (setq
+   js2-basic-offset 2
+   js-indent-level 2
+   js-expr-indent-offset -2)
+#+end_src
 
-     ; Default dictionary to use
-    (with-eval-after-load "ispell"
-      (setq ispell-program-name "hunspell")
-      (setq ispell-dictionary "de_AT,en_US")
-      ;; ispell-set-spellchecker-params has to be called
-      ;; before ispell-hunspell-add-multi-dic will work
-      (ispell-set-spellchecker-params)
-      (ispell-hunspell-add-multi-dic "de_AT,en_US"))
 
-    (put 'dired-find-alternate-file 'disabled nil)
-    
-;;TODO saveplace
-;;TODO savehist
+
+#+begin_src emacs-lisp
+
+
+
+  ;; Don't litter my init file
+  (setq custom-file "~/.emacs.d/local/custom-set.el")
+  (load custom-file 'noerror)
+
+
+
+
+  ;; (setq-default mode-line-format
+  ;;               (append 
+  ;;                (list
+  ;;                 ;; value of `mode-name'
+  ;;                 '(:eval (powerline-mode-icon)))
+  ;;                mode-line-format))
+
+                                          ; Default dictionary to use
+
+  ;;TODO saveplace
+  ;;TODO savehist
+
 #+END_SRC
