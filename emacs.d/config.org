@@ -454,17 +454,18 @@ These are the Files creating in the current Directory for files that have not be
 
 ** evil-exchange
 #+begin_src emacs-lisp
-  ;;gx to mark exchange second time to do it
-  ;;gX to cancel
-  (use-package evil-exchange
-    :ensure t
-    :general
-    :config)
-    (general-define-key "c" (general-key-dispatch 'evil-change
-                              :name general-dispatch-evil-change-exchange
-                              "x" 'evil-exchange
-                              "X" 'evil-exchange-cancel))
-    
+    ;;gx to mark exchange second time to do it
+    ;;gX to cancel
+    (use-package evil-exchange
+      :ensure t
+      :general
+      :config)
+      (general-define-key "c" (general-key-dispatch 'evil-change
+                                :name general-dispatch-evil-change-exchange
+                                "x" 'evil-exchange
+                                "X" 'evil-exchange-cancel
+                                "c" 'evil-change-whole-line))
+      
 #+end_src
 
 ** evil-commentary
@@ -524,7 +525,7 @@ These are the Files creating in the current Directory for files that have not be
       (cider-eval-region beg end)))
 
 
-  (general-define-key :keymaps '(clojure-mode cider-repl-mode cider-interaction-mode)
+  (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map cider-interaction-mode-map)
                       :states '(normal)
                       "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
                             "p" (general-key-dispatch 'evil-eval-clojure-text-object
@@ -533,8 +534,7 @@ These are the Files creating in the current Directory for files that have not be
                                          (let* ((range (evil-a-line))
                                                 (beg (elt range 0))
                                                 (end (elt range 1)))
-                                           (evil-eval-elisp-text-object beg end))))
-                            "c" 'evil-change-whole-line
+                                           (evil-eval-clojure-text-object beg end))))
                             ;; could be used for other operators where there
                             ;; isn't an existing command for the linewise version:
                             ;; "c" (general-simulate-keys ('evil-change "c"))
@@ -543,6 +543,37 @@ These are the Files creating in the current Directory for files that have not be
 
 #+end_src
 
+** elisp
+   #+BEGIN_SRC emacs-lisp
+     ;;todo only for elisp!
+     (evil-define-operator evil-eval-elisp-text-object (beg end)
+       "Evil operator for evaluating code."
+       :move-point nil
+       (save-excursion
+         (let (eval-str
+               value)
+           (setq eval-str (buffer-substring beg end))
+           (setq value (eval (car (read-from-string eval-str))))
+           (my-funcs/eval-overlay value end)
+           (message (format "%s" value)))))
+
+
+     (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
+                         :states '(normal)
+                         "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+                               "p" (general-key-dispatch 'evil-eval-elisp-text-object
+                                     "p" (lambda ()
+                                            (interactive)
+                                            (let* ((range (evil-a-line))
+                                                   (beg (elt range 0))
+                                                   (end (elt range 1)))
+                                              (evil-eval-elisp-text-object beg end))))
+                               ;; could be used for other operators where there
+                               ;; isn't an existing command for the linewise version:
+                               ;; "c" (general-simulate-keys ('evil-change "c"))
+                               ))
+
+   #+END_SRC
 ** neotree
 #+begin_src emacs-lisp
   (use-package neotree
@@ -897,6 +928,19 @@ These are the Files creating in the current Directory for files that have not be
 *** open source code in same window
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
+#+END_SRC
+** smartparens
+#+BEGIN_SRC emacs-lisp
+  (use-package smartparens
+    :ensure t
+    :config
+    ;; no '' pair in emacs-lisp-mode
+    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+    (sp-local-pair 'clojure-mode "'" nil :actions nil)
+    (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
+    (sp-local-pair 'cider-interaction-mode "'" nil :actions nil)
+    (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
+    (smartparens-global-mode 1))
 #+END_SRC
 ** Latex
 *** AucTex
