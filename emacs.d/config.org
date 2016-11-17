@@ -387,15 +387,15 @@ These are the Files creating in the current Directory for files that have not be
                          "C-j" 'evil-window-down
                          "g ." 'my-funcs/open-dotfile
                          "] SPC" (lambda ()
-                                    (interactive)
-                                    (save-excursion
-                                      (evil-open-below 1))
-                                    (evil-normal-state))
+                                   (interactive)
+                                   (save-excursion
+                                     (evil-open-below 1))
+                                   (evil-normal-state))
                          "[ SPC" (lambda ()
-                                    (interactive)
-                                    (save-excursion
-                                      (evil-open-above 1))
-                                    (evil-normal-state))
+                                   (interactive)
+                                   (save-excursion
+                                     (evil-open-above 1))
+                                   (evil-normal-state))
                          )
 
      ;; named prefix key
@@ -424,6 +424,7 @@ These are the Files creating in the current Directory for files that have not be
                          "b" 'ivy-switch-buffer
                          "f" 'find-file)
 
+     (setq local-leader "SPC")
    #+END_SRC
 ** evil-surround
 #+begin_src emacs-lisp
@@ -454,18 +455,26 @@ These are the Files creating in the current Directory for files that have not be
 
 ** evil-exchange
 #+begin_src emacs-lisp
-    ;;gx to mark exchange second time to do it
-    ;;gX to cancel
-    (use-package evil-exchange
-      :ensure t
-      :general
-      :config)
-      (general-define-key "c" (general-key-dispatch 'evil-change
-                                :name general-dispatch-evil-change-exchange
-                                "x" 'evil-exchange
-                                "X" 'evil-exchange-cancel
-                                "c" 'evil-change-whole-line))
-      
+   ;;gx to mark exchange second time to do it
+   ;;gX to cancel
+   (use-package evil-exchange
+     :ensure t
+     :general
+     :config)
+     
+   (general-define-key :predicate '(not evil-smartparens-mode)
+                       "c" (general-key-dispatch 'evil-change
+                             :name general-dispatch-evil-change-exchange
+                             "x" 'evil-exchange
+                             "X" 'evil-exchange-cancel
+                             "c" 'evil-change-whole-line))
+  (general-define-key :keymaps '(evil-smartparens-mode-map)
+                      "c" (general-key-dispatch 'evil-sp-change
+                            :name general-dispatch-evil-change-exchange
+                            "x" 'evil-exchange
+                            "X" 'evil-exchange-cancel
+                            "c" 'evil-change-whole-line))
+     
 #+end_src
 
 ** evil-commentary
@@ -495,7 +504,7 @@ These are the Files creating in the current Directory for files that have not be
       :config
       (add-hook 'cider-mode-hook #'cider-hydra-mode))
 
-    (setq cider-repl-display-in-current-window t)
+    (setq cider-repl-display-in-current-window nil)
     (setq cider-repl-use-pretty-printing t)
     (autoload 'cider--make-result-overlay "cider-overlays")
 
@@ -525,7 +534,17 @@ These are the Files creating in the current Directory for files that have not be
       (cider-eval-region beg end)))
 
 
-  (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map cider-interaction-mode-map)
+  (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map clojure-interaction-mode-map)
+                      :states '(normal)
+                      :prefix local-leader
+                      "r" 'cider-hydra-repl/body
+                      "j" 'cider-jack-in
+                      "c" 'cider-jack-in
+                      "d" 'cider-hydra-doc/body
+                      "e" 'cider-hydra-eval/body
+                      "q" 'hydra-cljr-help-menu/body)
+
+  (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map clojure-interaction-mode-map)
                       :states '(normal)
                       "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
                             "p" (general-key-dispatch 'evil-eval-clojure-text-object
@@ -539,6 +558,7 @@ These are the Files creating in the current Directory for files that have not be
                             ;; isn't an existing command for the linewise version:
                             ;; "c" (general-simulate-keys ('evil-change "c"))
                             ))
+
 
 
 #+end_src
@@ -935,10 +955,57 @@ These are the Files creating in the current Directory for files that have not be
     :ensure t
     :config
     ;; no '' pair in emacs-lisp-mode
+
+    (use-package evil-smartparens
+      :ensure t
+      :config
+      ;;(add-hook 'clojure-mode-hook #'evil-smartparens-mode)
+      (add-hook 'clojure-mode-hook #'smartparens-strict-mode)
+
+      ;;(add-hook 'clojure-interaction-mode-hook #'evil-smartparens-mode)
+      (add-hook 'clojure-interaction-mode-hook #'smartparens-strict-mode)
+
+      ;;(add-hook 'lisp-interaction-mode-hook #'evil-smartparens-mode)
+      (add-hook 'lisp-interaction-mode-hook #'smartparens-strict-mode)
+
+      ;;(add-hook 'cider-repl-mode-hook #'evil-smartparens-mode)
+      (add-hook 'cider-repl-mode-hook #'smartparens-strict-mode)
+
+      ;;(add-hook 'emacs-lisp-mode-hook #'evil-smartparens-mode)
+      (add-hook 'emacs-lisp-mode-hook #'smartparens-strict-mode)
+
+      (general-define-key :keymaps '(smartparens-strict-mode-map)
+                          :states '(normal)
+                          ;; c is defined in vim-exchange
+                          ">" (general-key-dispatch 'evil-shift-right
+                                "i" (lambda ()
+                                      (interactive)
+                                      (sp-end-of-sexp)
+                                      (when (not (char-equal (preceding-char)  ?  ))
+                                        (insert " "))
+                                      (evil-insert nil))
+                                ")" 'sp-forward-slurp-sexp
+                                "(" 'sp-backward-barf-sexp)
+                          "<" (general-key-dispatch 'evil-shift-left
+                                "i" (lambda ()
+                                      (interactive)
+                                      (sp-beginning-of-sexp)
+                                      (when (not (char-equal (following-char)  ?  ))
+                                        (insert " ")
+                                        (evil-backward-char))
+                                      (evil-insert nil))
+                                ")" 'sp-forward-barf-sexp
+                                "(" 'sp-backward-slurp-sexp)
+                          "d" 'evil-sp-delete
+                          "D" 'evil-sp-delete-line)
+      )
+
+    ;;(general-define-key ')
+
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (sp-local-pair 'clojure-mode "'" nil :actions nil)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
-    (sp-local-pair 'cider-interaction-mode "'" nil :actions nil)
+    (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
     (smartparens-global-mode 1))
 #+END_SRC
@@ -963,6 +1030,7 @@ These are the Files creating in the current Directory for files that have not be
      :ensure t
      :config
      (popwin-mode 1))
+
 #+END_SRC
 ** projectile
 #+begin_src emacs-lisp
