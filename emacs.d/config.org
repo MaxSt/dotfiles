@@ -457,24 +457,32 @@ These are the Files creating in the current Directory for files that have not be
 #+begin_src emacs-lisp
    ;;gx to mark exchange second time to do it
    ;;gX to cancel
-   (use-package evil-exchange
-     :ensure t
-     :general
-     :config)
-     
-   (general-define-key :predicate '(not evil-smartparens-mode)
-                       "c" (general-key-dispatch 'evil-change
-                             :name general-dispatch-evil-change-exchange
-                             "x" 'evil-exchange
-                             "X" 'evil-exchange-cancel
-                             "c" 'evil-change-whole-line))
-  (general-define-key :keymaps '(evil-smartparens-mode-map)
-                      "c" (general-key-dispatch 'evil-sp-change
+  (use-package evil-exchange
+    :ensure t
+    :general
+    :config)
+
+  (setq lisp-modes '(clojure-mode
+                     clojure-interaction-mode
+                     lisp-interaction-mode
+                     cider-repl-mode
+                     emacs-lisp-mode))
+
+  (evil-define-operator evil-decide-change-fun (beg end)
+    "decide which change function to use"
+    :move-point nil
+    (if (seq-contains lisp-modes major-mode)
+        (evil-sp-change beg end)
+      (evil-change beg end)))
+
+  (general-define-key :states '(normal)
+                      "c" (general-key-dispatch 'evil-decide-change-fun
                             :name general-dispatch-evil-change-exchange
                             "x" 'evil-exchange
-                            "X" 'evil-exchange-cancel
-                            "c" 'evil-change-whole-line))
+                            "X" 'evil-exchange-cancel))
+
      
+
 #+end_src
 
 ** evil-commentary
@@ -587,13 +595,53 @@ These are the Files creating in the current Directory for files that have not be
                                             (let* ((range (evil-a-line))
                                                    (beg (elt range 0))
                                                    (end (elt range 1)))
-                                              (evil-eval-elisp-text-object beg end))))
-                               ;; could be used for other operators where there
-                               ;; isn't an existing command for the linewise version:
-                               ;; "c" (general-simulate-keys ('evil-change "c"))
-                               ))
+                                              (evil-eval-elisp-text-object beg end))))))
 
    #+END_SRC
+** lisp general
+#+BEGIN_SRC emacs-lisp
+  (defun maybe-join-lisp-line (orig-fun &rest r)
+    (apply orig-fun r)
+    (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
+        (evil-previous-line-first-non-blank)
+        (save-excursion (join-line 1))))
+
+  (advice-add 'evil-sp-delete-line :around 'maybe-join-lisp-line)
+  (advice-add 'evil-sp-delete :around 'maybe-join-lisp-line)
+
+
+  (general-define-key :keymaps '(clojure-mode-map
+                                 lisp-interaction-mode-map
+                                 cider-repl-mode-map
+                                 emacs-lisp-mode-map)
+                      :states '(normal)
+                      ;; c is defined in vim-exchange
+
+                      ">" (general-key-dispatch 'evil-shift-right
+                            "i" (lambda ()
+                                  (interactive)
+                                  (sp-end-of-sexp)
+                                  (when (not (char-equal (preceding-char)  ?  ))
+                                    (insert " "))
+                                  (evil-insert nil))
+                            ")" 'sp-forward-slurp-sexp
+                            "(" 'sp-backward-barf-sexp)
+                      "<" (general-key-dispatch 'evil-shift-left
+                            "i" (lambda ()
+                                  (interactive)
+                                  (sp-beginning-of-sexp)
+                                  (when (not (char-equal (following-char)  ?  ))
+                                    (insert " ")
+                                    (evil-backward-char))
+                                  (evil-insert nil))
+                            ")" 'sp-forward-barf-sexp
+                            "(" 'sp-backward-slurp-sexp)
+                      "C" 'evil-sp-change-line
+                      "d" 'evil-sp-delete
+                      "D" 'evil-sp-delete-line)
+
+
+#+END_SRC
 ** neotree
 #+begin_src emacs-lisp
   (use-package neotree
@@ -954,51 +1002,16 @@ These are the Files creating in the current Directory for files that have not be
   (use-package smartparens
     :ensure t
     :config
-    ;; no '' pair in emacs-lisp-mode
 
     (use-package evil-smartparens
       :ensure t
-      :config
-      ;;(add-hook 'clojure-mode-hook #'evil-smartparens-mode)
-      (add-hook 'clojure-mode-hook #'smartparens-strict-mode)
+      :config)
 
-      ;;(add-hook 'clojure-interaction-mode-hook #'evil-smartparens-mode)
-      (add-hook 'clojure-interaction-mode-hook #'smartparens-strict-mode)
+  ;;(advice-add 'evil-sp-delete :after')
+             
+            
 
-      ;;(add-hook 'lisp-interaction-mode-hook #'evil-smartparens-mode)
-      (add-hook 'lisp-interaction-mode-hook #'smartparens-strict-mode)
 
-      ;;(add-hook 'cider-repl-mode-hook #'evil-smartparens-mode)
-      (add-hook 'cider-repl-mode-hook #'smartparens-strict-mode)
-
-      ;;(add-hook 'emacs-lisp-mode-hook #'evil-smartparens-mode)
-      (add-hook 'emacs-lisp-mode-hook #'smartparens-strict-mode)
-
-      (general-define-key :keymaps '(smartparens-strict-mode-map)
-                          :states '(normal)
-                          ;; c is defined in vim-exchange
-                          ">" (general-key-dispatch 'evil-shift-right
-                                "i" (lambda ()
-                                      (interactive)
-                                      (sp-end-of-sexp)
-                                      (when (not (char-equal (preceding-char)  ?  ))
-                                        (insert " "))
-                                      (evil-insert nil))
-                                ")" 'sp-forward-slurp-sexp
-                                "(" 'sp-backward-barf-sexp)
-                          "<" (general-key-dispatch 'evil-shift-left
-                                "i" (lambda ()
-                                      (interactive)
-                                      (sp-beginning-of-sexp)
-                                      (when (not (char-equal (following-char)  ?  ))
-                                        (insert " ")
-                                        (evil-backward-char))
-                                      (evil-insert nil))
-                                ")" 'sp-forward-barf-sexp
-                                "(" 'sp-backward-slurp-sexp)
-                          "d" 'evil-sp-delete
-                          "D" 'evil-sp-delete-line)
-      )
 
     ;;(general-define-key ')
 
