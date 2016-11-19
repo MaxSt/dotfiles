@@ -339,6 +339,31 @@ These are the Files creating in the current Directory for files that have not be
                        (end-of-defun)
                        (point)))))
      (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
+
+     (evil-define-text-object evil-a-lisp-element (count &optional beg end type)
+       "outer sexp"
+       (evil-range (progn
+                     (save-excursion
+                       ;;TODO
+                       ))
+                   (progn
+                     (save-excursion
+                       ;;TODO
+                       ))))
+     ;;(define-key evil-outer-text-objects-map "e" 'evil-a-lisp-element)
+
+     (evil-define-text-object evil-i-lisp-element (count &optional beg end type)
+       "inner sexp"
+       (evil-range (progn
+                     (save-excursion
+                       ;;TODO
+                       ))
+                   (progn
+                     (save-excursion
+                       ;;TODO
+                       ))))
+     ;;(define-key evil-inner-text-objects-map "e" 'evil-i-lisp-element)
+
    #+end_src
 *** line text object
     no mapping for that object 
@@ -603,12 +628,67 @@ These are the Files creating in the current Directory for files that have not be
   (defun maybe-join-lisp-line (orig-fun &rest r)
     (apply orig-fun r)
     (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
-        (evil-previous-line-first-non-blank)
-        (save-excursion (join-line 1))))
+      (evil-previous-line-first-non-blank)
+      (save-excursion (join-line 1))))
 
   (advice-add 'evil-sp-delete-line :around 'maybe-join-lisp-line)
   (advice-add 'evil-sp-delete :around 'maybe-join-lisp-line)
 
+
+  (defun in-sexp ()
+    (> (nth 0 (syntax-ppss)) 0))
+
+  (defun next-paren (&optional closing)
+    "Go to the next/previous closing/opening parenthesis/bracket/brace."
+    (if closing
+        (let ((curr (point)))
+          (forward-char)
+          (unless (eq curr (search-forward-regexp "[])}]"))
+            (backward-char)))
+      (search-backward-regexp "[[({]")))
+
+
+  (defun prev-opening-paren ()
+    "Go to the next closing parenthesis."
+    (interactive)
+    (next-paren))
+
+  (defun next-closing-paren ()
+    "Go to the next closing parenthesis."
+    (interactive)
+    (next-paren 'closing))
+
+
+  (defmacro open-paren-around-fn (paren element beginning)
+    `(lambda ()
+       (interactive)
+       (sp-wrap-with-pair ,paren)
+       ,(when element
+          '(when (in-sexp)
+             (next-paren)
+             (evil-forward-char 1)))
+       ,(if beginning
+            '(progn
+               (insert " ")
+               (evil-backward-char 1))
+          '(progn
+             (evilmi-jump-items)
+             (evil-forward-char 1)))
+       (evil-insert nil)))
+
+  (evil-define-command lisp-next-paren (count)
+    (interactive "<c>")
+    (if count
+        (dotimes (number count)
+          (sp-next-sexp))
+      (sp-next-sexp)))
+
+  (evil-define-command lisp-previous-paren (count)
+    (interactive "<c>")
+    (if count
+        (dotimes (number count)
+          (sp-previous-sexp))
+      (sp-previous-sexp)))
 
   (general-define-key :keymaps '(clojure-mode-map
                                  lisp-interaction-mode-map
@@ -616,18 +696,56 @@ These are the Files creating in the current Directory for files that have not be
                                  emacs-lisp-mode-map)
                       :states '(normal)
                       ;; c is defined in vim-exchange
+                      "W" 'lisp-next-paren
+                      "B" 'lisp-previous-paren
+
+                      ", @" 'sp-splice-sexp
+                      ", o" (lambda ()
+                              (interactive)
+                              (when (string-match-p "^[^\[({]" (thing-at-point 'sexp t))
+                                (sp-backward-up-sexp))
+                              (sp-raise-sexp))
+                      ", O" 'sp-raise-sexp
+
+                      "(" 'sp-backward-up-sexp
+                      ")" (lambda ()
+                            (interactive)
+                            (sp-backward-up-sexp)
+                            (evilmi-jump-items))
+                      ", W" (open-paren-around-fn "(" t nil)
+                      ", w" (open-paren-around-fn "(" t t)
+                      ", e)" (open-paren-around-fn "(" t nil)
+                      ", e(" (open-paren-around-fn "(" t t)
+                      ", e}" (open-paren-around-fn "{" t nil)
+                      ", e{" (open-paren-around-fn "{" t t)
+                      ", e]" (open-paren-around-fn "[" t nil)
+                      ", e[" (open-paren-around-fn "[" t t)
+                      ", e}" (open-paren-around-fn "{" t nil)
+                      ", e{" (open-paren-around-fn "{" t t)
+                      ", i" (open-paren-around-fn "(" nil t)
+                      ", I" (open-paren-around-fn "(" nil nil)
+                      ", (" (open-paren-around-fn "(" nil t)
+                      ", )" (open-paren-around-fn "(" nil nil)
+                      ", [" (open-paren-around-fn "[" nil t)
+                      ", ]" (open-paren-around-fn "]" nil nil)
+                      ", {" (open-paren-around-fn "{" nil t)
+                      ", }" (open-paren-around-fn "}" nil nil)
 
                       ">" (general-key-dispatch 'evil-shift-right
-                            "i" (lambda ()
+                            "I" (lambda ()
                                   (interactive)
                                   (sp-end-of-sexp)
                                   (when (not (char-equal (preceding-char)  ?  ))
                                     (insert " "))
                                   (evil-insert nil))
+                            "f" (lambda ()
+                                  (interactive)
+                                  (when (in-sexp)
+                                    ))
                             ")" 'sp-forward-slurp-sexp
                             "(" 'sp-backward-barf-sexp)
                       "<" (general-key-dispatch 'evil-shift-left
-                            "i" (lambda ()
+                            "I" (lambda ()
                                   (interactive)
                                   (sp-beginning-of-sexp)
                                   (when (not (char-equal (following-char)  ?  ))
@@ -1186,6 +1304,13 @@ These are the Files creating in the current Directory for files that have not be
     (setq highlight-symbol-idle-delay 1)
     (highlight-symbol-mode t)
     )
+#+end_src
+** aggressive indent
+#+begin_src emacs-lisp
+  (use-package aggressive-indent
+    :ensure t
+    :config
+    (global-aggressive-indent-mode))
 #+end_src
 *  Temp
 #+begin_src emacs-lisp
