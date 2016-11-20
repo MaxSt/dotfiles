@@ -493,20 +493,21 @@ These are the Files creating in the current Directory for files that have not be
                      cider-repl-mode
                      emacs-lisp-mode))
 
-  (evil-define-operator evil-decide-change-fun (beg end)
-    "decide which change function to use"
-    :move-point nil
-    (if (seq-contains lisp-modes major-mode)
-        (evil-sp-change beg end)
-      (evil-change beg end)))
+  (defun is-lisp-mode ()
+    "check if mode is a lisp mode"
+    (seq-contains lisp-modes major-mode))
 
   (general-define-key :states '(normal)
-                      "c" (general-key-dispatch 'evil-decide-change-fun
-                            :name general-dispatch-evil-change-exchange
+                      :predicate '(is-lisp-mode)
+                      "c" (general-key-dispatch 'evil-sp-change
+                            :name general-dispatch-evil-change-exchange-sp
                             "x" 'evil-exchange
                             "X" 'evil-exchange-cancel))
 
-     
+  (general-define-key "c" (general-key-dispatch 'evil-change
+                            :name general-dispatch-evil-change-exchange
+                            "x" 'evil-exchange
+                            "X" 'evil-exchange-cancel))
 
 #+end_src
 
@@ -591,7 +592,7 @@ These are the Files creating in the current Directory for files that have not be
 
   (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
                       :states '(normal)
-                      "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+                      "c" (general-key-dispatch 'general-dispatch-evil-change-exchange-sp
                             :name general-dispatch-change-clojure
                             "p" (general-key-dispatch 'evil-eval-clojure-text-object
                                   :name general-dispatch-eval-clojure-text-object
@@ -627,7 +628,7 @@ These are the Files creating in the current Directory for files that have not be
 
      (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
                          :states '(normal)
-                         "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+                         "c" (general-key-dispatch 'general-dispatch-evil-change-exchange-sp
                                :name general-dispatch-change-elisp
                                "p" (general-key-dispatch 'evil-eval-elisp-text-object
                                      :name general-dispatch-eval-elisp-text-object
