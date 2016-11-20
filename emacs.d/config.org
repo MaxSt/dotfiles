@@ -488,7 +488,7 @@ These are the Files creating in the current Directory for files that have not be
     :config)
 
   (setq lisp-modes '(clojure-mode
-                     clojure-interaction-mode
+                     cider-clojure-interaction-mode
                      lisp-interaction-mode
                      cider-repl-mode
                      emacs-lisp-mode))
@@ -566,27 +566,41 @@ These are the Files creating in the current Directory for files that have not be
     (save-excursion
       (cider-eval-region beg end)))
 
+  (general-define-key :keymaps '(cider-inspector-mode-map)
+                      :states '(normal)
+                      "n" 'cider-inspector-next-page
+                      "N" 'cider-inspector-prev-page
+                      "RET" 'cider-inspector-operate-on-point
+                      "d" 'cider-inspector-pop
+                      "r" 'cider-inspector-refresh)
 
-  (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map clojure-interaction-mode-map)
+  (general-define-key :keymaps '(cider-popup-buffer-mode-map)
+                      :states '(normal)
+                      "q" 'cider-popup-buffer-quit)
+
+  (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
                       :states '(normal)
                       :prefix local-leader
                       "r" 'cider-hydra-repl/body
                       "j" 'cider-jack-in
+                      "i" 'cider-inspect-last-result
                       "c" 'cider-jack-in
                       "d" 'cider-hydra-doc/body
                       "e" 'cider-hydra-eval/body
                       "q" 'hydra-cljr-help-menu/body)
 
-  (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map clojure-interaction-mode-map)
+  (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
                       :states '(normal)
                       "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+                            :name general-dispatch-change-clojure
                             "p" (general-key-dispatch 'evil-eval-clojure-text-object
+                                  :name general-dispatch-eval-clojure-text-object
                                   "p" (lambda ()
-                                         (interactive)
-                                         (let* ((range (evil-a-line))
-                                                (beg (elt range 0))
-                                                (end (elt range 1)))
-                                           (evil-eval-clojure-text-object beg end))))
+                                        (interactive)
+                                        (let* ((range (evil-a-line))
+                                               (beg (elt range 0))
+                                               (end (elt range 1)))
+                                          (evil-eval-clojure-text-object beg end))))
                             ;; could be used for other operators where there
                             ;; isn't an existing command for the linewise version:
                             ;; "c" (general-simulate-keys ('evil-change "c"))
@@ -614,13 +628,15 @@ These are the Files creating in the current Directory for files that have not be
      (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
                          :states '(normal)
                          "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+                               :name general-dispatch-change-elisp
                                "p" (general-key-dispatch 'evil-eval-elisp-text-object
+                                     :name general-dispatch-eval-elisp-text-object
                                      "p" (lambda ()
-                                            (interactive)
-                                            (let* ((range (evil-a-line))
-                                                   (beg (elt range 0))
-                                                   (end (elt range 1)))
-                                              (evil-eval-elisp-text-object beg end))))))
+                                           (interactive)
+                                           (let* ((range (evil-a-line))
+                                                  (beg (elt range 0))
+                                                  (end (elt range 1)))
+                                             (evil-eval-elisp-text-object beg end))))))
 
    #+END_SRC
 ** lisp general
@@ -691,6 +707,7 @@ These are the Files creating in the current Directory for files that have not be
       (sp-previous-sexp)))
 
   (general-define-key :keymaps '(clojure-mode-map
+                                 cider-clojure-interaction-mode-map
                                  lisp-interaction-mode-map
                                  cider-repl-mode-map
                                  emacs-lisp-mode-map)
@@ -1185,9 +1202,8 @@ These are the Files creating in the current Directory for files that have not be
     :ensure t
     :config
 
-    (add-hook 'js2-mode-hook 'rainbow-delimiters-mode)
-    (add-hook 'lisp-mode-hook 'rainbow-delimiters-mode)
-    (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+    (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
+    (add-hook 'cider-repl-mode #'rainbow-delimiters-mode)
     )
 #+end_src
 
