@@ -429,6 +429,8 @@ These are the Files creating in the current Directory for files that have not be
      (general-define-key :prefix my-leader
                          ;;"r" 'restart-emacs
                          "p" 'hydra-projectile/body
+
+                         ;;"h" (general-simulate-keys "C-h")
                          "h k" 'describe-key
                          "h SPC" 'which-key-show-top-level
                          "h v" 'describe-variable
@@ -436,12 +438,11 @@ These are the Files creating in the current Directory for files that have not be
                          "h m" 'describe-mode
 
                          ;;  Avoiding CTRL
-                         "w" (general-key-dispatch (general-simulate-keys "C-w")
-                               "f" 'ace-select-window
-                               "x" 'ace-swap-window)
+                         "Wf" 'ace-select-window
+                         "Wx" 'ace-swap-window
+                         "w" (general-simulate-keys "C-w")
                          "x" (general-simulate-keys "C-x")
                          "c" (general-simulate-keys "C-c")
-                         "h" (general-simulate-keys "C-h")
 
                          ". s" 'my-funcs/open-snippet-dir
                          "g s" 'magit-status
@@ -1307,6 +1308,10 @@ These are the Files creating in the current Directory for files that have not be
     (ivy-mode t))
 
   (use-package avy
+    :ensure t
+    :config)
+
+  (use-package ace-window
     :ensure t
     :config)
 
