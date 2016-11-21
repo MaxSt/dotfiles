@@ -444,6 +444,7 @@ These are the Files creating in the current Directory for files that have not be
 
                          ". s" 'my-funcs/open-snippet-dir
                          "g s" 'magit-status
+                         "g t" 'git-timemachine
                          "l" 'evil-avy-goto-line
                          "u" 'undo-tree-visualize
                          "b" 'ivy-switch-buffer
@@ -1066,6 +1067,18 @@ These are the Files creating in the current Directory for files that have not be
       (kill-buffer)
       (jump-to-register :magit-fullscreen)))
 
+
+  (use-package git-timemachine
+    :ensure t
+    :after general
+    :config
+    (general-define-key :keymaps '(git-timemachine-mode-map)
+                        :states '(normal)
+                        :prefix local-leader
+                        "n" 'git-timemachine-show-next-revision
+                        "p" 'git-timemachine-show-previous-revision
+                        "r" 'git-timemachine--revisions
+                        "q" 'git-timemachine-quit))
 #+END_SRC
 
 ** Org Mode
