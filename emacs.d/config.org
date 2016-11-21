@@ -1160,11 +1160,23 @@ These are the Files creating in the current Directory for files that have not be
                       ;;        (evil-append nil))
 
                       "RET" (lambda ()
-                               (interactive)
-                               (if (org-in-src-block-p)
-                                   (org-edit-special)
-                                 (org-open-at-point))
-                               (evil-normal-state)))
+                              (interactive)
+                              (if (org-in-src-block-p)
+                                  (org-edit-special)
+                                (org-open-at-point))
+                              (evil-normal-state)))
+
+
+  (general-define-key :prefix my-leader2
+                      :keymaps 'org-mode-map
+                      :states '(normal)
+                      "l" 'org-forward-heading-same-level
+                      "h" 'org-backward-heading-same-level
+                      "k" 'org-up-element
+                      "K" (lambda ()
+                            (interactive)
+                            (org-up-element)
+                            (org-cycle)))
 
   ;; key for exiting src edit mode
   (general-define-key :keymaps 'org-src-mode-map
