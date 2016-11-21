@@ -398,6 +398,7 @@ These are the Files creating in the current Directory for files that have not be
      (use-package general
        :ensure t
        :config
+       (general-evil-setup)
        ;; bind a key globally in normal state; keymaps must be quoted
        (setq general-default-keymaps 'evil-normal-state-map))
 
@@ -494,18 +495,21 @@ These are the Files creating in the current Directory for files that have not be
                      cider-repl-mode
                      emacs-lisp-mode))
 
-  (defun is-lisp-mode ()
-    "check if mode is a lisp mode"
-    (seq-contains lisp-modes major-mode))
+  (setq lisp-modes '(clojure-mode
+                     cider-clojure-interaction-mode
+                     lisp-interaction-mode
+                     cider-repl-mode
+                     emacs-lisp-mode))
 
-  (general-define-key :states '(normal)
-                      :predicate '(is-lisp-mode)
-                      "c" (general-key-dispatch 'evil-sp-change
-                            :name general-dispatch-evil-change-exchange-sp
-                            "x" 'evil-exchange
-                            "X" 'evil-exchange-cancel))
+  (evil-define-operator evil-decide-change-fun (beg end)
+    "decide which change function to use"
+    :move-point nil
+    (if (seq-contains lisp-modes major-mode)
+        (evil-sp-change beg end)
+      (evil-change beg end)))
+      
 
-  (general-define-key "c" (general-key-dispatch 'evil-change
+  (general-nmap "c" (general-key-dispatch 'evil-decide-change-fun
                             :name general-dispatch-evil-change-exchange
                             "x" 'evil-exchange
                             "X" 'evil-exchange-cancel))
@@ -629,7 +633,7 @@ These are the Files creating in the current Directory for files that have not be
 
      (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
                          :states '(normal)
-                         "c" (general-key-dispatch 'general-dispatch-evil-change-exchange-sp
+                         "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
                                :name general-dispatch-change-elisp
                                "p" (general-key-dispatch 'evil-eval-elisp-text-object
                                      :name general-dispatch-eval-elisp-text-object
@@ -1077,7 +1081,7 @@ These are the Files creating in the current Directory for files that have not be
                         :prefix local-leader
                         "n" 'git-timemachine-show-next-revision
                         "p" 'git-timemachine-show-previous-revision
-                        "r" 'git-timemachine--revisions
+                        "r" 'git-timemachine-show-current-revision
                         "q" 'git-timemachine-quit))
 #+END_SRC
 
