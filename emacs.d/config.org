@@ -81,6 +81,25 @@
   (put 'dired-find-alternate-file 'disabled nil)
 
 #+END_SRC
+
+** dired
+*** Dired+
+Dired enhancements.
+#+BEGIN_SRC emacs-lisp
+(put 'dired-find-alternate-file 'disabled nil)
+(use-package dired+
+    :after (dired))
+#+END_SRC
+*** Enable find-alternate-file
+    Prevents dired from creating an annoying popup when dired-find-alternate-file is called.
+#+BEGIN_SRC emacs-lisp
+(put 'dired-find-alternate-file 'disabled nil)
+#+END_SRC
+*** Human readable filesize
+#+BEGIN_SRC emacs-lisp
+(setq dired-listening-switches "-alh")
+#+END_SRC
+
 ** Backups
 #+BEGIN_SRC emacs-lisp
   (setq
@@ -104,8 +123,9 @@ These are the Files creating in the current Directory for files that have not be
 * GUI
 #+BEGIN_SRC emacs-lisp
   (set-default-font "Iosevka-11")
+  (setq default-frame-alist '((font . "Iosevka-11")))
 
-  (scroll-bar-mode -1)
+  (scroll-bar-mode 0)
   (tool-bar-mode -1)     ; disable the tool-bar
   (menu-bar-mode -1)     ; disable the menu-bar
   (global-linum-mode -1)  ; dont show line-numbers everywhere
@@ -380,6 +400,7 @@ These are the Files creating in the current Directory for files that have not be
                      (save-excursion
                        (end-of-line)
                        (point)))))
+     (define-key evil-inner-text-objects-map "l" 'evil-i-line)
 
      (evil-define-text-object evil-a-line (count &optional beg end type)
        "outer line"
@@ -391,6 +412,7 @@ These are the Files creating in the current Directory for files that have not be
                      (save-excursion
                        (end-of-line)
                        (point)))))
+     (define-key evil-outer-text-objects-map "l" 'evil-a-line)
 
    #+END_SRC
 ** General (keybindings)
@@ -594,13 +616,13 @@ These are the Files creating in the current Directory for files that have not be
 
   (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
                       :states '(normal)
-                      "c" (general-key-dispatch 'general-dispatch-evil-change-exchange-sp
-                            :name general-dispatch-change-clojure
+                      "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+                      :name general-dispatch-change-clojure
                             "p" (general-key-dispatch 'evil-eval-clojure-text-object
                                   :name general-dispatch-eval-clojure-text-object
                                   "p" (lambda ()
                                         (interactive)
-                                        (let* ((range (evil-a-line))
+                                        (let* ((range (evil-a-sexp))
                                                (beg (elt range 0))
                                                (end (elt range 1)))
                                           (evil-eval-clojure-text-object beg end))))
@@ -636,7 +658,7 @@ These are the Files creating in the current Directory for files that have not be
                                      :name general-dispatch-eval-elisp-text-object
                                      "p" (lambda ()
                                            (interactive)
-                                           (let* ((range (evil-a-line))
+                                           (let* ((range (evil-a-sexp))
                                                   (beg (elt range 0))
                                                   (end (elt range 1)))
                                              (evil-eval-elisp-text-object beg end))))))
@@ -1244,7 +1266,9 @@ These are the Files creating in the current Directory for files that have not be
    #+begin_src emacs-lisp
      (use-package recentf
        :ensure t
-       :config)
+       :config
+       (recentf-mode 1)
+       )
    #+end_src
 ** powerline
 #+BEGIN_SRC emacs-lisp
