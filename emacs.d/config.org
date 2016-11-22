@@ -97,7 +97,7 @@ Dired enhancements.
 #+END_SRC
 *** Human readable filesize
 #+BEGIN_SRC emacs-lisp
-(setq dired-listening-switches "-alh")
+  (setq dired-listing-switches "-alh")
 #+END_SRC
 
 ** Backups
@@ -140,7 +140,13 @@ These are the Files creating in the current Directory for files that have not be
 #+begin_src emacs-lisp
   (load-theme 'flatcolor t)
   (use-package all-the-icons
-    :ensure t)
+    :ensure t
+    :config
+    (use-package all-the-icons-dired
+      :ensure t
+      :config
+      (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+      ))
 
   (use-package doom-themes
     :ensure t
@@ -472,7 +478,7 @@ These are the Files creating in the current Directory for files that have not be
                          "l" 'evil-avy-goto-line
                          "u" 'undo-tree-visualize
                          "b" 'ivy-switch-buffer
-                         "f" 'find-file)
+                         "o" 'find-file)
 
      (setq my-leader2 ",")
      (setq local-leader "\\")
@@ -536,11 +542,10 @@ These are the Files creating in the current Directory for files that have not be
 
 ** evil-commentary
 #+begin_src emacs-lisp
-(use-package evil-nerd-commenter
-    :after (evil)
-    :config
-    (general-define-key :states '(normal visual) "gc"
-                        'evilnc-comment-operator))
+  (use-package evil-commentary
+      :after (evil)
+      :config
+      (evil-commentary-mode))
 #+end_src
 
 * Package config
@@ -1284,13 +1289,6 @@ These are the Files creating in the current Directory for files that have not be
    #+end_src
 ** powerline
 #+BEGIN_SRC emacs-lisp
-  (defun powerline-mode-icon ()
-    (let ((icon (all-the-icons-icon-for-buffer)))
-      (unless (symbolp icon) ;; This implies it's the major mode
-        (format " %s"
-                (propertize icon
-                            'help-echo (format "Major-mode: `%s`" major-mode)
-                            'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
 
   (use-package powerline
     :ensure t
@@ -1306,23 +1304,55 @@ These are the Files creating in the current Directory for files that have not be
            (setq data (make-list height (make-list width 1)))
            (pl/make-xpm "percent" color color (reverse data))))))
 
-    (setq powerline-default-separator nil)
-    (setq pltheme (powerline-center-evil-theme))
+
+    (defun powerline-mode-icon ()
+      (let ((icon (all-the-icons-icon-for-buffer)))
+        (unless (symbolp icon) ;; This implies it's the major mode
+          (format " %s"
+                  (propertize icon
+                              'help-echo (format "Major-mode: `%s`" major-mode)
+                              'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
+
     (setq-default mode-line-format 
                   '("%e"
                     (:eval
-                     (list
-                      (if (powerline-selected-window-active)
-                          (make-rect (face-background 'cursor) 25 3)
-                        (make-rect (face-background 'tooltip) 25 3))
-                      (when (buffer-modified-p)
-                        (concat
-                         " "
-                         (all-the-icons-faicon "floppy-o"
-                                          ;:face 'cursor'
-                                               :v-adjust -0.1)
-                         " "))
-                      pltheme)))))
+                     (let* ((active (powerline-selected-window-active))
+                            (modified (buffer-modified-p))
+                            (face1 (if active 'powerline-active1 'powerline-inactive1))
+                            (face2 (if active 'powerline-active2 'powerline-inactive2))
+                            (lhs (list
+                                  (if active
+                                      (make-rect (face-background 'cursor) 30 3)
+                                    (make-rect (face-background 'tooltip) 30 3))
+                                  (when modified
+                                    (concat
+                                     " "
+                                     (all-the-icons-faicon "floppy-o"
+                                                           :face 'error
+                                                           :v-adjust -0.01)))
+                                  " "
+                                  (powerline-buffer-id)
+                                  ))
+                            (center (list
+                                     " "
+                                     (powerline-mode-icon)
+                                     " "
+                                     (powerline-major-mode)
+                                     " "))
+                            (rhs (list
+                                  (powerline-hud face1 face2)
+                                  " "
+                                  (replace-regexp-in-string "Bottom" "Bot" (format-mode-line '("  (%l:%c) :%p ")))
+                                  "  "
+                                  ))
+                            )
+                       (concat
+                        (powerline-render lhs)
+                        (powerline-fill-center face1 (/ (powerline-width center) 2.0))
+                        (powerline-render center)
+                        (powerline-fill face2 (powerline-width rhs))
+                        (powerline-render rhs))))))
+    )
 #+END_SRC
 ** ivy
 #+BEGIN_SRC emacs-lisp
