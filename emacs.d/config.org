@@ -121,17 +121,22 @@ These are the Files creating in the current Directory for files that have not be
 #+END_SRC
 
 * GUI
+** font
 #+BEGIN_SRC emacs-lisp
   (set-default-font "Iosevka-11")
   (setq default-frame-alist '((font . "Iosevka-11")))
-
+#+END_SRC
+** disable menubar
+#+BEGIN_SRC emacs-lisp
   (scroll-bar-mode 0)
   (tool-bar-mode -1)     ; disable the tool-bar
   (menu-bar-mode -1)     ; disable the menu-bar
   (global-linum-mode -1)  ; dont show line-numbers everywhere
   (show-paren-mode)
   (electric-pair-mode 1)
-
+#+END_SRC
+** fringe
+#+BEGIN_SRC emacs-lisp
   (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
   (set-fringe-bitmap-face 'tilde 'fringe)
 #+END_SRC
@@ -148,18 +153,6 @@ These are the Files creating in the current Directory for files that have not be
       (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
       ))
 
-  (use-package doom-themes
-    :ensure t
-    :config
-    (setq doom-neotree-enable-variable-pitch t
-          doom-neotree-file-icons t
-          doom-neotree-line-spacing 3)
-    ;;(load-theme 'doom-one t)
-    ;; brighter source buffers
-    ;;(add-hook 'find-file-hook 'doom-buffer-mode)
-    ;; Custom neotree theme
-    (when window-system
-      (require 'doom-neotree)))
 #+end_src
 * custom Functions
 #+BEGIN_SRC emacs-lisp
@@ -825,7 +818,9 @@ These are the Files creating in the current Directory for files that have not be
               "q" 'neotree-hide
               "RET" 'neotree-enter)
     (:keymaps 'evil-normal-state-map
-              "|" 'neotree-toggle))
+              "|" 'neotree-toggle)
+    :config
+    (setq neo-theme (if window-system 'icons 'arrow)))
 #+end_src
 ** which-key
 #+begin_src emacs-lisp
@@ -1320,15 +1315,16 @@ These are the Files creating in the current Directory for files that have not be
                             (modified (buffer-modified-p))
                             (face1 (if active 'powerline-active1 'powerline-inactive1))
                             (face2 (if active 'powerline-active2 'powerline-inactive2))
+                            (bar-color (cond ((and active modified) (face-foreground 'error))
+                                             (active (face-background 'cursor))
+                                             (t (face-background 'tooltip))))
                             (lhs (list
-                                  (if active
-                                      (make-rect (face-background 'cursor) 30 3)
-                                    (make-rect (face-background 'tooltip) 30 3))
+                                  (make-rect bar-color 30 3)
                                   (when modified
                                     (concat
                                      " "
                                      (all-the-icons-faicon "floppy-o"
-                                                           :face 'error
+                                                           :face (when active 'error)
                                                            :v-adjust -0.01)))
                                   " "
                                   (powerline-buffer-id)

@@ -334,6 +334,8 @@
      ;;evil-mc-cursor
      `(evil-mc-cursor-default-face ((,c (:background ,yellow :foreground ,black))))
 
+     ;;all-the-icons-dired
+     `(all-the-icons-dired-dir-face ((,c (:foreground ,blue))))
 
 
      ;;
