@@ -434,6 +434,8 @@ These are the Files creating in the current Directory for files that have not be
                          "C-k" 'evil-window-up
                          "C-j" 'evil-window-down
                          "g ." 'my-funcs/open-dotfile
+                         "g h" 'org-capture
+                         "g l" 'org-agenda
                          "] SPC" (lambda ()
                                    (interactive)
                                    (save-excursion
@@ -1113,6 +1115,7 @@ These are the Files creating in the current Directory for files that have not be
 #+END_SRC
 
 ** Org Mode
+*** org settings
    enable syntax highlighting in org-babel source code
 #+BEGIN_SRC emacs-lisp
   (setq org-src-fontify-natively t)
@@ -1123,6 +1126,28 @@ These are the Files creating in the current Directory for files that have not be
 (setq org-directory "~/Dropbox/org")
 #+END_SRC
    
+*** capture templates
+  #+BEGIN_SRC emacs-lisp
+    (setq org-capture-templates
+          '(("n"
+             "new Note"
+             entry
+             (file "notes.org")
+             "* %?")
+            ("t"
+             "My TODO task format."
+             entry
+             (file "todo.org")
+             "* TODO %? SCHEDULED: %t")))
+
+    (setq org-refile-use-outline-path 'file)
+    (setq org-outline-path-complete-in-steps nil)
+
+    ;; use a depth level of 6 max
+    (setq org-refile-targets
+          '((org-agenda-files . (:maxlevel . 4))))
+
+  #+END_SRC 
 *** agenda keybindings
 *** org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
@@ -1147,6 +1172,21 @@ These are the Files creating in the current Directory for files that have not be
 
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
+  (defun clever-insert-item ()
+    "Clever insertion of org item."
+    (if (not (org-in-item-p))
+        (insert "\n")
+      (org-insert-item))
+    )
+
+  (defun evil-org-eol-call (fun)
+    "Go to end of line and call provided function.
+  FUN function callback"
+    (end-of-line)
+    (funcall fun)
+    (evil-append nil)
+    )
+
   (general-define-key :keymaps 'org-mode-map
                       :states '(normal)
                       "TAB" 'org-cycle
@@ -1170,6 +1210,14 @@ These are the Files creating in the current Directory for files that have not be
   (general-define-key :prefix my-leader2
                       :keymaps 'org-mode-map
                       :states '(normal)
+                      "o" '(lambda ()
+                             (interactive)
+                             (evil-org-eol-call 'org-insert-heading))
+                      "s" 'org-schedule
+                      "r" 'org-refile
+                      "t" 'org-todo
+                      "p" 'org-insert-link
+                      "y" 'org-store-link
                       "l" 'org-forward-heading-same-level
                       "h" 'org-backward-heading-same-level
                       "k" 'org-up-element
@@ -1189,6 +1237,7 @@ These are the Files creating in the current Directory for files that have not be
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
 #+END_SRC
+    
 ** smartparens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
@@ -1351,12 +1400,14 @@ These are the Files creating in the current Directory for files that have not be
     )
 #+END_SRC
 ** ivy
+  http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
     :ensure t
     :config
-    ;; fuzzy match
-    (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+    ;; regex order 
+    (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+
     (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
     (ivy-mode t))
 
