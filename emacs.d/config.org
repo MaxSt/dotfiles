@@ -78,26 +78,6 @@
     (ispell-set-spellchecker-params)
     (ispell-hunspell-add-multi-dic "de_AT,en_US"))
 
-  (put 'dired-find-alternate-file 'disabled nil)
-
-#+END_SRC
-
-** dired
-*** Dired+
-Dired enhancements.
-#+BEGIN_SRC emacs-lisp
-(put 'dired-find-alternate-file 'disabled nil)
-(use-package dired+
-    :after (dired))
-#+END_SRC
-*** Enable find-alternate-file
-    Prevents dired from creating an annoying popup when dired-find-alternate-file is called.
-#+BEGIN_SRC emacs-lisp
-(put 'dired-find-alternate-file 'disabled nil)
-#+END_SRC
-*** Human readable filesize
-#+BEGIN_SRC emacs-lisp
-  (setq dired-listing-switches "-alh")
 #+END_SRC
 
 ** Backups
@@ -436,6 +416,9 @@ These are the Files creating in the current Directory for files that have not be
                          "g ." 'my-funcs/open-dotfile
                          "g h" 'org-capture
                          "g l" 'org-agenda
+                         "g o" (lambda ()
+                                 (interactive)
+                                 (dired org-directory))
                          "] SPC" (lambda ()
                                    (interactive)
                                    (save-excursion
@@ -473,7 +456,9 @@ These are the Files creating in the current Directory for files that have not be
                          "l" 'evil-avy-goto-line
                          "u" 'undo-tree-visualize
                          "b" 'ivy-switch-buffer
-                         "o" 'find-file)
+                         "o" (lambda () (interactive) (dired "."))
+                         "O" 'dired
+                         "f" 'find-file)
 
      (setq my-leader2 ",")
      (setq local-leader "\\")
@@ -1468,6 +1453,87 @@ These are the Files creating in the current Directory for files that have not be
     :config
     (global-aggressive-indent-mode))
 #+end_src
+** dired
+*** settings
+    move files to trash
+    #+BEGIN_SRC emacs-lisp
+      (setq delete-by-moving-to-trash t)
+    #+END_SRC
+
+    Human readable filesize
+    #+BEGIN_SRC emacs-lisp
+      (setq dired-listing-switches "-alh")
+    #+END_SRC
+
+    Prevents dired from creating an annoying popup when dired-find-alternate-file is called.
+#+BEGIN_SRC emacs-lisp
+  (put 'dired-find-alternate-file 'disabled nil)
+#+END_SRC
+    
+   Recursive copy and deletion
+#+BEGIN_SRC emacs-lisp
+  (setq dired-recursive-copies 'always
+        dired-recursive-deletes 'always)
+#+END_SRC
+*** Keybindings
+#+BEGIN_SRC emacs-lisp
+  (defun my/dired-up-directory ()
+    "Take dired up one directory, but behave like dired-find-alternative-file (leave no orphan buffer)"
+    (interactive)
+    (let ((old (current-buffer)))
+      (dired-up-directory)
+      (kill-buffer old)))
+
+  (defun my/dired-create-file (file)
+    (interactive
+     (list
+      (read-file-name "Create file: " (dired-current-directory))))
+    (write-region "" nil (expand-file-name file) t)
+    (dired-add-file file)
+    (revert-buffer)
+    (dired-goto-file (expand-file-name file)))
+
+
+  (general-define-key :keymaps '(dired-mode-map)
+                      :states '(normal)
+                      "h" 'my/dired-up-directory
+                      "DEL" 'my/dired-up-directory
+                      "RET" 'dired-find-alternate-file
+                      "TAB" 'dired-subtree-toggle
+                      "l" 'dired-find-alternate-file
+                      "c" 'dired-do-rename
+                      "f" 'counsel-find-file
+                      "o" 'my/dired-create-file
+                      "O" 'dired-create-directory
+                      "n" 'evil-search-next
+                      "N" 'evil-search-previous
+                      "q" 'kill-this-buffer
+                      "!" 'dired-do-shell-command)
+
+#+END_SRC
+*** Dired+
+Dired enhancements.
+#+BEGIN_SRC emacs-lisp
+  (use-package dired+
+    :after (dired)
+    :config
+    (diredp-toggle-find-file-reuse-dir 1))
+#+END_SRC
+*** dired-subtree
+Show subtree when pressing i
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-subtree
+    :after (dired)
+    :config)
+#+END_SRC
+*** dired-details
+    toggle details with ')'
+    #+BEGIN_SRC emacs-lisp
+      (use-package dired-details+
+        :ensure t
+        :config)
+    #+END_SRC
+
 *  Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
