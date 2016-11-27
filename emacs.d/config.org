@@ -1195,9 +1195,10 @@ These are the Files creating in the current Directory for files that have not be
   (general-define-key :prefix my-leader2
                       :keymaps 'org-mode-map
                       :states '(normal)
-                      "o" '(lambda ()
-                             (interactive)
-                             (evil-org-eol-call 'org-insert-heading))
+                      "o" (lambda ()
+                            (interactive)
+                            (org-insert-heading-after-current)
+                            (evil-insert-state))
                       "s" 'org-schedule
                       "r" 'org-refile
                       "t" 'org-todo
