@@ -523,9 +523,20 @@ These are the Files creating in the current Directory for files that have not be
 ** evil-commentary
 #+begin_src emacs-lisp
   (use-package evil-commentary
+      :ensure t
       :after (evil)
       :config
       (evil-commentary-mode))
+#+end_src
+
+** evil-replace-with-register
+#+begin_src emacs-lisp
+  (use-package evil-replace-with-register
+    :ensure t
+    :after (evil)
+    :config
+    (setq evil-replace-with-register-key (kbd "gr"))
+    (evil-replace-with-register-install))
 #+end_src
 
 * Package config
