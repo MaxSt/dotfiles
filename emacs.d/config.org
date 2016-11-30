@@ -1354,6 +1354,7 @@ These are the Files creating in the current Directory for files that have not be
                               'help-echo (format "Major-mode: `%s`" major-mode)
                               'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
 
+
     (setq-default mode-line-format 
                   '("%e"
                     (:eval
@@ -1382,10 +1383,12 @@ These are the Files creating in the current Directory for files that have not be
                                      (powerline-major-mode)
                                      " "))
                             (rhs (list
-                                  (powerline-hud face1 face2)
+
+                                  (powerline-raw "%l:%c" 'mode-line 'r)
+                                  " | "
+                                  (powerline-raw "%6p" 'mode-line 'r)
+                                  (powerline-hud 'highlight 'region 1)
                                   " "
-                                  (replace-regexp-in-string "Bottom" "Bot" (format-mode-line '("  (%l:%c) :%p ")))
-                                  "  "
                                   ))
                             )
                        (concat
