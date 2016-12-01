@@ -178,6 +178,7 @@
      ;; Plugins
      ;;
 
+
      ;; Avy
      `(avy-lead-face-0    ((,c (:background ,search-bg :foreground ,search-fg))))
      `(avy-lead-face-1    ((,c (:background ,search-bg :foreground ,search-fg))))
@@ -336,6 +337,15 @@
 
      ;;all-the-icons-dired
      `(all-the-icons-dired-dir-face ((,c (:foreground ,blue))))
+
+     ;;latex
+     `(font-latex-sectioning-1-face               ((,c (:foreground ,green :bold ,bold :height 1.8 :box (:line-width 4 :color ,current-line)))))
+     `(font-latex-sectioning-2-face               ((,c (:foreground ,green :bold ,bold :height 1.5))))
+     `(font-latex-sectioning-3-face               ((,c (:foreground ,green :bold ,bold :height 1.3))))
+     `(font-latex-sectioning-4-face               ((,c (:foreground ,green :bold ,bold :height 1.2))))
+     `(font-latex-sectioning-5-face               ((,c (:foreground ,green :bold ,bold :height 1.1))))
+     `(font-latex-sectioning-6-face               ((,c (:foreground ,green :bold ,bold))))
+     `(font-latex-warning-face                    ((,c (:foreground ,yellow-d :bold ,bold))))
 
 
      ;;

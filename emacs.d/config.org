@@ -21,10 +21,10 @@
 #+END_SRC
 * Defaults
 
+** global
 #+BEGIN_SRC emacs-lisp
 
-  (setq
-   package-enable-at-startup nil
+  (setq package-enable-at-startup nil
    inhibit-startup-screen t
    x-select-enable-clipboard t
    column-number-mode t
@@ -70,15 +70,21 @@
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
 
-  (with-eval-after-load "ispell"
-    (setq ispell-program-name "hunspell")
-    (setq ispell-dictionary "de_AT,en_US")
-    ;; ispell-set-spellchecker-params has to be called
-    ;; before ispell-hunspell-add-multi-dic will work
-    (ispell-set-spellchecker-params)
-    (ispell-hunspell-add-multi-dic "de_AT,en_US"))
-
 #+END_SRC
+  
+** flyspell
+   #+BEGIN_SRC emacs-lisp
+     (with-eval-after-load "ispell"
+       (setq ispell-program-name "hunspell")
+       (setq ispell-dictionary "de_AT,en_US")
+       ;; ispell-set-spellchecker-params has to be called
+       ;; before ispell-hunspell-add-multi-dic will work
+       (ispell-set-spellchecker-params)
+       (ispell-hunspell-add-multi-dic "de_AT,en_US"))
+
+       (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))
+
+   #+END_SRC
 
 ** Backups
 #+BEGIN_SRC emacs-lisp
@@ -1274,6 +1280,7 @@ These are the Files creating in the current Directory for files that have not be
         :help "Run latexmk on file")
       TeX-command-list)))
   (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
+  (add-hook 'TeX-mode-hook '(lambda () (flyspell-mode 1)))
    #+END_SRC
 ** PopWin
 #+BEGIN_SRC emacs-lisp
@@ -1517,7 +1524,7 @@ These are the Files creating in the current Directory for files that have not be
                       "TAB" 'dired-subtree-toggle
                       "l" 'dired-find-alternate-file
                       "c" 'dired-do-rename
-                      "f" 'counsel-find-file
+                      "f" 'counsel-file-jump
                       "o" 'my/dired-create-file
                       "O" 'dired-create-directory
                       "n" 'evil-search-next
