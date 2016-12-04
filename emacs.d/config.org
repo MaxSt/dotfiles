@@ -20,7 +20,6 @@
   (require 'use-package)
 #+END_SRC
 * Defaults
-
 ** global
 #+BEGIN_SRC emacs-lisp
 
@@ -285,12 +284,14 @@ These are the Files creating in the current Directory for files that have not be
   #+BEGIN_SRC emacs-lisp
     (use-package evil
       :ensure t
-      :config
-      ;; prevent esc-key from translating to meta-key in terminal mode
-      (setq evil-esc-delay 0)
-      (setq evil-want-Y-yank-to-eol t)
-      (evil-mode 1)
-      )
+      :init
+      (setq-default evil-search-module 'evil-search
+                    evil-shift-width 2
+                    ;; prevent esc-key from translating to meta-key in terminal mode
+                    evil-esc-delay 0
+                    evil-want-Y-yank-to-eol t)
+      (evil-mode t)
+      :config)
   #+end_src
    
 ** custom text objects

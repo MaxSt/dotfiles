@@ -27,8 +27,8 @@
       (green-d           "#62d196"))
 
 
-  (let* ((bg             "#1e1c31")
-         (bg-d           (if window-system "#1e1c31" "#22252c"))
+  (let* ((bg             "#1b182c")
+         (bg-d           (if window-system "#1b182c" "#22252c"))
          (fg             grey)
          (highlight      magenta-d)
          (vertical-bar   black)
