@@ -547,6 +547,14 @@ These are the Files creating in the current Directory for files that have not be
 #+end_src
 
 * Package config
+** PopWin
+#+BEGIN_SRC emacs-lisp
+  (use-package popwin
+     :ensure t
+     :config
+     (popwin-mode 1))
+
+#+END_SRC
 ** clojure
 #+BEGIN_SRC emacs-lisp
   (use-package clojure-mode
@@ -1287,14 +1295,6 @@ These are the Files creating in the current Directory for files that have not be
   (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
   (add-hook 'TeX-mode-hook '(lambda () (flyspell-mode 1)))
    #+END_SRC
-** PopWin
-#+BEGIN_SRC emacs-lisp
-  (use-package popwin
-     :ensure t
-     :config
-     (popwin-mode 1))
-
-#+END_SRC
 ** projectile
 #+begin_src emacs-lisp
   (use-package projectile
