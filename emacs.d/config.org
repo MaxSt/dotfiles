@@ -1327,9 +1327,12 @@ These are the Files creating in the current Directory for files that have not be
   (use-package undo-tree
     :ensure t
     :config
-    (setq undo-tree-auto-save-history t
-          undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))
-    (global-undo-tree-mode))
+    (progn 
+      (global-undo-tree-mode)
+      (setq undo-tree-auto-save-history t
+            undo-tree-visualizer-diff t
+            undo-tree-visualizer-timestamps t
+            undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))))
 #+end_src
 ** recentf
    for keeping track of recent files, provides helm-recentf with data
