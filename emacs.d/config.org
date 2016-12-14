@@ -550,9 +550,9 @@ These are the Files creating in the current Directory for files that have not be
 ** PopWin
 #+BEGIN_SRC emacs-lisp
   (use-package popwin
-     :ensure t
-     :config
-     (popwin-mode 1))
+    :ensure t
+    :config
+    (popwin-mode 1))
 
 #+END_SRC
 ** clojure
@@ -1563,6 +1563,14 @@ Show subtree when pressing i
         :ensure t
         :config)
     #+END_SRC
+
+** restclient
+#+begin_src emacs-lisp
+  (use-package restclient
+    :ensure t
+    :config
+    (push '("*HTTP Response*" :height 20 :position bottom) popwin:special-display-config))
+#+end_src
 
 *  Temp
 #+begin_src emacs-lisp
