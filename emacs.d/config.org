@@ -157,7 +157,7 @@ These are the Files creating in the current Directory for files that have not be
   (defun my-funcs/open-snippet-dir ()
     (interactive)
     (let* ((dir (file-name-as-directory (car yas-snippet-dirs)))
-          (path (concat dir (symbol-name major-mode))))
+           (path (concat dir (symbol-name major-mode))))
       (dired path)))
 
   (defun my-funcs/resize-window-down ()
@@ -187,6 +187,12 @@ These are the Files creating in the current Directory for files that have not be
     (if (window-in-direction 'right)
         (enlarge-window-horizontally 1)
       (shrink-window-horizontally 1)))
+
+  (defun my-funcs/flash-region (start end)
+    "Makes the region between START and END change color for a moment"
+    (let ((overlay (make-overlay start end)))
+      (overlay-put overlay 'face 'swiper-match-face-4)
+      (run-with-timer 0.2 nil 'delete-overlay overlay)))
 
 
   (defun my-funcs/what-face (pos)
@@ -604,6 +610,7 @@ These are the Files creating in the current Directory for files that have not be
     "Evil operator for evaluating code."
     :move-point nil
     (save-excursion
+      (my-funcs/flash-region beg end)
       (cider-eval-region beg end)))
 
   (general-define-key :keymaps '(cider-inspector-mode-map)
@@ -661,9 +668,9 @@ These are the Files creating in the current Directory for files that have not be
                value)
            (setq eval-str (buffer-substring beg end))
            (setq value (eval (car (read-from-string eval-str))))
+           (my-funcs/flash-region beg end)
            (my-funcs/eval-overlay value end)
            (message (format "%s" value)))))
-
 
      (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
                          :states '(normal)
