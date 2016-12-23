@@ -1579,6 +1579,15 @@ Show subtree when pressing i
     (push '("*HTTP Response*" :height 20 :position bottom) popwin:special-display-config))
 #+end_src
 
+** highlight-indent-guides
+#+begin_src emacs-lisp
+  (use-package highlight-indent-guides
+    :ensure t
+    :config
+    (setq highlight-indent-guides-method 'character)
+    (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
+#+end_src
+
 *  Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
