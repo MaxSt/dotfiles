@@ -565,7 +565,9 @@ These are the Files creating in the current Directory for files that have not be
 #+BEGIN_SRC emacs-lisp
   (use-package clojure-mode
     :ensure t
-    :config)
+    :config
+    (put-clojure-indent 'defui '(2 nil nil (1)))
+    )
 
   (use-package clj-refactor
     :ensure t
