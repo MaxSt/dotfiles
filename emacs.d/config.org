@@ -455,6 +455,8 @@ These are the Files creating in the current Directory for files that have not be
                          "h v" 'describe-variable
                          "h f" 'describe-function
                          "h m" 'describe-mode
+                         "<return>" 'my/projectile-multi-term
+                         "S-<return>" 'multi-term
 
                          ;;  Avoiding CTRL
                          "W" 'ace-select-window
@@ -869,6 +871,13 @@ These are the Files creating in the current Directory for files that have not be
   :ensure t
   :config
   (add-hook 'term-mode-hook (lambda () (yas-minor-mode -1))))
+  
+
+(defun my/projectile-multi-term ()
+  (interactive)
+  (multi-term)
+  (insert (format "cd %s" (projectile-project-root)))
+  (term-send-input))
 
 (defun my-term-funcs/send-ctrl-a ()
   "Go to beginning of line."
