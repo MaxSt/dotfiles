@@ -1252,13 +1252,20 @@ These are the Files creating in the current Directory for files that have not be
                       :states '(normal)
                       "o" (lambda ()
                             (interactive)
-                            (org-insert-heading-after-current)
+                            (org-insert-heading-respect-content)
+                            (evil-insert-state))
+                      "a" (lambda ()
+                            (interactive)
+                            (org-insert-heading-respect-content)
+                            (org-demote-subtree)
                             (evil-insert-state))
                       "s" 'org-schedule
                       "r" 'org-refile
                       "t" 'org-todo
                       "p" 'org-insert-link
                       "y" 'org-store-link
+                      "h" 'org-previous-item
+                      "l" 'org-nex-tiem
                       "l" 'org-forward-heading-same-level
                       "h" 'org-backward-heading-same-level
                       "k" 'org-up-element
@@ -1271,7 +1278,6 @@ These are the Files creating in the current Directory for files that have not be
   (general-define-key :keymaps 'org-src-mode-map
                       :states '(normal)
                       "RET" 'org-edit-src-exit)
-
 #+END_SRC
 
 *** open source code in same window
