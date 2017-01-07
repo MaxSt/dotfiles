@@ -471,6 +471,7 @@ These are the Files creating in the current Directory for files that have not be
                          "l" 'evil-avy-goto-line
                          "u" 'undo-tree-visualize
                          "b" 'ivy-switch-buffer
+                         "z" 'hydra-zoom/body
                          "o" (lambda () (interactive) (dired "."))
                          "O" 'dired
                          "f" 'find-file)
@@ -1052,6 +1053,13 @@ These are the Files creating in the current Directory for files that have not be
   (global-company-mode))
 #+END_SRC
 
+** zoom
+#+BEGIN_SRC emacs-lisp
+  (use-package zoom-frm
+    :ensure t
+    :config)
+#+END_SRC
+
 ** hydra
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
@@ -1059,8 +1067,11 @@ These are the Files creating in the current Directory for files that have not be
     :config
     (defhydra hydra-zoom ()
       "Zoom"
-      ("+" zoom-in "in")
-      ("-" zoom-out "out"))
+      ("u" zoom-frm-unzoom "unzoom")
+      ("i" text-scale-increase "in Buffer")
+      ("I" zoom-frm-in "in Frame")
+      ("O" zoom-frm-out "out Frame")
+      ("o" text-scale-decrease "out Buffer"))
 
     (defhydra hydra-window-resize ()
       "Window resizing"
@@ -1530,6 +1541,12 @@ Show subtree when pressing i
     :ensure t
     :config
     (push '("*HTTP Response*" :height 20 :position bottom) popwin:special-display-config))
+#+end_src
+
+** ejc-sql
+#+begin_src emacs-lisp
+  (use-package ejc-sql
+    :ensure t)
 #+end_src
 
 ** highlight-indent-guides
