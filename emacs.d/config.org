@@ -422,6 +422,8 @@ These are the Files creating in the current Directory for files that have not be
      ;;evil mappings
      (general-define-key :keymaps 'normal
                          "gs" 'save-buffer
+                         "`" 'evil-goto-mark-line
+                         "'" 'evil-goto-mark
                          "C-h" 'evil-window-left
                          "C-h" 'evil-window-right
                          "C-k" 'evil-window-up
