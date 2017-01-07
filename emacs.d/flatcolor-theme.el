@@ -51,11 +51,11 @@
          (tab-unfocused-bg "#353a42")
          (tab-unfocused-fg "#1e2022")
          ;; main search regions
-         (search-bg      blue)
+         (search-bg      cyan)
          (search-fg      black)
          ;; other search regions
-         (search-rest-bg grey-d)
-         (search-rest-fg blue)
+         (search-rest-bg blue)
+         (search-rest-fg black)
          ;; line number column
          (linum-bg       bg-d)
          (linum-fg       black)
@@ -165,8 +165,8 @@
      `(dired-k-directory           ((,c (:foreground ,blue))))
 
      ;; Search
-     `(isearch                     ((,c (:background ,search-bg :foreground ,black :bold ,bold))))
-     `(isearch-lazy-highlight-face ((,c (:background ,search-rest-bg))))
+     `(isearch                     ((,c (:background ,search-bg :foreground ,search-fg :bold ,bold))))
+     `(isearch-lazy-highlight-face ((,c (:background ,search-rest-bg :foreground ,search-rest-fg))))
      `(yas-field-highlight-face    ((,c (:inherit match))))
 
      ;; `window-divider'
@@ -407,7 +407,7 @@
      `(org-document-info         ((,c (:foreground ,red-d))))
      `(org-document-info-keyword ((,c (:foreground ,grey-d))))
      `(org-meta-line             ((,c (:foreground ,doc-comments))))
-     `(org-block-begin-line      ((,c (:background ,grey-d :foreground ,black))))
+     `(org-block-begin-line      ((,c (:background ,grey-dd :foreground ,grey-d))))
      `(org-block-end-line        ((,c (:inherit org-block-begin-line))))
      `(org-block-background      ((,c (:background ,grey-ddd))))
      `(org-archived              ((,c (:foreground ,grey))))
