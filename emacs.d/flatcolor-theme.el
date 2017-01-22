@@ -231,9 +231,9 @@
      `(flycheck-info      ((,c (:underline (:style wave :color ,green)))))
      `(flyspell-incorrect ((,c (:underline (:style wave :color ,red) :inherit unspecified))))
      ;; git-gutter
-     `(git-gutter:modified         ((,c (:foreground ,vc-modified))))
-     `(git-gutter:added            ((,c (:foreground ,vc-added))))
-     `(git-gutter:deleted          ((,c (:foreground ,vc-deleted))))
+     `(git-gutter-fr:modified         ((,c (:foreground ,vc-modified))))
+     `(git-gutter-fr:added            ((,c (:foreground ,vc-added))))
+     `(git-gutter-fr:deleted          ((,c (:foreground ,vc-deleted))))
      `(git-gutter+-modified        ((,c (:foreground ,vc-modified))))
      `(git-gutter+-added           ((,c (:foreground ,vc-added))))
      `(git-gutter+-deleted         ((,c (:foreground ,vc-deleted))))

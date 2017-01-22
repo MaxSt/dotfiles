@@ -421,11 +421,25 @@ These are the Files creating in the current Directory for files that have not be
 
      ;;evil mappings
      (general-define-key :keymaps 'normal
+                         "M-l" (lambda ()
+                                 (interactive)
+                                 (evil-window-vsplit)
+                                 (evil-window-right 1))
+                         "M-h" (lambda ()
+                                 (interactive)
+                                 (evil-window-vsplit))
+                         "M-k" (lambda ()
+                                 (interactive)
+                                 (evil-window-split))
+                         "M-j" (lambda ()
+                                 (interactive)
+                                 (evil-window-split)
+                                 (evil-window-down 1))
                          "gs" 'save-buffer
                          "`" 'evil-goto-mark-line
                          "'" 'evil-goto-mark
                          "C-h" 'evil-window-left
-                         "C-h" 'evil-window-right
+                         "C-l" 'evil-window-right
                          "C-k" 'evil-window-up
                          "C-j" 'evil-window-down
                          "g ." 'my-funcs/open-dotfile
@@ -450,6 +464,9 @@ These are the Files creating in the current Directory for files that have not be
      (general-define-key :prefix my-leader
                          ;;"r" 'restart-emacs
                          "p" 'hydra-projectile/body
+                         "q" 'evil-window-delete
+
+                         "SPC" 'ace-select-window
 
                          ;;"h" (general-simulate-keys "C-h")
                          "h k" 'describe-key
@@ -467,6 +484,8 @@ These are the Files creating in the current Directory for files that have not be
                          "x" (general-simulate-keys "C-x")
                          "c" (general-simulate-keys "C-c")
 
+                         "t" 'projectile-find-file
+                         "e" 'projectile-switch-to-buffer
                          ". s" 'my-funcs/open-snippet-dir
                          "g s" 'magit-status
                          "g t" 'git-timemachine
@@ -1453,8 +1472,7 @@ These are the Files creating in the current Directory for files that have not be
 #+begin_src emacs-lisp
   (use-package aggressive-indent
     :ensure t
-    :config
-    (global-aggressive-indent-mode))
+    :config)
 #+end_src
 ** dired
 *** settings
