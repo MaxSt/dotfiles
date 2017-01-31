@@ -57,11 +57,11 @@
          (tab-unfocused-bg "#353a42")
          (tab-unfocused-fg "#1e2022")
          ;; main search regions
-         (search-bg      green-dd)
-         (search-fg      yellow-dd)
+         (search-fg black)
+         (search-bg green)
          ;; other search regions
-         (search-rest-bg red-dd)
-         (search-rest-fg yellow-dd)
+         (search-rest-bg yellow-dd)
+         (search-rest-fg black)
          ;; line number column
          (linum-bg       bg-d)
          (linum-fg       black)
@@ -111,7 +111,7 @@
      `(cursor                 ((,c (:foreground ,blue-dd))))
      `(shadow                 ((,c (:background ,grey))))
      `(minibuffer-prompt      ((,c (:background ,blue))))
-     `(tooltip                ((,c (:foreground ,black :background ,fg))))
+     `(tooltip                ((,c (:foreground ,fg :background ,yellow))))
      `(error                  ((,c (:background ,red))))
      `(warning                ((,c (:background ,yellow))))
      `(success                ((,c (:background ,green))))
@@ -166,12 +166,13 @@
      `(powerline-inactive2         ((,c (:inherit mode-line-inactive))))
 
      ;; Dired/dired-k
-     `(dired-directory             ((,c (:background ,red-d))))
+     `(dired-directory             ((,c (:background ,red))))
      `(dired-ignored               ((,c (:background ,comments))))
      `(dired-k-directory           ((,c (:background ,blue))))
+     `(all-the-icons-dired-dir-face ((,c (:foreground ,blue-dd :background nil))))
 
      ;; Search
-     `(isearch                     ((,c (:foreground ,search-bg :background ,search-fg :bold ,bold))))
+     `(isearch                     ((,c (:foreground ,search-fg :background ,search-bg :bold ,bold))))
      `(isearch-lazy-highlight-face ((,c (:background ,search-rest-bg :foreground ,search-rest-fg))))
      `(yas-field-highlight-face    ((,c (:inherit match))))
 
@@ -192,8 +193,8 @@
      `(avy-lead-face      ((,c (:foreground ,search-bg :background ,search-fg))))
      ;; company-mode
      `(company-tooltip             ((,c (:inherit tooltip))))
-     `(company-tooltip-common      ((,c (:background ,blue))))
-     `(company-tooltip-search      ((,c (:background ,search-fg :foreground ,highlight))))
+     `(company-tooltip-common      ((,c (:background ,green))))
+     `(company-tooltip-search      ((,c (:background ,search-bg :foreground ,black))))
      `(company-tooltip-selection   ((,c (:foreground ,selection))))
      `(company-tooltip-mouse       ((,c (:foreground ,magenta :background ,bg))))
      `(company-tooltip-annotation  ((,c (:background ,magenta-d))))
@@ -269,7 +270,7 @@
      `(iedit-occurrence            ((,c (:background ,magenta :bold ,bold :inverse-video t))))
      `(iedit-read-only-occurrence  ((,c (:inherit region))))
      ;; ivy
-     `(ivy-current-match           ((,c (:foreground ,black))))
+     `(ivy-current-match           ((,c (:foreground ,black :background ,blue))))
      `(ivy-minibuffer-match-face-1 ((,c (:background ,cyan))))
      `(ivy-minibuffer-match-face-2 ((,c (:background ,magenta :bold ,bold))))
      `(ivy-minibuffer-match-face-3 ((,c (:background ,green :bold ,bold))))
