@@ -600,6 +600,10 @@ These are the Files creating in the current Directory for files that have not be
   (use-package cider
     :ensure t
     :config
+
+    ;;make boot the default
+    (setq cider-default-repl-command "boot")
+
     (use-package cider-hydra
       :ensure t
       :config
@@ -1188,9 +1192,13 @@ These are the Files creating in the current Directory for files that have not be
 
 ** Org Mode
 *** org settings
-   enable syntax highlighting in org-babel source code
+enable syntax highlighting in org-babel source code
 #+BEGIN_SRC emacs-lisp
-  (setq org-src-fontify-natively t)
+(setq org-src-fontify-natively t)
+#+END_SRC
+Org indent Mode 
+#+BEGIN_SRC emacs-lisp
+(org-indent-mode 1)
 #+END_SRC
    set org default directory
 #+BEGIN_SRC emacs-lisp
@@ -1409,31 +1417,38 @@ These are the Files creating in the current Directory for files that have not be
 ** ivy
   http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
-  (use-package ivy
-    :ensure t
-    :config
-    ;; regex order 
-    (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+    (use-package ivy
+      :ensure t
+      :config
+      ;; regex order 
+      (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
 
-    (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
-    (ivy-mode t))
+      (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
+      (ivy-mode t))
 
-  (use-package counsel
-    :ensure t
-    :config)
+    (use-package counsel
+      :ensure t
+      :config)
 
-  (use-package swiper
-    :ensure t
-    :config
-    (ivy-mode t))
+    (use-package swiper
+      :ensure t
+      :config
+      (ivy-mode t))
 
-  (use-package avy
-    :ensure t
-    :config)
+    (use-package avy
+      :ensure t
+      :config
 
-  (use-package ace-window
-    :ensure t
-    :config)
+      (defun avy-line-saving-column ()
+        (interactive)
+        (let ((col (current-column)))
+          (avy-goto-line)
+          (move-to-column col)))
+  )
+
+    (use-package ace-window
+      :ensure t
+      :config)
 
 #+END_SRC
 ** rainbow-mode

@@ -24,7 +24,7 @@
       (blue           "#91ddff")
       (blue-d         "#65b2ff")
       (green          "#95ffa4")
-      (green-d           "#62d196"))
+      (green-d        "#62d196"))
 
 
   (let* ((bg             "#1b182c")
