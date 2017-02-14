@@ -1371,7 +1371,10 @@ Org indent Mode
   (use-package projectile
     :ensure t
     :config
-    (setq projectile-switch-project-action 'projectile-dired)
+    (setq projectile-switch-project-action (lambda ()
+                                             (if (fboundp 'my-project-up)
+                                                 (my-project-up))
+                                             (projectile-dired)))
     (setq projectile-completion-system 'ivy)
     (projectile-global-mode))
 #+end_src

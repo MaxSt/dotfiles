@@ -10,7 +10,6 @@
     ~/.scripts: scripts
     ~/.terminalcolors: terminalcolors
     ~/.Xresources: Xresources
-    ~/.Xdefaults: Xresources
     ~/.zshrc: zshrc
     ~/.zlogin: zlogin
     ~/.local/share/themes:
@@ -20,6 +19,7 @@
       create: true
       path: config/ranger
     ~/.spacemacs.d: spacemacs.d
+    ~/.gitignore: gitignore
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
