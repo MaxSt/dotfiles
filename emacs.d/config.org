@@ -1587,6 +1587,23 @@ Show subtree when pressing i
     :ensure t)
 #+end_src
 
+** sql
+#+begin_src emacs-lisp
+  (use-package sqlup-mode
+    :ensure t
+    :config
+    (add-hook 'sql-mode-hook (lambda () (sqlup-mode 1))))
+#+end_src
+
+
+
+** javascript
+#+begin_src emacs-lisp
+  (use-package web-mode
+    :ensure t
+    :config)
+#+end_src
+
 ** javascript
 #+begin_src emacs-lisp
     (use-package js2-mode
