@@ -1,6 +1,7 @@
 - clean: ['~']
 
 - link:
+    ~/.gitignore_global: gitignore_global
     ~/.tmux.conf: tmux.conf
     ~/.tmux: tmux
     ~/.vim: vim
@@ -12,14 +13,13 @@
     ~/.Xresources: Xresources
     ~/.zshrc: zshrc
     ~/.zlogin: zlogin
+    ~/.spacemacs.d: spacemacs.d
     ~/.local/share/themes:
       create: true
       path: local/share/themes
     ~/.config/ranger:
       create: true
       path: config/ranger
-    ~/.spacemacs.d: spacemacs.d
-    ~/.gitignore: gitignore
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]

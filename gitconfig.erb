@@ -1,10 +1,14 @@
 [core]
   editor = vim
+  excludefiles = /home/max/.gitignore_global
+  excludesfile = /home/max/.gitignore_global
 [user]
   name = <%= print("Your Name: "); STDOUT.flush; STDIN.gets.chomp %>
   email = <%= print("Your Email: "); STDOUT.flush; STDIN.gets.chomp %>
 [alias]
   ac = !git add -A && git commit
+[push]
+  default = simple
 [color]
   diff = auto
   status = auto
