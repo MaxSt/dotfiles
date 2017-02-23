@@ -549,11 +549,12 @@ These are the Files creating in the current Directory for files that have not be
       (evil-change beg end)))
 
 
-  (general-nmap "c" (general-key-dispatch 'evil-decide-change-fun
-                      :name general-dispatch-evil-change-exchange
-                      "s" 'evil-surround-change
-                      "x" 'evil-exchange
-                      "X" 'evil-exchange-cancel))
+  (general-define-key :states '(normal)
+                      "c" (general-key-dispatch 'evil-decide-change-fun
+                            :name general-dispatch-evil-change-exchange
+                            "s" 'evil-surround-change
+                            "x" 'evil-exchange
+                            "X" 'evil-exchange-cancel))
 
 #+end_src
 
