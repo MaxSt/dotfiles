@@ -101,7 +101,7 @@
      `(fringe                 ((,c (:inherit default :foreground ,comments))))
      `(region                 ((,c (:background ,region))))
      `(highlight              ((,c (:background ,highlight :foreground ,black))))
-     `(hl-line                ((,c (:background ,bg))))
+     `(hl-line                ((,c (:background ,current-line))))
      `(cursor                 ((,c (:background ,blue))))
      `(shadow                 ((,c (:foreground ,grey))))
      `(minibuffer-prompt      ((,c (:foreground ,blue))))
