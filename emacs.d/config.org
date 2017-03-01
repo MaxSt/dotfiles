@@ -1372,10 +1372,10 @@ Org indent Mode
   (use-package projectile
     :ensure t
     :config
-    (setq projectile-switch-project-action (lambda ()
-                                             (if (fboundp 'my-project-up)
-                                                 (my-project-up))
-                                             (projectile-dired)))
+    
+    ;; test fn in hashtabe has to be equal because we will use strings as keys
+    (setq my-projects-loaded (make-hash-table :test 'equal))
+
     (setq projectile-completion-system 'ivy)
     (projectile-global-mode))
 #+end_src
