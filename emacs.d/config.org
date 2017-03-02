@@ -31,6 +31,7 @@
   (setq-default truncate-lines nil) ; line wrap
   (setq-default indent-tabs-mode nil
                 tab-width 2)
+  (defvaralias 'c-basic-offset 'tab-width)
 
   ;; the blinking cursor is nothing, but an annoyance
   (blink-cursor-mode -1)
@@ -1602,7 +1603,12 @@ Show subtree when pressing i
 #+begin_src emacs-lisp
   (use-package web-mode
     :ensure t
-    :config)
+    :config
+    (setq web-mode-markup-indent-offset 2)
+    (setq css-indent-offset 2)
+  
+    (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  )
 #+end_src
 
 ** javascript
