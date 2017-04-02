@@ -129,6 +129,7 @@ These are the Files creating in the current Directory for files that have not be
 
 ** Themes
 #+begin_src emacs-lisp
+
   (load-theme 'flatcolor t)
   (use-package all-the-icons
     :ensure t
@@ -1602,8 +1603,7 @@ Show subtree when pressing i
 #+end_src
 
 
-
-** javascript
+** web-mode
 #+begin_src emacs-lisp
   (use-package web-mode
     :ensure t
@@ -1635,6 +1635,14 @@ Show subtree when pressing i
       (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
       (add-to-list 'interpreter-mode-alist '("node" . js2-mode)))
 
+#+end_src
+
+** elixir
+#+begin_src emacs-lisp
+  (use-package alchemist
+    :ensure t
+    :config
+  )
 #+end_src
 
 ** highlight-indent-guides
