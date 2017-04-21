@@ -20,6 +20,8 @@ source "${HOME}/.zgen/zgen.zsh"
 #theme
 source "${HOME}/dotfiles/settings/maxtheme"
 
+source "${HOME}/.bash_profile"
+
 # check if there's no init script
 if ! zgen saved; then
   echo "Creating a zgen save"
@@ -56,6 +58,14 @@ fi
 PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/local/rvm/bin:/usr/bin/vendor_perl:/usr/bin/core_perl
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 PATH=$PATH:$HOME/.scripts
+PATH=$PATH:$HOME/.bin
+export PATH="$(yarn global bin):$PATH"
+
+export PGUSER=postgres
+export PGPASSWORD=postgres
+
+. $HOME/.asdf/asdf.sh
+. $HOME/.asdf/completions/asdf.bash
 
 if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then source "$HOME/.rvm/scripts/rvm" ; fi
 

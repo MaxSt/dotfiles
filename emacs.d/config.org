@@ -75,12 +75,13 @@
 ** flyspell
    #+BEGIN_SRC emacs-lisp
      (with-eval-after-load "ispell"
-       (setq ispell-program-name "hunspell")
-       (setq ispell-dictionary "de_AT,en_US")
+       ;;(setq ispell-program-name "hunspell")
+       ;;(setq ispell-dictionary "de_AT,en_US")
        ;; ispell-set-spellchecker-params has to be called
        ;; before ispell-hunspell-add-multi-dic will work
-       (ispell-set-spellchecker-params)
-       (ispell-hunspell-add-multi-dic "de_AT,en_US"))
+       ;;(ispell-set-spellchecker-params)
+       ;;(ispell-hunspell-add-multi-dic "de_AT,en_US")
+       )
 
        (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))
 
@@ -106,11 +107,17 @@ These are the Files creating in the current Directory for files that have not be
 (setq create-lockfiles nil)
 #+END_SRC
 
+** MacOS
+#+BEGIN_SRC emacs-lisp
+(setq mac-option-modifier 'super)
+(setq mac-command-modifier 'meta)
+#+END_SRC
+  
 * GUI
 ** font
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Iosevka-11")
-  (setq default-frame-alist '((font . "Iosevka-11")))
+  (set-default-font "Iosevka-13")
+  (setq default-frame-alist '((font . "Iosevka-13")))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp
@@ -420,7 +427,6 @@ These are the Files creating in the current Directory for files that have not be
        (setq general-default-keymaps 'evil-normal-state-map))
 
 
-
      ;;evil mappings
      (general-define-key :keymaps 'normal
                          "M-l" (lambda ()
@@ -499,8 +505,8 @@ These are the Files creating in the current Directory for files that have not be
                          "O" 'dired
                          "f" 'find-file)
 
-     (setq my-leader2 ",")
-     (setq local-leader "\\")
+      (setq my-leader2 ",")
+      (setq local-leader "\\")
    #+END_SRC
 ** evil-surround
 #+begin_src emacs-lisp
@@ -580,6 +586,14 @@ These are the Files creating in the current Directory for files that have not be
 #+end_src
 
 * Package config
+** Exec-path
+#+BEGIN_SRC emacs-lisp
+  (use-package exec-path-from-shell
+	    :ensure t
+	    :config
+	    (exec-path-from-shell-initialize))
+
+#+END_SRC
 ** PopWin
 #+BEGIN_SRC emacs-lisp
   (use-package popwin
@@ -1602,7 +1616,6 @@ Show subtree when pressing i
     (add-hook 'sql-mode-hook (lambda () (sqlup-mode 1))))
 #+end_src
 
-
 ** web-mode
 #+begin_src emacs-lisp
   (use-package web-mode
@@ -1642,7 +1655,64 @@ Show subtree when pressing i
   (use-package alchemist
     :ensure t
     :config
-  )
+
+    (push '(alchemist-test-report-mode
+            :width 50
+            :position right
+            :stick true
+            :noselect true) popwin:special-display-config)
+    (push '(alchemist-iex-mode :height 20 :position bottom) popwin:special-display-config)
+    (push '("*alchemist help*" :width 80 :position left) popwin:special-display-config)
+
+    (evil-define-operator evil-eval-elixir-text-object (beg end)
+      "Evil operator for evaluating code."
+      :move-point nil
+      (save-excursion
+        (my-funcs/flash-region beg end)
+        (alchemist-iex-send-region beg end)))
+
+    (general-define-key :prefix local-leader
+                        :keymaps '(elixir-mode-map)
+                        :states '(normal)
+                        "g" 'alchemist-goto-definition-at-point
+                        "o" 'alchemist-goto-jump-back
+                        "d p" 'alchemist-help-search-at-point
+                        "d h" 'alchemist-help-history
+                        "d s" 'alchemist-help
+                        "t t" 'alchemist-mix-rerun-last-test
+                        "t p" 'alchemist-mix-test-at-point
+                        "t f" 'alchemist-test-file
+                        "t a" 'alchemist-test
+                        "r" 'alchemist-iex-run
+                        "i" 'alchemist-iex-project-run)
+
+    (general-define-key :keymaps '(elixir-mode-map)
+                        :states '(visual)
+                        "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+                              :name general-dispatch-change-elixir-visual
+                              "p" 'alchemist-iex-send-region))
+
+    (general-define-key :keymaps '(alchemist-test-report-mode-map)
+                        :states '(normal)
+                        "q" 'quit-window)
+
+    (general-define-key :keymaps '(elixir-mode-map)
+                        :states '(normal)
+                        "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+                              :name general-dispatch-change-elixir
+                              "p" (general-key-dispatch 'evil-eval-elixir-text-object
+                                    :name general-dispatch-eval-elixir-text-object
+                                    "p" (lambda ()
+                                          (interactive)
+                                          (alchemist-iex-send-region
+                                           (save-excursion
+                                             (beginning-of-line)
+                                             (point))
+                                           (save-excursion
+                                             (end-of-line)
+                                             (point)))))))
+
+    )
 #+end_src
 
 ** highlight-indent-guides
@@ -1727,6 +1797,18 @@ Show subtree when pressing i
                         (powerline-render rhs))))))
     )
 #+END_SRC
+** docker
+#+begin_src emacs-lisp
+  (use-package dockerfile-mode
+ 	    :ensure t
+ 	    :config)
+#+end_src
+** yaml
+#+begin_src emacs-lisp
+  (use-package yaml-mode
+ 	    :ensure t
+ 	    :config)
+#+end_src
 *  Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
