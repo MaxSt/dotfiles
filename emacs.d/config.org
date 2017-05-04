@@ -137,7 +137,11 @@ These are the Files creating in the current Directory for files that have not be
 ** Themes
 #+begin_src emacs-lisp
 
-  (load-theme 'flatcolor t)
+  ;;(use-package challenger-deep-theme
+    ;;:ensure t
+    ;;:config
+    ;;(load-theme 'challenger-deep t))
+  (load-theme 'challenger-deep t)
   (use-package all-the-icons
     :ensure t
     :config
@@ -306,7 +310,12 @@ These are the Files creating in the current Directory for files that have not be
                     evil-esc-delay 0
                     evil-want-Y-yank-to-eol t)
       (evil-mode t)
-      :config)
+      :config
+      (evil-set-initial-state 'ibuffer-mode 'normal)
+      ;;(setq evil-emacs-state-modes nil)
+      ;;(setq evil-insert-state-modes nil)
+      ;;(setq evil-motion-state-modes nil)
+      )
   #+end_src
    
 ** custom text objects
@@ -516,6 +525,17 @@ These are the Files creating in the current Directory for files that have not be
       (global-evil-surround-mode))
 #+end_src
 
+** evil-args
+#+begin_src emacs-lisp
+  (use-package evil-args
+    :ensure t
+    :config
+    ;; bind evil-args text objects
+    (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
+    (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
+    )
+#+end_src
+
 ** evil-numbers
    increment and decrement numbers with c-a and c-x
 #+begin_src emacs-lisp
@@ -573,6 +593,104 @@ These are the Files creating in the current Directory for files that have not be
       :after (evil)
       :config
       (evil-commentary-mode))
+#+end_src
+
+** ibuffer
+#+begin_src emacs-lisp
+  (defhydra hydra-ibuffer-main (:color pink :hint nil)
+    "
+   ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
+  -^----------^-+-^----^--------+-^-------^--------+-^----^-------
+    _k_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
+   _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
+    _j_:    v   | _*_: specific | _a_: all actions | _/_: filter
+  -^----------^-+-^----^--------+-^-------^--------+-^----^-------
+  "
+    ("j" ibuffer-forward-line)
+    ("RET" ibuffer-visit-buffer :color blue)
+    ("k" ibuffer-backward-line)
+
+    ("m" ibuffer-mark-forward)
+    ("u" ibuffer-unmark-forward)
+    ("*" hydra-ibuffer-mark/body :color blue)
+
+    ("D" ibuffer-do-delete)
+    ("S" ibuffer-do-save)
+    ("a" hydra-ibuffer-action/body :color blue)
+
+    ("g" ibuffer-update)
+    ("s" hydra-ibuffer-sort/body :color blue)
+    ("/" hydra-ibuffer-filter/body :color blue)
+    
+    ("q" ibuffer-quit "quit ibuffer" :color blue))
+
+  (defhydra hydra-ibuffer-mark (:color teal :columns 5
+                                :after-exit (hydra-ibuffer-main/body))
+    "Mark"
+    ("*" ibuffer-unmark-all "unmark all")
+    ("M" ibuffer-mark-by-mode "mode")
+    ("m" ibuffer-mark-modified-buffers "modified")
+    ("u" ibuffer-mark-unsaved-buffers "unsaved")
+    ("s" ibuffer-mark-special-buffers "special")
+    ("r" ibuffer-mark-read-only-buffers "read-only")
+    ("/" ibuffer-mark-dired-buffers "dired")
+    ("e" ibuffer-mark-dissociated-buffers "dissociated")
+    ("h" ibuffer-mark-help-buffers "help")
+    ("z" ibuffer-mark-compressed-file-buffers "compressed")
+    ("b" hydra-ibuffer-main/body "back" :color blue))
+
+  (defhydra hydra-ibuffer-action (:color teal :columns 4
+                                  :after-exit
+                                  (if (eq major-mode 'ibuffer-mode)
+                                      (hydra-ibuffer-main/body)))
+    "Action"
+    ("A" ibuffer-do-view "view")
+    ("E" ibuffer-do-eval "eval")
+    ("F" ibuffer-do-shell-command-file "shell-command-file")
+    ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
+    ("H" ibuffer-do-view-other-frame "view-other-frame")
+    ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
+    ("M" ibuffer-do-toggle-modified "toggle-modified")
+    ("O" ibuffer-do-occur "occur")
+    ("P" ibuffer-do-print "print")
+    ("Q" ibuffer-do-query-replace "query-replace")
+    ("R" ibuffer-do-rename-uniquely "rename-uniquely")
+    ("T" ibuffer-do-toggle-read-only "toggle-read-only")
+    ("U" ibuffer-do-replace-regexp "replace-regexp")
+    ("V" ibuffer-do-revert "revert")
+    ("W" ibuffer-do-view-and-eval "view-and-eval")
+    ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
+    ("b" nil "back"))
+
+  (defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
+    "Sort"
+    ("i" ibuffer-invert-sorting "invert")
+    ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
+    ("v" ibuffer-do-sort-by-recency "recently used")
+    ("s" ibuffer-do-sort-by-size "size")
+    ("f" ibuffer-do-sort-by-filename/process "filename")
+    ("m" ibuffer-do-sort-by-major-mode "mode")
+    ("b" hydra-ibuffer-main/body "back" :color blue))
+
+  (defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
+    "Filter"
+    ("m" ibuffer-filter-by-used-mode "mode")
+    ("M" ibuffer-filter-by-derived-mode "derived mode")
+    ("n" ibuffer-filter-by-name "name")
+    ("c" ibuffer-filter-by-content "content")
+    ("e" ibuffer-filter-by-predicate "predicate")
+    ("f" ibuffer-filter-by-filename "filename")
+    (">" ibuffer-filter-by-size-gt "size")
+    ("<" ibuffer-filter-by-size-lt "size")
+    ("/" ibuffer-filter-disable "disable")
+    ("b" hydra-ibuffer-main/body "back" :color blue))
+
+  (general-define-key :keymaps '(ibuffer-mode-map)
+                      :states '(normal)
+                      "SPC" 'hydra-ibuffer-main/body
+                      "j" 'ibuffer-forward-line
+                      "k" 'ibuffer-backward-line
+                      "J" 'ibuffer-jump-to-buffer)
 #+end_src
 
 ** evil-replace-with-register
@@ -1652,6 +1770,11 @@ Show subtree when pressing i
 
 ** elixir
 #+begin_src emacs-lisp
+  (use-package elixir-mode
+    :ensure t
+    :config
+    (plist-put evilmi-plugins 'elixir-mode '((evilmi-ruby-get-tag evilmi-ruby-jump))))
+
   (use-package alchemist
     :ensure t
     :config
@@ -1681,10 +1804,12 @@ Show subtree when pressing i
                         "d s" 'alchemist-help
                         "t t" 'alchemist-mix-rerun-last-test
                         "t p" 'alchemist-mix-test-at-point
-                        "t f" 'alchemist-test-file
-                        "t a" 'alchemist-test
-                        "r" 'alchemist-iex-run
-                        "i" 'alchemist-iex-project-run)
+                        "t f" 'alchemist-mix-test-file
+                        "t a" 'alchemist-mix-test
+                        "t a" 'alchemist-mix-test
+                        "r r" 'alchemist-iex-reload-module
+                        "i i" 'alchemist-iex-run
+                        "i p" 'alchemist-iex-project-run)
 
     (general-define-key :keymaps '(elixir-mode-map)
                         :states '(visual)

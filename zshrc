@@ -1,5 +1,5 @@
-export EDITOR='nvim'
-export VISUAL='nvim'
+export EDITOR='Emacs'
+export VISUAL='Emacs'
 export PAGER='less'
 
 # Aliases
@@ -59,13 +59,6 @@ PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 PATH=$PATH:$HOME/.scripts
 PATH=$PATH:$HOME/.bin
-export PATH="$(yarn global bin):$PATH"
-
-export PGUSER=postgres
-export PGPASSWORD=postgres
-
-. $HOME/.asdf/asdf.sh
-. $HOME/.asdf/completions/asdf.bash
 
 if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then source "$HOME/.rvm/scripts/rvm" ; fi
 
