@@ -71,20 +71,26 @@
   (set-keyboard-coding-system 'utf-8)
 
 #+END_SRC
-  
+
 ** flyspell
    #+BEGIN_SRC emacs-lisp
+
      (with-eval-after-load "ispell"
-       ;;(setq ispell-program-name "hunspell")
-       ;;(setq ispell-dictionary "de_AT,en_US")
-       ;; ispell-set-spellchecker-params has to be called
-       ;; before ispell-hunspell-add-multi-dic will work
-       ;;(ispell-set-spellchecker-params)
-       ;;(ispell-hunspell-add-multi-dic "de_AT,en_US")
-       )
 
-       (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))
+       (when (executable-find "hunspell")
+         (with-eval-after-load "ispell")
+         (setq ispell-dictionary "en_US")
+         (setq ispell-program-name "/usr/local/bin/hunspell")
 
+         (setq ispell-really-hunspell t)
+         (setq ispell-program-name "hunspell")
+         (setq ispell-dictionary "en_US,de_AT")
+         ;; ispell-set-spellchecker-params has to be called
+         ;; before ispell-hunspell-add-multi-dic will work
+         (ispell-set-spellchecker-params)
+         (ispell-hunspell-add-multi-dic "en_US,de_AT")
+
+         (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))))
    #+END_SRC
 
 ** Backups
@@ -109,10 +115,10 @@ These are the Files creating in the current Directory for files that have not be
 
 ** MacOS
 #+BEGIN_SRC emacs-lisp
-(setq mac-option-modifier 'super)
-(setq mac-command-modifier 'meta)
+  (setq mac-option-modifier nil)
+  (setq mac-command-modifier 'meta)
 #+END_SRC
-  
+
 * GUI
 ** font
 #+BEGIN_SRC emacs-lisp
@@ -126,7 +132,7 @@ These are the Files creating in the current Directory for files that have not be
   (menu-bar-mode -1)     ; disable the menu-bar
   (global-linum-mode -1)  ; dont show line-numbers everywhere
   (show-paren-mode)
-  (electric-pair-mode 1)
+  ;;(electric-pair-mode 1)
 #+END_SRC
 ** fringe
 #+BEGIN_SRC emacs-lisp
@@ -317,11 +323,11 @@ These are the Files creating in the current Directory for files that have not be
       ;;(setq evil-motion-state-modes nil)
       )
   #+end_src
-   
+
 ** custom text objects
 *** sexp
    #+BEGIN_SRC emacs-lisp
-        
+
      ;;Evil smartparens text objects
      (evil-define-text-object evil-a-sexp (count &optional beg end type)
        "outer sexp"
@@ -397,7 +403,7 @@ These are the Files creating in the current Directory for files that have not be
 
    #+end_src
 *** line text object
-    no mapping for that object 
+    no mapping for that object
    #+begin_src emacs-lisp
 
      (evil-define-text-object evil-i-line (count &optional beg end type)
@@ -502,6 +508,7 @@ These are the Files creating in the current Directory for files that have not be
                          "c" (general-simulate-keys "C-c")
 
                          "t" 'projectile-find-file
+                         "/" 'counsel-rg-project
                          "e" 'projectile-switch-to-buffer
                          ". s" 'my-funcs/open-snippet-dir
                          "g s" 'magit-status
@@ -621,7 +628,7 @@ These are the Files creating in the current Directory for files that have not be
     ("g" ibuffer-update)
     ("s" hydra-ibuffer-sort/body :color blue)
     ("/" hydra-ibuffer-filter/body :color blue)
-    
+
     ("q" ibuffer-quit "quit ibuffer" :color blue))
 
   (defhydra hydra-ibuffer-mark (:color teal :columns 5
@@ -1029,14 +1036,14 @@ These are the Files creating in the current Directory for files that have not be
       :config
       (which-key-mode))
 #+END_SRC
-   
+
 ** Terminal
 #+BEGIN_SRC emacs-lisp
 (use-package multi-term
   :ensure t
   :config
   (add-hook 'term-mode-hook (lambda () (yas-minor-mode -1))))
-  
+
 
 (defun my/projectile-multi-term ()
   (interactive)
@@ -1270,6 +1277,7 @@ These are the Files creating in the current Directory for files that have not be
     :config
     (use-package git-gutter-fringe
       :ensure t)
+
     (use-package fringe-helper
       :ensure t)
     (require 'fringe-helper)
@@ -1335,7 +1343,7 @@ enable syntax highlighting in org-babel source code
 #+BEGIN_SRC emacs-lisp
 (setq org-src-fontify-natively t)
 #+END_SRC
-Org indent Mode 
+Org indent Mode
 #+BEGIN_SRC emacs-lisp
 (org-indent-mode 1)
 #+END_SRC
@@ -1344,7 +1352,7 @@ Org indent Mode
 (setq org-agenda-files '("~/Dropbox/org/"))
 (setq org-directory "~/Dropbox/org")
 #+END_SRC
-   
+
 *** capture templates
   #+BEGIN_SRC emacs-lisp
     (setq org-capture-templates
@@ -1366,7 +1374,7 @@ Org indent Mode
     (setq org-refile-targets
           '((org-agenda-files . (:maxlevel . 4))))
 
-  #+END_SRC 
+  #+END_SRC
 *** agenda keybindings
 *** org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
@@ -1463,7 +1471,7 @@ Org indent Mode
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
 #+END_SRC
-    
+
 ** smartparens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
@@ -1475,8 +1483,8 @@ Org indent Mode
       :config)
 
   ;;(advice-add 'evil-sp-delete :after')
-             
-            
+
+
 
 
 
@@ -1510,7 +1518,7 @@ Org indent Mode
   (use-package projectile
     :ensure t
     :config
-    
+
     ;; test fn in hashtabe has to be equal because we will use strings as keys
     (setq my-projects-loaded (make-hash-table :test 'equal))
 
@@ -1540,7 +1548,7 @@ Org indent Mode
   (use-package undo-tree
     :ensure t
     :config
-    (progn 
+    (progn
       (global-undo-tree-mode)
       (setq undo-tree-auto-save-history t
             undo-tree-visualizer-diff t
@@ -1559,38 +1567,44 @@ Org indent Mode
 ** ivy
   http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
-    (use-package ivy
-      :ensure t
-      :config
-      ;; regex order 
-      (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+  (use-package ivy
+    :ensure t
+    :config
+    ;; regex order
+    (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
 
-      (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
-      (ivy-mode t))
+    (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
+    (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
+    (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
+    (ivy-mode t))
 
-    (use-package counsel
-      :ensure t
-      :config)
+  (use-package counsel
+    :ensure t
+    :config)
 
-    (use-package swiper
-      :ensure t
-      :config
-      (ivy-mode t))
+  (use-package ivy-hydra
+    :ensure t
+    :config)
 
-    (use-package avy
-      :ensure t
-      :config
+  (use-package swiper
+    :ensure t
+    :config
+    (ivy-mode t))
 
-      (defun avy-line-saving-column ()
-        (interactive)
-        (let ((col (current-column)))
-          (avy-goto-line)
-          (move-to-column col)))
-  )
+  (use-package avy
+    :ensure t
+    :config
 
-    (use-package ace-window
-      :ensure t
-      :config)
+    (defun avy-line-saving-column ()
+      (interactive)
+      (let ((col (current-column)))
+        (avy-goto-line)
+        (move-to-column col)))
+    )
+
+  (use-package ace-window
+    :ensure t
+    :config)
 
 #+END_SRC
 ** rainbow-mode
@@ -1647,7 +1661,7 @@ Org indent Mode
 #+BEGIN_SRC emacs-lisp
   (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
-    
+
    Recursive copy and deletion
 #+BEGIN_SRC emacs-lisp
   (setq dired-recursive-copies 'always
@@ -1741,7 +1755,7 @@ Show subtree when pressing i
     :config
     (setq web-mode-markup-indent-offset 2)
     (setq css-indent-offset 2)
-  
+
     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
   )
 #+end_src
@@ -1877,7 +1891,7 @@ Show subtree when pressing i
                               'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
 
 
-    (setq-default mode-line-format 
+    (setq-default mode-line-format
                   '("%e"
                     (:eval
                      (let* ((active (powerline-selected-window-active))
@@ -1902,6 +1916,7 @@ Show subtree when pressing i
                                      " "
                                      (powerline-mode-icon)
                                      " "
+                                     ;;major-mode
                                      (powerline-major-mode)
                                      " "))
                             (rhs (list
@@ -1934,6 +1949,44 @@ Show subtree when pressing i
  	    :ensure t
  	    :config)
 #+end_src
+** wgrep
+#+begin_src emacs-lisp
+  (use-package wgrep
+    :ensure t
+    :config
+    (setq wgrep-enable-key "r")
+    (setq wgrep-auto-save-buffer t)
+    )
+#+end_src
+** ag, ripgrep,.. (global search)
+#+begin_src emacs-lisp
+  (setq ag-highlight-search t)
+  (defun counsel-ag-project (&optional options)
+    (interactive)
+    (counsel-ag nil
+                (projectile-project-root)
+                options
+                (projectile-prepend-project-name "ag")))
+
+  (defun counsel-rg-project (&optional options)
+    (interactive)
+    (counsel-rg nil
+                (projectile-project-root)
+                options
+                (projectile-prepend-project-name "rg")))
+
+    ;;(setq ag-reuse-window 't)
+#+end_src
+
+** whitespace-trim
+#+begin_src emacs-lisp
+  (use-package ws-butler
+    :ensure t
+    :config
+    (setq ws-butler-keep-whitespace-before-point nil)
+    (ws-butler-global-mode))
+#+end_src
+
 *  Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
@@ -1960,29 +2013,8 @@ Show subtree when pressing i
    js-expr-indent-offset -2)
 #+end_src
 
-
-
 #+begin_src emacs-lisp
-
-
-
   ;; Don't litter my init file
   (setq custom-file "~/.emacs.d/local/custom-set.el")
   (load custom-file 'noerror)
-
-
-
-
-  ;; (setq-default mode-line-format
-  ;;               (append 
-  ;;                (list
-  ;;                 ;; value of `mode-name'
-  ;;                 '(:eval (powerline-mode-icon)))
-  ;;                mode-line-format))
-
-                                          ; Default dictionary to use
-
-  ;;TODO saveplace
-  ;;TODO savehist
-
 #+END_SRC

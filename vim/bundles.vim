@@ -285,12 +285,14 @@ call plug#begin('~/.vim/plugged')
   "
   Plug 'sheerun/vim-polyglot'
 
-  " deoplete (async completion)
-   Plug 'Shougo/deoplete.nvim'
-  " Plug 'Shougo/neco-syntax'
-  " Plug 'Shougo/neoinclude.vim'
-   let g:deoplete#enable_at_startup = 1
-  " set completeopt+=menuone
+  if has('nvim')
+    " deoplete (async completion)
+    Plug 'Shougo/deoplete.nvim'
+    " Plug 'Shougo/neco-syntax'
+    " Plug 'Shougo/neoinclude.vim'
+    let g:deoplete#enable_at_startup = 1
+    " set completeopt+=menuone
+  endif
 
   " supertab (tab complete/tab insert)
   Plug 'ervandew/supertab'
@@ -435,7 +437,9 @@ call plug#begin('~/.vim/plugged')
   nmap ga <Plug>(EasyAlign)
 
   Plug 'jpalardy/vim-slime'
+  if has('nvim')
   let g:slime_target = "neovim"
+  end
   let g:slime_no_mappings  = 1
   xmap <leader>e <Plug>SlimeRegionSend
   nmap <leader>e <Plug>SlimeMotionSend
