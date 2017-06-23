@@ -488,6 +488,7 @@ These are the Files creating in the current Directory for files that have not be
                          ;;"r" 'restart-emacs
                          "p" 'hydra-projectile/body
                          "q" 'evil-window-delete
+                         "k" 'kill-buffer
 
                          "SPC" 'ace-select-window
 
@@ -1576,13 +1577,37 @@ Org indent Mode
     (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
     (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
     (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
+
+    (push '(ivy-occur-grep-mode :height 20 :position bottom :stick true) popwin:special-display-config)
+
+    (defvar pop-target-window)
+    (make-variable-buffer-local 'pop-target-window)
+
+    (advice-add 'compilation-goto-locus :around #'my-around-compilation-goto-locus)
+
+    (defun my-around-compilation-goto-locus (orig-func &rest args)
+      (advice-add 'pop-to-buffer :override #'my-pop-to-buffer)
+      (apply orig-func args))
+
+    (defun my-pop-to-buffer (buffer &optional action norecord)
+      (advice-remove 'pop-to-buffer #'my-pop-to-buffer)
+      (let ((from-buffer (current-buffer))
+            (reused-window (display-buffer-reuse-window buffer nil)))
+        (cond (reused-window
+               (select-window reused-window norecord))
+              ((and (bound-and-true-p pop-target-window)
+                    (window-live-p pop-target-window))
+               (window--display-buffer buffer pop-target-window 'reuse)
+               (select-window pop-target-window norecord))
+              (t
+               (pop-to-buffer buffer action norecord)
+               (with-current-buffer from-buffer
+                 (setq-local pop-target-window (selected-window)))))))
+
+
     (ivy-mode t))
 
   (use-package counsel
-    :ensure t
-    :config)
-
-  (use-package ivy-hydra
     :ensure t
     :config)
 
