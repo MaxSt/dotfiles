@@ -119,6 +119,11 @@ These are the Files creating in the current Directory for files that have not be
   (setq mac-command-modifier 'meta)
 #+END_SRC
 
+* ediff
+#+BEGIN_SRC emacs-lisp
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain)
+  (setq ediff-split-window-function 'split-window-horizontally)
+#+END_SRC
 * GUI
 ** font
 #+BEGIN_SRC emacs-lisp
