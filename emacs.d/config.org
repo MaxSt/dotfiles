@@ -28,6 +28,10 @@
    x-select-enable-clipboard t
    column-number-mode t
    tab-stop-list (number-sequence 2 120 2))
+  ;; relative line numbers
+  (setq-default display-line-numbers 'visual)
+  ;; make current line 0
+  (setq-default display-line-numbers-current-absolute 'nil)
   (setq-default truncate-lines nil) ; line wrap
   (setq-default indent-tabs-mode nil
                 tab-width 2)
@@ -152,9 +156,9 @@ These are the Files creating in the current Directory for files that have not be
     ;;:ensure t
     ;;:config
     ;;(load-theme 'challenger-deep t))
+  (add-to-list 'custom-theme-load-path "~/Documents/challenger-deep")
   (load-theme 'challenger-deep t)
   (use-package all-the-icons
-    :ensure t
     :config
     (use-package all-the-icons-dired
       :ensure t
@@ -328,6 +332,45 @@ These are the Files creating in the current Directory for files that have not be
       ;;(setq evil-motion-state-modes nil)
       )
   #+end_src
+
+** hydra
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :ensure t
+    :config
+    (defhydra hydra-zoom ()
+      "Zoom"
+      ("u" zoom-frm-unzoom "unzoom")
+      ("i" text-scale-increase "in Buffer")
+      ("I" zoom-frm-in "in Frame")
+      ("O" zoom-frm-out "out Frame")
+      ("o" text-scale-decrease "out Buffer"))
+
+    (defhydra hydra-window-resize ()
+      "Window resizing"
+      ("j" my-funcs/resize-window-down "down")
+      ("k" my-funcs/resize-window-up "up")
+      ("l" my-funcs/resize-window-right "right")
+      ("h" my-funcs/resize-window-left "left")))
+
+  (defhydra hydra-projectile (:color teal :columns 4)
+    "Projectile"
+    ("f"   projectile-find-file                "Find File")
+    ("r"   projectile-recentf                  "Recent Files")
+    ("z"   projectile-cache-current-file       "Cache Current File")
+    ("x"   projectile-remove-known-project     "Remove Known Project")
+
+    ("d"   projectile-find-dir                 "Find Directory")
+    ("b"   projectile-switch-to-buffer         "Switch to Buffer")
+    ("c"   projectile-invalidate-cache         "Clear Cache")
+    ("X"   projectile-cleanup-known-projects   "Cleanup Known Projects")
+
+    ("o"   projectile-multi-occur              "Multi Occur")
+    ("p"   projectile-switch-project           "Switch Project")
+    ("k"   projectile-kill-buffers             "Kill Buffers")
+    ("q"   nil "Cancel" :color blue))
+
+#+END_SRC
 
 ** custom text objects
 *** sexp
@@ -522,6 +565,8 @@ These are the Files creating in the current Directory for files that have not be
                          "l" 'evil-avy-goto-line
                          "u" 'undo-tree-visualize
                          "b" 'ivy-switch-buffer
+                         "n" 'next-error
+                         "N" 'previous-error
                          "z" 'hydra-zoom/body
                          "o" (lambda () (interactive) (dired "."))
                          "O" 'dired
@@ -536,6 +581,12 @@ These are the Files creating in the current Directory for files that have not be
       :ensure t
       :config
       (global-evil-surround-mode))
+#+end_src
+** aggressive indent
+#+begin_src emacs-lisp
+  (use-package aggressive-indent
+    :ensure t
+    :config)
 #+end_src
 
 ** evil-args
@@ -1237,45 +1288,6 @@ These are the Files creating in the current Directory for files that have not be
     :config)
 #+END_SRC
 
-** hydra
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra
-    :ensure t
-    :config
-    (defhydra hydra-zoom ()
-      "Zoom"
-      ("u" zoom-frm-unzoom "unzoom")
-      ("i" text-scale-increase "in Buffer")
-      ("I" zoom-frm-in "in Frame")
-      ("O" zoom-frm-out "out Frame")
-      ("o" text-scale-decrease "out Buffer"))
-
-    (defhydra hydra-window-resize ()
-      "Window resizing"
-      ("j" my-funcs/resize-window-down "down")
-      ("k" my-funcs/resize-window-up "up")
-      ("l" my-funcs/resize-window-right "right")
-      ("h" my-funcs/resize-window-left "left")))
-
-  (defhydra hydra-projectile (:color teal :columns 4)
-    "Projectile"
-    ("f"   projectile-find-file                "Find File")
-    ("r"   projectile-recentf                  "Recent Files")
-    ("z"   projectile-cache-current-file       "Cache Current File")
-    ("x"   projectile-remove-known-project     "Remove Known Project")
-
-    ("d"   projectile-find-dir                 "Find Directory")
-    ("b"   projectile-switch-to-buffer         "Switch to Buffer")
-    ("c"   projectile-invalidate-cache         "Clear Cache")
-    ("X"   projectile-cleanup-known-projects   "Cleanup Known Projects")
-
-    ("o"   projectile-multi-occur              "Multi Occur")
-    ("p"   projectile-switch-project           "Switch Project")
-    ("k"   projectile-kill-buffers             "Kill Buffers")
-    ("q"   nil "Cancel" :color blue))
-
-#+END_SRC
-
 ** git
 #+BEGIN_SRC emacs-lisp
   (use-package git-gutter
@@ -1639,9 +1651,9 @@ Org indent Mode
 #+END_SRC
 ** rainbow-mode
 #+begin_src emacs-lisp
-  (use-package rainbow-mode
-    :ensure t
-    :config)
+  ;;(use-package rainbow-mode
+    ;;:ensure t
+    ;;:config)
 #+end_src
 
 ** command-log-mode
@@ -1668,12 +1680,6 @@ Org indent Mode
     (setq highlight-symbol-idle-delay 1)
     (highlight-symbol-mode t)
     )
-#+end_src
-** aggressive indent
-#+begin_src emacs-lisp
-  (use-package aggressive-indent
-    :ensure t
-    :config)
 #+end_src
 ** dired
 *** settings
@@ -2015,6 +2021,24 @@ Show subtree when pressing i
     :config
     (setq ws-butler-keep-whitespace-before-point nil)
     (ws-butler-global-mode))
+#+end_src
+
+** markdown-mode
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :ensure t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+#+end_src
+
+** rjsx-mode
+#+begin_src emacs-lisp
+  (use-package rjsx-mode
+    :ensure t
+    :config)
 #+end_src
 
 *  Temp
