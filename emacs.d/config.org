@@ -2048,6 +2048,13 @@ Show subtree when pressing i
     :config)
 #+end_src
 
+** language-tool
+#+begin_src emacs-lisp
+  (use-package langtool
+    :ensure t
+    :config)
+#+end_src
+
 *  Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
