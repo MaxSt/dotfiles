@@ -77,7 +77,7 @@
 #+END_SRC
 
 ** flyspell
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
      (with-eval-after-load "ispell"
 
        (when (executable-find "hunspell")
@@ -96,7 +96,7 @@
 
    (add-hook 'text-mode-hook #'flyspell-mode)
    (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-   #+END_SRC
+#+END_SRC
 
 ** Backups
 #+BEGIN_SRC emacs-lisp
@@ -160,6 +160,7 @@ These are the Files creating in the current Directory for files that have not be
   (add-to-list 'custom-theme-load-path "~/Documents/challenger-deep")
   (load-theme 'challenger-deep t)
   (use-package all-the-icons
+    :ensure t
     :config
     (use-package all-the-icons-dired
       :ensure t
@@ -316,24 +317,24 @@ These are the Files creating in the current Directory for files that have not be
 #+END_SRC
 * Evil
 ** initialize
-  #+BEGIN_SRC emacs-lisp
-    (use-package evil
-      :ensure t
-      :init
-      (setq-default evil-search-module 'evil-search
-                    evil-shift-width 2
-                    ;; prevent esc-key from translating to meta-key in terminal mode
-                    evil-esc-delay 0
-                    evil-want-Y-yank-to-eol t)
-      (evil-mode t)
-      :config
-      (evil-set-initial-state 'ibuffer-mode 'normal)
-      (evil-set-initial-state 'pdf-view-mode 'normal)
-      ;;(setq evil-emacs-state-modes nil)
-      ;;(setq evil-insert-state-modes nil)
-      ;;(setq evil-motion-state-modes nil)
-      )
-  #+end_src
+#+BEGIN_SRC emacs-lisp
+  (use-package evil
+    :ensure t
+    :init
+    (setq-default evil-search-module 'evil-search
+                  evil-shift-width 2
+                  ;; prevent esc-key from translating to meta-key in terminal mode
+                  evil-esc-delay 0
+                  evil-want-Y-yank-to-eol t)
+    (evil-mode t)
+    :config
+    (evil-set-initial-state 'ibuffer-mode 'normal)
+    (evil-set-initial-state 'pdf-view-mode 'normal)
+    ;;(setq evil-emacs-state-modes nil)
+    ;;(setq evil-insert-state-modes nil)
+    ;;(setq evil-motion-state-modes nil)
+    )
+#+end_src
 
 ** hydra
 #+BEGIN_SRC emacs-lisp
@@ -376,7 +377,7 @@ These are the Files creating in the current Directory for files that have not be
 
 ** custom text objects
 *** sexp
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
 
      ;;Evil smartparens text objects
      (evil-define-text-object evil-a-sexp (count &optional beg end type)
@@ -451,10 +452,10 @@ These are the Files creating in the current Directory for files that have not be
                        ))))
      ;;(define-key evil-inner-text-objects-map "e" 'evil-i-lisp-element)
 
-   #+end_src
+#+end_src
 *** line text object
-    no mapping for that object
-   #+begin_src emacs-lisp
+no mapping for that object
+#+begin_src emacs-lisp
 
      (evil-define-text-object evil-i-line (count &optional beg end type)
        "inner line"
@@ -480,10 +481,10 @@ These are the Files creating in the current Directory for files that have not be
                        (point)))))
      (define-key evil-outer-text-objects-map "l" 'evil-a-line)
 
-   #+END_SRC
+#+END_SRC
 ** General (keybindings)
-   [[https://github.com/noctuid/general.el][general.el]]
-   #+BEGIN_SRC emacs-lisp
+[[https://github.com/noctuid/general.el][general.el]]
+#+BEGIN_SRC emacs-lisp
      (use-package general
        :ensure t
        :config
@@ -539,6 +540,7 @@ These are the Files creating in the current Directory for files that have not be
                          "p" 'hydra-projectile/body
                          "q" 'evil-window-delete
                          "k" 'kill-buffer
+                         "d" 'evil-delete-buffer
 
                          "SPC" 'ace-select-window
 
@@ -558,6 +560,7 @@ These are the Files creating in the current Directory for files that have not be
                          "x" (general-simulate-keys "C-x")
                          "c" (general-simulate-keys "C-c")
 
+                         "i" 'ibuffer
                          "t" 'projectile-find-file
                          "/" 'counsel-rg-project
                          "e" 'projectile-switch-to-buffer
@@ -576,7 +579,7 @@ These are the Files creating in the current Directory for files that have not be
 
       (setq my-leader2 ",")
       (setq local-leader "\\")
-   #+END_SRC
+#+END_SRC
 ** evil-surround
 #+begin_src emacs-lisp
     (use-package evil-surround
@@ -603,7 +606,7 @@ These are the Files creating in the current Directory for files that have not be
 #+end_src
 
 ** evil-numbers
-   increment and decrement numbers with c-a and c-x
+increment and decrement numbers with c-a and c-x
 #+begin_src emacs-lisp
     (use-package evil-numbers
       :ensure t
@@ -613,7 +616,7 @@ These are the Files creating in the current Directory for files that have not be
 #+end_src
 
 ** evil-matchit
-   % to jump between matched tags
+% to jump between matched tags
 #+begin_src emacs-lisp
     (use-package evil-matchit
       :ensure t
@@ -773,18 +776,38 @@ These are the Files creating in the current Directory for files that have not be
 ** Exec-path
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
-	    :ensure t
-	    :config
-	    (exec-path-from-shell-initialize))
+      :ensure t
+      :config
+      (exec-path-from-shell-initialize))
 
 #+END_SRC
-** PopWin
+** Popup Window
 #+BEGIN_SRC emacs-lisp
-  (use-package popwin
+  (use-package shackle
     :ensure t
     :config
-    (popwin-mode 1))
-
+    (progn
+      (setq shackle-select-reused-windows nil) ; default nil
+      (setq shackle-default-alignment 'below) ; default below
+      (setq shackle-default-size 0.3) ; default 0.5
+      (setq shackle-rules
+            '(("*Warnings*"  :size 8  :noselect t)
+              ("*Messages*"  :size 12 :noselect t)
+              ("*Help*" :select t :popup t :align left)
+              ("*Metahelp*" :size 0.3 :align left)
+              ("*undo-tree*" :size 0.5 :align right)
+              (alchemist-iex-mode :same t)
+              (alchemist-test-report-mode :size 0.4 :align right :noselect t)
+              ("*alchemist help*" :same t)
+              ("*HTTP Response*" :size 0.3 :align below)
+              (cider-repl-mode :same t)
+              (cider-inspector-mode :size 0.3 :align above)
+              ("*cider-error*" :size 0.5 :align right)
+              (ivy-occur-grep-mode :size 0.3 :align below)
+              ))
+      (shackle-mode 1)
+      )
+    )
 #+END_SRC
 ** clojure
 #+BEGIN_SRC emacs-lisp
@@ -810,10 +833,6 @@ These are the Files creating in the current Directory for files that have not be
       :ensure t
       :config
       (add-hook 'cider-mode-hook #'cider-hydra-mode))
-
-    (push '("*cider-error*" :width 60 :position right) popwin:special-display-config)
-    (push '(cider-repl-mode :height 20 :position bottom) popwin:special-display-config)
-    (push '(cider-inspector-mode :height 10 :position top) popwin:special-display-config)
 
     (setq cider-repl-display-in-current-window nil)
     (setq cider-repl-use-pretty-printing t)
@@ -897,7 +916,7 @@ These are the Files creating in the current Directory for files that have not be
 #+end_src
 
 ** elisp
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
      ;;todo only for elisp!
      (evil-define-operator evil-eval-elisp-text-object (beg end)
        "Evil operator for evaluating code."
@@ -927,7 +946,7 @@ These are the Files creating in the current Directory for files that have not be
 
      (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
      (add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
-   #+END_SRC
+#+END_SRC
 ** lisp general
 #+BEGIN_SRC emacs-lisp
   (defun maybe-join-lisp-line (orig-fun &rest r)
@@ -1083,8 +1102,6 @@ These are the Files creating in the current Directory for files that have not be
               "TAB" 'neotree-enter
               "q" 'neotree-hide
               "RET" 'neotree-enter)
-    (:keymaps 'evil-normal-state-map
-              "|" 'neotree-toggle)
     :config
     (setq neo-theme (if window-system 'icons 'arrow)))
 #+end_src
@@ -1167,26 +1184,26 @@ These are the Files creating in the current Directory for files that have not be
   (term-send-raw-string "\t"))
 
 (add-hook 'term-mode-hook
-	  (lambda ()
-	    (evil-define-key 'normal term-raw-map
-	      (kbd "\C-j") 'evil-window-down
-	      (kbd "\C-k") 'evil-window-up
-	      (kbd "p") 'term-paste)
-	    (evil-define-key 'insert term-raw-map
-	      (kbd "\C-j") 'evil-window-down
-	      (kbd "\C-k") 'evil-window-up
-	      (kbd "\C-a") 'my-term-funcs/send-ctrl-a
-	      (kbd "\C-e") 'my-term-funcs/send-ctrl-e
-	      (kbd "\C-r") 'my-term-funcs/send-ctrl-r
-	      (kbd "\C-p") 'my-term-funcs/send-ctrl-p
-	      (kbd "\C-n") 'my-term-funcs/send-ctrl-n
-	      (kbd "\C-c") 'my-term-funcs/send-ctrl-c
-	      (kbd "\C-d") 'my-term-funcs/send-ctrl-d
-	      (kbd "\C-z") 'my-term-funcs/send-ctrl-z
-	      (kbd "SPC")  'my-term-funcs/send-space    ; must use this, or else smart-space overrides space here
-	      (kbd "TAB")  'my-term-funcs/send-tab
-	      [tab]        'my-term-funcs/send-tab
-	      (kbd "\C-w") 'term-send-backward-kill-word)))
+    (lambda ()
+      (evil-define-key 'normal term-raw-map
+        (kbd "\C-j") 'evil-window-down
+        (kbd "\C-k") 'evil-window-up
+        (kbd "p") 'term-paste)
+      (evil-define-key 'insert term-raw-map
+        (kbd "\C-j") 'evil-window-down
+        (kbd "\C-k") 'evil-window-up
+        (kbd "\C-a") 'my-term-funcs/send-ctrl-a
+        (kbd "\C-e") 'my-term-funcs/send-ctrl-e
+        (kbd "\C-r") 'my-term-funcs/send-ctrl-r
+        (kbd "\C-p") 'my-term-funcs/send-ctrl-p
+        (kbd "\C-n") 'my-term-funcs/send-ctrl-n
+        (kbd "\C-c") 'my-term-funcs/send-ctrl-c
+        (kbd "\C-d") 'my-term-funcs/send-ctrl-d
+        (kbd "\C-z") 'my-term-funcs/send-ctrl-z
+        (kbd "SPC")  'my-term-funcs/send-space    ; must use this, or else smart-space overrides space here
+        (kbd "TAB")  'my-term-funcs/send-tab
+        [tab]        'my-term-funcs/send-tab
+        (kbd "\C-w") 'term-send-backward-kill-word)))
 #+END_SRC
 
 # ** helm
@@ -1272,7 +1289,7 @@ These are the Files creating in the current Directory for files that have not be
   :ensure t
   :config
   (setq company-idle-delay 0.2
-	company-minimum-prefix-length 2)
+  company-minimum-prefix-length 2)
   (define-key company-active-map (kbd "M-n") nil)
   (define-key company-active-map (kbd "M-p") nil)
   (define-key company-active-map (kbd "C-n") #'company-select-next)
@@ -1358,44 +1375,127 @@ These are the Files creating in the current Directory for files that have not be
                         "q" 'git-timemachine-quit))
 #+END_SRC
 
+#+BEGIN_SRC emacs-lisp
+  (use-package git-gutter
+    :ensure t
+    :config
+    (use-package git-gutter-fringe
+      :ensure t)
+
+    (use-package fringe-helper
+      :ensure t)
+    (require 'fringe-helper)
+    (require 'git-gutter-fringe)
+
+    (fringe-mode 3)
+    ;; (push `(left-fringe  . 3) default-frame-alist)
+    ;; (push `(right-fringe . 3) default-frame-alist)
+    ;; ;; slightly larger default frame size on startup
+    ;; (push '(width . 120) default-frame-alist)
+    ;; (push '(height . 40) default-frame-alist)
+    ;; (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
+    ;; (set-fringe-bitmap-face 'tilde 'fringe)
+
+    ;; colored fringe "bars"
+    (define-fringe-bitmap 'git-gutter-fr:added
+      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
+      nil nil 'center)
+    (define-fringe-bitmap 'git-gutter-fr:modified
+      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
+      nil nil 'center)
+    (define-fringe-bitmap 'git-gutter-fr:deleted
+      [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
+      nil nil 'center)
+
+    (advice-add 'evil-force-normal-state :after 'git-gutter)
+    (add-hook 'focus-in-hook 'git-gutter:update-all-windows))
+
+  (use-package magit
+    :ensure t
+    :config
+    (use-package evil-magit
+      :ensure t)
+    ;; full screen magit-status
+    (defadvice magit-status (around magit-fullscreen activate)
+      (window-configuration-to-register :magit-fullscreen)
+      ad-do-it
+      (delete-other-windows))
+
+    (defun magit-quit-session ()
+      "Restores the previous window configuration and kills the magit buffer"
+      (interactive)
+      (kill-buffer)
+      (jump-to-register :magit-fullscreen)))
+
+
+  (use-package git-timemachine
+    :ensure t
+    :after general
+    :config
+    (general-define-key :keymaps '(git-timemachine-mode-map)
+                        :states '(normal)
+                        :prefix my-leader2
+                        "n" 'git-timemachine-show-next-revision
+                        "p" 'git-timemachine-show-previous-revision
+                        "r" 'git-timemachine-show-current-revision
+                        "q" 'git-timemachine-quit))
+#+END_SRC
+
 ** Org Mode
+*** imenu-list
+#+BEGIN_SRC emacs-lisp
+  (use-package imenu-list
+    :ensure t
+    :config
+    (setq imenu-list-focus-after-activation t)
+
+    (general-define-key :keymaps 'imenu-list-major-mode-map
+                        :states '(normal)
+                        "|" 'imenu-list-minor-mode
+                        "RET" 'imenu-list-goto-entry
+                        "i" 'imenu-list-goto-entry
+                        "q" 'imenu-list-quit-window)
+
+
+    )
+#+END_SRC
 *** org settings
 enable syntax highlighting in org-babel source code
 #+BEGIN_SRC emacs-lisp
-(setq org-src-fontify-natively t)
+  (setq org-src-fontify-natively t)
 #+END_SRC
 Org indent Mode
 #+BEGIN_SRC emacs-lisp
-(org-indent-mode 1)
+  (setq org-startup-indented t)
 #+END_SRC
-   set org default directory
+set org default directory
 #+BEGIN_SRC emacs-lisp
-(setq org-agenda-files '("~/Dropbox/org/"))
-(setq org-directory "~/Dropbox/org")
+  (setq org-agenda-files '("~/Dropbox/org/"))
+  (setq org-directory "~/Dropbox/org")
 #+END_SRC
 
 *** capture templates
-  #+BEGIN_SRC emacs-lisp
-    (setq org-capture-templates
-          '(("n"
-             "new Note"
-             entry
-             (file "notes.org")
-             "* %?")
-            ("t"
-             "My TODO task format."
-             entry
-             (file "todo.org")
-             "* TODO %? SCHEDULED: %t")))
+#+BEGIN_SRC emacs-lisp
+  (setq org-capture-templates
+        '(("n"
+           "new Note"
+           entry
+           (file "notes.org")
+           "* %?")
+          ("t"
+           "My TODO task format."
+           entry
+           (file "todo.org")
+           "* TODO %? SCHEDULED: %t")))
 
-    (setq org-refile-use-outline-path 'file)
-    (setq org-outline-path-complete-in-steps nil)
+  (setq org-refile-use-outline-path 'file)
+  (setq org-outline-path-complete-in-steps nil)
 
-    ;; use a depth level of 6 max
-    (setq org-refile-targets
-          '((org-agenda-files . (:maxlevel . 4))))
+  ;; use a depth level of 6 max
+  (setq org-refile-targets
+        '((org-agenda-files . (:maxlevel . 4))))
 
-  #+END_SRC
+#+END_SRC
 *** agenda keybindings
 *** org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
@@ -1440,6 +1540,7 @@ Org indent Mode
                       "TAB" 'org-cycle
                       "<" 'org-metaleft
                       ">" 'org-metaright
+                      "|" 'imenu-list-minor-mode
 
                       ;; "o" '(lambda ()
                       ;;        (interactive)
@@ -1453,7 +1554,6 @@ Org indent Mode
                                   (org-edit-special)
                                 (org-open-at-point))
                               (evil-normal-state)))
-
 
   (general-define-key :prefix my-leader2
                       :keymaps 'org-mode-map
@@ -1473,7 +1573,6 @@ Org indent Mode
                       "p" 'org-insert-link
                       "y" 'org-store-link
                       "h" 'org-previous-item
-                      "l" 'org-nex-tiem
                       "l" 'org-forward-heading-same-level
                       "h" 'org-backward-heading-same-level
                       "k" 'org-up-element
@@ -1533,7 +1632,7 @@ Org indent Mode
       TeX-command-list)))
   (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
   (add-hook 'TeX-mode-hook '(lambda () (flyspell-mode 1)))
-   #+END_SRC
+#+END_SRC
 ** projectile
 #+begin_src emacs-lisp
   (use-package projectile
@@ -1577,16 +1676,16 @@ Org indent Mode
             undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))))
 #+end_src
 ** recentf
-   for keeping track of recent files, provides helm-recentf with data
-   #+begin_src emacs-lisp
+for keeping track of recent files, provides helm-recentf with data
+#+begin_src emacs-lisp
      (use-package recentf
        :ensure t
        :config
        (recentf-mode 1)
        )
-   #+end_src
+#+end_src
 ** ivy
-  http://oremacs.com/swiper/
+http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
   (use-package ivy
     :ensure t
@@ -1598,7 +1697,9 @@ Org indent Mode
     (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
     (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
 
-    (push '(ivy-occur-grep-mode :height 20 :position bottom :stick true) popwin:special-display-config)
+  (general-define-key :keymaps '(ivy-occur-grep-mode-map)
+                      :states '(normal)
+                      "q" 'evil-delete-buffer)
 
     (defvar pop-target-window)
     (make-variable-buffer-local 'pop-target-window)
@@ -1686,22 +1787,22 @@ Org indent Mode
 #+end_src
 ** dired
 *** settings
-    move files to trash
-    #+BEGIN_SRC emacs-lisp
+move files to trash
+#+BEGIN_SRC emacs-lisp
       (setq delete-by-moving-to-trash t)
-    #+END_SRC
+#+END_SRC
 
-    Human readable filesize
-    #+BEGIN_SRC emacs-lisp
+Human readable filesize
+#+BEGIN_SRC emacs-lisp
       (setq dired-listing-switches "-alh")
-    #+END_SRC
+#+END_SRC
 
-    Prevents dired from creating an annoying popup when dired-find-alternate-file is called.
+Prevents dired from creating an annoying popup when dired-find-alternate-file is called.
 #+BEGIN_SRC emacs-lisp
   (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
 
-   Recursive copy and deletion
+Recursive copy and deletion
 #+BEGIN_SRC emacs-lisp
   (setq dired-recursive-copies 'always
         dired-recursive-deletes 'always)
@@ -1758,19 +1859,18 @@ Show subtree when pressing i
     :config)
 #+END_SRC
 *** dired-details
-    toggle details with ')'
-    #+BEGIN_SRC emacs-lisp
+toggle details with ')'
+#+BEGIN_SRC emacs-lisp
       (use-package dired-details+
         :ensure t
         :config)
-    #+END_SRC
+#+END_SRC
 
 ** restclient
 #+begin_src emacs-lisp
   (use-package restclient
     :ensure t
-    :config
-    (push '("*HTTP Response*" :height 20 :position bottom) popwin:special-display-config))
+    :config)
 #+end_src
 
 ** ejc-sql
@@ -1838,14 +1938,6 @@ Show subtree when pressing i
   (use-package alchemist
     :ensure t
     :config
-
-    (push '(alchemist-test-report-mode
-            :width 50
-            :position right
-            :stick true
-            :noselect true) popwin:special-display-config)
-    (push '(alchemist-iex-mode :height 20 :position bottom) popwin:special-display-config)
-    (push '("*alchemist help*" :width 80 :position left) popwin:special-display-config)
 
     (evil-define-operator evil-eval-elixir-text-object (beg end)
       "Evil operator for evaluating code."
@@ -1916,6 +2008,7 @@ Show subtree when pressing i
   (use-package powerline
     :ensure t
     :config
+    (add-hook 'desktop-after-read-hook 'powerline-reset)
 
     (defun make-rect (color height width)
       "Create an XPM bitmap."
@@ -1986,14 +2079,14 @@ Show subtree when pressing i
 ** docker
 #+begin_src emacs-lisp
   (use-package dockerfile-mode
- 	    :ensure t
- 	    :config)
+      :ensure t
+      :config)
 #+end_src
 ** yaml
 #+begin_src emacs-lisp
   (use-package yaml-mode
- 	    :ensure t
- 	    :config)
+      :ensure t
+      :config)
 #+end_src
 ** wgrep
 #+begin_src emacs-lisp
@@ -2108,7 +2201,7 @@ Show subtree when pressing i
     :config)
 #+end_src
 
-*  Temp
+* Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
   ;;   :ensure t
