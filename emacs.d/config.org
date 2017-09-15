@@ -78,7 +78,6 @@
 
 ** flyspell
    #+BEGIN_SRC emacs-lisp
-
      (with-eval-after-load "ispell"
 
        (when (executable-find "hunspell")
@@ -90,11 +89,13 @@
          (setq ispell-program-name "hunspell")
          (setq ispell-dictionary "en_US,de_AT")
          ;; ispell-set-spellchecker-params has to be called
-         ;; before ispell-hunspell-add-multi-dic will work
+         ;; bevore ispell-hunspell-add-multi-dic will work
          (ispell-set-spellchecker-params)
          (ispell-hunspell-add-multi-dic "en_US,de_AT")
+         ))
 
-         (add-hook 'prog-mode-hook (lambda () (flyspell-prog-mode)))))
+   (add-hook 'text-mode-hook #'flyspell-mode)
+   (add-hook 'prog-mode-hook #'flyspell-prog-mode)
    #+END_SRC
 
 ** Backups
@@ -327,6 +328,7 @@ These are the Files creating in the current Directory for files that have not be
       (evil-mode t)
       :config
       (evil-set-initial-state 'ibuffer-mode 'normal)
+      (evil-set-initial-state 'pdf-view-mode 'normal)
       ;;(setq evil-emacs-state-modes nil)
       ;;(setq evil-insert-state-modes nil)
       ;;(setq evil-motion-state-modes nil)
@@ -1241,6 +1243,7 @@ These are the Files creating in the current Directory for files that have not be
   :init
   (setq flycheck-indication-mode 'right-fringe)
   :config
+  (add-hook 'after-init-hook #'global-flycheck-mode)
   (global-flycheck-mode)
   (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
     [0 0 0 0 0 4 12 28 60 124 252 124 60 28 12 4 0 0 0 0])
@@ -2048,6 +2051,56 @@ Show subtree when pressing i
     :config)
 #+end_src
 
+** pdf-tools
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :ensure t
+    :config
+    (pdf-tools-install)
+    (general-define-key :keymaps '(pdf-view-mode-map)
+                        :states '(normal)
+                        ;;Navigation
+                        "j"  'pdf-view-next-line-or-next-page
+                        "k"  'pdf-view-previous-line-or-previous-page
+                        "l"  'image-forward-hscroll
+                        "h"  'image-backward-hscroll
+                        "C-f"  'pdf-view-next-page
+                        "C-b"  'pdf-view-previous-page
+                        "u"  'pdf-view-scroll-down-or-previous-page
+                        "d"  'pdf-view-scroll-up-or-next-page
+                        "0"  'image-bol
+                        "$"  'image-eol
+                        "+" 'pdf-view-enlarge
+                        "-" 'pdf-view-shrink
+                        ;; Copy
+                        "y" 'pdf-view-kill-ring-save
+                        ;; Scale/Fit
+                        "W"  'pdf-view-fit-width-to-window
+                        "H"  'pdf-view-fit-height-to-window
+                        "P"  'pdf-view-fit-page-to-window
+                        "m"  'pdf-view-set-slice-using-mouse
+                        "b"  'pdf-view-set-slice-from-bounding-box
+                        "R"  'pdf-view-reset-slice
+                        "zr" 'pdf-view-scale-reset
+                        ;; Annotations
+                        "aD" 'pdf-annot-delete
+                        "at" 'pdf-annot-attachment-dired
+                        "al" 'pdf-annot-list-annotations
+                        "am" 'pdf-annot-add-markup-annotation
+                        ;; Actions
+                        "s" 'pdf-occur
+                        "O" 'pdf-outline
+                        "p" 'pdf-misc-print-document
+                        "o" 'pdf-links-action-perform
+                        "r" 'pdf-view-revert-buffer
+                        "t" 'pdf-annot-attachment-dired
+                        "n" 'pdf-view-midnight-minor-mode)
+                                          ; Other
+
+    (add-hook 'pdf-view-mode-hook (lambda () (setq display-line-numbers nil)))
+
+    )
+#+end_src
 ** language-tool
 #+begin_src emacs-lisp
   (use-package langtool
