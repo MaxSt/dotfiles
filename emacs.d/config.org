@@ -55,6 +55,7 @@
    ;;                              fringe-indicator-alist)
 
    blink-matching-paren nil ; don't blink--too distracting
+   show-trailing-whitespace t ;; show trailing whitespace
    )
 
   ;; disable the annoying bell ring
@@ -1945,6 +1946,9 @@ toggle details with ')'
       (save-excursion
         (my-funcs/flash-region beg end)
         (alchemist-iex-send-region beg end)))
+
+    (add-hook 'alchemist-iex-mode (lambda () (setq show-trailing-whitespace nil)))
+    (add-hook 'alchemist-test-report-mode (lambda () (setq show-trailing-whitespace nil)))
 
     (general-define-key :prefix local-leader
                         :keymaps '(elixir-mode-map)
