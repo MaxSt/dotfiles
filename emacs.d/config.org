@@ -32,6 +32,7 @@
   (setq-default display-line-numbers 'visual)
   ;; make current line 0
   (setq-default display-line-numbers-current-absolute 'nil)
+  (setq-default fill-column 80)
   (setq-default truncate-lines nil) ; line wrap
   (setq-default indent-tabs-mode nil
                 tab-width 2)
@@ -55,7 +56,7 @@
    ;;                              fringe-indicator-alist)
 
    blink-matching-paren nil ; don't blink--too distracting
-   show-trailing-whitespace t ;; show trailing whitespace
+   ;;show-trailing-whitespace t ;; show trailing whitespace
    )
 
   ;; disable the annoying bell ring
@@ -166,8 +167,7 @@ These are the Files creating in the current Directory for files that have not be
     (use-package all-the-icons-dired
       :ensure t
       :config
-      (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
-      ))
+      (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
 
 #+end_src
 * custom Functions
@@ -606,6 +606,17 @@ no mapping for that object
     )
 #+end_src
 
+** evil-indent-plus textobject
+#+begin_src emacs-lisp
+  (use-package evil-indent-plus
+    :ensure t
+    :config
+
+    ;; bind evil-indent-plus text objects
+
+    (evil-indent-plus-default-bindings)
+    )
+#+end_src
 ** evil-numbers
 increment and decrement numbers with c-a and c-x
 #+begin_src emacs-lisp
@@ -771,6 +782,11 @@ increment and decrement numbers with c-a and c-x
     :config
     (setq evil-replace-with-register-key (kbd "gr"))
     (evil-replace-with-register-install))
+#+end_src
+
+** artist-mode
+#+begin_src emacs-lisp
+(add-hook artist-mode-hook #'(lambda () (evil-emacs-state)))
 #+end_src
 
 * Package config
@@ -1442,8 +1458,7 @@ increment and decrement numbers with c-a and c-x
                         "q" 'git-timemachine-quit))
 #+END_SRC
 
-** Org Mode
-*** imenu-list
+** imenu-list
 #+BEGIN_SRC emacs-lisp
   (use-package imenu-list
     :ensure t
@@ -1460,45 +1475,45 @@ increment and decrement numbers with c-a and c-x
 
     )
 #+END_SRC
+** Org Mode
 *** org settings
-enable syntax highlighting in org-babel source code
-#+BEGIN_SRC emacs-lisp
-  (setq org-src-fontify-natively t)
-#+END_SRC
-Org indent Mode
-#+BEGIN_SRC emacs-lisp
-  (setq org-startup-indented t)
-#+END_SRC
-set org default directory
-#+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files '("~/Dropbox/org/"))
-  (setq org-directory "~/Dropbox/org")
-#+END_SRC
+**** enable syntax highlighting in org-babel source code
+  #+BEGIN_SRC emacs-lisp
+    (setq org-src-fontify-natively t)
+  #+END_SRC
+**** COMMENT Org indent Mode
+  #+BEGIN_SRC emacs-lisp
+    (setq org-startup-indented t)
+  #+END_SRC
+**** set org default directory
+  #+BEGIN_SRC emacs-lisp
+    (setq org-agenda-files '("~/Dropbox/org/"))
+    (setq org-directory "~/Dropbox/org")
+  #+END_SRC
 
-*** capture templates
-#+BEGIN_SRC emacs-lisp
-  (setq org-capture-templates
-        '(("n"
-           "new Note"
-           entry
-           (file "notes.org")
-           "* %?")
-          ("t"
-           "My TODO task format."
-           entry
-           (file "todo.org")
-           "* TODO %? SCHEDULED: %t")))
+**** capture templates
+ #+BEGIN_SRC emacs-lisp
+   (setq org-capture-templates
+         '(("n"
+            "new Note"
+            entry
+            (file "notes.org")
+            "* %?")
+           ("t"
+            "My TODO task format."
+            entry
+            (file "todo.org")
+            "* TODO %? SCHEDULED: %t")))
 
-  (setq org-refile-use-outline-path 'file)
-  (setq org-outline-path-complete-in-steps nil)
+   (setq org-refile-use-outline-path 'file)
+   (setq org-outline-path-complete-in-steps nil)
 
-  ;; use a depth level of 6 max
-  (setq org-refile-targets
-        '((org-agenda-files . (:maxlevel . 4))))
+   ;; use a depth level of 6 max
+   (setq org-refile-targets
+         '((org-agenda-files . (:maxlevel . 4))))
 
-#+END_SRC
-*** agenda keybindings
-*** org-bullets (pretty bullets)
+ #+END_SRC
+*** COMMENT org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
     :ensure t
@@ -1506,6 +1521,10 @@ set org default directory
     (add-hook 'org-mode-hook
               (lambda ()
                 (org-bullets-mode 1))))
+#+END_SRC
+*** ellipsis
+#+BEGIN_SRC emacs-lisp
+(setq-default org-ellipsis (concat " " (all-the-icons-faicon "caret-down")))
 #+END_SRC
 
 *** org-Reveal (HTML presentations)
@@ -1523,8 +1542,12 @@ set org default directory
 #+BEGIN_SRC emacs-lisp
   (defun clever-insert-item ()
     "Clever insertion of org item."
+    (interactive)
     (if (not (org-in-item-p))
-        (insert "\n")
+        (progn
+          (end-of-visible-line)
+          (insert "\n")
+          (evil-append nil))
       (org-insert-item))
     )
 
@@ -1543,6 +1566,7 @@ set org default directory
                       ">" 'org-metaright
                       "|" 'imenu-list-minor-mode
 
+                      "o" 'clever-insert-item
                       ;; "o" '(lambda ()
                       ;;        (interactive)
                       ;;        (end-of-line)
@@ -1570,6 +1594,8 @@ set org default directory
                             (evil-insert-state))
                       "s" 'org-schedule
                       "r" 'org-refile
+                      "n" 'org-narrow-to-subtree
+                      "w" 'widen
                       "t" 'org-todo
                       "p" 'org-insert-link
                       "y" 'org-store-link
@@ -1592,7 +1618,6 @@ set org default directory
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
 #+END_SRC
-
 ** smartparens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
@@ -1626,13 +1651,13 @@ set org default directory
     :config
     (auctex-latexmk-setup))
 
-  (add-hook 'LaTeX-mode-hook (lambda ()
-    (push
-      '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
-        :help "Run latexmk on file")
-      TeX-command-list)))
-  (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
-  (add-hook 'TeX-mode-hook '(lambda () (flyspell-mode 1)))
+  (add-hook 'TeX-mode-hook
+            '(lambda ()
+               (setq evil-auto-indent nil)
+               (refill-mode)
+               (setq TeX-command-default "latexmk")
+               (flyspell-mode 1)
+               ))
 #+END_SRC
 ** projectile
 #+begin_src emacs-lisp
@@ -1754,11 +1779,27 @@ http://oremacs.com/swiper/
     :config)
 
 #+END_SRC
-** rainbow-mode
+** hex colors
 #+begin_src emacs-lisp
-  ;;(use-package rainbow-mode
-    ;;:ensure t
-    ;;:config)
+ (defvar hexcolour-keywords
+        '(("#[abcdef[:digit:]]\\{3,6\\}"
+           (0 (let ((colour (match-string-no-properties 0)))
+                (if (or (= (length colour) 4)
+                        (= (length colour) 7))
+                    (put-text-property
+                     (match-beginning 0)
+                     (match-end 0)
+                     'face (list :background (match-string-no-properties 0)
+                                 :foreground (if (>= (apply '+ (x-color-values 
+                                                                (match-string-no-properties 0)))
+                                                     (* (apply '+ (x-color-values "white")) .6))
+                                                 "black" ;; light bg, dark text
+                                               "white" ;; dark bg, light text
+                                              )))))
+              append))))
+  (defun hexcolour-add-to-font-lock ()
+    (interactive)
+    (font-lock-add-keywords nil hexcolour-keywords t))
 #+end_src
 
 ** command-log-mode
@@ -1946,9 +1987,6 @@ toggle details with ')'
       (save-excursion
         (my-funcs/flash-region beg end)
         (alchemist-iex-send-region beg end)))
-
-    (add-hook 'alchemist-iex-mode (lambda () (setq show-trailing-whitespace nil)))
-    (add-hook 'alchemist-test-report-mode (lambda () (setq show-trailing-whitespace nil)))
 
     (general-define-key :prefix local-leader
                         :keymaps '(elixir-mode-map)
@@ -2150,13 +2188,25 @@ toggle details with ')'
     ;;(setq ag-reuse-window 't)
 #+end_src
 
-** whitespace-trim
+** whitespace mode
 #+begin_src emacs-lisp
-  (use-package ws-butler
+  (use-package whitespace
     :ensure t
     :config
-    (setq ws-butler-keep-whitespace-before-point nil)
-    (ws-butler-global-mode))
+    (setq-default
+     whitespace-style '(face trailing lines-tail))
+    (setq whitespace-global-modes '(not
+                                    dired-mode
+                                    alchemist-test-mode
+                                    alchemist-iex-mode
+                                    cider-repl-mode
+                                    ))
+    (add-hook 'whitespace-mode-hook
+              (lambda () (setq whitespace-line-column fill-column)))
+
+    (global-whitespace-mode 1)
+
+    )
 #+end_src
 
 ** markdown-mode
@@ -2232,6 +2282,23 @@ toggle details with ')'
   (use-package langtool
     :ensure t
     :config)
+#+end_src
+
+** evil-goggles
+#+begin_src emacs-lisp
+  (use-package evil-goggles
+    :ensure t
+    :config
+    (setq evil-goggles-duration 0.200)
+    (evil-goggles-mode))
+#+end_src
+
+** editorconfig
+#+begin_src emacs-lisp
+(use-package editorconfig
+  :ensure t
+  :config
+  (editorconfig-mode 1))
 #+end_src
 
 * Temp
