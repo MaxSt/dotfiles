@@ -191,40 +191,11 @@ These are the Files creating in the current Directory for files that have not be
            (path (concat dir (symbol-name major-mode))))
       (dired path)))
 
-  (defun my-funcs/resize-window-down ()
-    "Resize a window downwards."
-    (interactive)
-    (if (window-in-direction 'below)
-        (enlarge-window 1)
-      (shrink-window 1)))
-
-  (defun my-funcs/resize-window-up ()
-    "Resize a window upwards."
-    (interactive)
-    (if (window-in-direction 'above)
-        (enlarge-window 1)
-      (shrink-window 1)))
-
-  (defun my-funcs/resize-window-left ()
-    "Resize a window leftwards."
-    (interactive)
-    (if (window-in-direction 'left)
-        (enlarge-window-horizontally 1)
-      (shrink-window-horizontally 1)))
-
-  (defun my-funcs/resize-window-right ()
-    "Resize a window rightwards."
-    (interactive)
-    (if (window-in-direction 'right)
-        (enlarge-window-horizontally 1)
-      (shrink-window-horizontally 1)))
-
   (defun my-funcs/flash-region (start end)
     "Makes the region between START and END change color for a moment"
     (let ((overlay (make-overlay start end)))
       (overlay-put overlay 'face 'swiper-match-face-4)
       (run-with-timer 0.2 nil 'delete-overlay overlay)))
-
 
   (defun my-funcs/what-face (pos)
     "Tells you the name of the face (point) is on."
@@ -486,100 +457,102 @@ no mapping for that object
 ** General (keybindings)
 [[https://github.com/noctuid/general.el][general.el]]
 #+BEGIN_SRC emacs-lisp
-     (use-package general
-       :ensure t
-       :config
-       (general-evil-setup)
-       ;; bind a key globally in normal state; keymaps must be quoted
-       (setq general-default-keymaps 'evil-normal-state-map))
+  (use-package general
+    :ensure t
+    :config
+    (general-evil-setup)
+    ;; bind a key globally in normal state; keymaps must be quoted
+    (setq general-default-keymaps 'evil-normal-state-map))
 
 
-     ;;evil mappings
-     (general-define-key :keymaps 'normal
-                         "M-l" (lambda ()
-                                 (interactive)
-                                 (evil-window-vsplit)
-                                 (evil-window-right 1))
-                         "M-h" (lambda ()
-                                 (interactive)
-                                 (evil-window-vsplit))
-                         "M-k" (lambda ()
-                                 (interactive)
-                                 (evil-window-split))
-                         "M-j" (lambda ()
-                                 (interactive)
-                                 (evil-window-split)
-                                 (evil-window-down 1))
-                         "gs" 'save-buffer
-                         "`" 'evil-goto-mark-line
-                         "'" 'evil-goto-mark
-                         "C-h" 'evil-window-left
-                         "C-l" 'evil-window-right
-                         "C-k" 'evil-window-up
-                         "C-j" 'evil-window-down
-                         "g ." 'my-funcs/open-dotfile
-                         "g h" 'org-capture
-                         "g l" 'org-agenda
-                         "g o" (lambda ()
-                                 (interactive)
-                                 (dired org-directory))
-                         "] SPC" (lambda ()
-                                   (interactive)
-                                   (save-excursion
-                                     (evil-open-below 1))
-                                   (evil-normal-state))
-                         "[ SPC" (lambda ()
-                                   (interactive)
-                                   (save-excursion
-                                     (evil-open-above 1))
-                                   (evil-normal-state))
-                         )
-     ;; named prefix key
-     (setq my-leader "SPC")
-     (general-define-key :prefix my-leader
-                         ;;"r" 'restart-emacs
-                         "p" 'hydra-projectile/body
-                         "q" 'evil-window-delete
-                         "k" 'kill-buffer
-                         "d" 'evil-delete-buffer
+  ;;evil mappings
+  (general-define-key :keymaps 'normal
+                      "M-l" (lambda ()
+                              (interactive)
+                              (evil-window-vsplit)
+                              (evil-window-right 1))
+                      "M-h" (lambda ()
+                              (interactive)
+                              (evil-window-vsplit))
+                      "M-k" (lambda ()
+                              (interactive)
+                              (evil-window-split))
+                      "M-j" (lambda ()
+                              (interactive)
+                              (evil-window-split)
+                              (evil-window-down 1))
+                      "gs" 'save-buffer
+                      "`" 'evil-goto-mark-line
+                      "'" 'evil-goto-mark
+                      "C-h" 'evil-window-left
+                      "C-l" 'evil-window-right
+                      "C-k" 'evil-window-up
+                      "C-j" 'evil-window-down
+                      "g ." 'my-funcs/open-dotfile
+                      "g h" 'org-capture
+                      "g l" 'org-agenda
+                      "g o" (lambda ()
+                              (interactive)
+                              (dired org-directory))
+                      "] SPC" (lambda ()
+                                (interactive)
+                                (save-excursion
+                                  (evil-open-below 1))
+                                (evil-normal-state))
+                      "[ SPC" (lambda ()
+                                (interactive)
+                                (save-excursion
+                                  (evil-open-above 1))
+                                (evil-normal-state))
+                      )
+  ;; named prefix key
+  (setq my-leader "SPC")
+  (general-define-key :prefix my-leader
+                      ;;"r" 'restart-emacs
+                      "p" 'hydra-projectile/body
+                      "x" 'evil-window-delete
+                      "k" 'kill-buffer
+                      "d" 'evil-delete-buffer
 
-                         "SPC" 'ace-select-window
+                      "SPC" 'ace-select-window
 
-                         ;;"h" (general-simulate-keys "C-h")
-                         "h k" 'describe-key
-                         "h SPC" 'which-key-show-top-level
-                         "h v" 'describe-variable
-                         "h f" 'describe-function
-                         "h m" 'describe-mode
-                         "<return>" 'my/projectile-multi-term
-                         "S-<return>" 'multi-term
+                      ;;"h" (general-simulate-keys "C-h")
+                      "h k" 'describe-key
+                      "h SPC" 'which-key-show-top-level
+                      "h v" 'describe-variable
+                      "h f" 'describe-function
+                      "h m" 'describe-mode
+                      "<return>" 'my/projectile-multi-term
+                      "S-<return>" 'multi-term
 
-                         ;;  Avoiding CTRL
-                         "W" 'ace-select-window
-                         "S" 'ace-swap-window
-                         "w" (general-simulate-keys "C-w")
-                         "x" (general-simulate-keys "C-x")
-                         "c" (general-simulate-keys "C-c")
+                      ;;  Avoiding CTRL
+                      "w" 'ace-window
+                      "W" (general-simulate-keys "C-w")
+                      "x" (general-simulate-keys "C-x")
+                      "c" (general-simulate-keys "C-c")
 
-                         "i" 'ibuffer
-                         "t" 'projectile-find-file
-                         "/" 'counsel-rg-project
-                         "e" 'projectile-switch-to-buffer
-                         ". s" 'my-funcs/open-snippet-dir
-                         "g s" 'magit-status
-                         "g t" 'git-timemachine
-                         "l" 'evil-avy-goto-line
-                         "u" 'undo-tree-visualize
-                         "b" 'ivy-switch-buffer
-                         "n" 'next-error
-                         "N" 'previous-error
-                         "z" 'hydra-zoom/body
-                         "o" (lambda () (interactive) (dired "."))
-                         "O" 'dired
-                         "f" 'find-file)
+                      "i" 'ibuffer
+                      "t" 'projectile-find-file
+                      "/" 'counsel-rg-project
+                      "e" 'projectile-switch-to-buffer
+                      ". s" 'my-funcs/open-snippet-dir
+                      "g s" 'magit-status
+                      "g t" 'git-timemachine
+                      "g n" 'git-gutter:next-hunk
+                      "g p" 'git-gutter:previous-hunk
+                      "g r" 'git-gutter:revert-hunk
+                      "l" 'evil-avy-goto-line
+                      "u" 'undo-tree-visualize
+                      "b" 'ivy-switch-buffer
+                      "n" 'next-error
+                      "N" 'previous-error
+                      "z" 'hydra-zoom/body
+                      "o" (lambda () (interactive) (dired "."))
+                      "O" 'dired
+                      "f" 'find-file)
 
-      (setq my-leader2 ",")
-      (setq local-leader "\\")
+   (setq my-leader2 ",")
+   (setq local-leader "\\")
 #+END_SRC
 ** evil-surround
 #+begin_src emacs-lisp
@@ -674,6 +647,15 @@ increment and decrement numbers with c-a and c-x
       :after (evil)
       :config
       (evil-commentary-mode))
+#+end_src
+
+** evil-anzu
+#+begin_src emacs-lisp
+  (use-package evil-anzu
+      :ensure t
+      :after (evil)
+      :config
+      )
 #+end_src
 
 ** ibuffer
@@ -1302,20 +1284,20 @@ increment and decrement numbers with c-a and c-x
 
 ** company
 #+BEGIN_SRC emacs-lisp
-(use-package company
-  :ensure t
-  :config
-  (setq company-idle-delay 0.2
-  company-minimum-prefix-length 2)
-  (define-key company-active-map (kbd "M-n") nil)
-  (define-key company-active-map (kbd "M-p") nil)
-  (define-key company-active-map (kbd "C-n") #'company-select-next)
-  (define-key company-active-map (kbd "C-p") #'company-select-previous)
-  (define-key company-active-map (kbd "C-w") #'backward-kill-word)
-  ;(define-key company-active-map [tab] 'my-funcs/expand-snippet-or-complete-selection)
-  ;(define-key company-active-map (kbd "TAB") 'my-funcs/expand-snippet-or-complete-selection)
-  (nconc company-backends '(company-yasnippet))
-  (global-company-mode))
+  (use-package company
+    :ensure t
+    :config
+    (setq company-idle-delay 0.2
+          company-minimum-prefix-length 2)
+    (define-key company-active-map (kbd "M-n") nil)
+    (define-key company-active-map (kbd "M-p") nil)
+    (define-key company-active-map (kbd "C-n") #'company-select-next)
+    (define-key company-active-map (kbd "C-p") #'company-select-previous)
+    (define-key company-active-map (kbd "C-w") #'backward-kill-word)
+    ;;(define-key company-active-map [tab] 'my-funcs/expand-snippet-or-complete-selection)
+    ;;(define-key company-active-map (kbd "TAB") 'my-funcs/expand-snippet-or-complete-selection)
+    (nconc company-backends '(company-yasnippet))
+    (global-company-mode))
 #+END_SRC
 
 ** zoom
@@ -1713,93 +1695,74 @@ for keeping track of recent files, provides helm-recentf with data
 ** ivy
 http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
-  (use-package ivy
-    :ensure t
-    :config
-    ;; regex order
-    (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+    (use-package ivy
+      :ensure t
+      :config
+      ;; regex order
+      (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
 
-    (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
-    (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
-    (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
+      (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
+      (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
+      (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
 
-  (general-define-key :keymaps '(ivy-occur-grep-mode-map)
-                      :states '(normal)
-                      "q" 'evil-delete-buffer)
+    (general-define-key :keymaps '(ivy-occur-grep-mode-map)
+                        :states '(normal)
+                        "q" 'evil-delete-buffer)
 
-    (defvar pop-target-window)
-    (make-variable-buffer-local 'pop-target-window)
+      (defvar pop-target-window)
+      (make-variable-buffer-local 'pop-target-window)
 
-    (advice-add 'compilation-goto-locus :around #'my-around-compilation-goto-locus)
+      (advice-add 'compilation-goto-locus :around #'my-around-compilation-goto-locus)
 
-    (defun my-around-compilation-goto-locus (orig-func &rest args)
-      (advice-add 'pop-to-buffer :override #'my-pop-to-buffer)
-      (apply orig-func args))
+      (defun my-around-compilation-goto-locus (orig-func &rest args)
+        (advice-add 'pop-to-buffer :override #'my-pop-to-buffer)
+        (apply orig-func args))
 
-    (defun my-pop-to-buffer (buffer &optional action norecord)
-      (advice-remove 'pop-to-buffer #'my-pop-to-buffer)
-      (let ((from-buffer (current-buffer))
-            (reused-window (display-buffer-reuse-window buffer nil)))
-        (cond (reused-window
-               (select-window reused-window norecord))
-              ((and (bound-and-true-p pop-target-window)
-                    (window-live-p pop-target-window))
-               (window--display-buffer buffer pop-target-window 'reuse)
-               (select-window pop-target-window norecord))
-              (t
-               (pop-to-buffer buffer action norecord)
-               (with-current-buffer from-buffer
-                 (setq-local pop-target-window (selected-window)))))))
+      (defun my-pop-to-buffer (buffer &optional action norecord)
+        (advice-remove 'pop-to-buffer #'my-pop-to-buffer)
+        (let ((from-buffer (current-buffer))
+              (reused-window (display-buffer-reuse-window buffer nil)))
+          (cond (reused-window
+                 (select-window reused-window norecord))
+                ((and (bound-and-true-p pop-target-window)
+                      (window-live-p pop-target-window))
+                 (window--display-buffer buffer pop-target-window 'reuse)
+                 (select-window pop-target-window norecord))
+                (t
+                 (pop-to-buffer buffer action norecord)
+                 (with-current-buffer from-buffer
+                   (setq-local pop-target-window (selected-window)))))))
 
 
-    (ivy-mode t))
+      (ivy-mode t))
 
-  (use-package counsel
-    :ensure t
-    :config)
+    (use-package counsel
+      :ensure t
+      :config)
 
-  (use-package swiper
-    :ensure t
-    :config
-    (ivy-mode t))
+    (use-package swiper
+      :ensure t
+      :config
+      (ivy-mode t))
 
-  (use-package avy
-    :ensure t
-    :config
+    (use-package avy
+      :ensure t
+      :config
 
-    (defun avy-line-saving-column ()
-      (interactive)
-      (let ((col (current-column)))
-        (avy-goto-line)
-        (move-to-column col)))
-    )
-
-  (use-package ace-window
-    :ensure t
-    :config)
+      (defun avy-line-saving-column ()
+        (interactive)
+        (let ((col (current-column)))
+          (avy-goto-line)
+          (move-to-column col)))
+      )
 
 #+END_SRC
-** hex colors
+
+** COMMENT hex colors
 #+begin_src emacs-lisp
- (defvar hexcolour-keywords
-        '(("#[abcdef[:digit:]]\\{3,6\\}"
-           (0 (let ((colour (match-string-no-properties 0)))
-                (if (or (= (length colour) 4)
-                        (= (length colour) 7))
-                    (put-text-property
-                     (match-beginning 0)
-                     (match-end 0)
-                     'face (list :background (match-string-no-properties 0)
-                                 :foreground (if (>= (apply '+ (x-color-values 
-                                                                (match-string-no-properties 0)))
-                                                     (* (apply '+ (x-color-values "white")) .6))
-                                                 "black" ;; light bg, dark text
-                                               "white" ;; dark bg, light text
-                                              )))))
-              append))))
-  (defun hexcolour-add-to-font-lock ()
-    (interactive)
-    (font-lock-add-keywords nil hexcolour-keywords t))
+  (use-package rainbow-mode
+    :ensure t
+    :config)
 #+end_src
 
 ** command-log-mode
@@ -2046,7 +2009,6 @@ toggle details with ')'
 
 ** powerline
 #+BEGIN_SRC emacs-lisp
-
   (use-package powerline
     :ensure t
     :config
@@ -2095,9 +2057,13 @@ toggle details with ')'
           (concat
            (propertize (concat
                         (projectile-project-name))
-                        'face 'warning)
+                       'face 'warning)
            " "
            (buffer-name)))))
+
+    (defun powerline-ace-window ()
+      (propertize (window-parameter (selected-window) 'my-ace-window-path)
+                  'face 'error))
 
     (setq-default mode-line-format
                   '("%e"
@@ -2130,11 +2096,13 @@ toggle details with ')'
                                      (powerline-major-mode)
                                      " "))
                             (rhs (list
+                                  (powerline-ace-window)
+                                  " | "
                                   (format "%s" (eyebrowse--get 'current-slot))
                                   " | "
-                                  (powerline-raw "%l:%c" 'mode-line 'r)
+                                  (powerline-raw "%l:%c" 'face1 'r)
                                   " | "
-                                  (powerline-raw "%6p" 'mode-line 'r)
+                                  (powerline-raw "%6p" 'face1 'r)
                                   (powerline-hud 'highlight 'region 1)
                                   " "
                                   ))
@@ -2194,19 +2162,13 @@ toggle details with ')'
     :ensure t
     :config
     (setq-default
-     whitespace-style '(face trailing lines-tail))
+     whitespace-style '(face trailing))
     (setq whitespace-global-modes '(not
                                     dired-mode
                                     alchemist-test-mode
                                     alchemist-iex-mode
-                                    cider-repl-mode
-                                    ))
-    (add-hook 'whitespace-mode-hook
-              (lambda () (setq whitespace-line-column fill-column)))
-
-    (global-whitespace-mode 1)
-
-    )
+                                    cider-repl-mode))
+    (global-whitespace-mode 1))
 #+end_src
 
 ** markdown-mode
@@ -2273,9 +2235,7 @@ toggle details with ')'
                         "n" 'pdf-view-midnight-minor-mode)
                                           ; Other
 
-    (add-hook 'pdf-view-mode-hook (lambda () (setq display-line-numbers nil)))
-
-    )
+    (add-hook 'pdf-view-mode-hook (lambda () (setq display-line-numbers nil))))
 #+end_src
 ** language-tool
 #+begin_src emacs-lisp
@@ -2298,10 +2258,87 @@ toggle details with ')'
   (use-package editorconfig
     :ensure t
     :config
-    (add-hook 'editorconfig-custom-hooks
-              (lambda (hash) (setq whitespace-line-column fill-column)))
 
     (editorconfig-mode 1))
+#+end_src
+
+** fill-column-indicator
+#+begin_src emacs-lisp
+  (use-package fill-column-indicator
+    :ensure t
+    :config
+
+  (defun on-off-fci-before-company(command)
+    (when (string= "show" command)
+      (turn-off-fci-mode))
+    (when (string= "hide" command)
+      (turn-on-fci-mode)))
+
+  (advice-add 'company-call-frontends :before #'on-off-fci-before-company)
+  (add-hook 'prog-mode-hook #'fci-mode)
+  (setq-default fci-rule-color "#906cff")
+  )
+#+end_src
+
+
+** ace-window
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :ensure t
+    :defer 1
+    :config
+    (set-face-attribute 'aw-leading-char-face nil :foreground nil :inherit 'evil-goggles-delete-face)
+
+
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+          aw-background nil
+          aw-dispatch-always t
+          aw-dispatch-alist
+          '((?x aw-delete-window     "Ace - Delete Window")
+            (?c aw-swap-window       "Ace - Swap Window")
+            (?w aw-flip-window)
+            (?o delete-other-windows)
+            (?b balance-windows)
+            ))
+
+    (when (package-installed-p 'hydra)
+      (defhydra hydra-window-size (:color red)
+        "Windows size"
+        ("h" shrink-window-horizontally "shrink horizontal")
+        ("j" shrink-window "shrink vertical")
+        ("k" enlarge-window "enlarge vertical")
+        ("l" enlarge-window-horizontally "enlarge horizontal"))
+      (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t))
+
+    (define-minor-mode my-ace-window-display-mode
+      "Minor mode for showing the ace window key in the mode line."
+      :global t
+      (if my-ace-window-display-mode
+          (progn
+            (my-aw-update)
+            (force-mode-line-update t)
+            ;; Each time a window is created or deleted, Emacs
+            ;; will run the `window-configuration-change-hook' -
+            ;; exactly what I need to update `mode-line-format'.
+            (add-hook 'window-configuration-change-hook 'my-aw-update))
+        (remove-hook 'window-configuration-change-hook 'my-aw-update)))
+
+    (defun my-aw-update ()
+      "Update my-ace-window-path window parameter for all windows."
+      (avy-traverse
+       (avy-tree (aw-window-list) aw-keys)
+       (lambda (path leaf)
+         ;; Use `set-window-parameter' to store a variable for
+         ;; each window.  Buffer local variables would not work
+         ;; here, since one buffer can be displayed in multiple
+         ;; windows, and those would need a different key each.
+         (set-window-parameter
+          leaf 'my-ace-window-path
+          (propertize
+           (apply #'string (reverse path)))))))
+
+    (my-ace-window-display-mode))
+
 #+end_src
 
 * Temp
