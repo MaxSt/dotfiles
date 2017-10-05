@@ -1633,13 +1633,15 @@ increment and decrement numbers with c-a and c-x
     :config
     (auctex-latexmk-setup))
 
-  (add-hook 'TeX-mode-hook
-            '(lambda ()
-               (setq evil-auto-indent nil)
-               (refill-mode)
-               (setq TeX-command-default "latexmk")
-               (flyspell-mode 1)
-               ))
+  (add-hook 'LaTeX-mode-hook
+            (lambda ()
+              (push
+               '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
+                 :help "Run latexmk on file")
+               TeX-command-list)))
+
+  (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
+  (add-hook 'TeX-mode-hook '(lambda () (flyspell-mode 1)))
 #+END_SRC
 ** projectile
 #+begin_src emacs-lisp
