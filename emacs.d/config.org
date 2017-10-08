@@ -792,7 +792,7 @@ increment and decrement numbers with c-a and c-x
       (setq shackle-rules
             '(("*Warnings*"  :size 8  :noselect t)
               ("*Messages*"  :size 12 :noselect t)
-              ("*Help*" :select t :popup t :align left)
+              ("*Help*" :select t :same t :inhibit-window-quit t)
               ("*Metahelp*" :size 0.3 :align left)
               ("*undo-tree*" :size 0.5 :align right)
               (alchemist-iex-mode :same t)
@@ -814,7 +814,7 @@ increment and decrement numbers with c-a and c-x
     :ensure t
     :config
     (put-clojure-indent 'defui '(2 nil nil (1)))
-    (add-hook 'clojure-mode-hook #'aggressive-indent-mode)
+    ;;(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
     )
 
   (use-package clj-refactor
@@ -943,8 +943,8 @@ increment and decrement numbers with c-a and c-x
                                              (evil-eval-elisp-text-object beg end))))))
 
 
-     (add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-     (add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
+     ;;(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+     ;;(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
 #+END_SRC
 ** lisp general
 #+BEGIN_SRC emacs-lisp
@@ -960,6 +960,10 @@ increment and decrement numbers with c-a and c-x
 
   (defun in-sexp ()
     (> (nth 0 (syntax-ppss)) 0))
+
+  (defun next-sexp ()
+    "Go to the next sexp"
+    (interactive))
 
   (defun next-paren (&optional closing)
     "Go to the next/previous closing/opening parenthesis/bracket/brace."
@@ -981,23 +985,19 @@ increment and decrement numbers with c-a and c-x
     (interactive)
     (next-paren 'closing))
 
-
-  (defmacro open-paren-around-fn (paren element beginning)
-    `(lambda ()
-       (interactive)
-       (sp-wrap-with-pair ,paren)
-       ,(when element
-          '(when (in-sexp)
-             (next-paren)
-             (evil-forward-char 1)))
-       ,(if beginning
-            '(progn
-               (insert " ")
-               (evil-backward-char 1))
-          '(progn
-             (evilmi-jump-items)
-             (evil-forward-char 1)))
-       (evil-insert nil)))
+  (defun open-paren-around (paren element beginning)
+    (when (and element (in-sexp))
+      (next-paren))
+    (sp-wrap-with-pair paren)
+    (if beginning
+        (progn
+          (insert " ")
+          (evil-backward-char 1))
+      (progn
+        (evilmi-jump-items)
+        (evil-forward-char 1)
+        (insert " ")))
+    (evil-insert nil))
 
   (evil-define-command lisp-next-paren (count)
     (interactive "<c>")
@@ -1020,24 +1020,60 @@ increment and decrement numbers with c-a and c-x
                                  cider-repl-mode-map
                                  emacs-lisp-mode-map)
                       :states '(normal)
-                      "W" (open-paren-around-fn "(" t nil)
-                      "w" (open-paren-around-fn "(" t t)
-                      "e)" (open-paren-around-fn "(" t nil)
-                      "e(" (open-paren-around-fn "(" t t)
-                      "e}" (open-paren-around-fn "{" t nil)
-                      "e{" (open-paren-around-fn "{" t t)
-                      "e]" (open-paren-around-fn "[" t nil)
-                      "e[" (open-paren-around-fn "[" t t)
-                      "e}" (open-paren-around-fn "{" t nil)
-                      "e{" (open-paren-around-fn "{" t t)
-                      "i" (open-paren-around-fn "(" nil t)
-                      "I" (open-paren-around-fn "(" nil nil)
-                      "(" (open-paren-around-fn "(" nil t)
-                      ")" (open-paren-around-fn "(" nil nil)
-                      "[" (open-paren-around-fn "[" nil t)
-                      "]" (open-paren-around-fn "]" nil nil)
-                      "{" (open-paren-around-fn "{" nil t)
-                      "}" (open-paren-around-fn "}" nil nil)
+                      "W" (lambda ()
+                            (interactive)
+                            (open-paren-around "(" t nil))
+                      "w" (lambda ()
+                            (interactive)
+                            (open-paren-around "(" t t))
+                      "e)" (lambda ()
+                             (interactive)
+                             (open-paren-around "(" t nil))
+                      "e(" (lambda ()
+                            (interactive)
+                            (open-paren-around "(" t t))
+                      "e}" (lambda ()
+                             (interactive)
+                             (open-paren-around "{" t nil))
+                      "e{" (lambda ()
+                             (interactive)
+                             (open-paren-around "{" t t))
+                      "e]" (lambda ()
+                             (interactive)
+                             (open-paren-around "[" t nil))
+                      "e[" (lambda ()
+                             (interactive)
+                             (open-paren-around "[" t t))
+                      "e}" (lambda ()
+                             (interactive)
+                             (open-paren-around "{" t nil))
+                      "e{" (lambda ()
+                             (interactive)
+                             (open-paren-around "{" t t))
+                      "i" (lambda ()
+                            (interactive)
+                            (open-paren-around "(" nil t))
+                      "I" (lambda ()
+                            (interactive)
+                            (open-paren-around "(" nil nil))
+                      "(" (lambda ()
+                            (interactive)
+                            (open-paren-around "(" nil t))
+                      ")" (lambda ()
+                            (interactive)
+                            (open-paren-around "(" nil nil))
+                      "[" (lambda ()
+                            (interactive)
+                            (open-paren-around "[" nil t))
+                      "]" (lambda ()
+                            (interactive)
+                            (open-paren-around "[" nil nil))
+                      "{" (lambda ()
+                            (interactive)
+                            (open-paren-around "{" nil t))
+                      "}" (lambda ()
+                            (interactive)
+                            (open-paren-aroundn "{" nil nil))
                       "@" 'sp-splice-sexp
                       "o" (lambda ()
                             (interactive)
@@ -1055,7 +1091,6 @@ increment and decrement numbers with c-a and c-x
                       ;; c is defined in vim-exchange
                       "W" 'lisp-next-paren
                       "B" 'lisp-previous-paren
-
 
                       "(" 'sp-backward-up-sexp
                       ")" (lambda ()
