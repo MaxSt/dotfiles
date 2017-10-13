@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: inspect pipe
+# key: pinsp
+# --
+|> IO.inspect(label: "$1")

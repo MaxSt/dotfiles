@@ -80,24 +80,33 @@
 
 ** flyspell
 #+BEGIN_SRC emacs-lisp
-     (with-eval-after-load "ispell"
+    (use-package auto-dictionary-mode
+      :ensure t
+      :config
+      (add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1)))
+      )
 
-       (when (executable-find "hunspell")
-         (with-eval-after-load "ispell")
-         (setq ispell-dictionary "en_US")
-         (setq ispell-program-name "/usr/local/bin/hunspell")
+    (setq-default ispell-really-hunspell t)
+    (setq-default ispell-program-name "hunspell")
 
-         (setq ispell-really-hunspell t)
-         (setq ispell-program-name "hunspell")
-         (setq ispell-dictionary "en_US,de_AT")
-         ;; ispell-set-spellchecker-params has to be called
-         ;; bevore ispell-hunspell-add-multi-dic will work
-         (ispell-set-spellchecker-params)
-         (ispell-hunspell-add-multi-dic "en_US,de_AT")
-         ))
+    (setq ispell-dictionary "en_US")
+    (setq ispell-local-dictionary-alist
+          '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8)
+            ("de_AT" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8)))
 
-   (add-hook 'text-mode-hook #'flyspell-mode)
-   (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+    (use-package flyspell
+      :ensure t
+      :config
+
+      ;; to slow for magit commit for example:
+      ;;(add-hook 'flyspell-mode-hook #'flyspell-buffer)
+
+      ;; didn't work with magit commit? why?
+      ;;(add-hook 'text-mode-local-vars-hook #'flyspell-mode)
+      ;;(add-hook 'prog-mode-local-vars-hook #'flyspell-prog-mode)
+
+      (add-hook 'text-mode-hook #'flyspell-mode)
+      (add-hook 'prog-mode-hook #'flyspell-prog-mode))
 #+END_SRC
 
 ** Backups
@@ -206,7 +215,18 @@ These are the Files creating in the current Directory for files that have not be
                       (get-char-property (point) 'face))))
         (if face (message "Face: %s" face) (message "No face at %d" pos)))
       (if hl-line-p (hl-line-mode 1))))
+
 #+END_SRC
+
+* dir-locals hook
+
+#+begin_src emacs-lisp
+(defun run-local-vars-mode-hook ()
+  "Run a hook for the major-mode after the local variables have been processed."
+  (run-hooks (intern (format "%S-local-vars-hook" major-mode))))
+(add-hook 'hack-local-variables-hook #'run-local-vars-mode-hook)
+#+end_src
+
 
 ** Session save/restore
 #+BEGIN_SRC emacs-lisp
@@ -481,6 +501,8 @@ no mapping for that object
                               (interactive)
                               (evil-window-split)
                               (evil-window-down 1))
+
+                      "gS" 'my-funcs/open-snippet-dir
                       "gs" 'save-buffer
                       "`" 'evil-goto-mark-line
                       "'" 'evil-goto-mark
@@ -510,7 +532,7 @@ no mapping for that object
   (general-define-key :prefix my-leader
                       ;;"r" 'restart-emacs
                       "p" 'hydra-projectile/body
-                      "x" 'evil-window-delete
+                      "q" 'evil-window-delete
                       "k" 'kill-buffer
                       "d" 'evil-delete-buffer
 
@@ -535,7 +557,6 @@ no mapping for that object
                       "t" 'projectile-find-file
                       "/" 'counsel-rg-project
                       "e" 'projectile-switch-to-buffer
-                      ". s" 'my-funcs/open-snippet-dir
                       "g s" 'magit-status
                       "g t" 'git-timemachine
                       "g n" 'git-gutter:next-hunk
@@ -771,13 +792,38 @@ increment and decrement numbers with c-a and c-x
 (add-hook 'artist-mode-hook #'(lambda () (evil-emacs-state)))
 #+end_src
 
+** narrowing
+#+begin_src emacs-lisp
+(defun narrow-to-region-indirect (start end)
+  "Restrict editing in this buffer to the current region, indirectly."
+  (interactive "r")
+  (deactivate-mark)
+  (let ((buf (clone-indirect-buffer nil nil)))
+    (with-current-buffer buf
+      (narrow-to-region start end))
+      (switch-to-buffer buf)))
+
+(evil-define-operator evil-narrow-indirect (beg end type)
+  "Indirectly narrow the region from BEG to END."
+  (interactive "<R>")
+  (narrow-to-region-indirect beg end))
+
+
+(general-define-key
+ :prefix my-leader
+ "n" 'evil-narrow-indirect)
+
+(general-vmap :prefix "SPC"
+              "n" 'narrow-to-region-indirect)
+#+end_src
 * Package config
 ** Exec-path
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
       :ensure t
       :config
-      (exec-path-from-shell-initialize))
+      (when (memq window-system '(mac ns x))
+        (exec-path-from-shell-initialize)))
 
 #+END_SRC
 ** Popup Window
@@ -796,6 +842,7 @@ increment and decrement numbers with c-a and c-x
               ("*Metahelp*" :size 0.3 :align left)
               ("*undo-tree*" :size 0.5 :align right)
               (alchemist-iex-mode :same t)
+              (sql-interaction-mode :same t)
               (alchemist-test-report-mode :size 0.4 :align right :noselect t)
               ("*alchemist help*" :same t)
               ("*HTTP Response*" :size 0.3 :align below)
@@ -1668,6 +1715,8 @@ increment and decrement numbers with c-a and c-x
     :config
     (auctex-latexmk-setup))
 
+    (setq-default TeX-quote-after-quote t)
+
   (add-hook 'LaTeX-mode-hook
             (lambda ()
               (push
@@ -1675,8 +1724,14 @@ increment and decrement numbers with c-a and c-x
                  :help "Run latexmk on file")
                TeX-command-list)))
 
-  (add-hook 'TeX-mode-hook '(lambda () (setq TeX-command-default "latexmk")))
-  (add-hook 'TeX-mode-hook '(lambda () (flyspell-mode 1)))
+  (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
+  (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
+#+END_SRC
+*** Bibtex
+#+BEGIN_SRC emacs-lisp
+(use-package ivy-bibtex
+  :ensure t
+  :config)
 #+END_SRC
 ** projectile
 #+begin_src emacs-lisp

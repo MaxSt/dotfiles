@@ -1,0 +1,5 @@
+# -*- mode: snippet -*-
+# name: inspect in with
+# key: winsp
+# --
+IO.inspect($1, label: "$1"),
