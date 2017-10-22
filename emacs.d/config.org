@@ -823,6 +823,8 @@ increment and decrement numbers with c-a and c-x
       :ensure t
       :config
       (when (memq window-system '(mac ns x))
+        (exec-path-from-shell-copy-env "PGUSER")
+        (exec-path-from-shell-copy-env "PGPASSWORD")
         (exec-path-from-shell-initialize)))
 
 #+END_SRC
@@ -2005,23 +2007,29 @@ toggle details with ')'
 
 ** javascript
 #+begin_src emacs-lisp
-    (use-package js2-mode
-      :ensure t
-      :config
-      ;; do not show errors (use flycheck for that)
-      (js2-mode-hide-warnings-and-errors)
+  (use-package js2-mode
+    :ensure t
+    :config
+    ;; do not show errors (use flycheck for that)
+    (js2-mode-hide-warnings-and-errors)
 
-      (setq
-       js2-skip-preprocessor-directives nil   ; allow shebangs in js-files (for node)
+    (setq
+     js2-skip-preprocessor-directives nil   ; allow shebangs in js-files (for node)
 
-       ;; default values for indentation (possibly overwritten by editorconfig)
-       js2-basic-offset 2
-       js-indent-level 2
-       js-expr-indent-offset -2)
+     ;; default values for indentation (possibly overwritten by editorconfig)
+     js2-basic-offset 2
+     js-indent-level 2
+     js-expr-indent-offset -2)
 
-      (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-      (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
-      (add-to-list 'interpreter-mode-alist '("node" . js2-mode)))
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+    (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
+    (add-to-list 'interpreter-mode-alist '("node" . js2-mode)))
+
+  (use-package prettier-js
+    :ensure t
+    :config
+    (add-hook 'js2-mode-hook 'prettier-js-mode)
+    (add-hook 'web-mode-hook 'prettier-js-mode))
 
 #+end_src
 
@@ -2087,6 +2095,13 @@ toggle details with ')'
                                              (point)))))))
 
     )
+#+end_src
+
+** erlang
+#+begin_src emacs-lisp
+  (use-package erlang
+    :ensure t
+    :config)
 #+end_src
 
 ** highlight-indent-guides
