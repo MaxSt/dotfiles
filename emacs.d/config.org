@@ -5,7 +5,6 @@
 #+TAGS: emacs
 #+CATEGORIES: editing
 #+PROPERTY: header-args:emacs-lisp :results silent
-
 * Package Config
 ** Package + use-package
 #+BEGIN_SRC emacs-lisp
@@ -13,7 +12,6 @@
   (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
   (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
   (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
-
   (unless (package-installed-p 'use-package)
     (package-refresh-contents)
     (package-install 'use-package))
@@ -22,7 +20,6 @@
 * Defaults
 ** global
 #+BEGIN_SRC emacs-lisp
-
   (setq package-enable-at-startup nil
    inhibit-startup-screen t
    x-select-enable-clipboard t
@@ -37,11 +34,8 @@
   (setq-default indent-tabs-mode nil
                 tab-width 2)
   (defvaralias 'c-basic-offset 'tab-width)
-
   ;; the blinking cursor is nothing, but an annoyance
   (blink-cursor-mode -1)
-
-
   (setq-default
    indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
    indicate-empty-lines nil        ; don't show empty lines
@@ -54,30 +48,23 @@
    ;; Remove continuation arrow on right fringe
    ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
    ;;                              fringe-indicator-alist)
-
    blink-matching-paren nil ; don't blink--too distracting
    ;;show-trailing-whitespace t ;; show trailing whitespace
    )
-
   ;; disable the annoying bell ring
   (setq ring-bell-function 'ignore)
   ;; reduce the frequency of garbage collection by making it happen on
   ;; each 50MB of allocated data (the default is on every 0.76MB)
   (setq gc-cons-threshold 50000000)
-
   ;; enable y/n answers
   (fset 'yes-or-no-p 'y-or-n-p)
-
   ;; revert buffers automatically when underlying files are changed externally
   (global-auto-revert-mode t)
-
   (prefer-coding-system 'utf-8)
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
-
 #+END_SRC
-
 ** flyspell
 #+BEGIN_SRC emacs-lisp
     (use-package auto-dictionary-mode
@@ -85,30 +72,23 @@
       :config
       (add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1)))
       )
-
     (setq-default ispell-really-hunspell t)
     (setq-default ispell-program-name "hunspell")
-
     (setq ispell-dictionary "en_US")
     (setq ispell-local-dictionary-alist
           '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8)
             ("de_AT" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8)))
-
     (use-package flyspell
       :ensure t
       :config
-
       ;; to slow for magit commit for example:
       ;;(add-hook 'flyspell-mode-hook #'flyspell-buffer)
-
       ;; didn't work with magit commit? why?
       ;;(add-hook 'text-mode-local-vars-hook #'flyspell-mode)
       ;;(add-hook 'prog-mode-local-vars-hook #'flyspell-prog-mode)
-
       (add-hook 'text-mode-hook #'flyspell-mode)
       (add-hook 'prog-mode-hook #'flyspell-prog-mode))
 #+END_SRC
-
 ** Backups
 #+BEGIN_SRC emacs-lisp
   (setq
@@ -122,19 +102,16 @@
    auto-save-default nil
    backup-directory-alist '(("." . "~/.emacs.d/backup")))
 #+END_SRC
-
 ** Disable Lockfiles
 These are the Files creating in the current Directory for files that have not been saved yet #File#
 #+BEGIN_SRC emacs-lisp
 (setq create-lockfiles nil)
 #+END_SRC
-
 ** MacOS
 #+BEGIN_SRC emacs-lisp
   (setq mac-option-modifier nil)
   (setq mac-command-modifier 'meta)
 #+END_SRC
-
 * ediff
 #+BEGIN_SRC emacs-lisp
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
@@ -160,10 +137,8 @@ These are the Files creating in the current Directory for files that have not be
   (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
   (set-fringe-bitmap-face 'tilde 'fringe)
 #+END_SRC
-
 ** Themes
 #+begin_src emacs-lisp
-
   ;;(use-package challenger-deep-theme
     ;;:ensure t
     ;;:config
@@ -177,35 +152,28 @@ These are the Files creating in the current Directory for files that have not be
       :ensure t
       :config
       (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
-
 #+end_src
 * custom Functions
 #+BEGIN_SRC emacs-lisp
   (defconst org-config-file "~/.emacs.d/config.org")
-
   (defun my-funcs/reload-dotfile ()
     "Reload '~/.emacs.d/init.el'."
     (interactive)
     (load-file "~/.emacs.d/init.el"))
-
   (defun my-funcs/open-dotfile ()
     "Open '~/.emacs.d/config.org."
     (interactive)
     (find-file org-config-file))
-
-
   (defun my-funcs/open-snippet-dir ()
     (interactive)
     (let* ((dir (file-name-as-directory (car yas-snippet-dirs)))
            (path (concat dir (symbol-name major-mode))))
       (dired path)))
-
   (defun my-funcs/flash-region (start end)
     "Makes the region between START and END change color for a moment"
     (let ((overlay (make-overlay start end)))
       (overlay-put overlay 'face 'swiper-match-face-4)
       (run-with-timer 0.2 nil 'delete-overlay overlay)))
-
   (defun my-funcs/what-face (pos)
     "Tells you the name of the face (point) is on."
     (interactive "d")
@@ -215,30 +183,22 @@ These are the Files creating in the current Directory for files that have not be
                       (get-char-property (point) 'face))))
         (if face (message "Face: %s" face) (message "No face at %d" pos)))
       (if hl-line-p (hl-line-mode 1))))
-
 #+END_SRC
-
 * dir-locals hook
-
 #+begin_src emacs-lisp
 (defun run-local-vars-mode-hook ()
   "Run a hook for the major-mode after the local variables have been processed."
   (run-hooks (intern (format "%S-local-vars-hook" major-mode))))
 (add-hook 'hack-local-variables-hook #'run-local-vars-mode-hook)
 #+end_src
-
-
 ** Session save/restore
 #+BEGIN_SRC emacs-lisp
   (require 'desktop)
-
   (defvar my-desktop-session-dir
     (concat (getenv "HOME") "/.emacs.d/desktop/")
     "*Directory to save desktop sessions in")
-
   (defvar my-desktop-session-name-hist nil
     "Desktop session name history")
-
   (defun my-desktop-save (&optional name)
     "Save desktop by name."
     (interactive)
@@ -247,14 +207,12 @@ These are the Files creating in the current Directory for files that have not be
     (when name
       (make-directory (concat my-desktop-session-dir name) t)
       (desktop-save (concat my-desktop-session-dir name) t)))
-
   (defun my-desktop-save-and-clear ()
     "Save and clear desktop."
     (interactive)
     (call-interactively 'my-desktop-save)
     (desktop-clear)
     (setq desktop-dirname nil))
-
   (defun my-desktop-read (&optional name)
     "Read desktop by name."
     (interactive)
@@ -263,7 +221,6 @@ These are the Files creating in the current Directory for files that have not be
     (when name
       (desktop-clear)
       (desktop-read (concat my-desktop-session-dir name))))
-
   (defun my-desktop-change (&optional name)
     "Change desktops by name."
     (interactive)
@@ -271,7 +228,6 @@ These are the Files creating in the current Directory for files that have not be
       (when name
         (my-desktop-save name))
       (call-interactively 'my-desktop-read)))
-
   (defun my-desktop-name ()
     "Return the current desktop name."
     (interactive)
@@ -279,14 +235,12 @@ These are the Files creating in the current Directory for files that have not be
       (if name
           (message (concat "Desktop name: " name))
         (message "No named desktop loaded"))))
-
   (defun my-desktop-get-current-name ()
     "Get the current desktop name."
     (when desktop-dirname
       (let ((dirname (substring desktop-dirname 0 -1)))
         (when (string= (file-name-directory dirname) my-desktop-session-dir)
           (file-name-nondirectory dirname)))))
-
   (defun my-desktop-get-session-name (prompt &optional use-default)
     "Get a session name."
     (let* ((default (and use-default (my-desktop-get-current-name)))
@@ -296,16 +250,13 @@ These are the Files creating in the current Directory for files that have not be
       (completing-read full-prompt (and (file-exists-p my-desktop-session-dir)
                                         (directory-files my-desktop-session-dir))
                        nil nil nil my-desktop-session-name-hist default)))
-
   (defun my-desktop-kill-emacs-hook ()
     "Save desktop before killing emacs."
     (when (file-exists-p (concat my-desktop-session-dir "last-session"))
       (setq desktop-file-modtime
             (nth 5 (file-attributes (desktop-full-file-name (concat my-desktop-session-dir "last-session"))))))
     (my-desktop-save "last-session"))
-
   (add-hook 'kill-emacs-hook 'my-desktop-kill-emacs-hook)
-
 #+END_SRC
 * Evil
 ** initialize
@@ -327,7 +278,6 @@ These are the Files creating in the current Directory for files that have not be
     ;;(setq evil-motion-state-modes nil)
     )
 #+end_src
-
 ** hydra
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
@@ -340,37 +290,30 @@ These are the Files creating in the current Directory for files that have not be
       ("I" zoom-frm-in "in Frame")
       ("O" zoom-frm-out "out Frame")
       ("o" text-scale-decrease "out Buffer"))
-
     (defhydra hydra-window-resize ()
       "Window resizing"
       ("j" my-funcs/resize-window-down "down")
       ("k" my-funcs/resize-window-up "up")
       ("l" my-funcs/resize-window-right "right")
       ("h" my-funcs/resize-window-left "left")))
-
   (defhydra hydra-projectile (:color teal :columns 4)
     "Projectile"
     ("f"   projectile-find-file                "Find File")
     ("r"   projectile-recentf                  "Recent Files")
     ("z"   projectile-cache-current-file       "Cache Current File")
     ("x"   projectile-remove-known-project     "Remove Known Project")
-
     ("d"   projectile-find-dir                 "Find Directory")
     ("b"   projectile-switch-to-buffer         "Switch to Buffer")
     ("c"   projectile-invalidate-cache         "Clear Cache")
     ("X"   projectile-cleanup-known-projects   "Cleanup Known Projects")
-
     ("o"   projectile-multi-occur              "Multi Occur")
     ("p"   projectile-switch-project           "Switch Project")
     ("k"   projectile-kill-buffers             "Kill Buffers")
     ("q"   nil "Cancel" :color blue))
-
 #+END_SRC
-
 ** custom text objects
 *** sexp
 #+BEGIN_SRC emacs-lisp
-
      ;;Evil smartparens text objects
      (evil-define-text-object evil-a-sexp (count &optional beg end type)
        "outer sexp"
@@ -383,7 +326,6 @@ These are the Files creating in the current Directory for files that have not be
                        (sp-end-of-sexp)
                        (+ (point) 1)))))
      (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
-
      (evil-define-text-object evil-i-sexp (count &optional beg end type)
        "inner sexp"
        (evil-range (progn
@@ -395,7 +337,6 @@ These are the Files creating in the current Directory for files that have not be
                        (sp-end-of-sexp)
                        (point)))))
      (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
-
      (evil-define-text-object evil-a-top-level-sexp (count &optional beg end type)
        "outer top level sexp"
        (evil-range (progn
@@ -407,7 +348,6 @@ These are the Files creating in the current Directory for files that have not be
                        (end-of-defun)
                        (+ (point) 1)))))
      (define-key evil-outer-text-objects-map "F" 'evil-a-top-level-sexp)
-
      (evil-define-text-object evil-i-top-level-sexp (count &optional beg end type)
        "inner top level sexp"
        (evil-range (progn
@@ -419,7 +359,6 @@ These are the Files creating in the current Directory for files that have not be
                        (end-of-defun)
                        (point)))))
      (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
-
      (evil-define-text-object evil-a-lisp-element (count &optional beg end type)
        "outer sexp"
        (evil-range (progn
@@ -431,7 +370,6 @@ These are the Files creating in the current Directory for files that have not be
                        ;;TODO
                        ))))
      ;;(define-key evil-outer-text-objects-map "e" 'evil-a-lisp-element)
-
      (evil-define-text-object evil-i-lisp-element (count &optional beg end type)
        "inner sexp"
        (evil-range (progn
@@ -443,12 +381,10 @@ These are the Files creating in the current Directory for files that have not be
                        ;;TODO
                        ))))
      ;;(define-key evil-inner-text-objects-map "e" 'evil-i-lisp-element)
-
 #+end_src
 *** line text object
 no mapping for that object
 #+begin_src emacs-lisp
-
      (evil-define-text-object evil-i-line (count &optional beg end type)
        "inner line"
        (evil-range (progn
@@ -460,7 +396,6 @@ no mapping for that object
                        (end-of-line)
                        (point)))))
      (define-key evil-inner-text-objects-map "l" 'evil-i-line)
-
      (evil-define-text-object evil-a-line (count &optional beg end type)
        "outer line"
        (evil-range (progn
@@ -472,7 +407,6 @@ no mapping for that object
                        (end-of-line)
                        (point)))))
      (define-key evil-outer-text-objects-map "l" 'evil-a-line)
-
 #+END_SRC
 ** General (keybindings)
 [[https://github.com/noctuid/general.el][general.el]]
@@ -483,8 +417,6 @@ no mapping for that object
     (general-evil-setup)
     ;; bind a key globally in normal state; keymaps must be quoted
     (setq general-default-keymaps 'evil-normal-state-map))
-
-
   ;;evil mappings
   (general-define-key :keymaps 'normal
                       "M-l" (lambda ()
@@ -501,7 +433,6 @@ no mapping for that object
                               (interactive)
                               (evil-window-split)
                               (evil-window-down 1))
-
                       "gS" 'my-funcs/open-snippet-dir
                       "gs" 'save-buffer
                       "`" 'evil-goto-mark-line
@@ -535,9 +466,7 @@ no mapping for that object
                       "q" 'evil-window-delete
                       "k" 'kill-buffer
                       "d" 'evil-delete-buffer
-
                       "SPC" 'ace-select-window
-
                       ;;"h" (general-simulate-keys "C-h")
                       "h k" 'describe-key
                       "h SPC" 'which-key-show-top-level
@@ -546,13 +475,11 @@ no mapping for that object
                       "h m" 'describe-mode
                       "<return>" 'my/projectile-multi-term
                       "S-<return>" 'multi-term
-
                       ;;  Avoiding CTRL
                       "w" 'ace-window
                       "W" (general-simulate-keys "C-w")
                       "x" (general-simulate-keys "C-x")
                       "c" (general-simulate-keys "C-c")
-
                       "i" 'ibuffer
                       "t" 'projectile-find-file
                       "/" 'counsel-rg-project
@@ -571,7 +498,6 @@ no mapping for that object
                       "o" (lambda () (interactive) (dired "."))
                       "O" 'dired
                       "f" 'find-file)
-
    (setq my-leader2 ",")
    (setq local-leader "\\")
 #+END_SRC
@@ -588,7 +514,6 @@ no mapping for that object
     :ensure t
     :config)
 #+end_src
-
 ** evil-args
 #+begin_src emacs-lisp
   (use-package evil-args
@@ -599,15 +524,12 @@ no mapping for that object
     (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
     )
 #+end_src
-
 ** evil-indent-plus textobject
 #+begin_src emacs-lisp
   (use-package evil-indent-plus
     :ensure t
     :config
-
     ;; bind evil-indent-plus text objects
-
     (evil-indent-plus-default-bindings)
     )
 #+end_src
@@ -620,7 +542,6 @@ increment and decrement numbers with c-a and c-x
       (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
       (define-key evil-normal-state-map (kbd "C-x") 'evil-numbers/dec-at-pt))
 #+end_src
-
 ** evil-matchit
 % to jump between matched tags
 #+begin_src emacs-lisp
@@ -629,7 +550,6 @@ increment and decrement numbers with c-a and c-x
       :config
       (global-evil-matchit-mode 1))
 #+end_src
-
 ** evil-exchange
 #+begin_src emacs-lisp
    ;;gx to mark exchange second time to do it
@@ -637,30 +557,24 @@ increment and decrement numbers with c-a and c-x
   (use-package evil-exchange
     :ensure t
     :config)
-
   (setq lisp-modes '(clojure-mode
                      cider-clojure-interaction-mode
                      lisp-interaction-mode
                      cider-repl-mode
                      emacs-lisp-mode))
-
   (evil-define-operator evil-decide-change-fun (beg end)
     "decide which change function to use"
     :move-point nil
     (if (seq-contains lisp-modes major-mode)
         (evil-sp-change beg end)
       (evil-change beg end)))
-
-
   (general-define-key :states '(normal)
                       "c" (general-key-dispatch 'evil-decide-change-fun
                             :name general-dispatch-evil-change-exchange
                             "s" 'evil-surround-change
                             "x" 'evil-exchange
                             "X" 'evil-exchange-cancel))
-
 #+end_src
-
 ** evil-commentary
 #+begin_src emacs-lisp
   (use-package evil-commentary
@@ -669,7 +583,6 @@ increment and decrement numbers with c-a and c-x
       :config
       (evil-commentary-mode))
 #+end_src
-
 ** evil-anzu
 #+begin_src emacs-lisp
   (use-package evil-anzu
@@ -678,7 +591,6 @@ increment and decrement numbers with c-a and c-x
       :config
       )
 #+end_src
-
 ** ibuffer
 #+begin_src emacs-lisp
   (defhydra hydra-ibuffer-main (:color pink :hint nil)
@@ -693,21 +605,16 @@ increment and decrement numbers with c-a and c-x
     ("j" ibuffer-forward-line)
     ("RET" ibuffer-visit-buffer :color blue)
     ("k" ibuffer-backward-line)
-
     ("m" ibuffer-mark-forward)
     ("u" ibuffer-unmark-forward)
     ("*" hydra-ibuffer-mark/body :color blue)
-
     ("D" ibuffer-do-delete)
     ("S" ibuffer-do-save)
     ("a" hydra-ibuffer-action/body :color blue)
-
     ("g" ibuffer-update)
     ("s" hydra-ibuffer-sort/body :color blue)
     ("/" hydra-ibuffer-filter/body :color blue)
-
     ("q" ibuffer-quit "quit ibuffer" :color blue))
-
   (defhydra hydra-ibuffer-mark (:color teal :columns 5
                                 :after-exit (hydra-ibuffer-main/body))
     "Mark"
@@ -722,7 +629,6 @@ increment and decrement numbers with c-a and c-x
     ("h" ibuffer-mark-help-buffers "help")
     ("z" ibuffer-mark-compressed-file-buffers "compressed")
     ("b" hydra-ibuffer-main/body "back" :color blue))
-
   (defhydra hydra-ibuffer-action (:color teal :columns 4
                                   :after-exit
                                   (if (eq major-mode 'ibuffer-mode)
@@ -745,7 +651,6 @@ increment and decrement numbers with c-a and c-x
     ("W" ibuffer-do-view-and-eval "view-and-eval")
     ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
     ("b" nil "back"))
-
   (defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
     "Sort"
     ("i" ibuffer-invert-sorting "invert")
@@ -755,7 +660,6 @@ increment and decrement numbers with c-a and c-x
     ("f" ibuffer-do-sort-by-filename/process "filename")
     ("m" ibuffer-do-sort-by-major-mode "mode")
     ("b" hydra-ibuffer-main/body "back" :color blue))
-
   (defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
     "Filter"
     ("m" ibuffer-filter-by-used-mode "mode")
@@ -768,7 +672,6 @@ increment and decrement numbers with c-a and c-x
     ("<" ibuffer-filter-by-size-lt "size")
     ("/" ibuffer-filter-disable "disable")
     ("b" hydra-ibuffer-main/body "back" :color blue))
-
   (general-define-key :keymaps '(ibuffer-mode-map)
                       :states '(normal)
                       "SPC" 'hydra-ibuffer-main/body
@@ -776,7 +679,6 @@ increment and decrement numbers with c-a and c-x
                       "k" 'ibuffer-backward-line
                       "J" 'ibuffer-jump-to-buffer)
 #+end_src
-
 ** evil-replace-with-register
 #+begin_src emacs-lisp
   (use-package evil-replace-with-register
@@ -786,12 +688,10 @@ increment and decrement numbers with c-a and c-x
     (setq evil-replace-with-register-key (kbd "gr"))
     (evil-replace-with-register-install))
 #+end_src
-
 ** artist-mode
 #+begin_src emacs-lisp
 (add-hook 'artist-mode-hook #'(lambda () (evil-emacs-state)))
 #+end_src
-
 ** narrowing
 #+begin_src emacs-lisp
 (defun narrow-to-region-indirect (start end)
@@ -802,17 +702,13 @@ increment and decrement numbers with c-a and c-x
     (with-current-buffer buf
       (narrow-to-region start end))
       (switch-to-buffer buf)))
-
 (evil-define-operator evil-narrow-indirect (beg end type)
   "Indirectly narrow the region from BEG to END."
   (interactive "<R>")
   (narrow-to-region-indirect beg end))
-
-
 (general-define-key
  :prefix my-leader
  "n" 'evil-narrow-indirect)
-
 (general-vmap :prefix "SPC"
               "n" 'narrow-to-region-indirect)
 #+end_src
@@ -826,7 +722,6 @@ increment and decrement numbers with c-a and c-x
         (exec-path-from-shell-copy-env "PGUSER")
         (exec-path-from-shell-copy-env "PGPASSWORD")
         (exec-path-from-shell-initialize)))
-
 #+END_SRC
 ** Popup Window
 #+BEGIN_SRC emacs-lisp
@@ -865,38 +760,30 @@ increment and decrement numbers with c-a and c-x
     (put-clojure-indent 'defui '(2 nil nil (1)))
     ;;(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
     )
-
   (use-package clj-refactor
     :ensure t
     :config)
-
   (use-package cider
     :ensure t
     :config
-
     ;;make boot the default
     (setq cider-default-repl-command "boot")
-
     (use-package cider-hydra
       :ensure t
       :config
       (add-hook 'cider-mode-hook #'cider-hydra-mode))
-
     (setq cider-repl-display-in-current-window nil)
     (setq cider-repl-use-pretty-printing t)
     (autoload 'cider--make-result-overlay "cider-overlays")
-
     (defun my-funcs/eval-overlay (value point)
       (cider--make-result-overlay (format "%S" value)
         :where point
         :duration 'command)
       ;; Preserve the return value.
       value)
-
     (advice-add 'eval-last-sexp :filter-return
                 (lambda (r)
                   (my-funcs/eval-overlay r (point))))
-
     (advice-add 'eval-defun :filter-return
                 (lambda (r)
                   (my-funcs/eval-overlay
@@ -904,20 +791,17 @@ increment and decrement numbers with c-a and c-x
                    (save-excursion
                      (end-of-defun)
                      (point))))))
-
   (evil-define-operator evil-eval-clojure-text-object (beg end)
     "Evil operator for evaluating code."
     :move-point nil
     (save-excursion
       (my-funcs/flash-region beg end)
       (cider-eval-region beg end)))
-
   (defun my/goto-or-switch-back-from-repl ()
     (interactive)
     (if (eq major-mode 'cider-repl-mode)
         (cider-switch-to-last-clojure-buffer)
       (cider-switch-to-repl-buffer)))
-
   (general-define-key :keymaps '(cider-inspector-mode-map)
                       :states '(normal)
                       "n" 'cider-inspector-next-page
@@ -925,11 +809,9 @@ increment and decrement numbers with c-a and c-x
                       "RET" 'cider-inspector-operate-on-point
                       "d" 'cider-inspector-pop
                       "r" 'cider-inspector-refresh)
-
   (general-define-key :keymaps '(cider-popup-buffer-mode-map cider-stacktrace-mode-map)
                       :states '(normal)
                       "q" 'cider-popup-buffer-quit)
-
   (general-define-key :prefix local-leader
                       :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
                       :states '(normal)
@@ -941,7 +823,6 @@ increment and decrement numbers with c-a and c-x
                       "d" 'cider-hydra-doc/body
                       "e" 'cider-hydra-eval/body
                       "q" 'hydra-cljr-help-menu/body)
-
   (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
                       :states '(normal)
                       "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
@@ -958,11 +839,7 @@ increment and decrement numbers with c-a and c-x
                             ;; isn't an existing command for the linewise version:
                             ;; "c" (general-simulate-keys ('evil-change "c"))
                             ))
-
-
-
 #+end_src
-
 ** elisp
 #+BEGIN_SRC emacs-lisp
      ;;todo only for elisp!
@@ -977,7 +854,6 @@ increment and decrement numbers with c-a and c-x
            (my-funcs/flash-region beg end)
            (my-funcs/eval-overlay value end)
            (message (format "%s" value)))))
-
      (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
                          :states '(normal)
                          "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
@@ -990,8 +866,6 @@ increment and decrement numbers with c-a and c-x
                                                   (beg (elt range 0))
                                                   (end (elt range 1)))
                                              (evil-eval-elisp-text-object beg end))))))
-
-
      ;;(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
      ;;(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
 #+END_SRC
@@ -1002,18 +876,13 @@ increment and decrement numbers with c-a and c-x
     (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
       (evil-previous-line-first-non-blank)
       (save-excursion (join-line 1))))
-
   (advice-add 'evil-sp-delete-line :around 'maybe-join-lisp-line)
   (advice-add 'evil-sp-delete :around 'maybe-join-lisp-line)
-
-
   (defun in-sexp ()
     (> (nth 0 (syntax-ppss)) 0))
-
   (defun next-sexp ()
     "Go to the next sexp"
     (interactive))
-
   (defun next-paren (&optional closing)
     "Go to the next/previous closing/opening parenthesis/bracket/brace."
     (if closing
@@ -1022,18 +891,14 @@ increment and decrement numbers with c-a and c-x
           (unless (eq curr (search-forward-regexp "[])}]"))
             (backward-char)))
       (search-backward-regexp "[[({]")))
-
-
   (defun prev-opening-paren ()
     "Go to the next closing parenthesis."
     (interactive)
     (next-paren))
-
   (defun next-closing-paren ()
     "Go to the next closing parenthesis."
     (interactive)
     (next-paren 'closing))
-
   (defun open-paren-around (paren element beginning)
     (when (and element (in-sexp))
       (next-paren))
@@ -1047,21 +912,18 @@ increment and decrement numbers with c-a and c-x
         (evil-forward-char 1)
         (insert " ")))
     (evil-insert nil))
-
   (evil-define-command lisp-next-paren (count)
     (interactive "<c>")
     (if count
         (dotimes (number count)
           (sp-next-sexp))
       (sp-next-sexp)))
-
   (evil-define-command lisp-previous-paren (count)
     (interactive "<c>")
     (if count
         (dotimes (number count)
           (sp-previous-sexp))
       (sp-previous-sexp)))
-
   (general-define-key :prefix my-leader2
                       :keymaps '(clojure-mode-map
                                  cider-clojure-interaction-mode-map
@@ -1130,7 +992,6 @@ increment and decrement numbers with c-a and c-x
                               (sp-backward-up-sexp))
                             (sp-raise-sexp))
                       "O" 'sp-raise-sexp)
-
   (general-define-key :keymaps '(clojure-mode-map
                                  cider-clojure-interaction-mode-map
                                  lisp-interaction-mode-map
@@ -1140,13 +1001,11 @@ increment and decrement numbers with c-a and c-x
                       ;; c is defined in vim-exchange
                       "W" 'lisp-next-paren
                       "B" 'lisp-previous-paren
-
                       "(" 'sp-backward-up-sexp
                       ")" (lambda ()
                             (interactive)
                             (sp-backward-up-sexp)
                             (evilmi-jump-items))
-
                       ">" (general-key-dispatch 'evil-shift-right
                             "I" (lambda ()
                                   (interactive)
@@ -1173,8 +1032,6 @@ increment and decrement numbers with c-a and c-x
                       "C" 'evil-sp-change-line
                       "d" 'evil-sp-delete
                       "D" 'evil-sp-delete-line)
-
-
 #+END_SRC
 ** neotree
 #+begin_src emacs-lisp
@@ -1195,215 +1052,23 @@ increment and decrement numbers with c-a and c-x
       :config
       (which-key-mode))
 #+END_SRC
-
 ** Terminal
-#+BEGIN_SRC emacs-lisp
-(use-package multi-term
-  :ensure t
-  :config
-  (add-hook 'term-mode-hook (lambda () (yas-minor-mode -1))))
-
-
-(defun my/projectile-multi-term ()
-  (interactive)
-  (multi-term)
-  (insert (format "cd %s" (projectile-project-root)))
-  (term-send-input))
-
-(defun my-term-funcs/send-ctrl-a ()
-  "Go to beginning of line."
-  (interactive)
-  (term-send-raw-string "\C-a"))
-
-(defun my-term-funcs/send-ctrl-e ()
-  "Go to end of line."
-  (interactive)
-  (term-send-raw-string "\C-e"))
-
-(defun my-term-funcs/send-ctrl-r ()
-  "Start reverse history search."
-  (interactive)
-  (term-send-raw-string "\C-r"))
-
-(defun my-term-funcs/send-ctrl-p ()
-  "Go back in history."
-  (interactive)
-  (term-send-raw-string "\C-p"))
-
-(defun my-term-funcs/send-ctrl-n ()
-  "Go forward in history."
-  (interactive)
-  (term-send-raw-string "\C-n"))
-
-(defun my-term-funcs/send-ctrl-c ()
-  "Send Ctrl+C."
-  (interactive)
-  (term-send-raw-string "\C-c"))
-
-(defun my-term-funcs/send-ctrl-d ()
-  "Send EOF."
-  (interactive)
-  (term-send-raw-string "\C-d"))
-
-(defun my-term-funcs/send-ctrl-z ()
-  "Suspend."
-  (interactive)
-  (term-send-raw-string "\C-z"))
-
-(defun my-term-funcs/send-space ()
-  "Send space."
-  (interactive)
-  (term-send-raw-string " "))
-
-(defun my-term-funcs/toggle-term ()
-  "Toggle the dedicated terminal."
-  (interactive)
-  (multi-term-dedicated-toggle)
-  (multi-term-dedicated-select))
-
-(defun my-term-funcs/send-tab ()
-  "Send tab."
-  (interactive)
-  (term-send-raw-string "\t"))
-
-(add-hook 'term-mode-hook
-    (lambda ()
-      (evil-define-key 'normal term-raw-map
-        (kbd "\C-j") 'evil-window-down
-        (kbd "\C-k") 'evil-window-up
-        (kbd "p") 'term-paste)
-      (evil-define-key 'insert term-raw-map
-        (kbd "\C-j") 'evil-window-down
-        (kbd "\C-k") 'evil-window-up
-        (kbd "\C-a") 'my-term-funcs/send-ctrl-a
-        (kbd "\C-e") 'my-term-funcs/send-ctrl-e
-        (kbd "\C-r") 'my-term-funcs/send-ctrl-r
-        (kbd "\C-p") 'my-term-funcs/send-ctrl-p
-        (kbd "\C-n") 'my-term-funcs/send-ctrl-n
-        (kbd "\C-c") 'my-term-funcs/send-ctrl-c
-        (kbd "\C-d") 'my-term-funcs/send-ctrl-d
-        (kbd "\C-z") 'my-term-funcs/send-ctrl-z
-        (kbd "SPC")  'my-term-funcs/send-space    ; must use this, or else smart-space overrides space here
-        (kbd "TAB")  'my-term-funcs/send-tab
-        [tab]        'my-term-funcs/send-tab
-        (kbd "\C-w") 'term-send-backward-kill-word)))
+                        :prefix my-leader2
+                        "n" 'git-timemachine-show-next-revision
+                        "p" 'git-timemachine-show-previous-revision
+                        "r" 'git-timemachine-show-current-revision
+                        "q" 'git-timemachine-quit))
 #+END_SRC
-
-# ** helm
-# #+BEGIN_SRC emacs-lisp
-# (use-package helm
-#   :ensure t
-#   :config
-#   (setq helm-buffers-fuzzy-matching t
-# 	helm-recentf-fuzzy-match    t)
-#   (setq helm-quick-update t
-#         ;; Speedier without fuzzy matching
-#         helm-mode-fuzzy-match t
-#         helm-buffers-fuzzy-matching t
-#         helm-apropos-fuzzy-match t
-#         helm-M-x-fuzzy-match t
-#         helm-recentf-fuzzy-match t
-#         helm-projectile-fuzzy-match nil
-#         ;; Display extraineous helm UI elements
-#         helm-display-header-line nil
-#         helm-ff-auto-update-initial-value nil
-#         helm-find-files-doc-header nil
-#         ;; Don't override evil-ex's completion
-#         helm-mode-handle-completion-in-region nil
-#         helm-candidate-number-limit 50
-#         ;; Don't wrap item cycling
-#         helm-move-to-line-cycle-in-source t)
-
-#   (define-key helm-map (kbd "C-j") 'helm-next-line)
-#   (define-key helm-map (kbd "C-k") 'helm-previous-line)
-#   (define-key helm-map (kbd "C-w") 'backward-kill-word)
-#   (define-key helm-map (kbd "TAB") 'helm-execute-persistent-action) ; complete with tab
-#   (global-set-key (kbd "M-x") 'helm-M-x)
-#   (helm-mode 1)
-
-#   ;;always bottom 40% height
-#   (add-to-list 'display-buffer-alist
-# 	       `(,(rx bos "*helm" (* not-newline) "*" eos)
-# 		 (display-buffer-in-side-window)
-# 		 (inhibit-same-window . t)
-# 		 (window-height . 0.4)))
-
-#   (use-package helm-projectile
-#     :ensure t
-#     :config
-#     (helm-projectile-on))
-#   (use-package helm-ag
-#     :ensure t
-#     :config))
-# #+END_SRC
-** flycheck
-#+BEGIN_SRC emacs-lisp
-(use-package flycheck
-  :ensure t
-  :init
-  (setq flycheck-indication-mode 'right-fringe)
-  :config
-  (add-hook 'after-init-hook #'global-flycheck-mode)
-  (global-flycheck-mode)
-  (define-fringe-bitmap 'flycheck-fringe-bitmap-double-arrow
-    [0 0 0 0 0 4 12 28 60 124 252 124 60 28 12 4 0 0 0 0])
-  )
-#+END_SRC
-
-** Yasnippet
-#+BEGIN_SRC emacs-lisp
-(use-package yasnippet
-  :ensure t
-  :config
-  ;(define-key yas-minor-mode-map [tab] nil)
-  ;(define-key yas-minor-mode-map (kbd "TAB") nil)
-
-  ;(define-key yas-keymap [tab] 'my-funcs/tab-complete-or-next-field)
-  ;(define-key yas-keymap (kbd "TAB") 'my-funcs/tab-complete-or-next-field)
-  ;(define-key yas-keymap [(control tab)] 'yas-next-field)
-  ;(define-key yas-keymap (kbd "C-g") 'my-funcs/abort-company-or-yas)
-
-  (yas-global-mode 1))
-#+END_SRC
-
-** company
-#+BEGIN_SRC emacs-lisp
-  (use-package company
-    :ensure t
-    :config
-    (setq company-idle-delay 0.2
-          company-minimum-prefix-length 2)
-    (define-key company-active-map (kbd "M-n") nil)
-    (define-key company-active-map (kbd "M-p") nil)
-    (define-key company-active-map (kbd "C-n") #'company-select-next)
-    (define-key company-active-map (kbd "C-p") #'company-select-previous)
-    (define-key company-active-map (kbd "C-w") #'backward-kill-word)
-    ;;(define-key company-active-map [tab] 'my-funcs/expand-snippet-or-complete-selection)
-    ;;(define-key company-active-map (kbd "TAB") 'my-funcs/expand-snippet-or-complete-selection)
-    (nconc company-backends '(company-yasnippet))
-    (global-company-mode))
-#+END_SRC
-
-** zoom
-#+BEGIN_SRC emacs-lisp
-  (use-package zoom-frm
-    :ensure t
-    :config)
-#+END_SRC
-
-** git
 #+BEGIN_SRC emacs-lisp
   (use-package git-gutter
     :ensure t
     :config
     (use-package git-gutter-fringe
       :ensure t)
-
     (use-package fringe-helper
       :ensure t)
     (require 'fringe-helper)
     (require 'git-gutter-fringe)
-
     (fringe-mode 3)
     ;; (push `(left-fringe  . 3) default-frame-alist)
     ;; (push `(right-fringe . 3) default-frame-alist)
@@ -1412,7 +1077,6 @@ increment and decrement numbers with c-a and c-x
     ;; (push '(height . 40) default-frame-alist)
     ;; (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
     ;; (set-fringe-bitmap-face 'tilde 'fringe)
-
     ;; colored fringe "bars"
     (define-fringe-bitmap 'git-gutter-fr:added
       [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
@@ -1423,10 +1087,8 @@ increment and decrement numbers with c-a and c-x
     (define-fringe-bitmap 'git-gutter-fr:deleted
       [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
       nil nil 'center)
-
     (advice-add 'evil-force-normal-state :after 'git-gutter)
     (add-hook 'focus-in-hook 'git-gutter:update-all-windows))
-
   (use-package magit
     :ensure t
     :config
@@ -1437,14 +1099,11 @@ increment and decrement numbers with c-a and c-x
       (window-configuration-to-register :magit-fullscreen)
       ad-do-it
       (delete-other-windows))
-
     (defun magit-quit-session ()
       "Restores the previous window configuration and kills the magit buffer"
       (interactive)
       (kill-buffer)
       (jump-to-register :magit-fullscreen)))
-
-
   (use-package git-timemachine
     :ensure t
     :after general
@@ -1457,108 +1116,41 @@ increment and decrement numbers with c-a and c-x
                         "r" 'git-timemachine-show-current-revision
                         "q" 'git-timemachine-quit))
 #+END_SRC
-
-#+BEGIN_SRC emacs-lisp
-  (use-package git-gutter
-    :ensure t
-    :config
-    (use-package git-gutter-fringe
-      :ensure t)
-
-    (use-package fringe-helper
-      :ensure t)
-    (require 'fringe-helper)
-    (require 'git-gutter-fringe)
-
-    (fringe-mode 3)
-    ;; (push `(left-fringe  . 3) default-frame-alist)
-    ;; (push `(right-fringe . 3) default-frame-alist)
-    ;; ;; slightly larger default frame size on startup
-    ;; (push '(width . 120) default-frame-alist)
-    ;; (push '(height . 40) default-frame-alist)
-    ;; (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
-    ;; (set-fringe-bitmap-face 'tilde 'fringe)
-
-    ;; colored fringe "bars"
-    (define-fringe-bitmap 'git-gutter-fr:added
-      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
-      nil nil 'center)
-    (define-fringe-bitmap 'git-gutter-fr:modified
-      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
-      nil nil 'center)
-    (define-fringe-bitmap 'git-gutter-fr:deleted
-      [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
-      nil nil 'center)
-
-    (advice-add 'evil-force-normal-state :after 'git-gutter)
-    (add-hook 'focus-in-hook 'git-gutter:update-all-windows))
-
-  (use-package magit
-    :ensure t
-    :config
-    (use-package evil-magit
-      :ensure t)
-    ;; full screen magit-status
-    (defadvice magit-status (around magit-fullscreen activate)
-      (window-configuration-to-register :magit-fullscreen)
-      ad-do-it
-      (delete-other-windows))
-
-    (defun magit-quit-session ()
-      "Restores the previous window configuration and kills the magit buffer"
-      (interactive)
-      (kill-buffer)
-      (jump-to-register :magit-fullscreen)))
-
-
-  (use-package git-timemachine
-    :ensure t
-    :after general
-    :config
-    (general-define-key :keymaps '(git-timemachine-mode-map)
-                        :states '(normal)
-                        :prefix my-leader2
-                        "n" 'git-timemachine-show-next-revision
-                        "p" 'git-timemachine-show-previous-revision
-                        "r" 'git-timemachine-show-current-revision
-                        "q" 'git-timemachine-quit))
-#+END_SRC
-
 ** imenu-list
 #+BEGIN_SRC emacs-lisp
   (use-package imenu-list
     :ensure t
     :config
     (setq imenu-list-focus-after-activation t)
-
     (general-define-key :keymaps 'imenu-list-major-mode-map
                         :states '(normal)
                         "|" 'imenu-list-minor-mode
                         "RET" 'imenu-list-goto-entry
                         "i" 'imenu-list-goto-entry
                         "q" 'imenu-list-quit-window)
-
-
     )
 #+END_SRC
 ** Org Mode
 *** org settings
+**** adapt indentation
+#+BEGIN_SRC emacs-lisp
+  (setq org-adapt-indentation nil)
+#+END_SRC
 **** enable syntax highlighting in org-babel source code
-  #+BEGIN_SRC emacs-lisp
-    (setq org-src-fontify-natively t)
-  #+END_SRC
+#+BEGIN_SRC emacs-lisp
+(setq org-src-fontify-natively t)
+#+END_SRC
 **** COMMENT Org indent Mode
-  #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
     (setq org-startup-indented t)
-  #+END_SRC
+#+END_SRC
 **** set org default directory
-  #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
     (setq org-agenda-files '("~/Dropbox/org/"))
     (setq org-directory "~/Dropbox/org")
-  #+END_SRC
-
+#+END_SRC
 **** capture templates
- #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
    (setq org-capture-templates
          '(("n"
             "new Note"
@@ -1570,15 +1162,21 @@ increment and decrement numbers with c-a and c-x
             entry
             (file "todo.org")
             "* TODO %? SCHEDULED: %t")))
-
    (setq org-refile-use-outline-path 'file)
    (setq org-outline-path-complete-in-steps nil)
-
    ;; use a depth level of 6 max
    (setq org-refile-targets
          '((org-agenda-files . (:maxlevel . 4))))
-
- #+END_SRC
+#+END_SRC
+(setq-default org-catch-invisible-edits 'smart)
+**** smart invisible edits
+#+BEGIN_SRC emacs-lisp
+(setq-default org-catch-invisible-edits 'smart)
+#+END_SRC
+**** COMMENT hide leading stars
+#+BEGIN_SRC emacs-lisp
+(setq-default org-hide-leading-stars t)
+#+END_SRC
 *** COMMENT org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
@@ -1592,18 +1190,19 @@ increment and decrement numbers with c-a and c-x
 #+BEGIN_SRC emacs-lisp
 (setq-default org-ellipsis (concat " " (all-the-icons-faicon "caret-down")))
 #+END_SRC
-
+*** blank before new entry
+#+BEGIN_SRC emacs-lisp
+(setq-default org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
+#+END_SRC
 *** org-Reveal (HTML presentations)
 #+BEGIN_SRC emacs-lisp
   (use-package ox-reveal
     :ensure t)
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
   ;;(setq org-reveal-mathjax t)
-
   (use-package htmlize
   :ensure t)
 #+END_SRC
-
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
   (defun clever-insert-item ()
@@ -1616,7 +1215,6 @@ increment and decrement numbers with c-a and c-x
           (evil-append nil))
       (org-insert-item))
     )
-
   (defun evil-org-eol-call (fun)
     "Go to end of line and call provided function.
   FUN function callback"
@@ -1624,28 +1222,24 @@ increment and decrement numbers with c-a and c-x
     (funcall fun)
     (evil-append nil)
     )
-
   (general-define-key :keymaps 'org-mode-map
                       :states '(normal)
                       "TAB" 'org-cycle
                       "<" 'org-metaleft
                       ">" 'org-metaright
                       "|" 'imenu-list-minor-mode
-
                       "o" 'clever-insert-item
                       ;; "o" '(lambda ()
                       ;;        (interactive)
                       ;;        (end-of-line)
                       ;;        (org-meta-return)
                       ;;        (evil-append nil))
-
                       "RET" (lambda ()
                               (interactive)
                               (if (org-in-src-block-p)
                                   (org-edit-special)
                                 (org-open-at-point))
                               (evil-normal-state)))
-
   (general-define-key :prefix my-leader2
                       :keymaps 'org-mode-map
                       :states '(normal)
@@ -1658,6 +1252,7 @@ increment and decrement numbers with c-a and c-x
                             (org-insert-heading-respect-content)
                             (org-demote-subtree)
                             (evil-insert-state))
+                      "x" 'org-archive-subtree-default-with-confirmation
                       "s" 'org-schedule
                       "r" 'org-refile
                       "n" 'org-narrow-to-subtree
@@ -1673,13 +1268,11 @@ increment and decrement numbers with c-a and c-x
                             (interactive)
                             (org-up-element)
                             (org-cycle)))
-
   ;; key for exiting src edit mode
   (general-define-key :keymaps 'org-src-mode-map
                       :states '(normal)
                       "RET" 'org-edit-src-exit)
 #+END_SRC
-
 *** open source code in same window
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
@@ -1689,19 +1282,11 @@ increment and decrement numbers with c-a and c-x
   (use-package smartparens
     :ensure t
     :config
-
     (use-package evil-smartparens
       :ensure t
       :config)
-
-  ;;(advice-add 'evil-sp-delete :after')
-
-
-
-
-
+    ;;(advice-add 'evil-sp-delete :after')
     ;;(general-define-key ')
-
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (sp-local-pair 'clojure-mode "'" nil :actions nil)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
@@ -1716,16 +1301,13 @@ increment and decrement numbers with c-a and c-x
     :ensure t
     :config
     (auctex-latexmk-setup))
-
     (setq-default TeX-quote-after-quote t)
-
   (add-hook 'LaTeX-mode-hook
             (lambda ()
               (push
                '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
                  :help "Run latexmk on file")
                TeX-command-list)))
-
   (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
   (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
 #+END_SRC
@@ -1740,31 +1322,25 @@ increment and decrement numbers with c-a and c-x
   (use-package projectile
     :ensure t
     :config
-
     ;; test fn in hashtabe has to be equal because we will use strings as keys
     (setq my-projects-loaded (make-hash-table :test 'equal))
-
     (setq projectile-completion-system 'ivy)
     (projectile-global-mode))
 #+end_src
-
 ** ag
 #+begin_src emacs-lisp
   (use-package ag
     :ensure t)
-
 #+end_src
 ** rainbow-delimiters
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
     :ensure t
     :config
-
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
     (add-hook 'cider-repl-mode #'rainbow-delimiters-mode)
     )
 #+end_src
-
 ** undo-tree
 #+begin_src emacs-lisp
   (use-package undo-tree
@@ -1794,24 +1370,18 @@ http://oremacs.com/swiper/
       :config
       ;; regex order
       (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
-
       (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
       (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
       (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
-
     (general-define-key :keymaps '(ivy-occur-grep-mode-map)
                         :states '(normal)
                         "q" 'evil-delete-buffer)
-
       (defvar pop-target-window)
       (make-variable-buffer-local 'pop-target-window)
-
       (advice-add 'compilation-goto-locus :around #'my-around-compilation-goto-locus)
-
       (defun my-around-compilation-goto-locus (orig-func &rest args)
         (advice-add 'pop-to-buffer :override #'my-pop-to-buffer)
         (apply orig-func args))
-
       (defun my-pop-to-buffer (buffer &optional action norecord)
         (advice-remove 'pop-to-buffer #'my-pop-to-buffer)
         (let ((from-buffer (current-buffer))
@@ -1826,46 +1396,36 @@ http://oremacs.com/swiper/
                  (pop-to-buffer buffer action norecord)
                  (with-current-buffer from-buffer
                    (setq-local pop-target-window (selected-window)))))))
-
-
       (ivy-mode t))
-
     (use-package counsel
       :ensure t
       :config)
-
     (use-package swiper
       :ensure t
       :config
       (ivy-mode t))
-
     (use-package avy
       :ensure t
       :config
-
       (defun avy-line-saving-column ()
         (interactive)
         (let ((col (current-column)))
           (avy-goto-line)
           (move-to-column col)))
       )
-
 #+END_SRC
-
 ** COMMENT hex colors
 #+begin_src emacs-lisp
   (use-package rainbow-mode
     :ensure t
     :config)
 #+end_src
-
 ** command-log-mode
 #+begin_src emacs-lisp
   (use-package command-log-mode
     :ensure t
     :config)
 #+end_src
-
 ** eyebrowse
 #+begin_src emacs-lisp
   (use-package eyebrowse
@@ -1874,7 +1434,6 @@ http://oremacs.com/swiper/
     (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
     (eyebrowse-mode t))
 #+end_src
-
 ** highlight-symbol
 #+begin_src emacs-lisp
   (use-package highlight-symbol
@@ -1890,17 +1449,14 @@ move files to trash
 #+BEGIN_SRC emacs-lisp
       (setq delete-by-moving-to-trash t)
 #+END_SRC
-
 Human readable filesize
 #+BEGIN_SRC emacs-lisp
       (setq dired-listing-switches "-alh")
 #+END_SRC
-
 Prevents dired from creating an annoying popup when dired-find-alternate-file is called.
 #+BEGIN_SRC emacs-lisp
   (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
-
 Recursive copy and deletion
 #+BEGIN_SRC emacs-lisp
   (setq dired-recursive-copies 'always
@@ -1914,7 +1470,6 @@ Recursive copy and deletion
     (let ((old (current-buffer)))
       (dired-up-directory)
       (kill-buffer old)))
-
   (defun my/dired-create-file (file)
     (interactive
      (list
@@ -1923,8 +1478,6 @@ Recursive copy and deletion
     (dired-add-file file)
     (revert-buffer)
     (dired-goto-file (expand-file-name file)))
-
-
   (general-define-key :keymaps '(dired-mode-map)
                       :states '(normal)
                       "h" 'my/dired-up-directory
@@ -1940,7 +1493,6 @@ Recursive copy and deletion
                       "N" 'evil-search-previous
                       "q" 'kill-this-buffer
                       "!" 'dired-do-shell-command)
-
 #+END_SRC
 *** Dired+
 Dired enhancements.
@@ -1964,20 +1516,17 @@ toggle details with ')'
         :ensure t
         :config)
 #+END_SRC
-
 ** restclient
 #+begin_src emacs-lisp
   (use-package restclient
     :ensure t
     :config)
 #+end_src
-
 ** ejc-sql
 #+begin_src emacs-lisp
   (use-package ejc-sql
     :ensure t)
 #+end_src
-
 ** sql
 #+begin_src emacs-lisp
   (use-package sqlup-mode
@@ -1985,7 +1534,6 @@ toggle details with ')'
     :config
     (add-hook 'sql-mode-hook (lambda () (sqlup-mode 1))))
 #+end_src
-
 ** web-mode
 #+begin_src emacs-lisp
   (use-package web-mode
@@ -1993,7 +1541,6 @@ toggle details with ')'
     :config
     (setq web-mode-markup-indent-offset 2)
     (setq css-indent-offset 2)
-
     (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
     (add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
@@ -2004,7 +1551,6 @@ toggle details with ')'
     (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
     )
 #+end_src
-
 ** javascript
 #+begin_src emacs-lisp
   (use-package js2-mode
@@ -2012,45 +1558,36 @@ toggle details with ')'
     :config
     ;; do not show errors (use flycheck for that)
     (js2-mode-hide-warnings-and-errors)
-
     (setq
      js2-skip-preprocessor-directives nil   ; allow shebangs in js-files (for node)
-
      ;; default values for indentation (possibly overwritten by editorconfig)
      js2-basic-offset 2
      js-indent-level 2
      js-expr-indent-offset -2)
-
     (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
     (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
     (add-to-list 'interpreter-mode-alist '("node" . js2-mode)))
-
   (use-package prettier-js
     :ensure t
     :config
     (add-hook 'js2-mode-hook 'prettier-js-mode)
     (add-hook 'web-mode-hook 'prettier-js-mode))
-
 #+end_src
-
 ** elixir
 #+begin_src emacs-lisp
   (use-package elixir-mode
     :ensure t
     :config
     (plist-put evilmi-plugins 'elixir-mode '((evilmi-ruby-get-tag evilmi-ruby-jump))))
-
   (use-package alchemist
     :ensure t
     :config
-
     (evil-define-operator evil-eval-elixir-text-object (beg end)
       "Evil operator for evaluating code."
       :move-point nil
       (save-excursion
         (my-funcs/flash-region beg end)
         (alchemist-iex-send-region beg end)))
-
     (general-define-key :prefix local-leader
                         :keymaps '(elixir-mode-map)
                         :states '(normal)
@@ -2067,17 +1604,14 @@ toggle details with ')'
                         "r r" 'alchemist-iex-reload-module
                         "i i" 'alchemist-iex-run
                         "i p" 'alchemist-iex-project-run)
-
     (general-define-key :keymaps '(elixir-mode-map)
                         :states '(visual)
                         "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
                               :name general-dispatch-change-elixir-visual
                               "p" 'alchemist-iex-send-region))
-
     (general-define-key :keymaps '(alchemist-test-report-mode-map)
                         :states '(normal)
                         "q" 'quit-window)
-
     (general-define-key :keymaps '(elixir-mode-map)
                         :states '(normal)
                         "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
@@ -2093,17 +1627,14 @@ toggle details with ')'
                                            (save-excursion
                                              (end-of-line)
                                              (point)))))))
-
     )
 #+end_src
-
 ** erlang
 #+begin_src emacs-lisp
   (use-package erlang
     :ensure t
     :config)
 #+end_src
-
 ** highlight-indent-guides
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
@@ -2113,14 +1644,12 @@ toggle details with ')'
     (setq highlight-indent-guides-method 'character)
     (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 #+end_src
-
 ** powerline
 #+BEGIN_SRC emacs-lisp
   (use-package powerline
     :ensure t
     :config
     (add-hook 'desktop-after-read-hook 'powerline-reset)
-
     (defun make-rect (color height width)
       "Create an XPM bitmap."
       (when window-system
@@ -2130,8 +1659,6 @@ toggle details with ')'
                (i 0))
            (setq data (make-list height (make-list width 1)))
            (pl/make-xpm "percent" color color (reverse data))))))
-
-
     (defun powerline-mode-icon ()
       (let ((icon (all-the-icons-icon-for-buffer)))
         (unless (symbolp icon) ;; This implies it's the major mode
@@ -2139,7 +1666,6 @@ toggle details with ')'
                   (propertize icon
                               'help-echo (format "Major-mode: `%s`" major-mode)
                               'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
-
     (defun powerline-modeline-vc ()
       (when vc-mode
         (let* ((text-props (text-properties-at 1 vc-mode))
@@ -2156,7 +1682,6 @@ toggle details with ')'
                  'face (when (powerline-selected-window-active) 'success)
                  text-props
                  ))))
-
     (defun powerline-buffer-info ()
       (let ((proj (projectile-project-name)))
         (if (string= proj "-")
@@ -2167,11 +1692,9 @@ toggle details with ')'
                        'face 'warning)
            " "
            (buffer-name)))))
-
     (defun powerline-ace-window ()
       (propertize (window-parameter (selected-window) 'my-ace-window-path)
                   'face 'error))
-
     (setq-default mode-line-format
                   '("%e"
                     (:eval
@@ -2252,17 +1775,14 @@ toggle details with ')'
                 (projectile-project-root)
                 options
                 (projectile-prepend-project-name "ag")))
-
   (defun counsel-rg-project (&optional options)
     (interactive)
     (counsel-rg nil
                 (projectile-project-root)
                 options
                 (projectile-prepend-project-name "rg")))
-
     ;;(setq ag-reuse-window 't)
 #+end_src
-
 ** whitespace mode
 #+begin_src emacs-lisp
   (use-package whitespace
@@ -2277,7 +1797,6 @@ toggle details with ')'
                                     cider-repl-mode))
     (global-whitespace-mode 1))
 #+end_src
-
 ** markdown-mode
 #+begin_src emacs-lisp
   (use-package markdown-mode
@@ -2288,14 +1807,12 @@ toggle details with ')'
            ("\\.markdown\\'" . markdown-mode))
     :init (setq markdown-command "multimarkdown"))
 #+end_src
-
 ** rjsx-mode
 #+begin_src emacs-lisp
   (use-package rjsx-mode
     :ensure t
     :config)
 #+end_src
-
 ** pdf-tools
 #+begin_src emacs-lisp
   (use-package pdf-tools
@@ -2341,7 +1858,6 @@ toggle details with ')'
                         "t" 'pdf-annot-attachment-dired
                         "n" 'pdf-view-midnight-minor-mode)
                                           ; Other
-
     (add-hook 'pdf-view-mode-hook (lambda () (setq display-line-numbers nil))))
 #+end_src
 ** language-tool
@@ -2350,7 +1866,6 @@ toggle details with ')'
     :ensure t
     :config)
 #+end_src
-
 ** evil-goggles
 #+begin_src emacs-lisp
   (use-package evil-goggles
@@ -2359,35 +1874,28 @@ toggle details with ')'
     (setq evil-goggles-duration 0.200)
     (evil-goggles-mode))
 #+end_src
-
 ** editorconfig
 #+begin_src emacs-lisp
   (use-package editorconfig
     :ensure t
     :config
-
     (editorconfig-mode 1))
 #+end_src
-
 ** fill-column-indicator
 #+begin_src emacs-lisp
   (use-package fill-column-indicator
     :ensure t
     :config
-
   (defun on-off-fci-before-company(command)
     (when (string= "show" command)
       (turn-off-fci-mode))
     (when (string= "hide" command)
       (turn-on-fci-mode)))
-
   (advice-add 'company-call-frontends :before #'on-off-fci-before-company)
   (add-hook 'prog-mode-hook #'fci-mode)
   (setq-default fci-rule-color "#906cff")
   )
 #+end_src
-
-
 ** ace-window
 #+begin_src emacs-lisp
   (use-package ace-window
@@ -2395,8 +1903,6 @@ toggle details with ')'
     :defer 1
     :config
     (set-face-attribute 'aw-leading-char-face nil :foreground nil :inherit 'evil-goggles-delete-face)
-
-
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
           aw-background nil
           aw-dispatch-always t
@@ -2407,7 +1913,6 @@ toggle details with ')'
             (?o delete-other-windows)
             (?b balance-windows)
             ))
-
     (when (package-installed-p 'hydra)
       (defhydra hydra-window-size (:color red)
         "Windows size"
@@ -2416,7 +1921,6 @@ toggle details with ')'
         ("k" enlarge-window "enlarge vertical")
         ("l" enlarge-window-horizontally "enlarge horizontal"))
       (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t))
-
     (define-minor-mode my-ace-window-display-mode
       "Minor mode for showing the ace window key in the mode line."
       :global t
@@ -2429,7 +1933,6 @@ toggle details with ')'
             ;; exactly what I need to update `mode-line-format'.
             (add-hook 'window-configuration-change-hook 'my-aw-update))
         (remove-hook 'window-configuration-change-hook 'my-aw-update)))
-
     (defun my-aw-update ()
       "Update my-ace-window-path window parameter for all windows."
       (avy-traverse
@@ -2443,11 +1946,8 @@ toggle details with ')'
           leaf 'my-ace-window-path
           (propertize
            (apply #'string (reverse path)))))))
-
     (my-ace-window-display-mode))
-
 #+end_src
-
 * Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
@@ -2456,7 +1956,6 @@ toggle details with ')'
   ;;   (progn
   ;;     (setq nlinum-format "%3d ")
   ;;     ))
-
   ;; (use-package nlinum-relative
   ;;   :ensure t
   ;;   :init
@@ -2465,15 +1964,12 @@ toggle details with ')'
   ;;     (global-nlinum-relative-mode t)
   ;;     (setq nlinum-relative-current-symbol "")
   ;;     (nlinum-relative-setup-evil)))
-
-
   ;; default values for indentation (possibly overwritten by editorconfig)
   (setq
    js2-basic-offset 2
    js-indent-level 2
    js-expr-indent-offset -2)
 #+end_src
-
 #+begin_src emacs-lisp
   ;; Don't litter my init file
   (setq custom-file "~/.emacs.d/local/custom-set.el")
