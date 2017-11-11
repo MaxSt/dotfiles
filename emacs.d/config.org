@@ -1572,6 +1572,10 @@ toggle details with ')'
     :config
     (add-hook 'js2-mode-hook 'prettier-js-mode)
     (add-hook 'web-mode-hook 'prettier-js-mode))
+
+  (use-package rjsx-mode
+    :ensure t
+    :config)
 #+end_src
 ** elixir
 #+begin_src emacs-lisp
