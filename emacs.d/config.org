@@ -443,10 +443,13 @@ no mapping for that object
                       "C-j" 'evil-window-down
                       "g ." 'my-funcs/open-dotfile
                       "g h" 'org-capture
+                      "g i" (lambda ()
+                              (interactive)
+                              (find-file (concat org-directory "/inbox.org")))
                       "g l" 'org-agenda
                       "g o" (lambda ()
                               (interactive)
-                              (dired org-directory))
+                              (counsel-find-file org-directory))
                       "] SPC" (lambda ()
                                 (interactive)
                                 (save-excursion
@@ -1146,37 +1149,44 @@ increment and decrement numbers with c-a and c-x
 #+END_SRC
 **** set org default directory
 #+BEGIN_SRC emacs-lisp
-    (setq org-agenda-files '("~/Dropbox/org/"))
-    (setq org-directory "~/Dropbox/org")
+  (setq org-agenda-files '("~/Dropbox/org/")
+        org-directory "~/Dropbox/org/"
+        org-archive-location "~/Dropbox/org-archive/%s::")
 #+END_SRC
+**** org src block indention
+#+BEGIN_SRC emacs-lisp
+  (setq org-src-preserve-indentation nil
+        org-edit-src-content-indentation 2)
+#+END_SRC
+
 **** capture templates
 #+BEGIN_SRC emacs-lisp
-   (setq org-capture-templates
-         '(("n"
-            "new Note"
-            entry
-            (file "notes.org")
-            "* %?")
-           ("t"
-            "My TODO task format."
-            entry
-            (file "todo.org")
-            "* TODO %? SCHEDULED: %t")))
-   (setq org-refile-use-outline-path 'file)
-   (setq org-outline-path-complete-in-steps nil)
-   ;; use a depth level of 6 max
-   (setq org-refile-targets
-         '((org-agenda-files . (:maxlevel . 4))))
-#+END_SRC
-(setq-default org-catch-invisible-edits 'smart)
+  (setq org-capture-templates
+           '(("i"
+              "INBOX"
+              entry
+              (file "inbox.org")
+              "* %?")
+             ("t"
+              "INBOX TODO"
+              entry
+              (file "inbox.org")
+              "* TODO %? SCHEDULED: %t")))
+     (setq org-refile-use-outline-path 'file)
+     (setq org-outline-path-complete-in-steps nil)
+     ;; use a depth level of 6 max
+     (setq org-refile-targets
+           '((org-agenda-files . (:maxlevel . 4))))
+     #+END_SRC
+     (setq-default org-catch-invisible-edits 'smart)
 **** smart invisible edits
-#+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC emacs-lisp
 (setq-default org-catch-invisible-edits 'smart)
-#+END_SRC
+     #+END_SRC
 **** COMMENT hide leading stars
-#+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC emacs-lisp
 (setq-default org-hide-leading-stars t)
-#+END_SRC
+     #+END_SRC
 *** COMMENT org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
@@ -1205,78 +1215,121 @@ increment and decrement numbers with c-a and c-x
 #+END_SRC
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
-  (defun clever-insert-item ()
-    "Clever insertion of org item."
-    (interactive)
-    (if (not (org-in-item-p))
+  (use-package worf
+   :ensure t)
+
+  (defhydra myorg-hydra-change (:hint nil)
+    "
+  ^ ^ _k_ ^ ^    _t_ags    _p_rop | _x_:archive
+  _h_ ^+^ _l_    _n_ame    _e_ol  |
+  ^ ^ _j_ ^ ^    ^ ^       ^ ^    |
+  "
+    ;; arrows
+    ("j" org-metaup)
+    ("k" org-metadown)
+    ("h" org-metaleft)
+    ("l" org-metaright)
+
+    ("e" move-end-of-line :exit t)
+    ;; misc
+    ("p" org-set-property :exit t)
+    ("t" org-set-tags :exit t)
+    ("n" worf-change-name :exit t)
+    ("x" org-archive-subtree-default-with-confirmation :exit t)
+    ("q" nil)
+    ("c" nil))
+
+
+  (defun my-org-before-or-after (before)
+    (if before
+        (evil-insert-line nil)
+      (evil-append-line nil)))
+
+  (defun my-org-new-item (before)
+    (if (org-at-heading-p)
         (progn
-          (end-of-visible-line)
-          (insert "\n")
-          (evil-append nil))
-      (org-insert-item))
-    )
-  (defun evil-org-eol-call (fun)
-    "Go to end of line and call provided function.
-  FUN function callback"
-    (end-of-line)
-    (funcall fun)
-    (evil-append nil)
-    )
-  (general-define-key :keymaps 'org-mode-map
-                      :states '(normal)
-                      "TAB" 'org-cycle
-                      "<" 'org-metaleft
-                      ">" 'org-metaright
-                      "|" 'imenu-list-minor-mode
-                      "o" 'clever-insert-item
-                      ;; "o" '(lambda ()
-                      ;;        (interactive)
-                      ;;        (end-of-line)
-                      ;;        (org-meta-return)
-                      ;;        (evil-append nil))
-                      "RET" (lambda ()
+          (my-org-before-or-after before)
+          (if before
+              (org-insert-heading)
+              (org-insert-heading-respect-content)))
+      (if (org-at-item-checkbox-p)
+          (progn
+            (my-org-before-or-after before)
+            (org-insert-todo-heading 1))
+        (if (org-at-item-p)
+          (progn
+            (my-org-before-or-after before)
+            (org-insert-item))))))
+
+  (defun my-org-new-item-before ()
+    (interactive)
+    (my-org-new-item t))
+
+  (defun my-org-new-item-after ()
+    (interactive)
+    (my-org-new-item nil))
+
+    (general-define-key :keymaps 'org-mode-map
+                        :states '(normal)
+                        "TAB" 'org-cycle
+                        "<" 'org-metaleft
+                        ">" 'org-metaright
+                        "|" 'imenu-list-minor-mode
+                        "RET" (lambda ()
+                                (interactive)
+                                (if (org-in-src-block-p)
+                                    (org-edit-special)
+                                  (if (org-at-item-checkbox-p)
+                                      (org-toggle-checkbox)
+                                      (org-open-at-point)
+                                      ))
+                                (evil-normal-state)))
+    (general-define-key :prefix my-leader2
+                        :keymaps 'org-mode-map
+                        :states '(normal)
+                        ;;"o" (lambda ()
+                              ;;(interactive)
+                              ;;(org-insert-heading-respect-content)
+                              ;;(evil-insert-state))
+                        "o" 'my-org-new-item-after
+                        "O" 'my-org-new-item-before
+                        "a" (lambda ()
                               (interactive)
-                              (if (org-in-src-block-p)
-                                  (org-edit-special)
-                                (org-open-at-point))
-                              (evil-normal-state)))
-  (general-define-key :prefix my-leader2
-                      :keymaps 'org-mode-map
-                      :states '(normal)
-                      "o" (lambda ()
-                            (interactive)
-                            (org-insert-heading-respect-content)
-                            (evil-insert-state))
-                      "a" (lambda ()
-                            (interactive)
-                            (org-insert-heading-respect-content)
-                            (org-demote-subtree)
-                            (evil-insert-state))
-                      "x" 'org-archive-subtree-default-with-confirmation
-                      "s" 'org-schedule
-                      "r" 'org-refile
-                      "n" 'org-narrow-to-subtree
-                      "w" 'widen
-                      "t" 'org-todo
-                      "p" 'org-insert-link
-                      "y" 'org-store-link
-                      "h" 'org-previous-item
-                      "l" 'org-forward-heading-same-level
-                      "h" 'org-backward-heading-same-level
-                      "k" 'org-up-element
-                      "K" (lambda ()
-                            (interactive)
-                            (org-up-element)
-                            (org-cycle)))
-  ;; key for exiting src edit mode
-  (general-define-key :keymaps 'org-src-mode-map
-                      :states '(normal)
-                      "RET" 'org-edit-src-exit)
+                              (org-insert-heading-respect-content)
+                              (org-demote-subtree)
+                              (evil-insert-state))
+                        "x" 'org-archive-subtree-default-with-confirmation
+                        "s" 'org-schedule
+                        "r" 'org-refile
+                        "n" 'org-narrow-to-subtree
+                        "w" 'widen
+                        "t" 'org-todo
+                        "T" 'org-set-tags
+                        "p" 'org-insert-link
+                        "y" 'org-store-link
+                        "c" 'myorg-hydra-change/body
+                        "l" 'worf-right
+                        "g" 'worf-goto
+                        "j" 'worf-down
+                        "k" 'worf-up
+                        "h" 'worf-left
+                        "H" (lambda ()
+                              (interactive)
+                              (worf-left)
+                              (org-cycle)))
+    ;; key for exiting src edit mode
+    (general-define-key :keymaps 'org-src-mode-map
+                        :states '(normal)
+                        "RET" 'org-edit-src-exit)
 #+END_SRC
 *** open source code in same window
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
 #+END_SRC
+
+
+
+
 ** smartparens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
