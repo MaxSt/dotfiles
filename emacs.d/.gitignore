@@ -18,3 +18,10 @@ local/*
 
 backup/*
 !backup/.gitkeep
+
+# compiled files
+*.elc
+
+# transient files
+*.cache-*
+*.log

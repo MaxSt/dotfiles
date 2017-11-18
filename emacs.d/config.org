@@ -4,23 +4,102 @@
 #+DESCRIPTION: Loading emacs configuration using org-babel
 #+TAGS: emacs
 #+CATEGORIES: editing
-#+PROPERTY: header-args:emacs-lisp :results silent
+#+PROPERTY: header-args:emacs-lisp :results silent :tangle yes
 * Package Config
-** Package + use-package
+** Emacs Initialization
+*** Settings
+We're going to increase the gc-cons-threshold to a very high number to decrease the load and compile time.
+We'll lower this value significantly after initialization has completed. We don't want to keep this value
+too high or it will result in long GC pauses during normal usage.
+
 #+BEGIN_SRC emacs-lisp
-  (require 'package)
-  (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/"))
-  (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-  (add-to-list 'package-archives '("melpa-stable" . "http://stable.melpa.org/packages/"))
-  (unless (package-installed-p 'use-package)
-    (package-refresh-contents)
-    (package-install 'use-package))
-  (require 'use-package)
+(eval-and-compile
+  (setq gc-cons-threshold 402653184
+        gc-cons-percentage 0.6))
 #+END_SRC
+
+Disable certain byte compiler warnings to cut down on the noise. This is a personal choice and can be removed
+if you would like to see any and all byte compiler warnings.
+
+#+BEGIN_SRC emacs-lisp
+(setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
+#+END_SRC
+*** Package Management
+
+**** Package Settings
+We're going to set the =load-path= ourselves and avoid calling =(package-initilize)= (for
+performance reasons) so we need to set =package--init-file-ensured= to true to tell =package.el=
+to not automatically call it on our behalf. Additionally we're setting
+=package-enable-at-startup= to nil so that packages will not automatically be loaded for us since
+=use-package= will be handling that.
+
+#+BEGIN_SRC emacs-lisp
+  (eval-and-compile
+    (setq load-prefer-newer t
+          package-user-dir "~/.emacs.d/elpa"
+          package--init-file-ensured t
+          package-enable-at-startup nil)
+
+    (unless (file-directory-p package-user-dir)
+      (make-directory package-user-dir t)))
+#+END_SRC
+
+**** Use-Package Settings
+Tell =use-package= to always defer loading packages unless explicitly told otherwise. This speeds up
+initialization significantly as many packages are only loaded later when they are explicitly used.
+
+#+BEGIN_SRC emacs-lisp
+  (setq use-package-always-defer t
+        use-package-verbose t)
+#+END_SRC
+
+**** Manually Set Load Path
+We're going to set the load path ourselves so that we don't have to call =package-initialize= at
+runtime and incur a large performance hit. This load-path will actually be faster than the one
+created by =package-initialize= because it appends the elpa packages to the end of the load path.
+Otherwise any time a builtin package was required it would have to search all of third party paths
+first.
+
+#+BEGIN_SRC emacs-lisp
+  (eval-and-compile
+    (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
+#+END_SRC
+
+**** Initialize Package Management
+Next we are going to require =package.el= and add our additional package archives, 'melpa' and 'org'.
+Afterwards we need to initialize our packages and then ensure that =use-package= is installed, which
+we promptly install if it's missing. Finally we load =use-package= and tell it to always install any
+missing packages.
+
+Note that this entire block is wrapped in =eval-when-compile=. The effect of this is to perform all
+of the package initialization during compilation so that when byte compiled, all of this time consuming
+code is skipped. This can be done because the result of byte compiling =use-package= statements results
+in the macro being fully expanded at which point =use-package= isn't actually required any longer.
+
+Since the code is automatically compiled during runtime, if the configuration hasn't already been
+previously compiled manually then all of the package initialization will still take place at startup.
+
+#+BEGIN_SRC emacs-lisp
+  (eval-when-compile
+    (require 'package)
+
+    (unless (assoc-default "melpa" package-archives)
+      (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
+    (unless (assoc-default "org" package-archives)
+      (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
+
+    (package-initialize)
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+    (require 'use-package)
+    (setq use-package-always-ensure t))
+#+END_SRC
+
 * Defaults
 ** global
 #+BEGIN_SRC emacs-lisp
-  (setq package-enable-at-startup nil
+  (setq 
    inhibit-startup-screen t
    x-select-enable-clipboard t
    column-number-mode t
@@ -55,7 +134,7 @@
   (setq ring-bell-function 'ignore)
   ;; reduce the frequency of garbage collection by making it happen on
   ;; each 50MB of allocated data (the default is on every 0.76MB)
-  (setq gc-cons-threshold 50000000)
+  ;; (setq gc-cons-threshold 50000000)
   ;; enable y/n answers
   (fset 'yes-or-no-p 'y-or-n-p)
   ;; revert buffers automatically when underlying files are changed externally
@@ -68,7 +147,7 @@
 ** flyspell
 #+BEGIN_SRC emacs-lisp
     (use-package auto-dictionary-mode
-      :ensure t
+      :demand t
       :config
       (add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1)))
       )
@@ -79,7 +158,7 @@
           '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8)
             ("de_AT" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8)))
     (use-package flyspell
-      :ensure t
+      :demand t
       :config
       ;; to slow for magit commit for example:
       ;;(add-hook 'flyspell-mode-hook #'flyspell-buffer)
@@ -140,16 +219,16 @@ These are the Files creating in the current Directory for files that have not be
 ** Themes
 #+begin_src emacs-lisp
   ;;(use-package challenger-deep-theme
-    ;;:ensure t
+    ;;:demand t
     ;;:config
     ;;(load-theme 'challenger-deep t))
   (add-to-list 'custom-theme-load-path "~/Documents/challenger-deep")
   (load-theme 'challenger-deep t)
   (use-package all-the-icons
-    :ensure t
+    :demand t
     :config
     (use-package all-the-icons-dired
-      :ensure t
+      :demand t
       :config
       (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
 #+end_src
@@ -262,26 +341,27 @@ These are the Files creating in the current Directory for files that have not be
 ** initialize
 #+BEGIN_SRC emacs-lisp
   (use-package evil
-    :ensure t
+    :demand t
     :init
     (setq-default evil-search-module 'evil-search
                   evil-shift-width 2
                   ;; prevent esc-key from translating to meta-key in terminal mode
                   evil-esc-delay 0
                   evil-want-Y-yank-to-eol t)
-    (evil-mode t)
     :config
     (evil-set-initial-state 'ibuffer-mode 'normal)
     (evil-set-initial-state 'pdf-view-mode 'normal)
     ;;(setq evil-emacs-state-modes nil)
     ;;(setq evil-insert-state-modes nil)
     ;;(setq evil-motion-state-modes nil)
+
+    (evil-mode t)
     )
 #+end_src
 ** hydra
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
-    :ensure t
+    :demand t
     :config
     (defhydra hydra-zoom ()
       "Zoom"
@@ -412,115 +492,113 @@ no mapping for that object
 [[https://github.com/noctuid/general.el][general.el]]
 #+BEGIN_SRC emacs-lisp
   (use-package general
-    :ensure t
+    :demand t
     :config
-    (general-evil-setup)
+    ;;(general-evil-setup)
     ;; bind a key globally in normal state; keymaps must be quoted
     (setq general-default-keymaps 'evil-normal-state-map))
   ;;evil mappings
-  (general-define-key :keymaps 'normal
-                      "M-l" (lambda ()
-                              (interactive)
-                              (evil-window-vsplit)
-                              (evil-window-right 1))
-                      "M-h" (lambda ()
-                              (interactive)
-                              (evil-window-vsplit))
-                      "M-k" (lambda ()
-                              (interactive)
-                              (evil-window-split))
-                      "M-j" (lambda ()
-                              (interactive)
-                              (evil-window-split)
-                              (evil-window-down 1))
-                      "gS" 'my-funcs/open-snippet-dir
-                      "gs" 'save-buffer
-                      "`" 'evil-goto-mark-line
-                      "'" 'evil-goto-mark
-                      "C-h" 'evil-window-left
-                      "C-l" 'evil-window-right
-                      "C-k" 'evil-window-up
-                      "C-j" 'evil-window-down
-                      "g ." 'my-funcs/open-dotfile
-                      "g h" 'org-capture
-                      "g i" (lambda ()
-                              (interactive)
-                              (find-file (concat org-directory "/inbox.org")))
-                      "g l" 'org-agenda
-                      "g o" (lambda ()
-                              (interactive)
-                              (counsel-find-file org-directory))
-                      "] SPC" (lambda ()
-                                (interactive)
-                                (save-excursion
-                                  (evil-open-below 1))
-                                (evil-normal-state))
-                      "[ SPC" (lambda ()
-                                (interactive)
-                                (save-excursion
-                                  (evil-open-above 1))
-                                (evil-normal-state))
-                      )
+  (general-def 'normal
+    "M-l" (lambda ()
+            (interactive)
+            (evil-window-vsplit)
+            (evil-window-right 1))
+    "M-h" (lambda ()
+            (interactive)
+            (evil-window-vsplit))
+    "M-k" (lambda ()
+            (interactive)
+            (evil-window-split))
+    "M-j" (lambda ()
+            (interactive)
+            (evil-window-split)
+            (evil-window-down 1))
+    "gS" 'my-funcs/open-snippet-dir
+    "gs" 'save-buffer
+    "`" 'evil-goto-mark-line
+    "'" 'evil-goto-mark
+    "C-h" 'evil-window-left
+    "C-l" 'evil-window-right
+    "C-k" 'evil-window-up
+    "C-j" 'evil-window-down
+    "g ." 'my-funcs/open-dotfile
+    "g h" 'org-capture
+    "g i" (lambda ()
+            (interactive)
+            (find-file (concat org-directory "/inbox.org")))
+    "g l" 'org-agenda
+    "g o" (lambda ()
+            (interactive)
+            (counsel-find-file org-directory))
+    "] SPC" (lambda ()
+              (interactive)
+              (save-excursion
+                (evil-open-below 1))
+              (evil-normal-state))
+    "[ SPC" (lambda ()
+              (interactive)
+              (save-excursion
+                (evil-open-above 1))
+              (evil-normal-state))
+    )
   ;; named prefix key
   (setq my-leader "SPC")
-  (general-define-key :prefix my-leader
-                      ;;"r" 'restart-emacs
-                      "p" 'hydra-projectile/body
-                      "q" 'evil-window-delete
-                      "k" 'kill-buffer
-                      "d" 'evil-delete-buffer
-                      "SPC" 'ace-select-window
-                      ;;"h" (general-simulate-keys "C-h")
-                      "h k" 'describe-key
-                      "h SPC" 'which-key-show-top-level
-                      "h v" 'describe-variable
-                      "h f" 'describe-function
-                      "h m" 'describe-mode
-                      "<return>" 'my/projectile-multi-term
-                      "S-<return>" 'multi-term
-                      ;;  Avoiding CTRL
-                      "w" 'ace-window
-                      "W" (general-simulate-keys "C-w")
-                      "x" (general-simulate-keys "C-x")
-                      "c" (general-simulate-keys "C-c")
-                      "i" 'ibuffer
-                      "t" 'projectile-find-file
-                      "/" 'counsel-rg-project
-                      "e" 'projectile-switch-to-buffer
-                      "g s" 'magit-status
-                      "g t" 'git-timemachine
-                      "g n" 'git-gutter:next-hunk
-                      "g p" 'git-gutter:previous-hunk
-                      "g r" 'git-gutter:revert-hunk
-                      "l" 'evil-avy-goto-line
-                      "u" 'undo-tree-visualize
-                      "b" 'ivy-switch-buffer
-                      "n" 'next-error
-                      "N" 'previous-error
-                      "z" 'hydra-zoom/body
-                      "o" (lambda () (interactive) (dired "."))
-                      "O" 'dired
-                      "f" 'find-file)
-   (setq my-leader2 ",")
-   (setq local-leader "\\")
+  (general-def 'normal :prefix my-leader
+    ;;"r" 'restart-emacs
+    "p" 'hydra-projectile/body
+    "q" 'evil-window-delete
+    "k" 'kill-buffer
+    "d" 'evil-delete-buffer
+    "SPC" 'ace-select-window
+    ;;"h" (general-simulate-keys "C-h")
+    "h k" 'describe-key
+    "h SPC" 'which-key-show-top-level
+    "h v" 'describe-variable
+    "h f" 'describe-function
+    "h m" 'describe-mode
+    "<return>" 'my/projectile-multi-term
+    "S-<return>" 'multi-term
+    ;;  Avoiding CTRL
+    "W" (general-simulate-keys "C-w")
+    "x" (general-simulate-keys "C-x")
+    "c" (general-simulate-keys "C-c")
+    "i" 'ibuffer
+    "t" 'projectile-find-file
+    "/" 'counsel-rg-project
+    "e" 'projectile-switch-to-buffer
+    "g s" 'magit-status
+    "g t" 'git-timemachine
+    "g n" 'git-gutter:next-hunk
+    "g p" 'git-gutter:previous-hunk
+    "g r" 'git-gutter:revert-hunk
+    "l" 'evil-avy-goto-line
+    "u" 'undo-tree-visualize
+    "b" 'ivy-switch-buffer
+    "n" 'next-error
+    "N" 'previous-error
+    "z" 'hydra-zoom/body
+    "o" (lambda () (interactive) (dired "."))
+    "O" 'dired
+    "f" 'find-file)
+  (setq my-leader2 ",")
+  (setq local-leader "\\")
 #+END_SRC
 ** evil-surround
 #+begin_src emacs-lisp
     (use-package evil-surround
-      :ensure t
+      :demand t
       :config
       (global-evil-surround-mode))
 #+end_src
 ** aggressive indent
 #+begin_src emacs-lisp
   (use-package aggressive-indent
-    :ensure t
     :config)
 #+end_src
 ** evil-args
 #+begin_src emacs-lisp
   (use-package evil-args
-    :ensure t
+    :demand t
     :config
     ;; bind evil-args text objects
     (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
@@ -530,7 +608,7 @@ no mapping for that object
 ** evil-indent-plus textobject
 #+begin_src emacs-lisp
   (use-package evil-indent-plus
-    :ensure t
+    :demand t
     :config
     ;; bind evil-indent-plus text objects
     (evil-indent-plus-default-bindings)
@@ -540,7 +618,7 @@ no mapping for that object
 increment and decrement numbers with c-a and c-x
 #+begin_src emacs-lisp
     (use-package evil-numbers
-      :ensure t
+      :commands (evil-numbers/inc-at-pt evil-numbers/dec-at-pt)
       :config
       (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
       (define-key evil-normal-state-map (kbd "C-x") 'evil-numbers/dec-at-pt))
@@ -549,7 +627,7 @@ increment and decrement numbers with c-a and c-x
 % to jump between matched tags
 #+begin_src emacs-lisp
     (use-package evil-matchit
-      :ensure t
+      :demand t
       :config
       (global-evil-matchit-mode 1))
 #+end_src
@@ -558,8 +636,7 @@ increment and decrement numbers with c-a and c-x
    ;;gx to mark exchange second time to do it
    ;;gX to cancel
   (use-package evil-exchange
-    :ensure t
-    :config)
+    :commands (evil-exchange))
   (setq lisp-modes '(clojure-mode
                      cider-clojure-interaction-mode
                      lisp-interaction-mode
@@ -571,17 +648,17 @@ increment and decrement numbers with c-a and c-x
     (if (seq-contains lisp-modes major-mode)
         (evil-sp-change beg end)
       (evil-change beg end)))
-  (general-define-key :states '(normal)
-                      "c" (general-key-dispatch 'evil-decide-change-fun
-                            :name general-dispatch-evil-change-exchange
-                            "s" 'evil-surround-change
-                            "x" 'evil-exchange
-                            "X" 'evil-exchange-cancel))
+  (general-def 'normal
+    "c" (general-key-dispatch 'evil-decide-change-fun
+          :name general-dispatch-evil-change-exchange
+          "s" 'evil-surround-change
+          "x" 'evil-exchange
+          "X" 'evil-exchange-cancel))
 #+end_src
 ** evil-commentary
 #+begin_src emacs-lisp
   (use-package evil-commentary
-      :ensure t
+      :demand t
       :after (evil)
       :config
       (evil-commentary-mode))
@@ -589,9 +666,8 @@ increment and decrement numbers with c-a and c-x
 ** evil-anzu
 #+begin_src emacs-lisp
   (use-package evil-anzu
-      :ensure t
+      :demand t
       :after (evil)
-      :config
       )
 #+end_src
 ** ibuffer
@@ -685,7 +761,7 @@ increment and decrement numbers with c-a and c-x
 ** evil-replace-with-register
 #+begin_src emacs-lisp
   (use-package evil-replace-with-register
-    :ensure t
+    :demand t
     :after (evil)
     :config
     (setq evil-replace-with-register-key (kbd "gr"))
@@ -709,17 +785,15 @@ increment and decrement numbers with c-a and c-x
   "Indirectly narrow the region from BEG to END."
   (interactive "<R>")
   (narrow-to-region-indirect beg end))
-(general-define-key
- :prefix my-leader
+(general-def 'normal :prefix my-leader
  "n" 'evil-narrow-indirect)
-(general-vmap :prefix "SPC"
-              "n" 'narrow-to-region-indirect)
+;;(general-vmap :prefix "SPC" "n" 'narrow-to-region-indirect)
 #+end_src
 * Package config
 ** Exec-path
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
-      :ensure t
+      :demand t
       :config
       (when (memq window-system '(mac ns x))
         (exec-path-from-shell-copy-env "PGUSER")
@@ -729,7 +803,7 @@ increment and decrement numbers with c-a and c-x
 ** Popup Window
 #+BEGIN_SRC emacs-lisp
   (use-package shackle
-    :ensure t
+    :demand t
     :config
     (progn
       (setq shackle-select-reused-windows nil) ; default nil
@@ -758,42 +832,40 @@ increment and decrement numbers with c-a and c-x
 ** clojure
 #+BEGIN_SRC emacs-lisp
   (use-package clojure-mode
-    :ensure t
+    :demand t
     :config
-    (put-clojure-indent 'defui '(2 nil nil (1)))
-    ;;(add-hook 'clojure-mode-hook #'aggressive-indent-mode)
-    )
+    (put-clojure-indent 'defui '(2 nil nil (1))))
   (use-package clj-refactor
-    :ensure t
+    :demand t
     :config)
   (use-package cider
-    :ensure t
+    :demand t
     :config
     ;;make boot the default
     (setq cider-default-repl-command "boot")
-    (use-package cider-hydra
-      :ensure t
-      :config
-      (add-hook 'cider-mode-hook #'cider-hydra-mode))
-    (setq cider-repl-display-in-current-window nil)
-    (setq cider-repl-use-pretty-printing t)
-    (autoload 'cider--make-result-overlay "cider-overlays")
-    (defun my-funcs/eval-overlay (value point)
-      (cider--make-result-overlay (format "%S" value)
-        :where point
-        :duration 'command)
-      ;; Preserve the return value.
-      value)
-    (advice-add 'eval-last-sexp :filter-return
-                (lambda (r)
-                  (my-funcs/eval-overlay r (point))))
-    (advice-add 'eval-defun :filter-return
-                (lambda (r)
-                  (my-funcs/eval-overlay
-                   r
-                   (save-excursion
-                     (end-of-defun)
-                     (point))))))
+      (use-package cider-hydra
+        :demand t
+        :config
+        (add-hook 'cider-mode-hook #'cider-hydra-mode))
+        (setq cider-repl-display-in-current-window nil)
+        (setq cider-repl-use-pretty-printing t)
+        (autoload 'cider--make-result-overlay "cider-overlays")
+        (defun my-funcs/eval-overlay (value point)
+          (cider--make-result-overlay (format "%S" value)
+            :where point
+            :duration 'command)
+          ;; Preserve the return value.
+          value)
+        (advice-add 'eval-last-sexp :filter-return
+                    (lambda (r)
+                      (my-funcs/eval-overlay r (point))))
+        (advice-add 'eval-defun :filter-return
+                    (lambda (r)
+                      (my-funcs/eval-overlay
+                       r
+                       (save-excursion
+                         (end-of-defun)
+                         (point))))))
   (evil-define-operator evil-eval-clojure-text-object (beg end)
     "Evil operator for evaluating code."
     :move-point nil
@@ -805,43 +877,39 @@ increment and decrement numbers with c-a and c-x
     (if (eq major-mode 'cider-repl-mode)
         (cider-switch-to-last-clojure-buffer)
       (cider-switch-to-repl-buffer)))
-  (general-define-key :keymaps '(cider-inspector-mode-map)
-                      :states '(normal)
-                      "n" 'cider-inspector-next-page
-                      "N" 'cider-inspector-prev-page
-                      "RET" 'cider-inspector-operate-on-point
-                      "d" 'cider-inspector-pop
-                      "r" 'cider-inspector-refresh)
-  (general-define-key :keymaps '(cider-popup-buffer-mode-map cider-stacktrace-mode-map)
-                      :states '(normal)
-                      "q" 'cider-popup-buffer-quit)
-  (general-define-key :prefix local-leader
-                      :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
-                      :states '(normal)
-                      "r" 'cider-hydra-repl/body
-                      "j" 'cider-jack-in
-                      "i" 'cider-inspect-last-result
-                      "g" 'my/goto-or-switch-back-from-repl
-                      "c" 'cider-jack-in
-                      "d" 'cider-hydra-doc/body
-                      "e" 'cider-hydra-eval/body
-                      "q" 'hydra-cljr-help-menu/body)
-  (general-define-key :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
-                      :states '(normal)
-                      "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
-                      :name general-dispatch-change-clojure
-                            "p" (general-key-dispatch 'evil-eval-clojure-text-object
-                                  :name general-dispatch-eval-clojure-text-object
-                                  "p" (lambda ()
-                                        (interactive)
-                                        (let* ((range (evil-a-sexp))
-                                               (beg (elt range 0))
-                                               (end (elt range 1)))
-                                          (evil-eval-clojure-text-object beg end))))
-                            ;; could be used for other operators where there
-                            ;; isn't an existing command for the linewise version:
-                            ;; "c" (general-simulate-keys ('evil-change "c"))
-                            ))
+  (general-def 'normal ':keymaps '(cider-inspector-mode-map)
+    "n" 'cider-inspector-next-page
+    "N" 'cider-inspector-prev-page
+    "RET" 'cider-inspector-operate-on-point
+    "d" 'cider-inspector-pop
+    "r" 'cider-inspector-refresh)
+  (general-def 'normal '(cider-popup-buffer-mode-map cider-stacktrace-mode-map)
+    "q" 'cider-popup-buffer-quit)
+  (general-def 'normal '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
+    :prefix local-leader
+    "r" 'cider-hydra-repl/body
+    "j" 'cider-jack-in
+    "i" 'cider-inspect-last-result
+    "g" 'my/goto-or-switch-back-from-repl
+    "c" 'cider-jack-in
+    "d" 'cider-hydra-doc/body
+    "e" 'cider-hydra-eval/body
+    "q" 'hydra-cljr-help-menu/body)
+  (general-def 'normal '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
+    "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+          :name general-dispatch-change-clojure
+          "p" (general-key-dispatch 'evil-eval-clojure-text-object
+                :name general-dispatch-eval-clojure-text-object
+                "p" (lambda ()
+                      (interactive)
+                      (let* ((range (evil-a-sexp))
+                             (beg (elt range 0))
+                             (end (elt range 1)))
+                        (evil-eval-clojure-text-object beg end))))
+          ;; could be used for other operators where there
+          ;; isn't an existing command for the linewise version:
+          ;; "c" (general-simulate-keys ('evil-change "c"))
+          ))
 #+end_src
 ** elisp
 #+BEGIN_SRC emacs-lisp
@@ -874,172 +942,175 @@ increment and decrement numbers with c-a and c-x
 #+END_SRC
 ** lisp general
 #+BEGIN_SRC emacs-lisp
-  (defun maybe-join-lisp-line (orig-fun &rest r)
-    (apply orig-fun r)
-    (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
-      (evil-previous-line-first-non-blank)
-      (save-excursion (join-line 1))))
-  (advice-add 'evil-sp-delete-line :around 'maybe-join-lisp-line)
-  (advice-add 'evil-sp-delete :around 'maybe-join-lisp-line)
-  (defun in-sexp ()
-    (> (nth 0 (syntax-ppss)) 0))
-  (defun next-sexp ()
-    "Go to the next sexp"
-    (interactive))
-  (defun next-paren (&optional closing)
-    "Go to the next/previous closing/opening parenthesis/bracket/brace."
-    (if closing
-        (let ((curr (point)))
-          (forward-char)
-          (unless (eq curr (search-forward-regexp "[])}]"))
-            (backward-char)))
-      (search-backward-regexp "[[({]")))
-  (defun prev-opening-paren ()
-    "Go to the next closing parenthesis."
-    (interactive)
-    (next-paren))
-  (defun next-closing-paren ()
-    "Go to the next closing parenthesis."
-    (interactive)
-    (next-paren 'closing))
-  (defun open-paren-around (paren element beginning)
-    (when (and element (in-sexp))
+    (defun maybe-join-lisp-line (orig-fun &rest r)
+      (apply orig-fun r)
+      (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
+        (evil-previous-line-first-non-blank)
+        (save-excursion (join-line 1))))
+    (advice-add 'evil-sp-delete-line :around 'maybe-join-lisp-line)
+    (advice-add 'evil-sp-delete :around 'maybe-join-lisp-line)
+    (defun in-sexp ()
+      (> (nth 0 (syntax-ppss)) 0))
+    (defun next-sexp ()
+      "Go to the next sexp"
+      (interactive))
+    (defun next-paren (&optional closing)
+      "Go to the next/previous closing/opening parenthesis/bracket/brace."
+      (if closing
+          (let ((curr (point)))
+            (forward-char)
+            (unless (eq curr (search-forward-regexp "[])}]"))
+              (backward-char)))
+        (search-backward-regexp "[[({]")))
+    (defun prev-opening-paren ()
+      "Go to the next closing parenthesis."
+      (interactive)
       (next-paren))
-    (sp-wrap-with-pair paren)
-    (if beginning
+    (defun next-closing-paren ()
+      "Go to the next closing parenthesis."
+      (interactive)
+      (next-paren 'closing))
+    (defun open-paren-around (paren element beginning)
+      (when (and element (in-sexp))
+        (next-paren))
+      (sp-wrap-with-pair paren)
+      (if beginning
+          (progn
+            (insert " ")
+            (evil-backward-char 1))
         (progn
-          (insert " ")
-          (evil-backward-char 1))
-      (progn
-        (evilmi-jump-items)
-        (evil-forward-char 1)
-        (insert " ")))
-    (evil-insert nil))
-  (evil-define-command lisp-next-paren (count)
-    (interactive "<c>")
-    (if count
-        (dotimes (number count)
-          (sp-next-sexp))
-      (sp-next-sexp)))
-  (evil-define-command lisp-previous-paren (count)
-    (interactive "<c>")
-    (if count
-        (dotimes (number count)
-          (sp-previous-sexp))
-      (sp-previous-sexp)))
-  (general-define-key :prefix my-leader2
-                      :keymaps '(clojure-mode-map
-                                 cider-clojure-interaction-mode-map
-                                 lisp-interaction-mode-map
-                                 cider-repl-mode-map
-                                 emacs-lisp-mode-map)
-                      :states '(normal)
-                      "W" (lambda ()
-                            (interactive)
-                            (open-paren-around "(" t nil))
-                      "w" (lambda ()
-                            (interactive)
-                            (open-paren-around "(" t t))
-                      "e)" (lambda ()
-                             (interactive)
-                             (open-paren-around "(" t nil))
-                      "e(" (lambda ()
-                            (interactive)
-                            (open-paren-around "(" t t))
-                      "e}" (lambda ()
-                             (interactive)
-                             (open-paren-around "{" t nil))
-                      "e{" (lambda ()
-                             (interactive)
-                             (open-paren-around "{" t t))
-                      "e]" (lambda ()
-                             (interactive)
-                             (open-paren-around "[" t nil))
-                      "e[" (lambda ()
-                             (interactive)
-                             (open-paren-around "[" t t))
-                      "e}" (lambda ()
-                             (interactive)
-                             (open-paren-around "{" t nil))
-                      "e{" (lambda ()
-                             (interactive)
-                             (open-paren-around "{" t t))
-                      "i" (lambda ()
-                            (interactive)
-                            (open-paren-around "(" nil t))
-                      "I" (lambda ()
-                            (interactive)
-                            (open-paren-around "(" nil nil))
-                      "(" (lambda ()
-                            (interactive)
-                            (open-paren-around "(" nil t))
-                      ")" (lambda ()
-                            (interactive)
-                            (open-paren-around "(" nil nil))
-                      "[" (lambda ()
-                            (interactive)
-                            (open-paren-around "[" nil t))
-                      "]" (lambda ()
-                            (interactive)
-                            (open-paren-around "[" nil nil))
-                      "{" (lambda ()
-                            (interactive)
-                            (open-paren-around "{" nil t))
-                      "}" (lambda ()
-                            (interactive)
-                            (open-paren-aroundn "{" nil nil))
-                      "@" 'sp-splice-sexp
-                      "o" (lambda ()
-                            (interactive)
-                            (when (string-match-p "^[^\[({]" (thing-at-point 'sexp t))
-                              (sp-backward-up-sexp))
-                            (sp-raise-sexp))
-                      "O" 'sp-raise-sexp)
-  (general-define-key :keymaps '(clojure-mode-map
-                                 cider-clojure-interaction-mode-map
-                                 lisp-interaction-mode-map
-                                 cider-repl-mode-map
-                                 emacs-lisp-mode-map)
-                      :states '(normal)
-                      ;; c is defined in vim-exchange
-                      "W" 'lisp-next-paren
-                      "B" 'lisp-previous-paren
-                      "(" 'sp-backward-up-sexp
-                      ")" (lambda ()
-                            (interactive)
-                            (sp-backward-up-sexp)
-                            (evilmi-jump-items))
-                      ">" (general-key-dispatch 'evil-shift-right
-                            "I" (lambda ()
-                                  (interactive)
-                                  (sp-end-of-sexp)
-                                  (when (not (char-equal (preceding-char)  ?  ))
-                                    (insert " "))
-                                  (evil-insert nil))
-                            "f" (lambda ()
-                                  (interactive)
-                                  (when (in-sexp)
-                                    ))
-                            ")" 'sp-forward-slurp-sexp
-                            "(" 'sp-backward-barf-sexp)
-                      "<" (general-key-dispatch 'evil-shift-left
-                            "I" (lambda ()
-                                  (interactive)
-                                  (sp-beginning-of-sexp)
-                                  (when (not (char-equal (following-char)  ?  ))
-                                    (insert " ")
-                                    (evil-backward-char))
-                                  (evil-insert nil))
-                            ")" 'sp-forward-barf-sexp
-                            "(" 'sp-backward-slurp-sexp)
-                      "C" 'evil-sp-change-line
-                      "d" 'evil-sp-delete
-                      "D" 'evil-sp-delete-line)
+          (evilmi-jump-items)
+          (evil-forward-char 1)
+          (insert " ")))
+      (evil-insert nil))
+    (evil-define-command lisp-next-paren (count)
+      (interactive "<c>")
+      (if count
+          (dotimes (number count)
+            (sp-next-sexp))
+        (sp-next-sexp)))
+    (evil-define-command lisp-previous-paren (count)
+      (interactive "<c>")
+      (if count
+          (dotimes (number count)
+            (sp-previous-sexp))
+        (sp-previous-sexp)))
+
+    (general-def 'normal ;;all-lisp-mode-maps
+          '(clojure-mode-map
+            cider-clojure-interaction-mode-map
+            lisp-interaction-mode-map
+            cider-repl-mode-map
+            emacs-lisp-mode-map)
+       :prefix my-leader2
+       "W" (lambda ()
+             (interactive)
+             (open-paren-around "(" t nil))
+       "w" (lambda ()
+             (interactive)
+             (open-paren-around "(" t t))
+       "e)" (lambda ()
+              (interactive)
+              (open-paren-around "(" t nil))
+       "e(" (lambda ()
+              (interactive)
+              (open-paren-around "(" t t))
+       "e}" (lambda ()
+              (interactive)
+              (open-paren-around "{" t nil))
+       "e{" (lambda ()
+              (interactive)
+              (open-paren-around "{" t t))
+       "e]" (lambda ()
+              (interactive)
+              (open-paren-around "[" t nil))
+       "e[" (lambda ()
+              (interactive)
+              (open-paren-around "[" t t))
+       "e}" (lambda ()
+              (interactive)
+              (open-paren-around "{" t nil))
+       "e{" (lambda ()
+              (interactive)
+              (open-paren-around "{" t t))
+       "i" (lambda ()
+             (interactive)
+             (open-paren-around "(" nil t))
+       "I" (lambda ()
+             (interactive)
+             (open-paren-around "(" nil nil))
+       "(" (lambda ()
+             (interactive)
+             (open-paren-around "(" nil t))
+       ")" (lambda ()
+             (interactive)
+             (open-paren-around "(" nil nil))
+       "[" (lambda ()
+             (interactive)
+             (open-paren-around "[" nil t))
+       "]" (lambda ()
+             (interactive)
+             (open-paren-around "[" nil nil))
+       "{" (lambda ()
+             (interactive)
+             (open-paren-around "{" nil t))
+       "}" (lambda ()
+             (interactive)
+             (open-paren-aroundn "{" nil nil))
+       "@" 'sp-splice-sexp
+       "o" (lambda ()
+             (interactive)
+             (when (string-match-p "^[^\[({]" (thing-at-point 'sexp t))
+               (sp-backward-up-sexp))
+             (sp-raise-sexp))
+       "O" 'sp-raise-sexp)
+
+    (general-def 'normal ;;all-lisp-mode-maps
+  '(clojure-mode-map
+            cider-clojure-interaction-mode-map
+            lisp-interaction-mode-map
+            cider-repl-mode-map
+            emacs-lisp-mode-map)
+
+       ;;c is defined in vim-exchange
+       "W" 'lisp-next-paren
+       "B" 'lisp-previous-paren
+       "(" 'sp-backward-up-sexp
+       ")" (lambda ()
+             (interactive)
+             (sp-backward-up-sexp)
+             (evilmi-jump-items))
+       ">" (general-key-dispatch 'evil-shift-right
+             "I" (lambda ()
+                   (interactive)
+                   (sp-end-of-sexp)
+                   (when (not (char-equal (preceding-char)  ?  ))
+                     (insert " "))
+                   (evil-insert nil))
+             "f" (lambda ()
+                   (interactive)
+                   (when (in-sexp)
+                     ))
+             ")" 'sp-forward-slurp-sexp
+             "(" 'sp-backward-barf-sexp)
+       "<" (general-key-dispatch 'evil-shift-left
+             "I" (lambda ()
+                   (interactive)
+                   (sp-beginning-of-sexp)
+                   (when (not (char-equal (following-char)  ?  ))
+                     (insert " ")
+                     (evil-backward-char))
+                   (evil-insert nil))
+             ")" 'sp-forward-barf-sexp
+             "(" 'sp-backward-slurp-sexp)
+       "C" 'evil-sp-change-line
+       "d" 'evil-sp-delete
+       "D" 'evil-sp-delete-line)
 #+END_SRC
 ** neotree
 #+begin_src emacs-lisp
   (use-package neotree
-    :ensure t
+    :demand t
     :general
     (:keymaps 'neotree-mode-map
               "TAB" 'neotree-enter
@@ -1051,7 +1122,7 @@ increment and decrement numbers with c-a and c-x
 ** which-key
 #+begin_src emacs-lisp
     (use-package which-key
-      :ensure t
+      :demand t
       :config
       (which-key-mode))
 #+END_SRC
@@ -1064,12 +1135,12 @@ increment and decrement numbers with c-a and c-x
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
   (use-package git-gutter
-    :ensure t
+    :demand t
     :config
     (use-package git-gutter-fringe
-      :ensure t)
+      :demand t)
     (use-package fringe-helper
-      :ensure t)
+      :demand t)
     (require 'fringe-helper)
     (require 'git-gutter-fringe)
     (fringe-mode 3)
@@ -1093,10 +1164,10 @@ increment and decrement numbers with c-a and c-x
     (advice-add 'evil-force-normal-state :after 'git-gutter)
     (add-hook 'focus-in-hook 'git-gutter:update-all-windows))
   (use-package magit
-    :ensure t
+    :demand t
     :config
     (use-package evil-magit
-      :ensure t)
+      :demand t)
     ;; full screen magit-status
     (defadvice magit-status (around magit-fullscreen activate)
       (window-configuration-to-register :magit-fullscreen)
@@ -1108,7 +1179,7 @@ increment and decrement numbers with c-a and c-x
       (kill-buffer)
       (jump-to-register :magit-fullscreen)))
   (use-package git-timemachine
-    :ensure t
+    :demand t
     :after general
     :config
     (general-define-key :keymaps '(git-timemachine-mode-map)
@@ -1122,7 +1193,7 @@ increment and decrement numbers with c-a and c-x
 ** imenu-list
 #+BEGIN_SRC emacs-lisp
   (use-package imenu-list
-    :ensure t
+    :demand t
     :config
     (setq imenu-list-focus-after-activation t)
     (general-define-key :keymaps 'imenu-list-major-mode-map
@@ -1190,7 +1261,7 @@ increment and decrement numbers with c-a and c-x
 *** COMMENT org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
-    :ensure t
+    :demand t
     :config
     (add-hook 'org-mode-hook
               (lambda ()
@@ -1207,16 +1278,16 @@ increment and decrement numbers with c-a and c-x
 *** org-Reveal (HTML presentations)
 #+BEGIN_SRC emacs-lisp
   (use-package ox-reveal
-    :ensure t)
+    :demand t)
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
   ;;(setq org-reveal-mathjax t)
   (use-package htmlize
-  :ensure t)
+  :demand t)
 #+END_SRC
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
   (use-package worf
-   :ensure t)
+   :demand t)
 
   (defhydra myorg-hydra-change (:hint nil)
     "
@@ -1327,16 +1398,13 @@ increment and decrement numbers with c-a and c-x
   (setq org-src-window-setup 'current-window)
 #+END_SRC
 
-
-
-
 ** smartparens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
-    :ensure t
+    :demand t
     :config
     (use-package evil-smartparens
-      :ensure t
+      :demand t
       :config)
     ;;(advice-add 'evil-sp-delete :after')
     ;;(general-define-key ')
@@ -1351,7 +1419,7 @@ increment and decrement numbers with c-a and c-x
 *** AucTex
 #+BEGIN_SRC emacs-lisp
   (use-package auctex-latexmk
-    :ensure t
+    :demand t
     :config
     (auctex-latexmk-setup))
     (setq-default TeX-quote-after-quote t)
@@ -1367,13 +1435,13 @@ increment and decrement numbers with c-a and c-x
 *** Bibtex
 #+BEGIN_SRC emacs-lisp
 (use-package ivy-bibtex
-  :ensure t
+  :demand t
   :config)
 #+END_SRC
 ** projectile
 #+begin_src emacs-lisp
   (use-package projectile
-    :ensure t
+    :demand t
     :config
     ;; test fn in hashtabe has to be equal because we will use strings as keys
     (setq my-projects-loaded (make-hash-table :test 'equal))
@@ -1383,12 +1451,12 @@ increment and decrement numbers with c-a and c-x
 ** ag
 #+begin_src emacs-lisp
   (use-package ag
-    :ensure t)
+    :demand t)
 #+end_src
 ** rainbow-delimiters
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
-    :ensure t
+    :demand t
     :config
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
     (add-hook 'cider-repl-mode #'rainbow-delimiters-mode)
@@ -1397,7 +1465,6 @@ increment and decrement numbers with c-a and c-x
 ** undo-tree
 #+begin_src emacs-lisp
   (use-package undo-tree
-    :ensure t
     :config
     (progn
       (global-undo-tree-mode)
@@ -1410,7 +1477,7 @@ increment and decrement numbers with c-a and c-x
 for keeping track of recent files, provides helm-recentf with data
 #+begin_src emacs-lisp
      (use-package recentf
-       :ensure t
+       :demand t
        :config
        (recentf-mode 1)
        )
@@ -1419,7 +1486,7 @@ for keeping track of recent files, provides helm-recentf with data
 http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
     (use-package ivy
-      :ensure t
+      :demand t
       :config
       ;; regex order
       (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
@@ -1451,14 +1518,14 @@ http://oremacs.com/swiper/
                    (setq-local pop-target-window (selected-window)))))))
       (ivy-mode t))
     (use-package counsel
-      :ensure t
+      :demand t
       :config)
     (use-package swiper
-      :ensure t
+      :demand t
       :config
       (ivy-mode t))
     (use-package avy
-      :ensure t
+      :demand t
       :config
       (defun avy-line-saving-column ()
         (interactive)
@@ -1470,19 +1537,18 @@ http://oremacs.com/swiper/
 ** COMMENT hex colors
 #+begin_src emacs-lisp
   (use-package rainbow-mode
-    :ensure t
+    :demand t
     :config)
 #+end_src
 ** command-log-mode
 #+begin_src emacs-lisp
   (use-package command-log-mode
-    :ensure t
     :config)
 #+end_src
 ** eyebrowse
 #+begin_src emacs-lisp
   (use-package eyebrowse
-    :ensure t
+    :demand t
     :config
     (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
     (eyebrowse-mode t))
@@ -1490,7 +1556,6 @@ http://oremacs.com/swiper/
 ** highlight-symbol
 #+begin_src emacs-lisp
   (use-package highlight-symbol
-    :ensure t
     :config
     (setq highlight-symbol-idle-delay 1)
     (highlight-symbol-mode t)
@@ -1566,31 +1631,26 @@ Show subtree when pressing i
 toggle details with ')'
 #+BEGIN_SRC emacs-lisp
       (use-package dired-details+
-        :ensure t
+        :demand t
         :config)
 #+END_SRC
 ** restclient
 #+begin_src emacs-lisp
-  (use-package restclient
-    :ensure t
-    :config)
+  (use-package restclient)
 #+end_src
 ** ejc-sql
 #+begin_src emacs-lisp
-  (use-package ejc-sql
-    :ensure t)
+  (use-package ejc-sql)
 #+end_src
 ** sql
 #+begin_src emacs-lisp
   (use-package sqlup-mode
-    :ensure t
     :config
     (add-hook 'sql-mode-hook (lambda () (sqlup-mode 1))))
 #+end_src
 ** web-mode
 #+begin_src emacs-lisp
   (use-package web-mode
-    :ensure t
     :config
     (setq web-mode-markup-indent-offset 2)
     (setq css-indent-offset 2)
@@ -1607,7 +1667,6 @@ toggle details with ')'
 ** javascript
 #+begin_src emacs-lisp
   (use-package js2-mode
-    :ensure t
     :config
     ;; do not show errors (use flycheck for that)
     (js2-mode-hide-warnings-and-errors)
@@ -1621,23 +1680,22 @@ toggle details with ')'
     (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
     (add-to-list 'interpreter-mode-alist '("node" . js2-mode)))
   (use-package prettier-js
-    :ensure t
+    :demand t
     :config
     (add-hook 'js2-mode-hook 'prettier-js-mode)
     (add-hook 'web-mode-hook 'prettier-js-mode))
 
   (use-package rjsx-mode
-    :ensure t
+    :demand t
     :config)
 #+end_src
 ** elixir
 #+begin_src emacs-lisp
   (use-package elixir-mode
-    :ensure t
     :config
     (plist-put evilmi-plugins 'elixir-mode '((evilmi-ruby-get-tag evilmi-ruby-jump))))
   (use-package alchemist
-    :ensure t
+    :demand t
     :config
     (evil-define-operator evil-eval-elixir-text-object (beg end)
       "Evil operator for evaluating code."
@@ -1689,22 +1747,221 @@ toggle details with ')'
 ** erlang
 #+begin_src emacs-lisp
   (use-package erlang
-    :ensure t
     :config)
 #+end_src
 ** highlight-indent-guides
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
-    :ensure t
     :config
     (setq highlight-indent-guides-auto-character-face-perc 25)
     (setq highlight-indent-guides-method 'character)
     (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
 #+end_src
+** docker
+#+begin_src emacs-lisp
+  (use-package dockerfile-mode
+      :config)
+#+end_src
+** yaml
+#+begin_src emacs-lisp
+  (use-package yaml-mode
+      :config)
+#+end_src
+** wgrep
+#+begin_src emacs-lisp
+  (use-package wgrep
+    :config
+    (setq wgrep-enable-key "r")
+    (setq wgrep-auto-save-buffer t)
+    )
+#+end_src
+** ag, ripgrep,.. (global search)
+#+begin_src emacs-lisp
+  (setq ag-highlight-search t)
+  (defun counsel-ag-project (&optional options)
+    (interactive)
+    (counsel-ag nil
+                (projectile-project-root)
+                options
+                (projectile-prepend-project-name "ag")))
+  (defun counsel-rg-project (&optional options)
+    (interactive)
+    (counsel-rg nil
+                (projectile-project-root)
+                options
+                (projectile-prepend-project-name "rg")))
+    ;;(setq ag-reuse-window 't)
+#+end_src
+** whitespace mode
+#+begin_src emacs-lisp
+  (use-package whitespace
+    :demand t
+    :config
+    (setq-default
+     whitespace-style '(face trailing))
+    (setq whitespace-global-modes '(not
+                                    dired-mode
+                                    alchemist-test-mode
+                                    alchemist-iex-mode
+                                    cider-repl-mode))
+    (global-whitespace-mode 1))
+#+end_src
+** markdown-mode
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :demand t
+    :commands (markdown-mode gfm-mode)
+    :mode (("README\\.md\\'" . gfm-mode)
+           ("\\.md\\'" . markdown-mode)
+           ("\\.markdown\\'" . markdown-mode))
+    :init (setq markdown-command "multimarkdown"))
+#+end_src
+** rjsx-mode
+#+begin_src emacs-lisp
+  (use-package rjsx-mode
+    :config)
+#+end_src
+** pdf-tools
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :general
+    (general-define-key :keymaps '(pdf-view-mode-map)
+                        :states '(normal)
+                        ;;Navigation
+                        "j"  'pdf-view-next-line-or-next-page
+                        "k"  'pdf-view-previous-line-or-previous-page
+                        "l"  'image-forward-hscroll
+                        "h"  'image-backward-hscroll
+                        "C-f"  'pdf-view-next-page
+                        "C-b"  'pdf-view-previous-page
+                        "u"  'pdf-view-scroll-down-or-previous-page
+                        "d"  'pdf-view-scroll-up-or-next-page
+                        "0"  'image-bol
+                        "$"  'image-eol
+                        "+" 'pdf-view-enlarge
+                        "-" 'pdf-view-shrink
+                        ;; Copy
+                        "y" 'pdf-view-kill-ring-save
+                        ;; Scale/Fit
+                        "W"  'pdf-view-fit-width-to-window
+                        "H"  'pdf-view-fit-height-to-window
+                        "P"  'pdf-view-fit-page-to-window
+                        "m"  'pdf-view-set-slice-using-mouse
+                        "b"  'pdf-view-set-slice-from-bounding-box
+                        "R"  'pdf-view-reset-slice
+                        "zr" 'pdf-view-scale-reset
+                        ;; Annotations
+                        "aD" 'pdf-annot-delete
+                        "at" 'pdf-annot-attachment-dired
+                        "al" 'pdf-annot-list-annotations
+                        "am" 'pdf-annot-add-markup-annotation
+                        ;; Actions
+                        "s" 'pdf-occur
+                        "O" 'pdf-outline
+                        "p" 'pdf-misc-print-document
+                        "o" 'pdf-links-action-perform
+                        "r" 'pdf-view-revert-buffer
+                        "t" 'pdf-annot-attachment-dired
+                        "n" 'pdf-view-midnight-minor-mode)
+    :config
+    (pdf-tools-install)
+    (add-hook 'pdf-view-mode-hook (lambda () (setq display-line-numbers nil))))
+#+end_src
+** language-tool
+#+begin_src emacs-lisp
+  (use-package langtool
+    :demand t
+    :config)
+#+end_src
+** evil-goggles
+#+begin_src emacs-lisp
+  (use-package evil-goggles
+    :config
+    (setq evil-goggles-duration 0.200)
+    (evil-goggles-mode))
+#+end_src
+** editorconfig
+#+begin_src emacs-lisp
+  (use-package editorconfig
+    :demand t
+    :config
+    (editorconfig-mode 1))
+#+end_src
+** fill-column-indicator
+#+begin_src emacs-lisp
+  (use-package fill-column-indicator
+    :config
+  (defun on-off-fci-before-company(command)
+    (when (string= "show" command)
+      (turn-off-fci-mode))
+    (when (string= "hide" command)
+      (turn-on-fci-mode)))
+  (advice-add 'company-call-frontends :before #'on-off-fci-before-company)
+  (add-hook 'prog-mode-hook #'fci-mode)
+  (add-hook 'text-mode-hook #'fci-mode)
+  (setq-default fci-rule-color "#906cff")
+  )
+#+end_src
+** ace-window
+#+begin_src emacs-lisp
+  (use-package ace-window
+    :demand t
+    :config
+    (set-face-attribute 'aw-leading-char-face nil :foreground nil :inherit 'evil-goggles-delete-face)
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+          aw-background nil
+          aw-dispatch-always t
+          aw-dispatch-alist
+          '((?x aw-delete-window     "Ace - Delete Window")
+            (?c aw-swap-window       "Ace - Swap Window")
+            (?w aw-flip-window)
+            (?o delete-other-windows)
+            (?b balance-windows)
+            ))
+
+      (defhydra hydra-window-size (:color red)
+        "Windows size"
+        ("h" shrink-window-horizontally "shrink horizontal")
+        ("j" shrink-window "shrink vertical")
+        ("k" enlarge-window "enlarge vertical")
+        ("l" enlarge-window-horizontally "enlarge horizontal"))
+      (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t)
+
+    (general-define-key :prefix my-leader "w" 'ace-window)
+
+    (define-minor-mode my-ace-window-display-mode
+      "Minor mode for showing the ace window key in the mode line."
+      :global t
+      (if my-ace-window-display-mode
+          (progn
+            (my-aw-update)
+            (force-mode-line-update t)
+            ;; Each time a window is created or deleted, Emacs
+            ;; will run the `window-configuration-change-hook' -
+            ;; exactly what I need to update `mode-line-format'.
+            (add-hook 'window-configuration-change-hook 'my-aw-update))
+        (remove-hook 'window-configuration-change-hook 'my-aw-update)))
+    (defun my-aw-update ()
+      "Update my-ace-window-path window parameter for all windows."
+      (avy-traverse
+       (avy-tree (aw-window-list) aw-keys)
+       (lambda (path leaf)
+         ;; Use `set-window-parameter' to store a variable for
+         ;; each window.  Buffer local variables would not work
+         ;; here, since one buffer can be displayed in multiple
+         ;; windows, and those would need a different key each.
+         (set-window-parameter
+          leaf 'my-ace-window-path
+          (propertize
+           (apply #'string (reverse path)))))))
+    (my-ace-window-display-mode)
+
+    )
+#+end_src
 ** powerline
 #+BEGIN_SRC emacs-lisp
   (use-package powerline
-    :ensure t
+    :demand t
     :config
     (add-hook 'desktop-after-read-hook 'powerline-reset)
     (defun make-rect (color height width)
@@ -1749,9 +2006,7 @@ toggle details with ')'
                        'face 'warning)
            " "
            (buffer-name)))))
-    (defun powerline-ace-window ()
-      (propertize (window-parameter (selected-window) 'my-ace-window-path)
-                  'face 'error))
+    (defun powerline-ace-window () (propertize (window-parameter (selected-window) 'my-ace-window-path) 'face 'error))
     (setq-default mode-line-format
                   '("%e"
                     (:eval
@@ -1802,219 +2057,16 @@ toggle details with ')'
                         (powerline-render rhs))))))
     )
 #+END_SRC
-** docker
-#+begin_src emacs-lisp
-  (use-package dockerfile-mode
-      :ensure t
-      :config)
-#+end_src
-** yaml
-#+begin_src emacs-lisp
-  (use-package yaml-mode
-      :ensure t
-      :config)
-#+end_src
-** wgrep
-#+begin_src emacs-lisp
-  (use-package wgrep
-    :ensure t
-    :config
-    (setq wgrep-enable-key "r")
-    (setq wgrep-auto-save-buffer t)
-    )
-#+end_src
-** ag, ripgrep,.. (global search)
-#+begin_src emacs-lisp
-  (setq ag-highlight-search t)
-  (defun counsel-ag-project (&optional options)
-    (interactive)
-    (counsel-ag nil
-                (projectile-project-root)
-                options
-                (projectile-prepend-project-name "ag")))
-  (defun counsel-rg-project (&optional options)
-    (interactive)
-    (counsel-rg nil
-                (projectile-project-root)
-                options
-                (projectile-prepend-project-name "rg")))
-    ;;(setq ag-reuse-window 't)
-#+end_src
-** whitespace mode
-#+begin_src emacs-lisp
-  (use-package whitespace
-    :ensure t
-    :config
-    (setq-default
-     whitespace-style '(face trailing))
-    (setq whitespace-global-modes '(not
-                                    dired-mode
-                                    alchemist-test-mode
-                                    alchemist-iex-mode
-                                    cider-repl-mode))
-    (global-whitespace-mode 1))
-#+end_src
-** markdown-mode
-#+begin_src emacs-lisp
-  (use-package markdown-mode
-    :ensure t
-    :commands (markdown-mode gfm-mode)
-    :mode (("README\\.md\\'" . gfm-mode)
-           ("\\.md\\'" . markdown-mode)
-           ("\\.markdown\\'" . markdown-mode))
-    :init (setq markdown-command "multimarkdown"))
-#+end_src
-** rjsx-mode
-#+begin_src emacs-lisp
-  (use-package rjsx-mode
-    :ensure t
-    :config)
-#+end_src
-** pdf-tools
-#+begin_src emacs-lisp
-  (use-package pdf-tools
-    :ensure t
-    :config
-    (pdf-tools-install)
-    (general-define-key :keymaps '(pdf-view-mode-map)
-                        :states '(normal)
-                        ;;Navigation
-                        "j"  'pdf-view-next-line-or-next-page
-                        "k"  'pdf-view-previous-line-or-previous-page
-                        "l"  'image-forward-hscroll
-                        "h"  'image-backward-hscroll
-                        "C-f"  'pdf-view-next-page
-                        "C-b"  'pdf-view-previous-page
-                        "u"  'pdf-view-scroll-down-or-previous-page
-                        "d"  'pdf-view-scroll-up-or-next-page
-                        "0"  'image-bol
-                        "$"  'image-eol
-                        "+" 'pdf-view-enlarge
-                        "-" 'pdf-view-shrink
-                        ;; Copy
-                        "y" 'pdf-view-kill-ring-save
-                        ;; Scale/Fit
-                        "W"  'pdf-view-fit-width-to-window
-                        "H"  'pdf-view-fit-height-to-window
-                        "P"  'pdf-view-fit-page-to-window
-                        "m"  'pdf-view-set-slice-using-mouse
-                        "b"  'pdf-view-set-slice-from-bounding-box
-                        "R"  'pdf-view-reset-slice
-                        "zr" 'pdf-view-scale-reset
-                        ;; Annotations
-                        "aD" 'pdf-annot-delete
-                        "at" 'pdf-annot-attachment-dired
-                        "al" 'pdf-annot-list-annotations
-                        "am" 'pdf-annot-add-markup-annotation
-                        ;; Actions
-                        "s" 'pdf-occur
-                        "O" 'pdf-outline
-                        "p" 'pdf-misc-print-document
-                        "o" 'pdf-links-action-perform
-                        "r" 'pdf-view-revert-buffer
-                        "t" 'pdf-annot-attachment-dired
-                        "n" 'pdf-view-midnight-minor-mode)
-                                          ; Other
-    (add-hook 'pdf-view-mode-hook (lambda () (setq display-line-numbers nil))))
-#+end_src
-** language-tool
-#+begin_src emacs-lisp
-  (use-package langtool
-    :ensure t
-    :config)
-#+end_src
-** evil-goggles
-#+begin_src emacs-lisp
-  (use-package evil-goggles
-    :ensure t
-    :config
-    (setq evil-goggles-duration 0.200)
-    (evil-goggles-mode))
-#+end_src
-** editorconfig
-#+begin_src emacs-lisp
-  (use-package editorconfig
-    :ensure t
-    :config
-    (editorconfig-mode 1))
-#+end_src
-** fill-column-indicator
-#+begin_src emacs-lisp
-  (use-package fill-column-indicator
-    :ensure t
-    :config
-  (defun on-off-fci-before-company(command)
-    (when (string= "show" command)
-      (turn-off-fci-mode))
-    (when (string= "hide" command)
-      (turn-on-fci-mode)))
-  (advice-add 'company-call-frontends :before #'on-off-fci-before-company)
-  (add-hook 'prog-mode-hook #'fci-mode)
-  (setq-default fci-rule-color "#906cff")
-  )
-#+end_src
-** ace-window
-#+begin_src emacs-lisp
-  (use-package ace-window
-    :ensure t
-    :defer 1
-    :config
-    (set-face-attribute 'aw-leading-char-face nil :foreground nil :inherit 'evil-goggles-delete-face)
-    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
-          aw-background nil
-          aw-dispatch-always t
-          aw-dispatch-alist
-          '((?x aw-delete-window     "Ace - Delete Window")
-            (?c aw-swap-window       "Ace - Swap Window")
-            (?w aw-flip-window)
-            (?o delete-other-windows)
-            (?b balance-windows)
-            ))
-    (when (package-installed-p 'hydra)
-      (defhydra hydra-window-size (:color red)
-        "Windows size"
-        ("h" shrink-window-horizontally "shrink horizontal")
-        ("j" shrink-window "shrink vertical")
-        ("k" enlarge-window "enlarge vertical")
-        ("l" enlarge-window-horizontally "enlarge horizontal"))
-      (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t))
-    (define-minor-mode my-ace-window-display-mode
-      "Minor mode for showing the ace window key in the mode line."
-      :global t
-      (if my-ace-window-display-mode
-          (progn
-            (my-aw-update)
-            (force-mode-line-update t)
-            ;; Each time a window is created or deleted, Emacs
-            ;; will run the `window-configuration-change-hook' -
-            ;; exactly what I need to update `mode-line-format'.
-            (add-hook 'window-configuration-change-hook 'my-aw-update))
-        (remove-hook 'window-configuration-change-hook 'my-aw-update)))
-    (defun my-aw-update ()
-      "Update my-ace-window-path window parameter for all windows."
-      (avy-traverse
-       (avy-tree (aw-window-list) aw-keys)
-       (lambda (path leaf)
-         ;; Use `set-window-parameter' to store a variable for
-         ;; each window.  Buffer local variables would not work
-         ;; here, since one buffer can be displayed in multiple
-         ;; windows, and those would need a different key each.
-         (set-window-parameter
-          leaf 'my-ace-window-path
-          (propertize
-           (apply #'string (reverse path)))))))
-    (my-ace-window-display-mode))
-#+end_src
 * Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
-  ;;   :ensure t
+  ;;   :demand t
   ;;   :init
   ;;   (progn
   ;;     (setq nlinum-format "%3d ")
   ;;     ))
   ;; (use-package nlinum-relative
-  ;;   :ensure t
+  ;;   :demand t
   ;;   :init
   ;;   (progn
   ;;     ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
@@ -2031,4 +2083,12 @@ toggle details with ')'
   ;; Don't litter my init file
   (setq custom-file "~/.emacs.d/local/custom-set.el")
   (load custom-file 'noerror)
+#+END_SRC
+
+** Post Initialization
+Let's lower our GC thresholds back down to a sane level.
+
+#+BEGIN_SRC emacs-lisp
+(setq gc-cons-threshold 16777216
+      gc-cons-percentage 0.1)
 #+END_SRC
