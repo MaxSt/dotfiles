@@ -146,7 +146,7 @@ previously compiled manually then all of the package initialization will still t
 #+END_SRC
 ** flyspell
 #+BEGIN_SRC emacs-lisp
-    (use-package auto-dictionary-mode
+    (use-package auto-dictionary
       :demand t
       :config
       (add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1)))
@@ -358,6 +358,13 @@ These are the Files creating in the current Directory for files that have not be
     (evil-mode t)
     )
 #+end_src
+** snippets
+#+BEGIN_SRC emacs-lisp
+  (use-package yasnippet
+    :demand t
+    :config
+    (yas-global-mode 1))
+#+END_SRC
 ** hydra
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
@@ -648,6 +655,10 @@ increment and decrement numbers with c-a and c-x
     (if (seq-contains lisp-modes major-mode)
         (evil-sp-change beg end)
       (evil-change beg end)))
+
+  (general-def 'visual
+    "c" 'evil-change)
+
   (general-def 'normal
     "c" (general-key-dispatch 'evil-decide-change-fun
           :name general-dispatch-evil-change-exchange
@@ -1604,11 +1615,13 @@ Recursive copy and deletion
                       "TAB" 'dired-subtree-toggle
                       "l" 'dired-find-alternate-file
                       "c" 'dired-do-rename
+                      "R" 'dired-do-redisplay
+                      "r" 'wdired-change-to-wdired-mode
                       "f" 'counsel-file-jump
                       "o" 'my/dired-create-file
                       "O" 'dired-create-directory
-                      "n" 'evil-search-next
-                      "N" 'evil-search-previous
+                      "n" 'evil-ex-search-next
+                      "N" 'evil-ex-search-previous
                       "q" 'kill-this-buffer
                       "!" 'dired-do-shell-command)
 #+END_SRC
@@ -1876,6 +1889,7 @@ toggle details with ')'
 ** evil-goggles
 #+begin_src emacs-lisp
   (use-package evil-goggles
+    :demand t
     :config
     (setq evil-goggles-duration 0.200)
     (evil-goggles-mode))
