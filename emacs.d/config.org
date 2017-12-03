@@ -782,6 +782,13 @@ increment and decrement numbers with c-a and c-x
 #+begin_src emacs-lisp
 (add-hook 'artist-mode-hook #'(lambda () (evil-emacs-state)))
 #+end_src
+** company-mode
+#+begin_src emacs-lisp
+    (use-package company
+     :demand t
+     :config
+     (global-company-mode))
+#+end_src
 ** narrowing
 #+begin_src emacs-lisp
 (defun narrow-to-region-indirect (start end)
