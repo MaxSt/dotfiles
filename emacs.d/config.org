@@ -99,7 +99,7 @@ previously compiled manually then all of the package initialization will still t
 * Defaults
 ** global
 #+BEGIN_SRC emacs-lisp
-  (setq 
+  (setq
    inhibit-startup-screen t
    x-select-enable-clipboard t
    column-number-mode t
@@ -555,7 +555,8 @@ no mapping for that object
     "p" 'hydra-projectile/body
     "q" 'evil-window-delete
     "k" 'kill-buffer
-    "d" 'evil-delete-buffer
+    "D" 'evil-delete-buffer
+    "d" 'kill-this-buffer
     "SPC" 'ace-select-window
     ;;"h" (general-simulate-keys "C-h")
     "h k" 'describe-key
@@ -784,10 +785,16 @@ increment and decrement numbers with c-a and c-x
 #+end_src
 ** company-mode
 #+begin_src emacs-lisp
-    (use-package company
-     :demand t
-     :config
-     (global-company-mode))
+  (use-package company
+   :demand t
+   :config
+   (global-company-mode)
+   (setq company-idle-delay 0.2)
+   (setq company-selection-wrap-around t)
+
+   (define-key company-active-map [tab] 'company-complete)
+   (define-key company-active-map (kbd "C-n") 'company-select-next)
+   (define-key company-active-map (kbd "C-p") 'company-select-previous))
 #+end_src
 ** narrowing
 #+begin_src emacs-lisp
@@ -2023,11 +2030,11 @@ toggle details with ')'
             (buffer-name)
           (concat
            (propertize (concat
-                        (projectile-project-name))
+                        proj)
                        'face 'warning)
            " "
            (buffer-name)))))
-    (defun powerline-ace-window () (propertize (window-parameter (selected-window) 'my-ace-window-path) 'face 'error))
+    (defun powerline-ace-window () (propertize (or (window-parameter (selected-window) 'my-ace-window-path) "") 'face 'error))
     (setq-default mode-line-format
                   '("%e"
                     (:eval
@@ -2063,9 +2070,9 @@ toggle details with ')'
                                   " | "
                                   (format "%s" (eyebrowse--get 'current-slot))
                                   " | "
-                                  (powerline-raw "%l:%c" 'face1 'r)
+                                  (powerline-raw "%l:%c" face1 'r)
                                   " | "
-                                  (powerline-raw "%6p" 'face1 'r)
+                                  (powerline-raw "%6p" face1 'r)
                                   (powerline-hud 'highlight 'region 1)
                                   " "
                                   ))
