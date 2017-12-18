@@ -652,7 +652,6 @@ increment and decrement numbers with c-a and c-x
                      emacs-lisp-mode))
   (evil-define-operator evil-decide-change-fun (beg end)
     "decide which change function to use"
-    :move-point nil
     (if (seq-contains lisp-modes major-mode)
         (evil-sp-change beg end)
       (evil-change beg end)))
@@ -1476,6 +1475,11 @@ increment and decrement numbers with c-a and c-x
 ** ag
 #+begin_src emacs-lisp
   (use-package ag
+    :demand t)
+#+end_src
+** popup (dependency)
+#+begin_src emacs-lisp
+  (use-package popup
     :demand t)
 #+end_src
 ** rainbow-delimiters
