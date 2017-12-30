@@ -10,8 +10,8 @@ endif
 call plug#begin('~/.vim/plugged')
 
   " Colorscheme
-  Plug 'MaxSt/FlatColor'
-  let g:flatcolor_termcolors=16
+  Plug 'challenger-deep-theme/vim'
+  let g:challenger_deep_termcolors=16
   set background=dark
 
   " " ctrlp (open file with fuzzy search)
@@ -472,7 +472,7 @@ call plug#begin('~/.vim/plugged')
 call plug#end()
 filetype plugin indent on
 
-colorscheme flatcolor
+colorscheme challenger_deep
 
 hi link GitGutterAdd DiffAdd
 hi link GitGutterDelete DiffDelete

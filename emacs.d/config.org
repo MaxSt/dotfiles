@@ -222,7 +222,7 @@ These are the Files creating in the current Directory for files that have not be
     ;;:demand t
     ;;:config
     ;;(load-theme 'challenger-deep t))
-  (add-to-list 'custom-theme-load-path "~/Documents/challenger-deep")
+  (add-to-list 'custom-theme-load-path "~/Documents/challenger-deep/emacs/")
   (load-theme 'challenger-deep t)
   (use-package all-the-icons
     :demand t
