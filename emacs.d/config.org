@@ -652,7 +652,6 @@ increment and decrement numbers with c-a and c-x
                      emacs-lisp-mode))
   (evil-define-operator evil-decide-change-fun (beg end)
     "decide which change function to use"
-    :move-point nil
     (if (seq-contains lisp-modes major-mode)
         (evil-sp-change beg end)
       (evil-change beg end)))
@@ -1478,6 +1477,11 @@ increment and decrement numbers with c-a and c-x
   (use-package ag
     :demand t)
 #+end_src
+** popup (dependency)
+#+begin_src emacs-lisp
+  (use-package popup
+    :demand t)
+#+end_src
 ** rainbow-delimiters
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
@@ -1588,6 +1592,12 @@ http://oremacs.com/swiper/
 #+end_src
 ** dired
 *** settings
+Hide details by default (can be toggled with "(")
+#+BEGIN_SRC emacs-lisp
+(add-hook 'dired-mode-hook
+      (lambda ()
+        (dired-hide-details-mode)))
+#+END_SRC
 move files to trash
 #+BEGIN_SRC emacs-lisp
       (setq delete-by-moving-to-trash t)
@@ -1605,6 +1615,26 @@ Recursive copy and deletion
   (setq dired-recursive-copies 'always
         dired-recursive-deletes 'always)
 #+END_SRC
+*** dired-subtree
+Show subtree when pressing i
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-subtree
+    :after (dired)
+    :config)
+#+END_SRC
+*** dired-ranger
+Multi-stage copy/pasting of files and bookmarks
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-ranger
+    :after (dired)
+    :config)
+#+END_SRC
+*** dired-sidebar
+#+begin_src emacs-lisp
+  (use-package dired-sidebar
+    :after (dired)
+    :config)
+#+end_src
 *** Keybindings
 #+BEGIN_SRC emacs-lisp
   (defun my/dired-up-directory ()
@@ -1629,6 +1659,9 @@ Recursive copy and deletion
                       "TAB" 'dired-subtree-toggle
                       "l" 'dired-find-alternate-file
                       "c" 'dired-do-rename
+                      "y" 'dired-ranger-copy
+                      "p" 'dired-ranger-paste
+                      "v" 'dired-ranger-move
                       "R" 'dired-do-redisplay
                       "r" 'wdired-change-to-wdired-mode
                       "f" 'counsel-file-jump
@@ -1638,28 +1671,6 @@ Recursive copy and deletion
                       "N" 'evil-ex-search-previous
                       "q" 'kill-this-buffer
                       "!" 'dired-do-shell-command)
-#+END_SRC
-*** Dired+
-Dired enhancements.
-#+BEGIN_SRC emacs-lisp
-  (use-package dired+
-    :after (dired)
-    :config
-    (diredp-toggle-find-file-reuse-dir 1))
-#+END_SRC
-*** dired-subtree
-Show subtree when pressing i
-#+BEGIN_SRC emacs-lisp
-  (use-package dired-subtree
-    :after (dired)
-    :config)
-#+END_SRC
-*** dired-details
-toggle details with ')'
-#+BEGIN_SRC emacs-lisp
-      (use-package dired-details+
-        :demand t
-        :config)
 #+END_SRC
 ** restclient
 #+begin_src emacs-lisp
@@ -2085,6 +2096,14 @@ toggle details with ')'
                         (powerline-render rhs))))))
     )
 #+END_SRC
+** evil-collection
+#+begin_src emacs-lisp
+  (use-package evil-collection
+    :demand t
+    :custom (evil-collection-setup-minibuffer t)
+    :config (evil-collection-init)
+)
+#+end_src
 * Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
