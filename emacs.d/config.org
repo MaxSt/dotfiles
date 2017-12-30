@@ -2104,6 +2104,14 @@ Multi-stage copy/pasting of files and bookmarks
     :config (evil-collection-init)
 )
 #+end_src
+** emojify
+#+begin_src emacs-lisp
+  (use-package emojify
+    :demand t
+    :config
+    (add-hook 'after-init-hook #'global-emojify-mode)
+)
+#+end_src
 * Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum

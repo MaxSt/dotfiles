@@ -9,6 +9,7 @@ desktop/
 eshell/
 elpa/
 auto-save-list/
+emojis/
 
 undo/*
 !undo/.gitkeep
