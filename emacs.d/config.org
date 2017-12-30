@@ -2096,6 +2096,14 @@ Multi-stage copy/pasting of files and bookmarks
                         (powerline-render rhs))))))
     )
 #+END_SRC
+** evil-collection
+#+begin_src emacs-lisp
+  (use-package evil-collection
+    :demand t
+    :custom (evil-collection-setup-minibuffer t)
+    :config (evil-collection-init)
+)
+#+end_src
 * Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
