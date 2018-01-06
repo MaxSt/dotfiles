@@ -199,8 +199,8 @@ These are the Files creating in the current Directory for files that have not be
 * GUI
 ** font
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Iosevka-13")
-  (setq default-frame-alist '((font . "Iosevka-13")))
+  (set-default-font "Iosevka-12")
+  (setq default-frame-alist '((font . "Iosevka-12")))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp
@@ -495,6 +495,14 @@ no mapping for that object
                        (point)))))
      (define-key evil-outer-text-objects-map "l" 'evil-a-line)
 #+END_SRC
+** evil-collection
+#+begin_src emacs-lisp
+  (use-package evil-collection
+    :demand t
+    ;;:custom (evil-collection-setup-minibuffer t)
+    :config (evil-collection-init)
+)
+#+end_src
 ** General (keybindings)
 [[https://github.com/noctuid/general.el][general.el]]
 #+BEGIN_SRC emacs-lisp
@@ -2096,14 +2104,6 @@ Multi-stage copy/pasting of files and bookmarks
                         (powerline-render rhs))))))
     )
 #+END_SRC
-** evil-collection
-#+begin_src emacs-lisp
-  (use-package evil-collection
-    :demand t
-    :custom (evil-collection-setup-minibuffer t)
-    :config (evil-collection-init)
-)
-#+end_src
 ** emojify
 #+begin_src emacs-lisp
   (use-package emojify
