@@ -10,7 +10,7 @@ endif
 call plug#begin('~/.vim/plugged')
 
   " Colorscheme
-  Plug 'challenger-deep-theme/vim'
+  Plug 'challenger-deep-theme/vim', { 'as': 'challenger-deep' }
   let g:challenger_deep_termcolors=16
   set background=dark
 
@@ -77,24 +77,7 @@ call plug#begin('~/.vim/plugged')
 
   " " lightline  (StatusBar)
   " Plug 'itchyny/lightline.vim'
-  " let g:lightline = {
-  "   \'colorscheme': 'flatcolor',
-  "   \'active': {
-  "     \'left': [ [ 'mode', 'fugitive' ],
-  "      \          [ 'readonly', 'filename', 'modified'] ]
-  "   \},
-  "   \'component': {
-  "     \'readonly': '%{&filetype=="help"?"":&readonly?"":""}',
-  "     \'modified': '%{&filetype=="help"?"":&modified?"+":&modifiable?"":"-"}',
-  "     \'fugitive': '%{exists("*fugitive#head")?fugitive#head():""}'
-  "   \},
-  "   \'separator': { 'left': '░', 'right': '░' },
-  "   \'subseparator': { 'left': '〉', 'right': '〉' }
-  " \ }
-  "     " \          [ 'readonly', 'filename', 'modified', 'parinfermode' ] ]
-  "   " \'component_function': {
-  "   "   \'parinfermode': 'LightLineParinferMode'
-  "   " \},
+  " let g:lightline = { 'colorscheme': 'challenger_deep' }
 
   " function! LightLineParinferMode()
   "   if &filetype == "clojure"
