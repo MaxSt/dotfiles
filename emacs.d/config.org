@@ -349,6 +349,8 @@ These are the Files creating in the current Directory for files that have not be
                   evil-esc-delay 0
                   evil-want-Y-yank-to-eol t)
     :config
+    (evil-set-initial-state 'package-menu-mode 'normal)
+    (evil-set-initial-state 'help-mode 'normal)
     (evil-set-initial-state 'ibuffer-mode 'normal)
     (evil-set-initial-state 'pdf-view-mode 'normal)
     ;;(setq evil-emacs-state-modes nil)
@@ -495,14 +497,6 @@ no mapping for that object
                        (point)))))
      (define-key evil-outer-text-objects-map "l" 'evil-a-line)
 #+END_SRC
-** evil-collection
-#+begin_src emacs-lisp
-  (use-package evil-collection
-    :demand t
-    ;;:custom (evil-collection-setup-minibuffer t)
-    :config (evil-collection-init)
-)
-#+end_src
 ** General (keybindings)
 [[https://github.com/noctuid/general.el][general.el]]
 #+BEGIN_SRC emacs-lisp
@@ -776,6 +770,32 @@ increment and decrement numbers with c-a and c-x
                       "j" 'ibuffer-forward-line
                       "k" 'ibuffer-backward-line
                       "J" 'ibuffer-jump-to-buffer)
+#+end_src
+** help
+#+begin_src emacs-lisp
+  (general-define-key :keymaps '(help-mode-map)
+                      :states '(normal)
+                      "C-o" 'help-go-back
+                      "C-i" 'help-go-forward
+                      "r" 'help-follow
+                      "q" 'quit-window)
+#+end_src
+** package-menu
+#+begin_src emacs-lisp
+  (general-define-key :keymaps '(package-menu-mode-map)
+                      :states '(normal)
+                      "i" 'package-menu-mark-install
+                      "U" 'package-menu-mark-upgrades
+                      "d" 'package-menu-mark-delete
+
+                      ;; undo
+                      "u" 'package-menu-mark-unmark
+
+                      ;; execute
+                      "x" 'package-menu-execute
+                      ;; "q" 'quit-window ; macros can make sense here.
+                      "ZQ" 'evil-quit
+                      "ZZ" 'quit-window)
 #+end_src
 ** evil-replace-with-register
 #+begin_src emacs-lisp
