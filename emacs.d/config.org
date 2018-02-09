@@ -569,8 +569,8 @@ no mapping for that object
     "<return>" 'my/projectile-multi-term
     "S-<return>" 'multi-term
     ;;  Avoiding CTRL
-    "W" (general-simulate-keys "C-w")
-    "x" (general-simulate-keys "C-x")
+    "W" (general-simulate-key "C-w")
+    "x" (general-simulate-key "C-x")
     "c" (general-simulate-keys "C-c")
     "i" 'ibuffer
     "t" 'projectile-find-file
@@ -1161,15 +1161,15 @@ increment and decrement numbers with c-a and c-x
 #+END_SRC
 ** neotree
 #+begin_src emacs-lisp
-  (use-package neotree
-    :demand t
-    :general
-    (:keymaps 'neotree-mode-map
-              "TAB" 'neotree-enter
-              "q" 'neotree-hide
-              "RET" 'neotree-enter)
-    :config
-    (setq neo-theme (if window-system 'icons 'arrow)))
+    (use-package neotree
+      :demand t
+      :config
+      (general-define-key :keymaps '(neotree-mode-map)
+                          :states '(normal)
+                          "TAB" 'neotree-enter
+                          "q" 'neotree-hide
+                          "RET" 'neotree-enter)
+      (setq neo-theme (if window-system 'icons 'arrow)))
 #+end_src
 ** which-key
 #+begin_src emacs-lisp
@@ -1890,48 +1890,69 @@ Multi-stage copy/pasting of files and bookmarks
 ** pdf-tools
 #+begin_src emacs-lisp
   (use-package pdf-tools
-    :general
-    (general-define-key :keymaps '(pdf-view-mode-map)
-                        :states '(normal)
-                        ;;Navigation
-                        "j"  'pdf-view-next-line-or-next-page
-                        "k"  'pdf-view-previous-line-or-previous-page
-                        "l"  'image-forward-hscroll
-                        "h"  'image-backward-hscroll
-                        "C-f"  'pdf-view-next-page
-                        "C-b"  'pdf-view-previous-page
-                        "u"  'pdf-view-scroll-down-or-previous-page
-                        "d"  'pdf-view-scroll-up-or-next-page
-                        "0"  'image-bol
-                        "$"  'image-eol
-                        "+" 'pdf-view-enlarge
-                        "-" 'pdf-view-shrink
-                        ;; Copy
-                        "y" 'pdf-view-kill-ring-save
-                        ;; Scale/Fit
-                        "W"  'pdf-view-fit-width-to-window
-                        "H"  'pdf-view-fit-height-to-window
-                        "P"  'pdf-view-fit-page-to-window
-                        "m"  'pdf-view-set-slice-using-mouse
-                        "b"  'pdf-view-set-slice-from-bounding-box
-                        "R"  'pdf-view-reset-slice
-                        "zr" 'pdf-view-scale-reset
-                        ;; Annotations
-                        "aD" 'pdf-annot-delete
-                        "at" 'pdf-annot-attachment-dired
-                        "al" 'pdf-annot-list-annotations
-                        "am" 'pdf-annot-add-markup-annotation
-                        ;; Actions
-                        "s" 'pdf-occur
-                        "O" 'pdf-outline
-                        "p" 'pdf-misc-print-document
-                        "o" 'pdf-links-action-perform
-                        "r" 'pdf-view-revert-buffer
-                        "t" 'pdf-annot-attachment-dired
-                        "n" 'pdf-view-midnight-minor-mode)
+    :mode (("\\.pdf\\'" . pdf-view-mode))
     :config
-    (pdf-tools-install)
-    (add-hook 'pdf-view-mode-hook (lambda () (setq display-line-numbers nil))))
+    (progn
+      (pdf-tools-install)
+      (add-hook 'pdf-view-mode-hook (lambda ()
+                                      (setq display-line-numbers nil)))
+      (general-define-key :keymaps '(pdf-view-mode-map)
+                          :states '(normal)
+                          ;;Navigation
+                          "j"  'pdf-view-next-line-or-next-page
+                          "k"  'pdf-view-previous-line-or-previous-page
+                          "l"  'image-forward-hscroll
+                          "h"  'image-backward-hscroll
+                          "C-f"  'pdf-view-next-page
+                          "C-b"  'pdf-view-previous-page
+                          "u"  'pdf-view-scroll-down-or-previous-page
+                          "d"  'pdf-view-scroll-up-or-next-page
+                          "0"  'image-bol
+                          "$"  'image-eol
+                          "P" 'pdf-view-goto-page
+
+                          ;; mark
+                          "'" 'pdf-view-jump-to-register
+                          "m" 'pdf-view-position-to-register
+
+                          ;; zoom
+                          "+" 'pdf-view-enlarge
+                          "-" 'pdf-view-shrink
+                          "0" 'pdf-view-scale-reset
+                          "=" 'pdf-view-enlarge
+
+                          ;; Copy
+                          "y" 'pdf-view-kill-ring-save
+                          ;; Scale/Fit
+                          "W"  'pdf-view-fit-width-to-window
+                          "H"  'pdf-view-fit-height-to-window
+                          "zP"  'pdf-view-fit-page-to-window
+                          "b"  'pdf-view-set-slice-from-bounding-box
+                          "R"  'pdf-view-reset-slice
+                          "zr" 'pdf-view-scale-reset
+                          ;; Annotations
+                          "aD" 'pdf-annot-delete
+                          "at" 'pdf-annot-attachment-dired
+                          "al" 'pdf-annot-list-annotations
+                          "am" 'pdf-annot-add-markup-annotation
+                          ;; Actions
+                          "s" 'pdf-occur
+                          "O" 'pdf-outline
+                          "p" 'pdf-misc-print-document
+                          "o" 'pdf-links-action-perform
+                          "r" 'pdf-view-revert-buffer
+                          "t" 'pdf-annot-attachment-dired
+                          "n" 'pdf-view-midnight-minor-mode)
+
+      (general-define-key :keymaps '(pdf-occur-buffer-mode-map)
+                          :states '(normal)
+                          (kbd "S-<return>") 'pdf-occur-goto-occurrence
+                          (kbd "<return>") 'pdf-occur-view-occurrence
+                          "r" 'pdf-occur-revert-buffer-with-args
+                          "gd" 'pdf-occur-goto-occurrence
+                          "gD" 'pdf-occur-view-occurrence
+                          "q" 'evil-window-delete)))
+
 #+end_src
 ** language-tool
 #+begin_src emacs-lisp
