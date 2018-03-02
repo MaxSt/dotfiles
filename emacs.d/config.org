@@ -103,6 +103,10 @@ previously compiled manually then all of the package initialization will still t
    inhibit-startup-screen t
    x-select-enable-clipboard t
    column-number-mode t
+
+   ;; faster scrolling (see https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag/28746)
+   auto-window-vscroll nil
+
    tab-stop-list (number-sequence 2 120 2))
   ;; relative line numbers
   (setq-default display-line-numbers 'visual)
@@ -581,6 +585,7 @@ no mapping for that object
     "g n" 'git-gutter:next-hunk
     "g p" 'git-gutter:previous-hunk
     "g r" 'git-gutter:revert-hunk
+    "g h s" 'git-gutter:stage-hunk
     "l" 'evil-avy-goto-line
     "u" 'undo-tree-visualize
     "b" 'ivy-switch-buffer
@@ -1944,7 +1949,7 @@ Multi-stage copy/pasting of files and bookmarks
   (use-package evil-goggles
     :demand t
     :config
-    (setq evil-goggles-duration 0.200)
+    (setq evil-goggles-duration 0.150)
     (evil-goggles-mode))
 #+end_src
 ** editorconfig
@@ -2131,6 +2136,12 @@ Multi-stage copy/pasting of files and bookmarks
     :config
     (add-hook 'after-init-hook #'global-emojify-mode)
 )
+#+end_src
+** dumb-jump
+#+begin_src emacs-lisp
+  (use-package dumb-jump
+    :ensure t
+    :config)
 #+end_src
 * Temp
 #+begin_src emacs-lisp
