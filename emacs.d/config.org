@@ -266,6 +266,17 @@ These are the Files creating in the current Directory for files that have not be
                       (get-char-property (point) 'face))))
         (if face (message "Face: %s" face) (message "No face at %d" pos)))
       (if hl-line-p (hl-line-mode 1))))
+
+  (defun sudo-edit (&optional arg)
+    "Edit currently visited file as root.
+     With a prefix ARG prompt for a file to visit.
+     Will also prompt for a file to visit if current
+     buffer is not visiting a file."
+    (interactive "P")
+    (if (or arg (not buffer-file-name))
+        (find-file (concat "/sudo:root@localhost:"
+                           (ido-read-file-name "Find file(as root): ")))
+      (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 #+END_SRC
 * dir-locals hook
 #+begin_src emacs-lisp
@@ -564,6 +575,8 @@ no mapping for that object
     "D" 'evil-delete-buffer
     "d" 'kill-this-buffer
     "SPC" 'ace-select-window
+    "s" 'dumb-jump-go
+    "S" 'dumb-jump-go-prompt
     ;;"h" (general-simulate-keys "C-h")
     "h k" 'describe-key
     "h SPC" 'which-key-show-top-level
@@ -2162,7 +2175,14 @@ Multi-stage copy/pasting of files and bookmarks
 #+begin_src emacs-lisp
   (use-package dumb-jump
     :ensure t
-    :config)
+    :config
+    ;; integrate with evil-jump (C-i, C-o)
+    (advice-add 'dumb-jump-go :before (lambda (&rest r) (evil-set-jump))))
+#+end_src
+** view-large-files
+#+begin_src emacs-lisp
+  (use-package vlf
+    :ensure t)
 #+end_src
 * Temp
 #+begin_src emacs-lisp
