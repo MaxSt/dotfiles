@@ -109,7 +109,7 @@ previously compiled manually then all of the package initialization will still t
 
    tab-stop-list (number-sequence 2 120 2))
   ;; relative line numbers
-  (setq-default display-line-numbers 'visual)
+  (setq-default display-line-numbers 'relative)
   ;; make current line 0
   (setq-default display-line-numbers-current-absolute 'nil)
   (setq-default fill-column 80)
@@ -147,6 +147,7 @@ previously compiled manually then all of the package initialization will still t
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
+  (global-hl-line-mode t) ;; highlight current line
 #+END_SRC
 ** flyspell
 #+BEGIN_SRC emacs-lisp
@@ -203,8 +204,8 @@ These are the Files creating in the current Directory for files that have not be
 * GUI
 ** font
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Iosevka-12")
-  (setq default-frame-alist '((font . "Iosevka-12")))
+  (set-default-font "Iosevka-12:spacing=110")
+  (setq default-frame-alist '((font . "Iosevka-12:spacing=110")))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp
@@ -882,7 +883,7 @@ increment and decrement numbers with c-a and c-x
       (setq shackle-rules
             '(("*Warnings*"  :size 8  :noselect t)
               ("*Messages*"  :size 12 :noselect t)
-              ("*Help*" :select t :same t :inhibit-window-quit t)
+              ("*Help*" :select t :align below :inhibit-window-quit nil :modeline nil)
               ("*Metahelp*" :size 0.3 :align left)
               ("*undo-tree*" :size 0.5 :align right)
               (alchemist-iex-mode :same t)
@@ -1366,8 +1367,8 @@ increment and decrement numbers with c-a and c-x
   ^ ^ _j_ ^ ^    ^ ^       ^ ^    |
   "
     ;; arrows
-    ("j" org-metaup)
-    ("k" org-metadown)
+    ("j" org-metadown)
+    ("k" org-metaup)
     ("h" org-metaleft)
     ("l" org-metaright)
 
@@ -1476,14 +1477,15 @@ increment and decrement numbers with c-a and c-x
     (use-package evil-smartparens
       :demand t
       :config)
-    ;;(advice-add 'evil-sp-delete :after')
-    ;;(general-define-key ')
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (sp-local-pair 'clojure-mode "'" nil :actions nil)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
-    (smartparens-global-mode 1))
+    (smartparens-global-mode 1)
+    )
+  ;;(advice-add 'evil-sp-delete :after')
+  ;;(general-define-key ')
 #+END_SRC
 ** Latex
 *** AucTex
