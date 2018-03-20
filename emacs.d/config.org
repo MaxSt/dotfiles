@@ -984,32 +984,32 @@ increment and decrement numbers with c-a and c-x
 #+end_src
 ** elisp
 #+BEGIN_SRC emacs-lisp
-     ;;todo only for elisp!
-     (evil-define-operator evil-eval-elisp-text-object (beg end)
-       "Evil operator for evaluating code."
-       :move-point nil
-       (save-excursion
-         (let (eval-str
-               value)
-           (setq eval-str (buffer-substring beg end))
-           (setq value (eval (car (read-from-string eval-str))))
-           (my-funcs/flash-region beg end)
-           (my-funcs/eval-overlay value end)
-           (message (format "%s" value)))))
-     (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
-                         :states '(normal)
-                         "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
-                               :name general-dispatch-change-elisp
-                               "p" (general-key-dispatch 'evil-eval-elisp-text-object
-                                     :name general-dispatch-eval-elisp-text-object
-                                     "p" (lambda ()
-                                           (interactive)
-                                           (let* ((range (evil-a-sexp))
-                                                  (beg (elt range 0))
-                                                  (end (elt range 1)))
-                                             (evil-eval-elisp-text-object beg end))))))
-     ;;(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-     ;;(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
+  ;;todo only for elisp!
+  (evil-define-operator evil-eval-elisp-text-object (beg end)
+    "Evil operator for evaluating code."
+    :move-point nil
+    (save-excursion
+      (let (eval-str
+            value)
+        (setq eval-str (buffer-substring beg end))
+        (setq value (eval (car (read-from-string eval-str)) lexical-binding))
+        (my-funcs/flash-region beg end)
+        (my-funcs/eval-overlay value end)
+        (message (format "%s" value)))))
+  (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
+                      :states '(normal)
+                      "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
+                            :name general-dispatch-change-elisp
+                            "p" (general-key-dispatch 'evil-eval-elisp-text-object
+                                  :name general-dispatch-eval-elisp-text-object
+                                  "p" (lambda ()
+                                        (interactive)
+                                        (let* ((range (evil-a-sexp))
+                                               (beg (elt range 0))
+                                               (end (elt range 1)))
+                                          (evil-eval-elisp-text-object beg end))))))
+  ;;(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
+  ;;(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
 #+END_SRC
 ** lisp general
 #+BEGIN_SRC emacs-lisp
