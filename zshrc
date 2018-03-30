@@ -34,7 +34,6 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/tmux
   zgen oh-my-zsh plugins/docker
   zgen oh-my-zsh plugins/docker-compose
-  zgen oh-my-zsh plugins/emacs
 
 
   # completions
