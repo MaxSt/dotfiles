@@ -18,3 +18,6 @@ config/fish/fish_history
 config/fish/fishd*
 config/fish/functions/fish_user_key_bindings.fish
 config/fish/functions/fzf_key_bindings.fish
+/emacs.d/package-quickstart.el
+/emacs.d/session.*
+/emacs.d/tramp

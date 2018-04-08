@@ -88,7 +88,9 @@ previously compiled manually then all of the package initialization will still t
     (unless (assoc-default "org" package-archives)
       (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
 
-    (package-initialize)
+
+      (when (< emacs-major-version 27)
+      (package-initialize))
     (unless (package-installed-p 'use-package)
       (package-refresh-contents)
       (package-install 'use-package))
@@ -204,7 +206,7 @@ These are the Files creating in the current Directory for files that have not be
 * GUI
 ** font
 #+BEGIN_SRC emacs-lisp
-  (set-default-font "Iosevka-12:spacing=110")
+  ;;(set-default-font "Iosevka-12:spacing=110")
   (setq default-frame-alist '((font . "Iosevka-12:spacing=110")))
 #+END_SRC
 ** disable menubar

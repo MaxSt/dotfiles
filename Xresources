@@ -54,4 +54,4 @@ URxvt*boldFont: xft:Iosevka:size=10
 /* URxvt*font: xft:Hack:size=12 */
 /* URxvt*boldFont: xft:Hack:size=12 */
 
-#include "/home/max/.terminalcolors/flatcolors.xdefaults"
+#include "/home/max/.terminalcolors/challenger-deep.xdefaults"
