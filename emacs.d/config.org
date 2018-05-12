@@ -155,9 +155,8 @@ previously compiled manually then all of the package initialization will still t
 #+BEGIN_SRC emacs-lisp
     (use-package auto-dictionary
       :demand t
-      :config
-      (add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1)))
-      )
+      :init
+      (add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1))))
     (setq-default ispell-really-hunspell t)
     (setq-default ispell-program-name "hunspell")
     (setq ispell-dictionary "en_US")
@@ -166,7 +165,7 @@ previously compiled manually then all of the package initialization will still t
             ("de_AT" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8)))
     (use-package flyspell
       :demand t
-      :config
+      :init
       ;; to slow for magit commit for example:
       ;;(add-hook 'flyspell-mode-hook #'flyspell-buffer)
       ;; didn't work with magit commit? why?
@@ -235,13 +234,11 @@ These are the Files creating in the current Directory for files that have not be
   (use-package all-the-icons :demand t)
   (use-package all-the-icons-dired
       :after (all-the-icons)
-      :demand t
-      :config
+      :init
       (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 
   (use-package all-the-icons-ivy
       :after (all-the-icons projectile ivy counsel counsel-projectile)
-      :demand t
       :config
       (setq all-the-icons-ivy-file-commands
             '(counsel-find-file
@@ -918,40 +915,36 @@ increment and decrement numbers with c-a and c-x
 ** clojure
 #+BEGIN_SRC emacs-lisp
   (use-package clojure-mode
-    :demand t
     :config
     (put-clojure-indent 'defui '(2 nil nil (1))))
   (use-package clj-refactor
-    :demand t
     :config)
   (use-package cider
-    :demand t
     :config
-    ;;make boot the default
-    (setq cider-default-repl-command "boot")
-      (use-package cider-hydra
-        :demand t
-        :config
-        (add-hook 'cider-mode-hook #'cider-hydra-mode))
-        (setq cider-repl-display-in-current-window nil)
-        (setq cider-repl-use-pretty-printing t)
-        (autoload 'cider--make-result-overlay "cider-overlays")
-        (defun my-funcs/eval-overlay (value point)
-          (cider--make-result-overlay (format "%S" value)
-            :where point
-            :duration 'command)
-          ;; Preserve the return value.
-          value)
-        (advice-add 'eval-last-sexp :filter-return
-                    (lambda (r)
-                      (my-funcs/eval-overlay r (point))))
-        (advice-add 'eval-defun :filter-return
-                    (lambda (r)
-                      (my-funcs/eval-overlay
-                       r
-                       (save-excursion
-                         (end-of-defun)
-                         (point))))))
+    (setq cider-repl-display-in-current-window nil)
+    (setq cider-repl-use-pretty-printing t)
+    (autoload 'cider--make-result-overlay "cider-overlays")
+    (defun my-funcs/eval-overlay (value point)
+      (cider--make-result-overlay (format "%S" value)
+        :where point
+        :duration 'command)
+      ;; Preserve the return value.
+      value)
+    (advice-add 'eval-last-sexp :filter-return
+                (lambda (r)
+                  (my-funcs/eval-overlay r (point))))
+    (advice-add 'eval-defun :filter-return
+                (lambda (r)
+                  (my-funcs/eval-overlay
+                   r
+                   (save-excursion
+                     (end-of-defun)
+                     (point))))))
+  (use-package cider-hydra
+    :after (clojure-mode)
+    :init
+    (add-hook 'cider-mode-hook #'cider-hydra-mode))
+
   (evil-define-operator evil-eval-clojure-text-object (beg end)
     "Evil operator for evaluating code."
     :move-point nil
@@ -1196,7 +1189,6 @@ increment and decrement numbers with c-a and c-x
 ** neotree
 #+begin_src emacs-lisp
     (use-package neotree
-      :demand t
       :config
       (general-define-key :keymaps '(neotree-mode-map)
                           :states '(normal)
@@ -1220,13 +1212,8 @@ increment and decrement numbers with c-a and c-x
                         "q" 'git-timemachine-quit))
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
-  (use-package git-gutter
-    :demand t
-    :config
-    (use-package git-gutter-fringe
-      :demand t)
-    (use-package fringe-helper
-      :demand t)
+    (use-package git-gutter-fringe)
+    (use-package fringe-helper)
     (require 'fringe-helper)
     (require 'git-gutter-fringe)
     (fringe-mode 3)
@@ -1248,12 +1235,10 @@ increment and decrement numbers with c-a and c-x
       [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
       nil nil 'center)
     (advice-add 'evil-force-normal-state :after 'git-gutter)
-    (add-hook 'focus-in-hook 'git-gutter:update-all-windows))
+    (add-hook 'focus-in-hook 'git-gutter:update-all-windows)
+
   (use-package magit
-    :demand t
     :config
-    (use-package evil-magit
-      :demand t)
     ;; full screen magit-status
     (defadvice magit-status (around magit-fullscreen activate)
       (window-configuration-to-register :magit-fullscreen)
@@ -1263,9 +1248,12 @@ increment and decrement numbers with c-a and c-x
       "Restores the previous window configuration and kills the magit buffer"
       (interactive)
       (kill-buffer)
-      (jump-to-register :magit-fullscreen)))
+      (jump-to-register :magit-fullscreen))
+    (require 'evil-magit))
+
+  (use-package evil-magit
+    :after (magit))
   (use-package git-timemachine
-    :demand t
     :after general
     :config
     (general-define-key :keymaps '(git-timemachine-mode-map)
@@ -1348,7 +1336,7 @@ increment and decrement numbers with c-a and c-x
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
     :demand t
-    :config
+    :init
     (add-hook 'org-mode-hook
               (lambda ()
                 (org-bullets-mode 1))))
@@ -1363,17 +1351,16 @@ increment and decrement numbers with c-a and c-x
 #+END_SRC
 *** org-Reveal (HTML presentations)
 #+BEGIN_SRC emacs-lisp
-  (use-package ox-reveal
-    :demand t)
+  (use-package ox-reveal)
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
   ;;(setq org-reveal-mathjax t)
-  (use-package htmlize
-  :demand t)
+  (use-package htmlize)
 #+END_SRC
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
   (use-package worf
-   :demand t)
+    :init
+    (add-hook 'org-mode-hook 'worf-mode))
 
   (defhydra myorg-hydra-change (:hint nil)
     "
@@ -1506,24 +1493,24 @@ increment and decrement numbers with c-a and c-x
 *** AucTex
 #+BEGIN_SRC emacs-lisp
   (use-package auctex-latexmk
-    :demand t
+    :init
+    (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
+    (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook
+              (lambda ()
+                (push
+                 '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
+                   :help "Run latexmk on file")
+                 TeX-command-list)))
     :config
     (auctex-latexmk-setup))
-    (setq-default TeX-quote-after-quote t)
-  (add-hook 'LaTeX-mode-hook
-            (lambda ()
-              (push
-               '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
-                 :help "Run latexmk on file")
-               TeX-command-list)))
-  (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
-  (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
+
+  (setq-default TeX-quote-after-quote t)
+
 #+END_SRC
 *** Bibtex
 #+BEGIN_SRC emacs-lisp
-(use-package ivy-bibtex
-  :demand t
-  :config)
+(use-package ivy-bibtex)
 #+END_SRC
 ** projectile
 #+begin_src emacs-lisp
@@ -1541,8 +1528,7 @@ increment and decrement numbers with c-a and c-x
 #+end_src
 ** ag
 #+begin_src emacs-lisp
-  (use-package ag
-    :demand t)
+  (use-package ag)
 #+end_src
 ** popup (dependency)
 #+begin_src emacs-lisp
@@ -1630,10 +1616,9 @@ http://oremacs.com/swiper/
           (move-to-column col)))
       )
 #+END_SRC
-** COMMENT hex colors
+** hex colors
 #+begin_src emacs-lisp
   (use-package rainbow-mode
-    :demand t
     :config)
 #+end_src
 ** command-log-mode
@@ -1771,28 +1756,32 @@ Multi-stage copy/pasting of files and bookmarks
 #+end_src
 ** javascript
 #+begin_src emacs-lisp
-  (use-package js2-mode
-    :config
-    ;; do not show errors (use flycheck for that)
-    (js2-mode-hide-warnings-and-errors)
-    (setq
-     js2-skip-preprocessor-directives nil   ; allow shebangs in js-files (for node)
-     ;; default values for indentation (possibly overwritten by editorconfig)
-     js2-basic-offset 2
-     js-indent-level 2
-     js-expr-indent-offset -2)
-    (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-    (add-to-list 'auto-mode-alist '("\\.jsx\\'" . js2-jsx-mode))
-    (add-to-list 'interpreter-mode-alist '("node" . js2-mode)))
-  (use-package prettier-js
-    :demand t
-    :config
-    (add-hook 'js2-mode-hook 'prettier-js-mode)
-    (add-hook 'web-mode-hook 'prettier-js-mode))
+   (use-package js2-mode
+     :init
+     ;;(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+     (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+     (setq
+      js2-skip-preprocessor-directives nil   ; allow shebangs in js-files (for node)
+      ;; default values for indentation (possibly overwritten by editorconfig)
+      js2-basic-offset 2
+      js-indent-level 2
+      js-expr-indent-offset -2)
+     :config
+     ;; do not show errors (use flycheck for that)
+     (js2-mode-hide-warnings-and-errors))
 
-  (use-package rjsx-mode
-    :demand t
-    :config)
+   (use-package prettier-js
+     :init
+     (add-hook 'js2-mode-hook 'prettier-js-mode))
+
+  (use-package add-node-modules-path
+    :init
+    (add-hook 'js2-mode-hook #'add-node-modules-path))
+
+   (use-package rjsx-mode
+    :init
+    (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode)))
+
 #+end_src
 ** elixir
 #+begin_src emacs-lisp
@@ -1800,7 +1789,6 @@ Multi-stage copy/pasting of files and bookmarks
     :config
     (plist-put evilmi-plugins 'elixir-mode '((evilmi-ruby-get-tag evilmi-ruby-jump))))
   (use-package alchemist
-    :demand t
     :config
     (evil-define-operator evil-eval-elixir-text-object (beg end)
       "Evil operator for evaluating code."
@@ -1914,17 +1902,11 @@ Multi-stage copy/pasting of files and bookmarks
 ** markdown-mode
 #+begin_src emacs-lisp
   (use-package markdown-mode
-    :demand t
     :commands (markdown-mode gfm-mode)
     :mode (("README\\.md\\'" . gfm-mode)
            ("\\.md\\'" . markdown-mode)
            ("\\.markdown\\'" . markdown-mode))
     :init (setq markdown-command "multimarkdown"))
-#+end_src
-** rjsx-mode
-#+begin_src emacs-lisp
-  (use-package rjsx-mode
-    :config)
 #+end_src
 ** pdf-tools
 #+begin_src emacs-lisp
@@ -1992,12 +1974,6 @@ Multi-stage copy/pasting of files and bookmarks
                           "gD" 'pdf-occur-view-occurrence
                           "q" 'evil-window-delete)))
 
-#+end_src
-** language-tool
-#+begin_src emacs-lisp
-  (use-package langtool
-    :demand t
-    :config)
 #+end_src
 ** evil-goggles
 #+begin_src emacs-lisp
