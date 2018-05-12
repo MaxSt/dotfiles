@@ -231,13 +231,26 @@ These are the Files creating in the current Directory for files that have not be
     ;;(load-theme 'challenger-deep t))
   (add-to-list 'custom-theme-load-path "~/Documents/challenger-deep/emacs/")
   (load-theme 'challenger-deep t)
-  (use-package all-the-icons
-    :demand t
-    :config
-    (use-package all-the-icons-dired
+
+  (use-package all-the-icons :demand t)
+  (use-package all-the-icons-dired
+      :after (all-the-icons)
       :demand t
       :config
-      (add-hook 'dired-mode-hook 'all-the-icons-dired-mode)))
+      (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+
+  (use-package all-the-icons-ivy
+      :after (all-the-icons projectile ivy counsel counsel-projectile)
+      :demand t
+      :config
+      (setq all-the-icons-ivy-file-commands
+            '(counsel-find-file
+              counsel-file-jump
+              counsel-recentf
+              counsel-projectile-find-file
+              counsel-projectile-find-dir
+              counsel-projectile))
+      (all-the-icons-ivy-setup))
 #+end_src
 * custom Functions
 #+BEGIN_SRC emacs-lisp
@@ -405,17 +418,17 @@ These are the Files creating in the current Directory for files that have not be
       ("h" my-funcs/resize-window-left "left")))
   (defhydra hydra-projectile (:color teal :columns 4)
     "Projectile"
-    ("f"   projectile-find-file                "Find File")
-    ("r"   projectile-recentf                  "Recent Files")
-    ("z"   projectile-cache-current-file       "Cache Current File")
-    ("x"   projectile-remove-known-project     "Remove Known Project")
-    ("d"   projectile-find-dir                 "Find Directory")
-    ("b"   projectile-switch-to-buffer         "Switch to Buffer")
-    ("c"   projectile-invalidate-cache         "Clear Cache")
-    ("X"   projectile-cleanup-known-projects   "Cleanup Known Projects")
-    ("o"   projectile-multi-occur              "Multi Occur")
-    ("p"   projectile-switch-project           "Switch Project")
-    ("k"   projectile-kill-buffers             "Kill Buffers")
+    ("f"   counsel-projectile-find-file                "Find File")
+    ("r"   counsel-projectile-recentf                  "Recent Files")
+    ("z"   counsel-projectile-cache-current-file       "Cache Current File")
+    ("x"   counsel-projectile-remove-known-project     "Remove Known Project")
+    ("d"   counsel-projectile-find-dir                 "Find Directory")
+    ("b"   counsel-projectile-switch-to-buffer         "Switch to Buffer")
+    ("c"   counsel-projectile-invalidate-cache         "Clear Cache")
+    ("X"   counsel-projectile-cleanup-known-projects   "Cleanup Known Projects")
+    ("o"   counsel-projectile-multi-occur              "Multi Occur")
+    ("p"   counsel-projectile-switch-project           "Switch Project")
+    ("k"   counsel-projectile-kill-buffers             "Kill Buffers")
     ("q"   nil "Cancel" :color blue))
 #+END_SRC
 ** custom text objects
@@ -593,9 +606,9 @@ no mapping for that object
     "x" (general-simulate-key "C-x")
     "c" (general-simulate-keys "C-c")
     "i" 'ibuffer
-    "t" 'projectile-find-file
+    "t" 'counsel-projectile-find-file
     "/" 'counsel-rg-project
-    "e" 'projectile-switch-to-buffer
+    "e" 'counsel-projectile-switch-to-buffer
     "g s" 'magit-status
     "g t" 'git-timemachine
     "g n" 'git-gutter:next-hunk
@@ -610,7 +623,7 @@ no mapping for that object
     "z" 'hydra-zoom/body
     "o" (lambda () (interactive) (dired "."))
     "O" 'dired
-    "f" 'find-file)
+    "f" 'counsel-find-file)
   (setq my-leader2 ",")
   (setq local-leader "\\")
 #+END_SRC
@@ -1519,8 +1532,12 @@ increment and decrement numbers with c-a and c-x
     :config
     ;; test fn in hashtabe has to be equal because we will use strings as keys
     (setq my-projects-loaded (make-hash-table :test 'equal))
-    (setq projectile-completion-system 'ivy)
+    ;;(setq projectile-completion-system 'ivy)
     (projectile-global-mode))
+
+  (use-package counsel-projectile
+    :ensure t
+    :after (projectile))
 #+end_src
 ** ag
 #+begin_src emacs-lisp
