@@ -1800,6 +1800,10 @@ Multi-stage copy/pasting of files and bookmarks
     (general-define-key :prefix local-leader
                         :keymaps '(elixir-mode-map)
                         :states '(normal)
+                        "f" (lambda ()
+                              (interactive)
+                              (projectile-with-default-dir (projectile-project-root)
+                                (shell-command "mix format")))
                         "g" 'alchemist-goto-definition-at-point
                         "o" 'alchemist-goto-jump-back
                         "d p" 'alchemist-help-search-at-point
