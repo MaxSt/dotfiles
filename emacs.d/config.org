@@ -1187,17 +1187,6 @@ increment and decrement numbers with c-a and c-x
        "d" 'evil-sp-delete
        "D" 'evil-sp-delete-line)
 #+END_SRC
-** neotree
-#+begin_src emacs-lisp
-    (use-package neotree
-      :config
-      (general-define-key :keymaps '(neotree-mode-map)
-                          :states '(normal)
-                          "TAB" 'neotree-enter
-                          "q" 'neotree-hide
-                          "RET" 'neotree-enter)
-      (setq neo-theme (if window-system 'icons 'arrow)))
-#+end_src
 ** which-key
 #+begin_src emacs-lisp
     (use-package which-key
@@ -1524,7 +1513,6 @@ increment and decrement numbers with c-a and c-x
     (projectile-global-mode))
 
   (use-package counsel-projectile
-    :ensure t
     :after (projectile))
 #+end_src
 ** ag
@@ -1684,9 +1672,11 @@ Multi-stage copy/pasting of files and bookmarks
 #+END_SRC
 *** dired-sidebar
 #+begin_src emacs-lisp
-  (use-package dired-sidebar
-    :after (dired)
-    :config)
+    (use-package dired-sidebar
+      :after (dired)
+      :commands (dired-sidebar-toggle-sidebar)
+      :init
+      (general-define-key :prefix my-leader "TAB" 'dired-sidebar-toggle-sidebar))
 #+end_src
 *** Keybindings
 #+BEGIN_SRC emacs-lisp
@@ -1712,6 +1702,7 @@ Multi-stage copy/pasting of files and bookmarks
                       "TAB" 'dired-subtree-toggle
                       "l" 'dired-find-alternate-file
                       "c" 'dired-do-rename
+                      "C" 'dired-do-copy
                       "y" 'dired-ranger-copy
                       "p" 'dired-ranger-paste
                       "v" 'dired-ranger-move
@@ -2176,21 +2167,18 @@ Multi-stage copy/pasting of files and bookmarks
 ** dumb-jump
 #+begin_src emacs-lisp
   (use-package dumb-jump
-    :ensure t
     :config
     ;; integrate with evil-jump (C-i, C-o)
     (advice-add 'dumb-jump-go :before (lambda (&rest r) (evil-set-jump))))
 #+end_src
 ** view-large-files
 #+begin_src emacs-lisp
-  (use-package vlf
-    :ensure t)
+  (use-package vlf)
 #+end_src
 ** language-server
 #+begin_src emacs-lisp
     (use-package lsp-mode
       :demand t
-      :ensure t
       :config
 
       (defconst lsp-javascript--get-root
