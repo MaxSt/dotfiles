@@ -1781,6 +1781,8 @@ Multi-stage copy/pasting of files and bookmarks
     :config
     (plist-put evilmi-plugins 'elixir-mode '((evilmi-ruby-get-tag evilmi-ruby-jump))))
   (use-package alchemist
+    :init
+    (add-hook 'elixir-mode-hook #'alchemist-mode)
     :config
     (evil-define-operator evil-eval-elixir-text-object (beg end)
       "Evil operator for evaluating code."
