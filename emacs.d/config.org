@@ -113,7 +113,7 @@ previously compiled manually then all of the package initialization will still t
   ;; relative line numbers
   (setq-default display-line-numbers 'relative)
   ;; make current line 0
-  (setq-default display-line-numbers-current-absolute 'nil)
+  (setq-default display-line-numbers-current-absolute t)
   (setq-default fill-column 80)
   (setq-default truncate-lines nil) ; line wrap
   (setq-default indent-tabs-mode nil
@@ -206,7 +206,7 @@ These are the Files creating in the current Directory for files that have not be
 ** font
 #+BEGIN_SRC emacs-lisp
   ;;(set-default-font "Iosevka-12:spacing=110")
-  (setq default-frame-alist '((font . "Iosevka-12:spacing=110")))
+  (add-to-list 'default-frame-alist '(font . "Iosevka-12:spacing=110"))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp
@@ -551,7 +551,9 @@ no mapping for that object
             (evil-window-split)
             (evil-window-down 1))
     "gS" 'my-funcs/open-snippet-dir
-    "gs" 'save-buffer
+    "s" 'save-buffer
+    "S" 'counsel-projectile-find-file
+    "gs" 'magit-status
     "`" 'evil-goto-mark-line
     "'" 'evil-goto-mark
     "C-h" 'evil-window-left
@@ -623,6 +625,11 @@ no mapping for that object
     "f" 'counsel-find-file)
   (setq my-leader2 ",")
   (setq local-leader "\\")
+
+  (general-def '(operator normal visual) :prefix my-leader2
+    "f" 'evil-avy-goto-char
+    "l" 'evil-avy-goto-line
+    "w" 'evil-avy-goto-word-1 )
 #+END_SRC
 ** evil-surround
 #+begin_src emacs-lisp
@@ -844,11 +851,17 @@ increment and decrement numbers with c-a and c-x
 ** company-mode
 #+begin_src emacs-lisp
   (use-package company
-   :demand t
+  :demand t
+   :init
+    (progn
+      (setq company-idle-delay 0.2
+            company-minimum-prefix-length 2
+            company-require-match nil
+            company-selection-wrap-around t
+            company-dabbrev-ignore-case nil
+            company-dabbrev-downcase nil))
    :config
    (global-company-mode)
-   (setq company-idle-delay 0.2)
-   (setq company-selection-wrap-around t)
 
    (define-key company-active-map [tab] 'company-complete)
    (define-key company-active-map (kbd "C-n") 'company-select-next)
@@ -902,6 +915,7 @@ increment and decrement numbers with c-a and c-x
               (sql-interaction-mode :same t)
               (alchemist-test-report-mode :size 0.4 :align right :noselect t)
               ("*alchemist help*" :same t)
+              (magit-status-mode :same t)
               ("*HTTP Response*" :size 0.3 :align below)
               (cider-repl-mode :same t)
               (cider-inspector-mode :size 0.3 :align above)
@@ -1202,47 +1216,37 @@ increment and decrement numbers with c-a and c-x
                         "q" 'git-timemachine-quit))
 #+END_SRC
 #+BEGIN_SRC emacs-lisp
-    (use-package git-gutter-fringe)
-    (use-package fringe-helper)
-    (require 'fringe-helper)
-    (require 'git-gutter-fringe)
-    (fringe-mode 3)
-    ;; (push `(left-fringe  . 3) default-frame-alist)
-    ;; (push `(right-fringe . 3) default-frame-alist)
-    ;; ;; slightly larger default frame size on startup
-    ;; (push '(width . 120) default-frame-alist)
-    ;; (push '(height . 40) default-frame-alist)
-    ;; (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
-    ;; (set-fringe-bitmap-face 'tilde 'fringe)
-    ;; colored fringe "bars"
-    (define-fringe-bitmap 'git-gutter-fr:added
-      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
-      nil nil 'center)
-    (define-fringe-bitmap 'git-gutter-fr:modified
-      [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
-      nil nil 'center)
-    (define-fringe-bitmap 'git-gutter-fr:deleted
-      [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
-      nil nil 'center)
-    (advice-add 'evil-force-normal-state :after 'git-gutter)
-    (add-hook 'focus-in-hook 'git-gutter:update-all-windows)
+  (use-package git-gutter-fringe)
+  (use-package fringe-helper)
+  (require 'fringe-helper)
+  (require 'git-gutter-fringe)
+  (fringe-mode 3)
+  ;; (push `(left-fringe  . 3) default-frame-alist)
+  ;; (push `(right-fringe . 3) default-frame-alist)
+  ;; ;; slightly larger default frame size on startup
+  ;; (push '(width . 120) default-frame-alist)
+  ;; (push '(height . 40) default-frame-alist)
+  ;; (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
+  ;; (set-fringe-bitmap-face 'tilde 'fringe)
+  ;; colored fringe "bars"
+  (define-fringe-bitmap 'git-gutter-fr:added
+    [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
+    nil nil 'center)
+  (define-fringe-bitmap 'git-gutter-fr:modified
+    [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
+    nil nil 'center)
+  (define-fringe-bitmap 'git-gutter-fr:deleted
+    [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
+    nil nil 'center)
+  (advice-add 'evil-force-normal-state :after 'git-gutter)
+  (add-hook 'focus-in-hook 'git-gutter:update-all-windows)
 
   (use-package magit
     :config
-    ;; full screen magit-status
-    (defadvice magit-status (around magit-fullscreen activate)
-      (window-configuration-to-register :magit-fullscreen)
-      ad-do-it
-      (delete-other-windows))
-    (defun magit-quit-session ()
-      "Restores the previous window configuration and kills the magit buffer"
-      (interactive)
-      (kill-buffer)
-      (jump-to-register :magit-fullscreen))
     (require 'evil-magit))
-
   (use-package evil-magit
     :after (magit))
+
   (use-package git-timemachine
     :after general
     :config
@@ -1465,22 +1469,37 @@ increment and decrement numbers with c-a and c-x
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
     :demand t
+    :init
+    (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode)
+    (add-hook 'cide-clojure-interaction-mode-hook 'turn-on-smartparens-strict-mode)
+    (add-hook 'lisp-interaction-mode-hook 'turn-on-smartparens-strict-mode)
+    (add-hook 'cider-repl-mode-hook 'turn-on-smartparens-strict-mode)
+    (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
     :config
-    (use-package evil-smartparens
-      :demand t
-      :config)
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (sp-local-pair 'clojure-mode "'" nil :actions nil)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
+
+
     (smartparens-global-mode 1)
     )
-  ;;(advice-add 'evil-sp-delete :after')
-  ;;(general-define-key ')
+
+  (use-package evil-smartparens
+    :demand t
+    :config)
+
+  (general-def 'normal
+    ">" (general-key-dispatch 'evil-shift-right
+          ")" 'sp-forward-slurp-sexp
+          "(" 'sp-backward-barf-sexp)
+    "<" (general-key-dispatch 'evil-shift-left
+          ")" 'sp-forward-barf-sexp
+          "(" 'sp-backward-slurp-sexp))
 #+END_SRC
 ** Latex
-*** AucTex
+** AucTex
 #+BEGIN_SRC emacs-lisp
   (use-package auctex-latexmk
     :init
@@ -2177,7 +2196,7 @@ Multi-stage copy/pasting of files and bookmarks
 #+begin_src emacs-lisp
   (use-package vlf)
 #+end_src
-** language-server
+** COMMENT language-server
 #+begin_src emacs-lisp
     (use-package lsp-mode
       :demand t
