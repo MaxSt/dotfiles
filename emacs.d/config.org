@@ -206,7 +206,7 @@ These are the Files creating in the current Directory for files that have not be
 ** font
 #+BEGIN_SRC emacs-lisp
   ;;(set-default-font "Iosevka-12:spacing=110")
-  (add-to-list 'default-frame-alist '(font . "Iosevka-12:spacing=110"))
+  (add-to-list 'default-frame-alist '(font . "Monoid-12:spacing=100"))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp
@@ -395,6 +395,10 @@ These are the Files creating in the current Directory for files that have not be
     :config
     (yas-global-mode 1))
 #+END_SRC
+** default-text-scale
+#+BEGIN_SRC emacs-lisp
+  (use-package default-text-scale)
+#+END_SRC
 ** hydra
 #+BEGIN_SRC emacs-lisp
   (use-package hydra
@@ -402,10 +406,10 @@ These are the Files creating in the current Directory for files that have not be
     :config
     (defhydra hydra-zoom ()
       "Zoom"
-      ("u" zoom-frm-unzoom "unzoom")
+      ("u" default-text-scale-reset"unzoom")
       ("i" text-scale-increase "in Buffer")
-      ("I" zoom-frm-in "in Frame")
-      ("O" zoom-frm-out "out Frame")
+      ("I" default-text-scale-increase "in Frame")
+      ("O" default-text-scale-decrease "out Frame")
       ("o" text-scale-decrease "out Buffer"))
     (defhydra hydra-window-resize ()
       "Window resizing"
@@ -604,6 +608,7 @@ no mapping for that object
     "W" (general-simulate-key "C-w")
     "x" (general-simulate-key "C-x")
     "c" (general-simulate-keys "C-c")
+    "v" 'widen
     "i" 'ibuffer
     "t" 'counsel-projectile-find-file
     "/" 'counsel-rg-project
@@ -868,6 +873,12 @@ increment and decrement numbers with c-a and c-x
    (define-key company-active-map (kbd "C-p") 'company-select-previous))
 #+end_src
 ** narrowing
+enable narrowing
+#+begin_src emacs-lisp
+ (put 'narrow-to-defun  'disabled nil)
+ (put 'narrow-to-page   'disabled nil)
+ (put 'narrow-to-region 'disabled nil)
+#+end_src
 #+begin_src emacs-lisp
 (defun narrow-to-region-indirect (start end)
   "Restrict editing in this buffer to the current region, indirectly."
@@ -910,11 +921,11 @@ increment and decrement numbers with c-a and c-x
               ("*Messages*"  :size 12 :noselect t)
               ("*Help*" :select t :align below :inhibit-window-quit nil :modeline nil)
               ("*Metahelp*" :size 0.3 :align left)
-              ("*undo-tree*" :size 0.5 :align right)
+              (undo-tree-visualizer-mode :size 0.5 :align right)
               (alchemist-iex-mode :same t)
               (sql-interaction-mode :same t)
               (alchemist-test-report-mode :size 0.4 :align right :noselect t)
-              ("*alchemist help*" :same t)
+              ("*alchemist help*" :select t :align below :inhibit-window-quit nil :modeline nil)
               (magit-status-mode :same t)
               ("*HTTP Response*" :size 0.3 :align below)
               (cider-repl-mode :same t)
@@ -1081,14 +1092,13 @@ increment and decrement numbers with c-a and c-x
       (interactive "<c>")
       (if count
           (dotimes (number count)
-            (sp-next-sexp))
-        (sp-next-sexp)))
+            (call-interactively 'sp-next-sexp))
+        (call-interactively 'sp-next-sexp)))
     (evil-define-command lisp-previous-paren (count)
       (interactive "<c>")
       (if count
-          (dotimes (number count)
-            (sp-previous-sexp))
-        (sp-previous-sexp)))
+          (sp-next-sexp (* count -1))
+        (sp-next-sexp -1)))
 
     (general-def 'normal ;;all-lisp-mode-maps
           '(clojure-mode-map
@@ -1451,6 +1461,8 @@ increment and decrement numbers with c-a and c-x
                         "j" 'worf-down
                         "k" 'worf-up
                         "h" 'worf-left
+                        "/" 'org-toggle-comment
+                        "SPC" 'worf-back-to-heading
                         "H" (lambda ()
                               (interactive)
                               (worf-left)
@@ -1476,6 +1488,8 @@ increment and decrement numbers with c-a and c-x
     (add-hook 'cider-repl-mode-hook 'turn-on-smartparens-strict-mode)
     (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
     :config
+    (setq sp-navigate-interactive-always-progress-point t)
+
     (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
     (sp-local-pair 'clojure-mode "'" nil :actions nil)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
@@ -1691,11 +1705,12 @@ Multi-stage copy/pasting of files and bookmarks
 #+END_SRC
 *** dired-sidebar
 #+begin_src emacs-lisp
-    (use-package dired-sidebar
-      :after (dired)
-      :commands (dired-sidebar-toggle-sidebar)
-      :init
-      (general-define-key :prefix my-leader "TAB" 'dired-sidebar-toggle-sidebar))
+  (use-package dired-sidebar
+        :after (dired)
+        :commands (dired-sidebar-toggle-sidebar)
+        :init
+        (general-define-key :prefix my-leader "TAB" 'dired-sidebar-toggle-sidebar)
+  )
 #+end_src
 *** Keybindings
 #+BEGIN_SRC emacs-lisp
@@ -1767,29 +1782,29 @@ Multi-stage copy/pasting of files and bookmarks
 #+end_src
 ** javascript
 #+begin_src emacs-lisp
-   (use-package js2-mode
-     :init
-     ;;(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
-     (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
-     (setq
-      js2-skip-preprocessor-directives nil   ; allow shebangs in js-files (for node)
-      ;; default values for indentation (possibly overwritten by editorconfig)
-      js2-basic-offset 2
-      js-indent-level 2
-      js-expr-indent-offset -2)
-     :config
-     ;; do not show errors (use flycheck for that)
-     (js2-mode-hide-warnings-and-errors))
+  (use-package js2-mode
+    :init
+    ;;(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
+    (add-to-list 'interpreter-mode-alist '("node" . js2-mode))
+    (setq
+     js2-skip-preprocessor-directives nil   ; allow shebangs in js-files (for node)
+     ;; default values for indentation (possibly overwritten by editorconfig)
+     js2-basic-offset 2
+     js-indent-level 2
+     js-expr-indent-offset -2)
+    :config
+    ;; do not show errors (use flycheck for that)
+    (js2-mode-hide-warnings-and-errors))
 
-   (use-package prettier-js
-     :init
-     (add-hook 'js2-mode-hook 'prettier-js-mode))
+  (use-package prettier-js
+    :init
+    (add-hook 'js2-mode-hook 'prettier-js-mode))
 
   (use-package add-node-modules-path
     :init
     (add-hook 'js2-mode-hook #'add-node-modules-path))
 
-   (use-package rjsx-mode
+  (use-package rjsx-mode
     :init
     (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode)))
 
@@ -1797,6 +1812,9 @@ Multi-stage copy/pasting of files and bookmarks
 ** elixir
 #+begin_src emacs-lisp
   (use-package elixir-mode
+    :init
+    (add-hook 'elixir-mode-hook
+            (lambda () (add-hook 'before-save-hook 'elixir-format nil t)))
     :config
     (plist-put evilmi-plugins 'elixir-mode '((evilmi-ruby-get-tag evilmi-ruby-jump))))
   (use-package alchemist
@@ -1812,10 +1830,6 @@ Multi-stage copy/pasting of files and bookmarks
     (general-define-key :prefix local-leader
                         :keymaps '(elixir-mode-map)
                         :states '(normal)
-                        "f" (lambda ()
-                              (interactive)
-                              (projectile-with-default-dir (projectile-project-root)
-                                (shell-command "mix format")))
                         "g" 'alchemist-goto-definition-at-point
                         "o" 'alchemist-goto-jump-back
                         "d p" 'alchemist-help-search-at-point
@@ -2231,6 +2245,15 @@ Multi-stage copy/pasting of files and bookmarks
         :init
         (push 'company-lsp company-backends))
 #+end_src
+** langtool
+#+BEGIN_SRC emacs-lisp
+  (use-package langtool
+    :ensure t
+    :config
+    (setq langtool-language-tool-jar "~/Downloads/LanguageTool-4.1/languagetool-commandline.jar")
+    ;;(require 'langtool)
+  )
+#+END_SRC
 * Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum
