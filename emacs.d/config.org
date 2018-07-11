@@ -381,6 +381,7 @@ These are the Files creating in the current Directory for files that have not be
     (evil-set-initial-state 'help-mode 'normal)
     (evil-set-initial-state 'ibuffer-mode 'normal)
     (evil-set-initial-state 'pdf-view-mode 'normal)
+    (evil-set-initial-state 'ivy-occur-grep-mode 'normal)
     ;;(setq evil-emacs-state-modes nil)
     ;;(setq evil-insert-state-modes nil)
     ;;(setq evil-motion-state-modes nil)
@@ -672,7 +673,7 @@ increment and decrement numbers with c-a and c-x
 #+begin_src emacs-lisp
     (use-package evil-numbers
       :commands (evil-numbers/inc-at-pt evil-numbers/dec-at-pt)
-      :config
+      :init
       (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
       (define-key evil-normal-state-map (kbd "C-x") 'evil-numbers/dec-at-pt))
 #+end_src
@@ -1811,12 +1812,32 @@ Multi-stage copy/pasting of files and bookmarks
 #+end_src
 ** elixir
 #+begin_src emacs-lisp
-  (use-package elixir-mode
-    :init
-    (add-hook 'elixir-mode-hook
-            (lambda () (add-hook 'before-save-hook 'elixir-format nil t)))
-    :config
-    (plist-put evilmi-plugins 'elixir-mode '((evilmi-ruby-get-tag evilmi-ruby-jump))))
+    (use-package elixir-mode
+      :init
+
+      ;; Set elixir formatter file to projectile root (https://github.com/elixir-editors/emacs-elixir)
+      (add-hook 'elixir-format-hook (lambda ()
+                                      (if (projectile-project-p)
+                                          (setq elixir-format-arguments
+                                                (list "--dot-formatter"
+                                                      (concat (locate-dominating-file buffer-file-name ".formatter.exs") ".formatter.exs")))
+                                        (setq elixir-format-arguments nil))))
+
+      ;; Set default dir for formatter (See https://github.com/elixir-editors/emacs-elixir/issues/415)
+      (defun set-default-directory-to-mix-project-root (original-fun &rest args)
+        (if-let* ((mix-project-root (and (projectile-project-p)
+                                         (projectile-locate-dominating-file buffer-file-name
+                                                                            ".formatter.exs"))))
+            (let ((default-directory mix-project-root))
+              (apply original-fun args))
+          (apply original-fun args)))
+
+      (advice-add 'elixir-format :around #'set-default-directory-to-mix-project-root)
+
+      (add-hook 'elixir-mode-hook
+                (lambda () (add-hook 'before-save-hook 'elixir-format nil t)))
+      :config
+      (plist-put evilmi-plugins 'elixir-mode '((evilmi-ruby-get-tag evilmi-ruby-jump))))
   (use-package alchemist
     :init
     (add-hook 'elixir-mode-hook #'alchemist-mode)
