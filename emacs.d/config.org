@@ -216,6 +216,17 @@ These are the Files creating in the current Directory for files that have not be
   (global-linum-mode -1)  ; dont show line-numbers everywhere
   (show-paren-mode)
   ;;(electric-pair-mode 1)
+
+;;; Transparent titlebar
+;; https://github.com/d12frosted/homebrew-emacs-plus/blob/master/Formula/emacs-plus.rb#L98
+;; https://github.com/d12frosted/homebrew-emacs-plus/issues/55
+;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Properties-in-Mode.html#Properties-in-Mode
+(when (memq window-system '(mac ns))
+  (add-to-list 'default-frame-alist '(ns-appearance . dark))
+  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
+
+(setq frame-title-format "%b")
+
 #+END_SRC
 ** fringe
 #+BEGIN_SRC emacs-lisp
@@ -619,6 +630,7 @@ no mapping for that object
     "g n" 'git-gutter:next-hunk
     "g p" 'git-gutter:previous-hunk
     "g r" 'git-gutter:revert-hunk
+    "g p" 'git-gutter:popup-hunk
     "g h s" 'git-gutter:stage-hunk
     "l" 'evil-avy-goto-line
     "u" 'undo-tree-visualize
@@ -1453,12 +1465,12 @@ enable narrowing
                         "n" 'org-narrow-to-subtree
                         "w" 'widen
                         "t" 'org-todo
-                        "T" 'org-set-tags
+                        "T" 'counsel-org-tag
                         "p" 'org-insert-link
                         "y" 'org-store-link
                         "c" 'myorg-hydra-change/body
                         "l" 'worf-right
-                        "g" 'worf-goto
+                        "g" 'counsel-org-goto
                         "j" 'worf-down
                         "k" 'worf-up
                         "h" 'worf-left
@@ -1473,9 +1485,35 @@ enable narrowing
                         :states '(normal)
                         "RET" 'org-edit-src-exit)
 #+END_SRC
-*** open source code in same window
+*** open source code in same windowemacs
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
+#+END_SRC
+*** evil-org
+I only use a few features from this mode like testobjects: 
+
+|-----+---------------|
+| Key | Object        |
+|-----+---------------|
+| e   | Org Element   |
+| r   | Inner Subtree |
+|-----+---------------|
+
+and the `>` and `<` opererators for promoting and demoting headers and
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-org
+    :after org
+    :init
+    (add-hook 'org-mode-hook 'evil-org-mode)
+    (add-hook 'evil-org-mode-hook
+              (lambda ()
+                (evil-org-set-key-theme '(operators textobjects table))))
+    :config
+    ;; diable o/O special handling for items
+    (setq evil-org-special-o/O nil)
+
+    (require 'evil-org-agenda)
+    (evil-org-agenda-set-keys))
 #+END_SRC
 
 ** smartparens
@@ -2113,7 +2151,14 @@ Multi-stage copy/pasting of files and bookmarks
 
     )
 #+end_src
-** powerline
+** doom-modeline
+#+BEGIN_SRC emacs-lisp
+(use-package doom-modeline
+      :ensure t
+     :defer t
+      :hook (after-init . doom-modeline-init))
+#+END_SRC
+** COMMENT powerline
 #+BEGIN_SRC emacs-lisp
   (use-package powerline
     :demand t
@@ -2216,9 +2261,12 @@ Multi-stage copy/pasting of files and bookmarks
 #+begin_src emacs-lisp
   (use-package emojify
     :demand t
-    :config
+    :init
     (add-hook 'after-init-hook #'global-emojify-mode)
-)
+    :config
+    (when (memq window-system '(mac ns))
+      (setq emojify-display-style 'unicode)
+      (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji") nil 'prepend)))
 #+end_src
 ** dumb-jump
 #+begin_src emacs-lisp
