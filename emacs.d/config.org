@@ -2320,7 +2320,7 @@ Multi-stage copy/pasting of files and bookmarks
     :ensure t
     :config
     (setq langtool-language-tool-jar "~/Downloads/LanguageTool-4.1/languagetool-commandline.jar")
-    ;;(require 'langtool)
+    (require 'langtool)
   )
 #+END_SRC
 * Temp
