@@ -541,6 +541,18 @@ no mapping for that object
                        (point)))))
      (define-key evil-outer-text-objects-map "l" 'evil-a-line)
 #+END_SRC
+** define lisp modes
+#+BEGIN_SRC emacs-lisp
+  (setq lisp-modes '(clojure-mode
+                     clojurescript-mode
+                     lisp-interaction-mode
+                     cider-repl-mode
+                     emacs-lisp-mode))
+
+  (setq lisp-mode-maps (mapcar (lambda (mode)
+                                 (intern (concat (symbol-name mode) "-map")))
+                               lisp-modes))
+#+END_SRC
 ** General (keybindings)
 [[https://github.com/noctuid/general.el][general.el]]
 #+BEGIN_SRC emacs-lisp
@@ -619,7 +631,7 @@ no mapping for that object
     ;;  Avoiding CTRL
     "W" (general-simulate-key "C-w")
     "x" (general-simulate-key "C-x")
-    "c" (general-simulate-keys "C-c")
+    "c" (general-simulate-key "C-c")
     "v" 'widen
     "i" 'ibuffer
     "t" 'counsel-projectile-find-file
@@ -703,16 +715,18 @@ increment and decrement numbers with c-a and c-x
    ;;gX to cancel
   (use-package evil-exchange
     :commands (evil-exchange))
-  (setq lisp-modes '(clojure-mode
-                     cider-clojure-interaction-mode
-                     lisp-interaction-mode
-                     cider-repl-mode
-                     emacs-lisp-mode))
+
   (evil-define-operator evil-decide-change-fun (beg end)
     "decide which change function to use"
     (if (seq-contains lisp-modes major-mode)
         (evil-sp-change beg end)
       (evil-change beg end)))
+
+  (evil-define-operator evil-decide-delete-fun (beg end)
+    "decide which change function to use"
+    (if (seq-contains lisp-modes major-mode)
+        (evil-sp-delete beg end)
+      (evil-delete beg end)))
 
   (general-def 'visual
     "c" 'evil-change)
@@ -723,6 +737,11 @@ increment and decrement numbers with c-a and c-x
           "s" 'evil-surround-change
           "x" 'evil-exchange
           "X" 'evil-exchange-cancel))
+
+  (general-def 'normal
+    "d" (general-key-dispatch 'evil-decide-delete-fun
+          :name general-dispatch-evil-delete-exchange
+          "s" 'evil-surround-delete))
 #+end_src
 ** evil-commentary
 #+begin_src emacs-lisp
@@ -1113,12 +1132,9 @@ enable narrowing
           (sp-next-sexp (* count -1))
         (sp-next-sexp -1)))
 
-    (general-def 'normal ;;all-lisp-mode-maps
-          '(clojure-mode-map
-            cider-clojure-interaction-mode-map
-            lisp-interaction-mode-map
-            cider-repl-mode-map
-            emacs-lisp-mode-map)
+    (general-define-key
+      :states 'normal
+      :keymaps lisp-mode-maps
        :prefix my-leader2
        "W" (lambda ()
              (interactive)
@@ -1182,13 +1198,9 @@ enable narrowing
              (sp-raise-sexp))
        "O" 'sp-raise-sexp)
 
-    (general-def 'normal ;;all-lisp-mode-maps
-  '(clojure-mode-map
-            cider-clojure-interaction-mode-map
-            lisp-interaction-mode-map
-            cider-repl-mode-map
-            emacs-lisp-mode-map)
-
+  (general-define-key
+      :states 'normal
+      :keymaps lisp-mode-maps
        ;;c is defined in vim-exchange
        "W" 'lisp-next-paren
        "B" 'lisp-previous-paren
@@ -1221,7 +1233,6 @@ enable narrowing
              ")" 'sp-forward-barf-sexp
              "(" 'sp-backward-slurp-sexp)
        "C" 'evil-sp-change-line
-       "d" 'evil-sp-delete
        "D" 'evil-sp-delete-line)
 #+END_SRC
 ** which-key
@@ -1377,7 +1388,13 @@ enable narrowing
 #+BEGIN_SRC emacs-lisp
   (use-package worf
     :init
-    (add-hook 'org-mode-hook 'worf-mode))
+    (add-hook 'org-mode-hook 'worf-mode)
+    ;; set the worf-mode keymap to an empty keymap to remove all worf bindings
+    (add-hook 'worf-mode-hook
+              (lambda ()
+                (push `(worf-mode . ,(newmap (make-sparse-keymap))) minor-mode-overriding-map-alist)))
+
+    )
 
   (defhydra myorg-hydra-change (:hint nil)
     "
@@ -2277,7 +2294,9 @@ Multi-stage copy/pasting of files and bookmarks
 #+end_src
 ** view-large-files
 #+begin_src emacs-lisp
-  (use-package vlf)
+  (use-package vlf
+    :config
+    (require 'vlf-setup))
 #+end_src
 ** COMMENT language-server
 #+begin_src emacs-lisp
