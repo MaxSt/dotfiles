@@ -593,7 +593,6 @@ no mapping for that object
     "g i" (lambda ()
             (interactive)
             (find-file (concat org-directory "/inbox.org")))
-    "g l" 'org-agenda
     "g o" (lambda ()
             (interactive)
             (counsel-find-file org-directory))
@@ -612,6 +611,7 @@ no mapping for that object
   (setq my-leader "SPC")
   (general-def 'normal :prefix my-leader
     ;;"r" 'restart-emacs
+    "a" 'org-agenda
     "p" 'hydra-projectile/body
     "q" 'evil-window-delete
     "k" 'kill-buffer
@@ -674,6 +674,23 @@ no mapping for that object
     :config)
 #+end_src
 ** evil-args
+#+begin_src emacs-lisp
+  (use-package evil-args
+    :demand t
+    :config
+    ;; bind evil-args text objects
+    (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
+    (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
+    )
+#+end_src
+** evil-lion
+#+begin_src emacs-lisp
+(use-package evil-lion
+  :demand t
+  :config
+  (evil-lion-mode))
+#+end_src
+** evil-targets
 #+begin_src emacs-lisp
   (use-package evil-args
     :demand t
@@ -1709,8 +1726,20 @@ http://oremacs.com/swiper/
   (use-package eyebrowse
     :demand t
     :config
-    (eyebrowse-setup-opinionated-keys) ;set evil keybindings (gt gT)
-    (eyebrowse-mode t))
+    (general-define-key :keymaps '(eyebrowse-mode-map)
+                      :states '(normal)
+                      "M-0" 'eyebrowse-switch-to-window-config-0
+                      "M-1" 'eyebrowse-switch-to-window-config-1
+                      "M-2" 'eyebrowse-switch-to-window-config-2
+                      "M-3" 'eyebrowse-switch-to-window-config-3
+                      "M-4" 'eyebrowse-switch-to-window-config-4
+                      "M-5" 'eyebrowse-switch-to-window-config-5
+                      "M-6" 'eyebrowse-switch-to-window-config-6
+                      "M-7" 'eyebrowse-switch-to-window-config-7
+                      "M-8" 'eyebrowse-switch-to-window-config-8
+                      "M-9" 'eyebrowse-switch-to-window-config-9)
+    (eyebrowse-mode t)
+)
 #+end_src
 ** highlight-symbol
 #+begin_src emacs-lisp
