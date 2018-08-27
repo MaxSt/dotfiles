@@ -206,7 +206,7 @@ These are the Files creating in the current Directory for files that have not be
 ** font
 #+BEGIN_SRC emacs-lisp
   ;;(set-default-font "Iosevka-12:spacing=110")
-  (add-to-list 'default-frame-alist '(font . "Monoid-12:spacing=100"))
+  (add-to-list 'default-frame-alist '(font . "Monoid:pixelsize=12:spacing=100"))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp
@@ -382,6 +382,7 @@ These are the Files creating in the current Directory for files that have not be
   (use-package evil
     :demand t
     :init
+    (setq evil-want-integration nil)
     (setq-default evil-search-module 'evil-search
                   evil-shift-width 2
                   ;; prevent esc-key from translating to meta-key in terminal mode
@@ -393,6 +394,7 @@ These are the Files creating in the current Directory for files that have not be
     (evil-set-initial-state 'ibuffer-mode 'normal)
     (evil-set-initial-state 'pdf-view-mode 'normal)
     (evil-set-initial-state 'ivy-occur-grep-mode 'normal)
+    (evil-set-initial-state 'occur-mode 'normal)
     ;;(setq evil-emacs-state-modes nil)
     ;;(setq evil-insert-state-modes nil)
     ;;(setq evil-motion-state-modes nil)
@@ -400,6 +402,44 @@ These are the Files creating in the current Directory for files that have not be
     (evil-mode t)
     )
 #+end_src
+** evil-collection
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-collection
+    :after evil
+    :demand t
+    :config
+    ;;(setq evil-collection-mode-list ...)
+    ;; These are the mappings i use for window management and i don't want
+    ;; evil-collection to override those
+    (defun my-control-hjkl-rotation (_mode mode-keymaps &rest _rest)
+      (evil-collection-translate-key 'normal mode-keymaps
+        (kbd "SPC") nil
+        (kbd "]") nil
+        (kbd "[") nil
+        (kbd "M-j") nil
+        (kbd "M-k") nil
+        (kbd "M-h") nil
+        (kbd "M-l") nil
+        (kbd "M-J") (kbd "M-j")
+        (kbd "M-K") (kbd "M-k")
+        (kbd "M-H") (kbd "M-h")
+        (kbd "M-L") (kbd "M-l")
+        (kbd "C-j") nil
+        (kbd "C-k") nil
+        (kbd "C-h") nil
+        (kbd "C-l") nil
+        (kbd "C-J") (kbd "C-j")
+        (kbd "C-K") (kbd "C-k")
+        (kbd "C-H") (kbd "C-h")
+        (kbd "C-L") (kbd "C-L")
+        ))
+    ;; called after evil-collection makes its keybindings
+    (add-hook 'evil-collection-setup-hook #'my-control-hjkl-rotation)
+
+    (evil-collection-init)
+
+    )
+#+END_SRC
 ** snippets
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
@@ -559,6 +599,15 @@ no mapping for that object
   (use-package general
     :demand t
     :config
+    (setq general-override-states '(insert
+                                    emacs
+                                    hybrid
+                                    normal
+                                    visual
+                                    motion
+                                    operator
+                                    replace))
+    (general-override-mode)
     ;;(general-evil-setup)
     ;; bind a key globally in normal state; keymaps must be quoted
     (setq general-default-keymaps 'evil-normal-state-map))
@@ -1409,7 +1458,7 @@ enable narrowing
     ;; set the worf-mode keymap to an empty keymap to remove all worf bindings
     (add-hook 'worf-mode-hook
               (lambda ()
-                (push `(worf-mode . ,(newmap (make-sparse-keymap))) minor-mode-overriding-map-alist)))
+                (push `(worf-mode . ,(make-sparse-keymap)) minor-mode-overriding-map-alist)))
 
     )
 
@@ -1454,7 +1503,10 @@ enable narrowing
         (if (org-at-item-p)
           (progn
             (my-org-before-or-after before)
-            (org-insert-item))))))
+            (org-insert-item))
+          (progn
+            (worf-back-to-heading)
+            (my-org-new-item before))))))
 
   (defun my-org-new-item-before ()
     (interactive)
