@@ -431,7 +431,7 @@ These are the Files creating in the current Directory for files that have not be
         (kbd "C-J") (kbd "C-j")
         (kbd "C-K") (kbd "C-k")
         (kbd "C-H") (kbd "C-h")
-        (kbd "C-L") (kbd "C-L")
+        (kbd "C-L") (kbd "C-l")
         ))
     ;; called after evil-collection makes its keybindings
     (add-hook 'evil-collection-setup-hook #'my-control-hjkl-rotation)
@@ -612,7 +612,9 @@ no mapping for that object
     ;; bind a key globally in normal state; keymaps must be quoted
     (setq general-default-keymaps 'evil-normal-state-map))
   ;;evil mappings
-  (general-def 'normal
+  (general-define-key
+   :states 'normal
+   :keymaps 'override
     "M-l" (lambda ()
             (interactive)
             (evil-window-vsplit)
@@ -658,7 +660,10 @@ no mapping for that object
     )
   ;; named prefix key
   (setq my-leader "SPC")
-  (general-def 'normal :prefix my-leader
+  (general-define-key
+   :states 'normal
+   :keymaps 'override
+   :prefix my-leader
     ;;"r" 'restart-emacs
     "a" 'org-agenda
     "p" 'hydra-projectile/body
@@ -705,7 +710,10 @@ no mapping for that object
   (setq my-leader2 ",")
   (setq local-leader "\\")
 
-  (general-def '(operator normal visual) :prefix my-leader2
+  (general-define-key
+   :states '(operator normal visual)
+   :keymaps 'override
+   :prefix my-leader2
     "f" 'evil-avy-goto-char
     "l" 'evil-avy-goto-line
     "w" 'evil-avy-goto-word-1 )
