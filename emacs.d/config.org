@@ -383,6 +383,7 @@ These are the Files creating in the current Directory for files that have not be
     :demand t
     :init
     (setq evil-want-integration nil)
+    (setq evil-want-keybinding nil)
     (setq-default evil-search-module 'evil-search
                   evil-shift-width 2
                   ;; prevent esc-key from translating to meta-key in terminal mode
