@@ -791,32 +791,13 @@ increment and decrement numbers with c-a and c-x
   (use-package evil-exchange
     :commands (evil-exchange))
 
-  (evil-define-operator evil-decide-change-fun (beg end)
-    "decide which change function to use"
-    (if (seq-contains lisp-modes major-mode)
-        (evil-sp-change beg end)
-      (evil-change beg end)))
-
-  (evil-define-operator evil-decide-delete-fun (beg end)
-    "decide which change function to use"
-    (if (seq-contains lisp-modes major-mode)
-        (evil-sp-delete beg end)
-      (evil-delete beg end)))
-
-  (general-def 'visual
-    "c" 'evil-change)
-
   (general-def 'normal
-    "c" (general-key-dispatch 'evil-decide-change-fun
-          :name general-dispatch-evil-change-exchange
-          "s" 'evil-surround-change
+    "c" (general-key-dispatch 'evil-change
+    :name max-exchange
           "x" 'evil-exchange
-          "X" 'evil-exchange-cancel))
+          "X" 'evil-exchange-cancel
+))
 
-  (general-def 'normal
-    "d" (general-key-dispatch 'evil-decide-delete-fun
-          :name general-dispatch-evil-delete-exchange
-          "s" 'evil-surround-delete))
 #+end_src
 ** evil-commentary
 #+begin_src emacs-lisp
@@ -1108,8 +1089,9 @@ enable narrowing
     "e" 'cider-hydra-eval/body
     "q" 'hydra-cljr-help-menu/body)
   (general-def 'normal '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
-    "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
-          :name general-dispatch-change-clojure
+    "c" (general-key-dispatch 'evil-change
+          "x" 'evil-exchange
+          "X" 'evil-exchange-cancel
           "p" (general-key-dispatch 'evil-eval-clojure-text-object
                 :name general-dispatch-eval-clojure-text-object
                 "p" (lambda ()
@@ -1139,8 +1121,9 @@ enable narrowing
         (message (format "%s" value)))))
   (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
                       :states '(normal)
-                      "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
-                            :name general-dispatch-change-elisp
+                      "c" (general-key-dispatch 'evil-change
+                            "x" 'evil-exchange
+                            "X" 'evil-exchange-cancel
                             "p" (general-key-dispatch 'evil-eval-elisp-text-object
                                   :name general-dispatch-eval-elisp-text-object
                                   "p" (lambda ()
@@ -1206,6 +1189,13 @@ enable narrowing
       (if count
           (sp-next-sexp (* count -1))
         (sp-next-sexp -1)))
+
+  (general-define-key
+      :states '(normal operator visual)
+     :keymaps lisp-mode-maps
+     [remap evil-delete] 'evil-sp-delete
+     [remap evil-change] 'evil-sp-change)
+
 
     (general-define-key
       :states 'normal
@@ -2011,8 +2001,9 @@ Multi-stage copy/pasting of files and bookmarks
                         "i p" 'alchemist-iex-project-run)
     (general-define-key :keymaps '(elixir-mode-map)
                         :states '(visual)
-                        "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
-                              :name general-dispatch-change-elixir-visual
+                        "c" (general-key-dispatch 'evil-change
+                              "x" 'evil-exchange
+                              "X" 'evil-exchange-cancel
                               "p" 'alchemist-iex-send-region))
     (general-define-key :keymaps '(alchemist-test-report-mode-map)
                         :states '(normal)
@@ -2021,6 +2012,8 @@ Multi-stage copy/pasting of files and bookmarks
                         :states '(normal)
                         "c" (general-key-dispatch 'general-dispatch-evil-change-exchange
                               :name general-dispatch-change-elixir
+                              "x" 'evil-exchange
+                              "X" 'evil-exchange-cancel
                               "p" (general-key-dispatch 'evil-eval-elixir-text-object
                                     :name general-dispatch-eval-elixir-text-object
                                     "p" (lambda ()
