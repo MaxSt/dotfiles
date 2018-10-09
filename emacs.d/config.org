@@ -705,7 +705,7 @@ no mapping for that object
     "n" 'next-error
     "N" 'previous-error
     "z" 'hydra-zoom/body
-    "o" (lambda () (interactive) (dired "."))
+    "o" 'dired-jump
     "O" 'dired
     "f" 'counsel-find-file)
   (setq my-leader2 ",")
