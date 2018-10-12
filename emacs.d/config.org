@@ -1994,7 +1994,7 @@ Multi-stage copy/pasting of files and bookmarks
                         "t t" 'alchemist-mix-rerun-last-test
                         "t p" 'alchemist-mix-test-at-point
                         "t f" 'alchemist-mix-test-file
-                        "t a" 'alchemist-mix-test
+                        "t c" 'alchemist-project-run-tests-for-current-file
                         "t a" 'alchemist-mix-test
                         "r r" 'alchemist-iex-reload-module
                         "i i" 'alchemist-iex-run
