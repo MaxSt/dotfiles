@@ -236,29 +236,34 @@ These are the Files creating in the current Directory for files that have not be
 ** Themes
 #+begin_src emacs-lisp
   ;;(use-package challenger-deep-theme
-    ;;:demand t
-    ;;:config
-    ;;(load-theme 'challenger-deep t))
+  ;;:demand t
+  ;;:config
+  ;;(load-theme 'challenger-deep t))
   (add-to-list 'custom-theme-load-path "~/Documents/challenger-deep/emacs/")
   (load-theme 'challenger-deep t)
 
-  (use-package all-the-icons :demand t)
+  (use-package all-the-icons
+    :demand t
+    :config
+    ;; org-mode ellipsis
+    (setq-default org-ellipsis (concat " " (all-the-icons-faicon "angle-down")))
+    )
   (use-package all-the-icons-dired
-      :after (all-the-icons)
-      :init
-      (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+    :after (all-the-icons)
+    :init
+    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 
   (use-package all-the-icons-ivy
-      :after (all-the-icons projectile ivy counsel counsel-projectile)
-      :config
-      (setq all-the-icons-ivy-file-commands
-            '(counsel-find-file
-              counsel-file-jump
-              counsel-recentf
-              counsel-projectile-find-file
-              counsel-projectile-find-dir
-              counsel-projectile))
-      (all-the-icons-ivy-setup))
+    :after (all-the-icons projectile ivy counsel counsel-projectile)
+    :config
+    (setq all-the-icons-ivy-file-commands
+          '(counsel-find-file
+            counsel-file-jump
+            counsel-recentf
+            counsel-projectile-find-file
+            counsel-projectile-find-dir
+            counsel-projectile))
+    (all-the-icons-ivy-setup))
 #+end_src
 * custom Functions
 #+BEGIN_SRC emacs-lisp
@@ -1428,11 +1433,7 @@ enable narrowing
     :init
     (add-hook 'org-mode-hook
               (lambda ()
-                (org-bullets-mode 1))))
-#+END_SRC
-*** ellipsis
-#+BEGIN_SRC emacs-lisp
-(setq-default org-ellipsis (concat " " (all-the-icons-faicon "caret-down")))
+              (org-bullets-mode 1))))
 #+END_SRC
 *** blank before new entry
 #+BEGIN_SRC emacs-lisp
@@ -2416,6 +2417,16 @@ Multi-stage copy/pasting of files and bookmarks
     (setq langtool-language-tool-jar "~/Downloads/LanguageTool-4.1/languagetool-commandline.jar")
     (require 'langtool)
   )
+#+END_SRC
+** format-all
+#+BEGIN_SRC emacs-lisp
+(use-package format-all
+    :ensure t)
+#+END_SRC
+** rg
+#+BEGIN_SRC emacs-lisp
+(use-package format-all
+    :ensure t)
 #+END_SRC
 * Temp
 #+begin_src emacs-lisp
