@@ -111,9 +111,10 @@ previously compiled manually then all of the package initialization will still t
 
    tab-stop-list (number-sequence 2 120 2))
   ;; relative line numbers
-  (setq-default display-line-numbers 'relative)
+  ;;(setq-default display-line-numbers 'visual)
+  (setq-default display-line-numbers nil)
   ;; make current line 0
-  (setq-default display-line-numbers-current-absolute t)
+  (setq display-line-numbers-current-absolute nil)
   (setq-default fill-column 80)
   (setq-default truncate-lines nil) ; line wrap
   (setq-default indent-tabs-mode nil
@@ -617,112 +618,121 @@ no mapping for that object
     ;;(general-evil-setup)
     ;; bind a key globally in normal state; keymaps must be quoted
     (setq general-default-keymaps 'evil-normal-state-map))
+
   ;;evil mappings
+  (general-define-key
+   :states '(normal visual)
+   :keymaps 'override
+   "gj" 'evil-next-line
+   "gk" 'evil-previous-line
+   "j" 'evil-next-visual-line
+   "k" 'evil-previous-visual-line
+   )
   (general-define-key
    :states 'normal
    :keymaps 'override
-    "M-l" (lambda ()
-            (interactive)
-            (evil-window-vsplit)
-            (evil-window-right 1))
-    "M-h" (lambda ()
-            (interactive)
-            (evil-window-vsplit))
-    "M-k" (lambda ()
-            (interactive)
-            (evil-window-split))
-    "M-j" (lambda ()
-            (interactive)
-            (evil-window-split)
-            (evil-window-down 1))
-    "gS" 'my-funcs/open-snippet-dir
-    "s" 'save-buffer
-    "S" 'counsel-projectile-find-file
-    "gs" 'magit-status
-    "`" 'evil-goto-mark-line
-    "'" 'evil-goto-mark
-    "C-h" 'evil-window-left
-    "C-l" 'evil-window-right
-    "C-k" 'evil-window-up
-    "C-j" 'evil-window-down
-    "g ." 'my-funcs/open-dotfile
-    "g h" 'org-capture
-    "g i" (lambda ()
-            (interactive)
-            (find-file (concat org-directory "/inbox.org")))
-    "g o" (lambda ()
-            (interactive)
-            (counsel-find-file org-directory))
-    "] SPC" (lambda ()
-              (interactive)
-              (save-excursion
-                (evil-open-below 1))
-              (evil-normal-state))
-    "[ SPC" (lambda ()
-              (interactive)
-              (save-excursion
-                (evil-open-above 1))
-              (evil-normal-state))
-    )
+   "M-l" (lambda ()
+           (interactive)
+           (evil-window-vsplit)
+           (evil-window-right 1))
+   "M-h" (lambda ()
+           (interactive)
+           (evil-window-vsplit))
+   "M-k" (lambda ()
+           (interactive)
+           (evil-window-split))
+   "M-j" (lambda ()
+           (interactive)
+           (evil-window-split)
+           (evil-window-down 1))
+   "gf" 'counsel-find-file
+   "gS" 'my-funcs/open-snippet-dir
+   "s" 'save-buffer
+   "S" 'counsel-projectile-find-file
+   "gs" 'magit-status
+   "`" 'evil-goto-mark-line
+   "'" 'evil-goto-mark
+   "C-h" 'evil-window-left
+   "C-l" 'evil-window-right
+   "C-k" 'evil-window-up
+   "C-j" 'evil-window-down
+   "g ." 'my-funcs/open-dotfile
+   "g h" 'org-capture
+   "g i" (lambda ()
+           (interactive)
+           (find-file (concat org-directory "/inbox.org")))
+   "g o" (lambda ()
+           (interactive)
+           (counsel-find-file org-directory))
+   "] SPC" (lambda ()
+             (interactive)
+             (save-excursion
+               (evil-open-below 1))
+             (evil-normal-state))
+   "[ SPC" (lambda ()
+             (interactive)
+             (save-excursion
+               (evil-open-above 1))
+             (evil-normal-state))
+   )
   ;; named prefix key
   (setq my-leader "SPC")
   (general-define-key
    :states 'normal
    :keymaps 'override
    :prefix my-leader
-    ;;"r" 'restart-emacs
-    "a" 'org-agenda
-    "p" 'hydra-projectile/body
-    "q" 'evil-window-delete
-    "k" 'kill-buffer
-    "D" 'evil-delete-buffer
-    "d" 'kill-this-buffer
-    "SPC" 'ace-select-window
-    "s" 'dumb-jump-go
-    "S" 'dumb-jump-go-prompt
-    ;;"h" (general-simulate-keys "C-h")
-    "h k" 'describe-key
-    "h SPC" 'which-key-show-top-level
-    "h v" 'describe-variable
-    "h f" 'describe-function
-    "h m" 'describe-mode
-    "<return>" 'my/projectile-multi-term
-    "S-<return>" 'multi-term
-    ;;  Avoiding CTRL
-    "W" (general-simulate-key "C-w")
-    "x" (general-simulate-key "C-x")
-    "c" (general-simulate-key "C-c")
-    "v" 'widen
-    "i" 'ibuffer
-    "t" 'counsel-projectile-find-file
-    "/" 'counsel-rg-project
-    "e" 'counsel-projectile-switch-to-buffer
-    "g s" 'magit-status
-    "g t" 'git-timemachine
-    "g n" 'git-gutter:next-hunk
-    "g p" 'git-gutter:previous-hunk
-    "g r" 'git-gutter:revert-hunk
-    "g p" 'git-gutter:popup-hunk
-    "g h s" 'git-gutter:stage-hunk
-    "l" 'evil-avy-goto-line
-    "u" 'undo-tree-visualize
-    "b" 'ivy-switch-buffer
-    "n" 'next-error
-    "N" 'previous-error
-    "z" 'hydra-zoom/body
-    "o" 'dired-jump
-    "O" 'dired
-    "f" 'counsel-find-file)
+   ;;"r" 'restart-emacs
+   "a" 'org-agenda
+   "p" 'hydra-projectile/body
+   "q" 'evil-window-delete
+   "k" 'kill-buffer
+   "D" 'evil-delete-buffer
+   "d" 'kill-this-buffer
+   "SPC" 'ace-select-window
+   "s" 'dumb-jump-go
+   "S" 'dumb-jump-go-prompt
+   ;;"h" (general-simulate-keys "C-h")
+   "h k" 'describe-key
+   "h SPC" 'which-key-show-top-level
+   "h v" 'describe-variable
+   "h f" 'describe-function
+   "h m" 'describe-mode
+   "<return>" 'my/projectile-multi-term
+   "S-<return>" 'multi-term
+   ;;  Avoiding CTRL
+   "W" (general-simulate-key "C-w")
+   "x" (general-simulate-key "C-x")
+   "c" (general-simulate-key "C-c")
+   "v" 'widen
+   "i" 'ibuffer
+   "t" 'counsel-projectile-find-file
+   "/" 'counsel-rg-project
+   "e" 'counsel-projectile-switch-to-buffer
+   "g s" 'magit-status
+   "g t" 'git-timemachine
+   "g n" 'git-gutter:next-hunk
+   "g p" 'git-gutter:previous-hunk
+   "g r" 'git-gutter:revert-hunk
+   "g p" 'git-gutter:popup-hunk
+   "g h s" 'git-gutter:stage-hunk
+   "l" 'evil-avy-goto-line
+   "u" 'undo-tree-visualize
+   "b" 'ivy-switch-buffer
+   "n" 'next-error
+   "N" 'previous-error
+   "z" 'hydra-zoom/body
+   "o" 'dired-jump
+   "O" 'dired)
   (setq my-leader2 ",")
   (setq local-leader "\\")
 
   (general-define-key
    :states '(operator normal visual)
    :keymaps 'override
-   :prefix my-leader2
-    "f" 'evil-avy-goto-char
-    "l" 'evil-avy-goto-line
-    "w" 'evil-avy-goto-word-1 )
+   :prefix my-leader
+   "f" 'evil-avy-goto-char
+   "l" 'evil-avy-goto-line
+   "w" 'evil-avy-goto-word-1 )
 #+END_SRC
 ** evil-surround
 #+begin_src emacs-lisp
