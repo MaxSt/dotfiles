@@ -4,7 +4,7 @@ PROMPTERRORCOLOR='red'
 
 
 #IF ROOT
-if [ $UID -eq 0 ]; then ROOTPROMPT='╾'; else ROOTPROMPT='┄'; fi
+if [ $UID -eq 0 ]; then ROOTPROMPT='!'; else ROOTPROMPT='>'; fi
 
 #DEFINE COLOR DEPENDING ON EXIT CODE
 PROMPT='%{$fg[$PROMPTCOLOR]%}%(0?..%{$fg[$PROMPTERRORCOLOR]%})'
@@ -15,7 +15,7 @@ PROMPT=$PROMPT'$ROOTPROMPT'
 #CHECK IF JOB IS RUNNING
 PROMPT=$PROMPT'%{$fg[$PROMPTCOLOR]%}%(1j.%{$fg[$PROMPTERRORCOLOR]%}.)$VIMODE'
 
-PROMPT=$PROMPT'╼ %{$reset_color%}'
+PROMPT=$PROMPT'> %{$reset_color%}'
 
 RPROMPT=''
 
@@ -28,7 +28,7 @@ RPROMPT=''
 
 #vimode
 function zle-line-init zle-keymap-select {
-    VIMODE="${${KEYMAP/vicmd/N}/(main|viins)/─}"
+    VIMODE="${${KEYMAP/vicmd/N}/(main|viins)/>}"
     zle reset-prompt
 }
 zle -N zle-line-init

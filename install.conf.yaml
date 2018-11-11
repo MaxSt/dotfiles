@@ -12,14 +12,10 @@
     ~/.terminalcolors: terminalcolors
     ~/.Xresources: Xresources
     ~/.zshrc: zshrc
-    ~/.zlogin: zlogin
-    ~/.spacemacs.d: spacemacs.d
-    ~/.local/share/themes:
-      create: true
-      path: local/share/themes
-    ~/.config/ranger:
-      create: true
-      path: config/ranger
+    ~/.config/:
+      glob: true
+      path: config/*
+      relink: true
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
