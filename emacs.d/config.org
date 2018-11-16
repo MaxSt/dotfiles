@@ -111,8 +111,8 @@ previously compiled manually then all of the package initialization will still t
 
    tab-stop-list (number-sequence 2 120 2))
   ;; relative line numbers
-  ;;(setq-default display-line-numbers 'visual)
-  (setq-default display-line-numbers nil)
+  (setq-default display-line-numbers 'visual)
+  ;;(setq-default display-line-numbers nil)
   ;; make current line 0
   (setq display-line-numbers-current-absolute nil)
   (setq-default fill-column 80)
@@ -619,15 +619,6 @@ no mapping for that object
     ;; bind a key globally in normal state; keymaps must be quoted
     (setq general-default-keymaps 'evil-normal-state-map))
 
-  ;;evil mappings
-  (general-define-key
-   :states '(normal visual)
-   :keymaps 'override
-   "gj" 'evil-next-line
-   "gk" 'evil-previous-line
-   "j" 'evil-next-visual-line
-   "k" 'evil-previous-visual-line
-   )
   (general-define-key
    :states 'normal
    :keymaps 'override
@@ -983,21 +974,24 @@ enable narrowing
  (put 'narrow-to-region 'disabled nil)
 #+end_src
 #+begin_src emacs-lisp
-(defun narrow-to-region-indirect (start end)
-  "Restrict editing in this buffer to the current region, indirectly."
-  (interactive "r")
-  (deactivate-mark)
-  (let ((buf (clone-indirect-buffer nil nil)))
-    (with-current-buffer buf
-      (narrow-to-region start end))
-      (switch-to-buffer buf)))
-(evil-define-operator evil-narrow-indirect (beg end type)
-  "Indirectly narrow the region from BEG to END."
-  (interactive "<R>")
-  (narrow-to-region-indirect beg end))
-(general-def 'normal :prefix my-leader
- "n" 'evil-narrow-indirect)
-;;(general-vmap :prefix "SPC" "n" 'narrow-to-region-indirect)
+  (defun narrow-to-region-indirect (start end)
+    "Restrict editing in this buffer to the current region, indirectly."
+    (interactive "r")
+    (deactivate-mark)
+    (let ((buf (clone-indirect-buffer nil nil)))
+      (with-current-buffer buf
+        (narrow-to-region start end))
+        (switch-to-buffer buf)))
+  (evil-define-operator evil-narrow-indirect (beg end type)
+    "Indirectly narrow the region from BEG to END."
+    (interactive "<R>")
+    (narrow-to-region-indirect beg end))
+
+  (general-define-key
+      :states '(normal operator visual)
+   :keymaps 'override
+   :prefix my-leader
+   "n" 'evil-narrow-indirect)
 #+end_src
 * Package config
 ** Exec-path
@@ -1555,7 +1549,6 @@ enable narrowing
                         "s" 'org-schedule
                         "r" 'org-refile
                         "n" 'org-narrow-to-subtree
-                        "w" 'widen
                         "t" 'org-todo
                         "T" 'counsel-org-tag
                         "p" 'org-insert-link
