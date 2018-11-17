@@ -765,6 +765,12 @@ no mapping for that object
     )
 #+end_src
 ** evil-indent-plus textobject
+- ii: A block of text with the same or higher indentation.
+- ai: The same as ii, plus whitespace.
+- iI: A block of text with the same or higher indentation, including the first line above with less indentation.
+- aI: The same as iI, plus whitespace.
+- iJ: A block of text with the same or higher indentation, including the first line above and below with less indentation.
+- aJ: The same as iJ, plus whitespace.
 #+begin_src emacs-lisp
   (use-package evil-indent-plus
     :demand t
