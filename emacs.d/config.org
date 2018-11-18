@@ -150,7 +150,7 @@ previously compiled manually then all of the package initialization will still t
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
-  (global-hl-line-mode t) ;; highlight current line
+  ;;(global-hl-line-mode t) ;; highlight current line
 #+END_SRC
 ** flyspell
 #+BEGIN_SRC emacs-lisp
@@ -641,6 +641,7 @@ no mapping for that object
    "s" 'save-buffer
    "S" 'counsel-projectile-find-file
    "gs" 'magit-status
+   "g/" (general-simulate-key ":g/\C-r//" :state 'normal)
    "`" 'evil-goto-mark-line
    "'" 'evil-goto-mark
    "C-h" 'evil-window-left
@@ -721,9 +722,9 @@ no mapping for that object
    :states '(operator normal visual)
    :keymaps 'override
    :prefix my-leader
-   "f" 'evil-avy-goto-char
-   "l" 'evil-avy-goto-line
-   "w" 'evil-avy-goto-word-1 )
+   "gf" 'evil-avy-goto-char
+   "gl" 'evil-avy-goto-line
+   "gw" 'evil-avy-goto-word-1 )
 #+END_SRC
 ** evil-surround
 #+begin_src emacs-lisp
@@ -2037,10 +2038,10 @@ Multi-stage copy/pasting of files and bookmarks
 ** highlight-indent-guides
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
+    :init
+    (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
     :config
-    (setq highlight-indent-guides-auto-character-face-perc 25)
-    (setq highlight-indent-guides-method 'character)
-    (add-hook 'prog-mode-hook 'highlight-indent-guides-mode))
+    (setq highlight-indent-guides-method 'column))
 #+end_src
 ** docker
 #+begin_src emacs-lisp
@@ -2167,7 +2168,7 @@ Multi-stage copy/pasting of files and bookmarks
                           "q" 'evil-window-delete)))
 
 #+end_src
-** evil-goggles
+** COMMENT evil-goggles
 #+begin_src emacs-lisp
   (use-package evil-goggles
     :demand t
@@ -2185,6 +2186,9 @@ Multi-stage copy/pasting of files and bookmarks
 ** fill-column-indicator
 #+begin_src emacs-lisp
   (use-package fill-column-indicator
+  :init
+    (add-hook 'prog-mode-hook #'fci-mode)
+    (add-hook 'text-mode-hook #'fci-mode)
     :config
   (defun on-off-fci-before-company(command)
     (when (string= "show" command)
@@ -2192,8 +2196,6 @@ Multi-stage copy/pasting of files and bookmarks
     (when (string= "hide" command)
       (turn-on-fci-mode)))
   (advice-add 'company-call-frontends :before #'on-off-fci-before-company)
-  (add-hook 'prog-mode-hook #'fci-mode)
-  (add-hook 'text-mode-hook #'fci-mode)
   (setq-default fci-rule-color "#906cff")
   )
 #+end_src
