@@ -1457,6 +1457,12 @@ enable narrowing
   ;;(setq org-reveal-mathjax t)
   (use-package htmlize)
 #+END_SRC
+
+*** org-habit
+#+BEGIN_SRC emacs-lisp
+  (require 'org-habit)
+  (add-to-list 'org-modules 'org-habit)
+#+END_SRC
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
   (use-package worf
@@ -1697,7 +1703,7 @@ and the `>` and `<` opererators for promoting and demoting headers and
     (add-hook 'cider-repl-mode #'rainbow-delimiters-mode)
     )
 #+end_src
-** undo-tree
+** COMMENT undo-tree
 #+begin_src emacs-lisp
   (use-package undo-tree
     :config
@@ -2084,7 +2090,9 @@ Multi-stage copy/pasting of files and bookmarks
     :demand t
     :config
     (setq-default
-     whitespace-style '(face trailing))
+     whitespace-style '(face trailing lines-tail)
+     whitespace-line-column nil)
+    (set-face-attribute 'whitespace-line nil :underline "#ff0000" :inherit 'normal)
     (setq whitespace-global-modes '(not
                                     dired-mode
                                     alchemist-test-mode
@@ -2183,7 +2191,7 @@ Multi-stage copy/pasting of files and bookmarks
     :config
     (editorconfig-mode 1))
 #+end_src
-** fill-column-indicator
+** COMMENT fill-column-indicator
 #+begin_src emacs-lisp
   (use-package fill-column-indicator
   :init
