@@ -709,6 +709,7 @@ no mapping for that object
    "g h s" 'git-gutter:stage-hunk
    "l" 'evil-avy-goto-line
    "u" 'undo-tree-visualize
+   "f" 'counsel-find-file
    "b" 'ivy-switch-buffer
    "n" 'next-error
    "N" 'previous-error
