@@ -1,5 +1,5 @@
 clean:
-	@rm -f init.elc config.el config.elc
+	@rm -f init.elc early-init.elc config.el config.elc
 
-compile: init.el config.org clean
+compile: early-init.el init.el config.org clean
 	@emacs -Q --batch -l 'lisp/compile.el'

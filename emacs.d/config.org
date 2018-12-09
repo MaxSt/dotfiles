@@ -50,6 +50,7 @@ initialization significantly as many packages are only loaded later when they ar
 
 #+BEGIN_SRC emacs-lisp
   (setq use-package-always-defer t
+        use-package-always-ensure t
         use-package-verbose t)
 #+END_SRC
 
@@ -88,14 +89,14 @@ previously compiled manually then all of the package initialization will still t
     (unless (assoc-default "org" package-archives)
       (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
 
+    (when (< emacs-major-version 27)
+      (package-initialize)
 
-      (when (< emacs-major-version 27)
-      (package-initialize))
-    (unless (package-installed-p 'use-package)
-      (package-refresh-contents)
-      (package-install 'use-package))
-    (require 'use-package)
-    (setq use-package-always-ensure t))
+      (unless (package-installed-p 'use-package)
+        (package-refresh-contents)
+        (package-install 'use-package))
+      (require 'use-package)))
+
 #+END_SRC
 
 * Defaults
@@ -137,6 +138,8 @@ previously compiled manually then all of the package initialization will still t
    blink-matching-paren nil ; don't blink--too distracting
    ;;show-trailing-whitespace t ;; show trailing whitespace
    )
+   ;; turn off ad-redefinition warnings
+  (setq ad-redefinition-action 'accept)
   ;; disable the annoying bell ring
   (setq ring-bell-function 'ignore)
   ;; reduce the frequency of garbage collection by making it happen on
@@ -155,7 +158,6 @@ previously compiled manually then all of the package initialization will still t
 ** flyspell
 #+BEGIN_SRC emacs-lisp
     (use-package auto-dictionary
-      :demand t
       :init
       (add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1))))
     (setq-default ispell-really-hunspell t)
@@ -165,7 +167,6 @@ previously compiled manually then all of the package initialization will still t
           '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8)
             ("de_AT" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil nil nil utf-8)))
     (use-package flyspell
-      :demand t
       :init
       ;; to slow for magit commit for example:
       ;;(add-hook 'flyspell-mode-hook #'flyspell-buffer)
@@ -173,7 +174,11 @@ previously compiled manually then all of the package initialization will still t
       ;;(add-hook 'text-mode-local-vars-hook #'flyspell-mode)
       ;;(add-hook 'prog-mode-local-vars-hook #'flyspell-prog-mode)
       (add-hook 'text-mode-hook #'flyspell-mode)
-      (add-hook 'prog-mode-hook #'flyspell-prog-mode))
+      (add-hook 'prog-mode-hook #'flyspell-prog-mode)
+      ;; printing messages for every word (when checking the entire buffer)
+      ;; causes an enormous slowdown, thats why I deactivated it:
+      (setq flyspell-issue-message-flag nil)
+)
 #+END_SRC
 ** Backups
 #+BEGIN_SRC emacs-lisp
@@ -207,7 +212,7 @@ These are the Files creating in the current Directory for files that have not be
 ** font
 #+BEGIN_SRC emacs-lisp
   ;;(set-default-font "Iosevka-12:spacing=110")
-  (add-to-list 'default-frame-alist '(font . "Monoid:pixelsize=12:spacing=100"))
+  (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=14"))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp
@@ -244,7 +249,6 @@ These are the Files creating in the current Directory for files that have not be
   (load-theme 'challenger-deep t)
 
   (use-package all-the-icons
-    :demand t
     :config
     ;; org-mode ellipsis
     (setq-default org-ellipsis (concat " " (all-the-icons-faicon "angle-down")))
@@ -386,7 +390,6 @@ These are the Files creating in the current Directory for files that have not be
 ** initialize
 #+BEGIN_SRC emacs-lisp
   (use-package evil
-    :demand t
     :init
     (setq evil-want-integration nil)
     (setq evil-want-keybinding nil)
@@ -395,6 +398,7 @@ These are the Files creating in the current Directory for files that have not be
                   ;; prevent esc-key from translating to meta-key in terminal mode
                   evil-esc-delay 0
                   evil-want-Y-yank-to-eol t)
+    (evil-mode t)
     :config
     (evil-set-initial-state 'package-menu-mode 'normal)
     (evil-set-initial-state 'help-mode 'normal)
@@ -406,14 +410,118 @@ These are the Files creating in the current Directory for files that have not be
     ;;(setq evil-insert-state-modes nil)
     ;;(setq evil-motion-state-modes nil)
 
-    (evil-mode t)
-    )
+    ;;Evil smartparens text objects
+    (evil-define-text-object evil-a-sexp (count &optional beg end type)
+      "outer sexp"
+      (evil-range (progn
+                    (save-excursion
+                      (sp-beginning-of-sexp)
+                      (- (point) 1)))
+                  (progn
+                    (save-excursion
+                      (sp-end-of-sexp)
+                      (+ (point) 1)))))
+    (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
+    (evil-define-text-object evil-i-sexp (count &optional beg end type)
+      "inner sexp"
+      (evil-range (progn
+                    (save-excursion
+                      (sp-beginning-of-sexp)
+                      (point)))
+                  (progn
+                    (save-excursion
+                      (sp-end-of-sexp)
+                      (point)))))
+    (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
+    (evil-define-text-object evil-a-top-level-sexp (count &optional beg end type)
+      "outer top level sexp"
+      (evil-range (progn
+                    (save-excursion
+                      (beginning-of-defun)
+                      (- (point) 1)))
+                  (progn
+                    (save-excursion
+                      (end-of-defun)
+                      (+ (point) 1)))))
+    (define-key evil-outer-text-objects-map "F" 'evil-a-top-level-sexp)
+    (evil-define-text-object evil-i-top-level-sexp (count &optional beg end type)
+      "inner top level sexp"
+      (evil-range (progn
+                    (save-excursion
+                      (beginning-of-defun)
+                      (point)))
+                  (progn
+                    (save-excursion
+                      (end-of-defun)
+                      (point)))))
+    (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
+    (evil-define-text-object evil-a-lisp-element (count &optional beg end type)
+      "outer sexp"
+      (evil-range (progn
+                    (save-excursion
+                      ;;TODO
+                      ))
+                  (progn
+                    (save-excursion
+                      ;;TODO
+                      ))))
+    ;;(define-key evil-outer-text-objects-map "e" 'evil-a-lisp-element)
+    (evil-define-text-object evil-i-lisp-element (count &optional beg end type)
+      "inner sexp"
+      (evil-range (progn
+                    (save-excursion
+                      ;;TODO
+                      ))
+                  (progn
+                    (save-excursion
+                      ;;TODO
+                      ))))
+    ;;(define-key evil-inner-text-objects-map "e" 'evil-i-lisp-element)
+
+    (evil-define-text-object evil-i-line (count &optional beg end type)
+      "inner line"
+      (evil-range (progn
+                    (save-excursion
+                      (back-to-indentation)
+                      (point)))
+                  (progn
+                    (save-excursion
+                      (end-of-line)
+                      (point)))))
+    (define-key evil-inner-text-objects-map "l" 'evil-i-line)
+    (evil-define-text-object evil-a-line (count &optional beg end type)
+      "outer line"
+      (evil-range (progn
+                    (save-excursion
+                      (evil-beginning-of-line)
+                      (point)))
+                  (progn
+                    (save-excursion
+                      (end-of-line)
+                      (point)))))
+    (define-key evil-outer-text-objects-map "l" 'evil-a-line)
+
+  (evil-define-operator evil-eval-elisp-text-object (beg end)
+    "Evil operator for evaluating code."
+    :move-point nil
+    (save-excursion
+      (let (eval-str
+            value)
+        (setq eval-str (buffer-substring beg end))
+        (setq value (eval (car (read-from-string eval-str)) lexical-binding))
+        (my-funcs/flash-region beg end)
+        (my-funcs/eval-overlay value end)
+        (message (format "%s" value)))))
+
+  (evil-define-operator evil-narrow-indirect (beg end type)
+    "Indirectly narrow the region from BEG to END."
+    (interactive "<R>")
+    (narrow-to-region-indirect beg end)))
 #+end_src
 ** evil-collection
 #+BEGIN_SRC emacs-lisp
   (use-package evil-collection
     :after evil
-    :demand t
     :config
     ;;(setq evil-collection-mode-list ...)
     ;; These are the mappings i use for window management and i don't want
@@ -450,26 +558,26 @@ These are the Files creating in the current Directory for files that have not be
 ** snippets
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
-    :demand t
     :config
     (yas-global-mode 1))
 #+END_SRC
 ** default-text-scale
 #+BEGIN_SRC emacs-lisp
-  (use-package default-text-scale)
-#+END_SRC
-** hydra
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra
-    :demand t
-    :config
-    (defhydra hydra-zoom ()
+  (use-package default-text-scale
+  :after (hydra)
+  :init
+  (defhydra hydra-zoom ()
       "Zoom"
       ("u" default-text-scale-reset"unzoom")
       ("i" text-scale-increase "in Buffer")
       ("I" default-text-scale-increase "in Frame")
       ("O" default-text-scale-decrease "out Frame")
-      ("o" text-scale-decrease "out Buffer"))
+      ("o" text-scale-decrease "out Buffer")))
+#+END_SRC
+** hydra
+#+BEGIN_SRC emacs-lisp
+  (use-package hydra
+    :config
     (defhydra hydra-window-resize ()
       "Window resizing"
       ("j" my-funcs/resize-window-down "down")
@@ -491,103 +599,6 @@ These are the Files creating in the current Directory for files that have not be
     ("k"   counsel-projectile-kill-buffers             "Kill Buffers")
     ("q"   nil "Cancel" :color blue))
 #+END_SRC
-** custom text objects
-*** sexp
-#+BEGIN_SRC emacs-lisp
-     ;;Evil smartparens text objects
-     (evil-define-text-object evil-a-sexp (count &optional beg end type)
-       "outer sexp"
-       (evil-range (progn
-                     (save-excursion
-                       (sp-beginning-of-sexp)
-                       (- (point) 1)))
-                   (progn
-                     (save-excursion
-                       (sp-end-of-sexp)
-                       (+ (point) 1)))))
-     (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
-     (evil-define-text-object evil-i-sexp (count &optional beg end type)
-       "inner sexp"
-       (evil-range (progn
-                     (save-excursion
-                       (sp-beginning-of-sexp)
-                       (point)))
-                   (progn
-                     (save-excursion
-                       (sp-end-of-sexp)
-                       (point)))))
-     (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
-     (evil-define-text-object evil-a-top-level-sexp (count &optional beg end type)
-       "outer top level sexp"
-       (evil-range (progn
-                     (save-excursion
-                       (beginning-of-defun)
-                       (- (point) 1)))
-                   (progn
-                     (save-excursion
-                       (end-of-defun)
-                       (+ (point) 1)))))
-     (define-key evil-outer-text-objects-map "F" 'evil-a-top-level-sexp)
-     (evil-define-text-object evil-i-top-level-sexp (count &optional beg end type)
-       "inner top level sexp"
-       (evil-range (progn
-                     (save-excursion
-                       (beginning-of-defun)
-                       (point)))
-                   (progn
-                     (save-excursion
-                       (end-of-defun)
-                       (point)))))
-     (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
-     (evil-define-text-object evil-a-lisp-element (count &optional beg end type)
-       "outer sexp"
-       (evil-range (progn
-                     (save-excursion
-                       ;;TODO
-                       ))
-                   (progn
-                     (save-excursion
-                       ;;TODO
-                       ))))
-     ;;(define-key evil-outer-text-objects-map "e" 'evil-a-lisp-element)
-     (evil-define-text-object evil-i-lisp-element (count &optional beg end type)
-       "inner sexp"
-       (evil-range (progn
-                     (save-excursion
-                       ;;TODO
-                       ))
-                   (progn
-                     (save-excursion
-                       ;;TODO
-                       ))))
-     ;;(define-key evil-inner-text-objects-map "e" 'evil-i-lisp-element)
-#+end_src
-*** line text object
-no mapping for that object
-#+begin_src emacs-lisp
-     (evil-define-text-object evil-i-line (count &optional beg end type)
-       "inner line"
-       (evil-range (progn
-                     (save-excursion
-                       (back-to-indentation)
-                       (point)))
-                   (progn
-                     (save-excursion
-                       (end-of-line)
-                       (point)))))
-     (define-key evil-inner-text-objects-map "l" 'evil-i-line)
-     (evil-define-text-object evil-a-line (count &optional beg end type)
-       "outer line"
-       (evil-range (progn
-                     (save-excursion
-                       (evil-beginning-of-line)
-                       (point)))
-                   (progn
-                     (save-excursion
-                       (end-of-line)
-                       (point)))))
-     (define-key evil-outer-text-objects-map "l" 'evil-a-line)
-#+END_SRC
 ** define lisp modes
 #+BEGIN_SRC emacs-lisp
   (setq lisp-modes '(clojure-mode
@@ -604,7 +615,6 @@ no mapping for that object
 [[https://github.com/noctuid/general.el][general.el]]
 #+BEGIN_SRC emacs-lisp
   (use-package general
-    :demand t
     :config
     (setq general-override-states '(insert
                                     emacs
@@ -730,7 +740,7 @@ no mapping for that object
 ** evil-surround
 #+begin_src emacs-lisp
     (use-package evil-surround
-      :demand t
+      :after (evil)
       :config
       (global-evil-surround-mode))
 #+end_src
@@ -742,7 +752,7 @@ no mapping for that object
 ** evil-args
 #+begin_src emacs-lisp
   (use-package evil-args
-    :demand t
+    :after (evil)
     :config
     ;; bind evil-args text objects
     (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
@@ -752,19 +762,9 @@ no mapping for that object
 ** evil-lion
 #+begin_src emacs-lisp
 (use-package evil-lion
-  :demand t
+  :after (evil)
   :config
   (evil-lion-mode))
-#+end_src
-** evil-targets
-#+begin_src emacs-lisp
-  (use-package evil-args
-    :demand t
-    :config
-    ;; bind evil-args text objects
-    (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
-    (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
-    )
 #+end_src
 ** evil-indent-plus textobject
 - ii: A block of text with the same or higher indentation.
@@ -775,7 +775,7 @@ no mapping for that object
 - aJ: The same as iJ, plus whitespace.
 #+begin_src emacs-lisp
   (use-package evil-indent-plus
-    :demand t
+    :after (evil)
     :config
     ;; bind evil-indent-plus text objects
     (evil-indent-plus-default-bindings)
@@ -785,6 +785,7 @@ no mapping for that object
 increment and decrement numbers with c-a and c-x
 #+begin_src emacs-lisp
     (use-package evil-numbers
+      :after (evil)
       :commands (evil-numbers/inc-at-pt evil-numbers/dec-at-pt)
       :init
       (define-key evil-normal-state-map (kbd "C-a") 'evil-numbers/inc-at-pt)
@@ -794,7 +795,7 @@ increment and decrement numbers with c-a and c-x
 % to jump between matched tags
 #+begin_src emacs-lisp
     (use-package evil-matchit
-      :demand t
+      :after (evil)
       :config
       (global-evil-matchit-mode 1))
 #+end_src
@@ -816,7 +817,6 @@ increment and decrement numbers with c-a and c-x
 ** evil-commentary
 #+begin_src emacs-lisp
   (use-package evil-commentary
-      :demand t
       :after (evil)
       :config
       (evil-commentary-mode))
@@ -824,7 +824,6 @@ increment and decrement numbers with c-a and c-x
 ** evil-anzu
 #+begin_src emacs-lisp
   (use-package evil-anzu
-      :demand t
       :after (evil)
       )
 #+end_src
@@ -927,6 +926,7 @@ increment and decrement numbers with c-a and c-x
 #+end_src
 ** package-menu
 #+begin_src emacs-lisp
+  (setq package-menu-async t)
   (general-define-key :keymaps '(package-menu-mode-map)
                       :states '(normal)
                       "i" 'package-menu-mark-install
@@ -945,7 +945,6 @@ increment and decrement numbers with c-a and c-x
 ** evil-replace-with-register
 #+begin_src emacs-lisp
   (use-package evil-replace-with-register
-    :demand t
     :after (evil)
     :config
     (setq evil-replace-with-register-key (kbd "gr"))
@@ -958,7 +957,6 @@ increment and decrement numbers with c-a and c-x
 ** company-mode
 #+begin_src emacs-lisp
   (use-package company
-  :demand t
    :init
     (progn
       (setq company-idle-delay 0.2
@@ -990,10 +988,6 @@ enable narrowing
       (with-current-buffer buf
         (narrow-to-region start end))
         (switch-to-buffer buf)))
-  (evil-define-operator evil-narrow-indirect (beg end type)
-    "Indirectly narrow the region from BEG to END."
-    (interactive "<R>")
-    (narrow-to-region-indirect beg end))
 
   (general-define-key
       :states '(normal operator visual)
@@ -1005,7 +999,6 @@ enable narrowing
 ** Exec-path
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
-      :demand t
       :config
       (when (memq window-system '(mac ns x))
         (exec-path-from-shell-copy-env "PGUSER")
@@ -1015,7 +1008,6 @@ enable narrowing
 ** Popup Window
 #+BEGIN_SRC emacs-lisp
   (use-package shackle
-    :demand t
     :config
     (progn
       (setq shackle-select-reused-windows nil) ; default nil
@@ -1044,96 +1036,87 @@ enable narrowing
 #+END_SRC
 ** clojure
 #+BEGIN_SRC emacs-lisp
-  (use-package clojure-mode
-    :config
-    (put-clojure-indent 'defui '(2 nil nil (1))))
-  (use-package clj-refactor
-    :config)
-  (use-package cider
-    :demand t
-    :config
-    (setq cider-repl-display-in-current-window nil)
-    (setq cider-repl-use-pretty-printing t)
-    (autoload 'cider--make-result-overlay "cider-overlays")
-    (defun my-funcs/eval-overlay (value point)
-      (cider--make-result-overlay (format "%S" value)
-        :where point
-        :duration 'command)
-      ;; Preserve the return value.
-      value)
-    (advice-add 'eval-last-sexp :filter-return
-                (lambda (r)
-                  (my-funcs/eval-overlay r (point))))
-    (advice-add 'eval-defun :filter-return
-                (lambda (r)
-                  (my-funcs/eval-overlay
-                   r
-                   (save-excursion
-                     (end-of-defun)
-                     (point))))))
-  (use-package cider-hydra
-    :after (clojure-mode)
-    :init
-    (add-hook 'cider-mode-hook #'cider-hydra-mode))
+    (use-package clojure-mode
+      :config
+      (put-clojure-indent 'defui '(2 nil nil (1))))
+    (use-package clj-refactor
+      :config)
+    (use-package cider
+      :after (evil general)
+      :config
+      (setq cider-repl-display-in-current-window nil)
+      (setq cider-repl-use-pretty-printing t)
+      (autoload 'cider--make-result-overlay "cider-overlays")
+      (defun my-funcs/eval-overlay (value point)
+        (cider--make-result-overlay (format "%S" value)
+          :where point
+          :duration 'command)
+        ;; Preserve the return value.
+        value)
+      (advice-add 'eval-last-sexp :filter-return
+                  (lambda (r)
+                    (my-funcs/eval-overlay r (point))))
+      (advice-add 'eval-defun :filter-return
+                  (lambda (r)
+                    (my-funcs/eval-overlay
+                     r
+                     (save-excursion
+                       (end-of-defun)
+                       (point)))))
+    (evil-define-operator evil-eval-clojure-text-object (beg end)
+      "Evil operator for evaluating code."
+      :move-point nil
+      (save-excursion
+        (my-funcs/flash-region beg end)
+        (cider-eval-region beg end)))
+    (defun my/goto-or-switch-back-from-repl ()
+      (interactive)
+      (if (eq major-mode 'cider-repl-mode)
+          (cider-switch-to-last-clojure-buffer)
+        (cider-switch-to-repl-buffer)))
+    (general-def 'normal ':keymaps '(cider-inspector-mode-map)
+      "n" 'cider-inspector-next-page
+      "N" 'cider-inspector-prev-page
+      "RET" 'cider-inspector-operate-on-point
+      "d" 'cider-inspector-pop
+      "r" 'cider-inspector-refresh)
+    (general-def 'normal '(cider-popup-buffer-mode-map cider-stacktrace-mode-map)
+      "q" 'cider-popup-buffer-quit)
+    (general-def 'normal '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
+      :prefix local-leader
+      "r" 'cider-hydra-repl/body
+      "j" 'cider-jack-in
+      "i" 'cider-inspect-last-result
+      "g" 'my/goto-or-switch-back-from-repl
+      "c" 'cider-jack-in
+      "d" 'cider-hydra-doc/body
+      "e" 'cider-hydra-eval/body
+      "q" 'hydra-cljr-help-menu/body)
+    (general-def 'normal '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
+      "c" (general-key-dispatch 'general-dispatch-evil-exchange
+            "p" (general-key-dispatch 'evil-eval-clojure-text-object
+                  :name general-dispatch-eval-clojure-text-object
+                  "p" (lambda ()
+                        (interactive)
+                        (let* ((range (evil-a-sexp))
+                               (beg (elt range 0))
+                               (end (elt range 1)))
+                          (evil-eval-clojure-text-object beg end))))
+            ;; could be used for other operators where there
+            ;; isn't an existing command for the linewise version:
+            ;; "c" (general-simulate-keys ('evil-change "c"))
+            ))
+  )
+    (use-package cider-hydra
+      :after (evil clojure-mode)
+      :init
+      (add-hook 'cider-mode-hook #'cider-hydra-mode))
+      :config
 
-  (evil-define-operator evil-eval-clojure-text-object (beg end)
-    "Evil operator for evaluating code."
-    :move-point nil
-    (save-excursion
-      (my-funcs/flash-region beg end)
-      (cider-eval-region beg end)))
-  (defun my/goto-or-switch-back-from-repl ()
-    (interactive)
-    (if (eq major-mode 'cider-repl-mode)
-        (cider-switch-to-last-clojure-buffer)
-      (cider-switch-to-repl-buffer)))
-  (general-def 'normal ':keymaps '(cider-inspector-mode-map)
-    "n" 'cider-inspector-next-page
-    "N" 'cider-inspector-prev-page
-    "RET" 'cider-inspector-operate-on-point
-    "d" 'cider-inspector-pop
-    "r" 'cider-inspector-refresh)
-  (general-def 'normal '(cider-popup-buffer-mode-map cider-stacktrace-mode-map)
-    "q" 'cider-popup-buffer-quit)
-  (general-def 'normal '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
-    :prefix local-leader
-    "r" 'cider-hydra-repl/body
-    "j" 'cider-jack-in
-    "i" 'cider-inspect-last-result
-    "g" 'my/goto-or-switch-back-from-repl
-    "c" 'cider-jack-in
-    "d" 'cider-hydra-doc/body
-    "e" 'cider-hydra-eval/body
-    "q" 'hydra-cljr-help-menu/body)
-  (general-def 'normal '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
-    "c" (general-key-dispatch 'general-dispatch-evil-exchange
-          "p" (general-key-dispatch 'evil-eval-clojure-text-object
-                :name general-dispatch-eval-clojure-text-object
-                "p" (lambda ()
-                      (interactive)
-                      (let* ((range (evil-a-sexp))
-                             (beg (elt range 0))
-                             (end (elt range 1)))
-                        (evil-eval-clojure-text-object beg end))))
-          ;; could be used for other operators where there
-          ;; isn't an existing command for the linewise version:
-          ;; "c" (general-simulate-keys ('evil-change "c"))
-          ))
 #+end_src
 ** elisp
 #+BEGIN_SRC emacs-lisp
   ;;todo only for elisp!
-  (evil-define-operator evil-eval-elisp-text-object (beg end)
-    "Evil operator for evaluating code."
-    :move-point nil
-    (save-excursion
-      (let (eval-str
-            value)
-        (setq eval-str (buffer-substring beg end))
-        (setq value (eval (car (read-from-string eval-str)) lexical-binding))
-        (my-funcs/flash-region beg end)
-        (my-funcs/eval-overlay value end)
-        (message (format "%s" value)))))
   (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
                       :states '(normal)
                       "c" (general-key-dispatch 'general-dispatch-evil-exchange
@@ -1148,175 +1131,9 @@ enable narrowing
   ;;(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
   ;;(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
 #+END_SRC
-** lisp general
-#+BEGIN_SRC emacs-lisp
-    (defun maybe-join-lisp-line (orig-fun &rest r)
-      (apply orig-fun r)
-      (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
-        (evil-previous-line-first-non-blank)
-        (save-excursion (join-line 1))))
-    (advice-add 'evil-sp-delete-line :around 'maybe-join-lisp-line)
-    (advice-add 'evil-sp-delete :around 'maybe-join-lisp-line)
-    (defun in-sexp ()
-      (> (nth 0 (syntax-ppss)) 0))
-    (defun next-sexp ()
-      "Go to the next sexp"
-      (interactive))
-    (defun next-paren (&optional closing)
-      "Go to the next/previous closing/opening parenthesis/bracket/brace."
-      (if closing
-          (let ((curr (point)))
-            (forward-char)
-            (unless (eq curr (search-forward-regexp "[])}]"))
-              (backward-char)))
-        (search-backward-regexp "[[({]")))
-    (defun prev-opening-paren ()
-      "Go to the next closing parenthesis."
-      (interactive)
-      (next-paren))
-    (defun next-closing-paren ()
-      "Go to the next closing parenthesis."
-      (interactive)
-      (next-paren 'closing))
-    (defun open-paren-around (paren element beginning)
-      (when (and element (in-sexp))
-        (next-paren))
-      (sp-wrap-with-pair paren)
-      (if beginning
-          (progn
-            (insert " ")
-            (evil-backward-char 1))
-        (progn
-          (evilmi-jump-items)
-          (evil-forward-char 1)
-          (insert " ")))
-      (evil-insert nil))
-    (evil-define-command lisp-next-paren (count)
-      (interactive "<c>")
-      (if count
-          (dotimes (number count)
-            (call-interactively 'sp-next-sexp))
-        (call-interactively 'sp-next-sexp)))
-    (evil-define-command lisp-previous-paren (count)
-      (interactive "<c>")
-      (if count
-          (sp-next-sexp (* count -1))
-        (sp-next-sexp -1)))
-
-  (general-define-key
-      :states '(normal operator visual)
-     :keymaps lisp-mode-maps
-     [remap evil-delete] 'evil-sp-delete
-     [remap evil-change] 'evil-sp-change)
-
-
-    (general-define-key
-      :states 'normal
-      :keymaps lisp-mode-maps
-       :prefix my-leader2
-       "W" (lambda ()
-             (interactive)
-             (open-paren-around "(" t nil))
-       "w" (lambda ()
-             (interactive)
-             (open-paren-around "(" t t))
-       "e)" (lambda ()
-              (interactive)
-              (open-paren-around "(" t nil))
-       "e(" (lambda ()
-              (interactive)
-              (open-paren-around "(" t t))
-       "e}" (lambda ()
-              (interactive)
-              (open-paren-around "{" t nil))
-       "e{" (lambda ()
-              (interactive)
-              (open-paren-around "{" t t))
-       "e]" (lambda ()
-              (interactive)
-              (open-paren-around "[" t nil))
-       "e[" (lambda ()
-              (interactive)
-              (open-paren-around "[" t t))
-       "e}" (lambda ()
-              (interactive)
-              (open-paren-around "{" t nil))
-       "e{" (lambda ()
-              (interactive)
-              (open-paren-around "{" t t))
-       "i" (lambda ()
-             (interactive)
-             (open-paren-around "(" nil t))
-       "I" (lambda ()
-             (interactive)
-             (open-paren-around "(" nil nil))
-       "(" (lambda ()
-             (interactive)
-             (open-paren-around "(" nil t))
-       ")" (lambda ()
-             (interactive)
-             (open-paren-around "(" nil nil))
-       "[" (lambda ()
-             (interactive)
-             (open-paren-around "[" nil t))
-       "]" (lambda ()
-             (interactive)
-             (open-paren-around "[" nil nil))
-       "{" (lambda ()
-             (interactive)
-             (open-paren-around "{" nil t))
-       "}" (lambda ()
-             (interactive)
-             (open-paren-aroundn "{" nil nil))
-       "@" 'sp-splice-sexp
-       "o" (lambda ()
-             (interactive)
-             (when (string-match-p "^[^\[({]" (thing-at-point 'sexp t))
-               (sp-backward-up-sexp))
-             (sp-raise-sexp))
-       "O" 'sp-raise-sexp)
-
-  (general-define-key
-      :states 'normal
-      :keymaps lisp-mode-maps
-       ;;c is defined in vim-exchange
-       "W" 'lisp-next-paren
-       "B" 'lisp-previous-paren
-       "(" 'sp-backward-up-sexp
-       ")" (lambda ()
-             (interactive)
-             (sp-backward-up-sexp)
-             (evilmi-jump-items))
-       ">" (general-key-dispatch 'evil-shift-right
-             "I" (lambda ()
-                   (interactive)
-                   (sp-end-of-sexp)
-                   (when (not (char-equal (preceding-char)  ?  ))
-                     (insert " "))
-                   (evil-insert nil))
-             "f" (lambda ()
-                   (interactive)
-                   (when (in-sexp)
-                     ))
-             ")" 'sp-forward-slurp-sexp
-             "(" 'sp-backward-barf-sexp)
-       "<" (general-key-dispatch 'evil-shift-left
-             "I" (lambda ()
-                   (interactive)
-                   (sp-beginning-of-sexp)
-                   (when (not (char-equal (following-char)  ?  ))
-                     (insert " ")
-                     (evil-backward-char))
-                   (evil-insert nil))
-             ")" 'sp-forward-barf-sexp
-             "(" 'sp-backward-slurp-sexp)
-       "C" 'evil-sp-change-line
-       "D" 'evil-sp-delete-line)
-#+END_SRC
 ** which-key
 #+begin_src emacs-lisp
     (use-package which-key
-      :demand t
       :config
       (which-key-mode))
 #+END_SRC
@@ -1373,7 +1190,6 @@ enable narrowing
 ** imenu-list
 #+BEGIN_SRC emacs-lisp
   (use-package imenu-list
-    :demand t
     :config
     (setq imenu-list-focus-after-activation t)
     (general-define-key :keymaps 'imenu-list-major-mode-map
@@ -1441,7 +1257,6 @@ enable narrowing
 *** COMMENT org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
-    :demand t
     :init
     (add-hook 'org-mode-hook
               (lambda ()
@@ -1618,7 +1433,6 @@ and the `>` and `<` opererators for promoting and demoting headers and
 ** smartparens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
-    :demand t
     :init
     (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode)
     (add-hook 'cide-clojure-interaction-mode-hook 'turn-on-smartparens-strict-mode)
@@ -1634,21 +1448,184 @@ and the `>` and `<` opererators for promoting and demoting headers and
     (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
 
-
     (smartparens-global-mode 1)
     )
 
   (use-package evil-smartparens
-    :demand t
-    :config)
+    :after (evil general)
+    :config
+    (defun maybe-join-lisp-line (orig-fun &rest r)
+      (apply orig-fun r)
+      (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
+        (evil-previous-line-first-non-blank)
+        (save-excursion (join-line 1))))
+    (advice-add 'evil-sp-delete-line :around 'maybe-join-lisp-line)
+    (advice-add 'evil-sp-delete :around 'maybe-join-lisp-line)
+    (defun in-sexp ()
+      (> (nth 0 (syntax-ppss)) 0))
+    (defun next-sexp ()
+      "Go to the next sexp"
+      (interactive))
+    (defun next-paren (&optional closing)
+      "Go to the next/previous closing/opening parenthesis/bracket/brace."
+      (if closing
+          (let ((curr (point)))
+            (forward-char)
+            (unless (eq curr (search-forward-regexp "[])}]"))
+              (backward-char)))
+        (search-backward-regexp "[[({]")))
+    (defun prev-opening-paren ()
+      "Go to the next closing parenthesis."
+      (interactive)
+      (next-paren))
+    (defun next-closing-paren ()
+      "Go to the next closing parenthesis."
+      (interactive)
+      (next-paren 'closing))
+    (defun open-paren-around (paren element beginning)
+      (when (and element (in-sexp))
+        (next-paren))
+      (sp-wrap-with-pair paren)
+      (if beginning
+          (progn
+            (insert " ")
+            (evil-backward-char 1))
+        (progn
+          (evilmi-jump-items)
+          (evil-forward-char 1)
+          (insert " ")))
+      (evil-insert nil))
+    (evil-define-command lisp-next-paren (count)
+      (interactive "<c>")
+      (if count
+          (dotimes (number count)
+            (call-interactively 'sp-next-sexp))
+        (call-interactively 'sp-next-sexp)))
+    (evil-define-command lisp-previous-paren (count)
+      (interactive "<c>")
+      (if count
+          (sp-next-sexp (* count -1))
+        (sp-next-sexp -1)))
 
-  (general-def 'normal
-    ">" (general-key-dispatch 'evil-shift-right
-          ")" 'sp-forward-slurp-sexp
-          "(" 'sp-backward-barf-sexp)
-    "<" (general-key-dispatch 'evil-shift-left
-          ")" 'sp-forward-barf-sexp
-          "(" 'sp-backward-slurp-sexp))
+    (general-define-key
+     :states '(normal operator visual)
+     :keymaps lisp-mode-maps
+     [remap evil-delete] 'evil-sp-delete
+     [remap evil-change] 'evil-sp-change)
+
+
+    (general-define-key
+     :states 'normal
+     :keymaps lisp-mode-maps
+     :prefix my-leader2
+     "W" (lambda ()
+           (interactive)
+           (open-paren-around "(" t nil))
+     "w" (lambda ()
+           (interactive)
+           (open-paren-around "(" t t))
+     "e)" (lambda ()
+            (interactive)
+            (open-paren-around "(" t nil))
+     "e(" (lambda ()
+            (interactive)
+            (open-paren-around "(" t t))
+     "e}" (lambda ()
+            (interactive)
+            (open-paren-around "{" t nil))
+     "e{" (lambda ()
+            (interactive)
+            (open-paren-around "{" t t))
+     "e]" (lambda ()
+            (interactive)
+            (open-paren-around "[" t nil))
+     "e[" (lambda ()
+            (interactive)
+            (open-paren-around "[" t t))
+     "e}" (lambda ()
+            (interactive)
+            (open-paren-around "{" t nil))
+     "e{" (lambda ()
+            (interactive)
+            (open-paren-around "{" t t))
+     "i" (lambda ()
+           (interactive)
+           (open-paren-around "(" nil t))
+     "I" (lambda ()
+           (interactive)
+           (open-paren-around "(" nil nil))
+     "(" (lambda ()
+           (interactive)
+           (open-paren-around "(" nil t))
+     ")" (lambda ()
+           (interactive)
+           (open-paren-around "(" nil nil))
+     "[" (lambda ()
+           (interactive)
+           (open-paren-around "[" nil t))
+     "]" (lambda ()
+           (interactive)
+           (open-paren-around "[" nil nil))
+     "{" (lambda ()
+           (interactive)
+           (open-paren-around "{" nil t))
+     "}" (lambda ()
+           (interactive)
+           (open-paren-aroundn "{" nil nil))
+     "@" 'sp-splice-sexp
+     "o" (lambda ()
+           (interactive)
+           (when (string-match-p "^[^\[({]" (thing-at-point 'sexp t))
+             (sp-backward-up-sexp))
+           (sp-raise-sexp))
+     "O" 'sp-raise-sexp)
+
+    (general-define-key
+     :states 'normal
+     :keymaps lisp-mode-maps
+     ;;c is defined in vim-exchange
+     "W" 'lisp-next-paren
+     "B" 'lisp-previous-paren
+     "(" 'sp-backward-up-sexp
+     ")" (lambda ()
+           (interactive)
+           (sp-backward-up-sexp)
+           (evilmi-jump-items))
+     ">" (general-key-dispatch 'evil-shift-right
+           "I" (lambda ()
+                 (interactive)
+                 (sp-end-of-sexp)
+                 (when (not (char-equal (preceding-char)  ?  ))
+                   (insert " "))
+                 (evil-insert nil))
+           "f" (lambda ()
+                 (interactive)
+                 (when (in-sexp)
+                   ))
+           ")" 'sp-forward-slurp-sexp
+           "(" 'sp-backward-barf-sexp)
+     "<" (general-key-dispatch 'evil-shift-left
+           "I" (lambda ()
+                 (interactive)
+                 (sp-beginning-of-sexp)
+                 (when (not (char-equal (following-char)  ?  ))
+                   (insert " ")
+                   (evil-backward-char))
+                 (evil-insert nil))
+           ")" 'sp-forward-barf-sexp
+           "(" 'sp-backward-slurp-sexp)
+     "C" 'evil-sp-change-line
+     "D" 'evil-sp-delete-line)
+
+    (general-def 'normal
+      ">" (general-key-dispatch 'evil-shift-right
+            ")" 'sp-forward-slurp-sexp
+            "(" 'sp-backward-barf-sexp)
+      "<" (general-key-dispatch 'evil-shift-left
+            ")" 'sp-forward-barf-sexp
+            "(" 'sp-backward-slurp-sexp))
+    )
+
 #+END_SRC
 ** Latex
 ** AucTex
@@ -1676,7 +1653,6 @@ and the `>` and `<` opererators for promoting and demoting headers and
 ** projectile
 #+begin_src emacs-lisp
   (use-package projectile
-    :demand t
     :config
     ;; test fn in hashtabe has to be equal because we will use strings as keys
     (setq my-projects-loaded (make-hash-table :test 'equal))
@@ -1692,13 +1668,11 @@ and the `>` and `<` opererators for promoting and demoting headers and
 #+end_src
 ** popup (dependency)
 #+begin_src emacs-lisp
-  (use-package popup
-    :demand t)
+  (use-package popup)
 #+end_src
 ** rainbow-delimiters
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
-    :demand t
     :config
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
     (add-hook 'cider-repl-mode #'rainbow-delimiters-mode)
@@ -1719,7 +1693,6 @@ and the `>` and `<` opererators for promoting and demoting headers and
 for keeping track of recent files, provides helm-recentf with data
 #+begin_src emacs-lisp
      (use-package recentf
-       :demand t
        :config
        (recentf-mode 1)
        )
@@ -1728,7 +1701,8 @@ for keeping track of recent files, provides helm-recentf with data
 http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
     (use-package ivy
-      :demand t
+      :init
+      (ivy-mode t)
       :config
       ;; regex order
       (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
@@ -1758,16 +1732,11 @@ http://oremacs.com/swiper/
                  (pop-to-buffer buffer action norecord)
                  (with-current-buffer from-buffer
                    (setq-local pop-target-window (selected-window)))))))
-      (ivy-mode t))
+      )
     (use-package counsel
-      :demand t
       :config)
-    (use-package swiper
-      :demand t
-      :config
-      (ivy-mode t))
+    (use-package swiper)
     (use-package avy
-      :demand t
       :config
       (defun avy-line-saving-column ()
         (interactive)
@@ -1789,7 +1758,6 @@ http://oremacs.com/swiper/
 ** eyebrowse
 #+begin_src emacs-lisp
   (use-package eyebrowse
-    :demand t
     :config
     (general-define-key :keymaps '(eyebrowse-mode-map)
                       :states '(normal)
@@ -1988,6 +1956,7 @@ Multi-stage copy/pasting of files and bookmarks
       :config
       (plist-put evilmi-plugins 'elixir-mode '((evilmi-ruby-get-tag evilmi-ruby-jump))))
   (use-package alchemist
+    :after (evil general)
     :init
     (add-hook 'elixir-mode-hook #'alchemist-mode)
     :config
@@ -2088,7 +2057,6 @@ Multi-stage copy/pasting of files and bookmarks
 ** whitespace mode
 #+begin_src emacs-lisp
   (use-package whitespace
-    :demand t
     :config
     (setq-default
      whitespace-style '(face trailing lines-tail)
@@ -2180,7 +2148,6 @@ Multi-stage copy/pasting of files and bookmarks
 ** COMMENT evil-goggles
 #+begin_src emacs-lisp
   (use-package evil-goggles
-    :demand t
     :config
     (setq evil-goggles-duration 0.150)
     (evil-goggles-mode))
@@ -2188,7 +2155,6 @@ Multi-stage copy/pasting of files and bookmarks
 ** editorconfig
 #+begin_src emacs-lisp
   (use-package editorconfig
-    :demand t
     :config
     (editorconfig-mode 1))
 #+end_src
@@ -2211,7 +2177,6 @@ Multi-stage copy/pasting of files and bookmarks
 ** ace-window
 #+begin_src emacs-lisp
   (use-package ace-window
-    :demand t
     :config
     (set-face-attribute 'aw-leading-char-face nil :foreground nil :inherit 'evil-goggles-delete-face)
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
@@ -2267,14 +2232,11 @@ Multi-stage copy/pasting of files and bookmarks
 ** doom-modeline
 #+BEGIN_SRC emacs-lisp
 (use-package doom-modeline
-      :ensure t
-     :defer t
       :hook (after-init . doom-modeline-init))
 #+END_SRC
 ** COMMENT powerline
 #+BEGIN_SRC emacs-lisp
   (use-package powerline
-    :demand t
     :config
     (add-hook 'desktop-after-read-hook 'powerline-reset)
     (defun make-rect (color height width)
@@ -2373,7 +2335,6 @@ Multi-stage copy/pasting of files and bookmarks
 ** emojify
 #+begin_src emacs-lisp
   (use-package emojify
-    :demand t
     :init
     (add-hook 'after-init-hook #'global-emojify-mode)
     :config
@@ -2397,7 +2358,6 @@ Multi-stage copy/pasting of files and bookmarks
 ** COMMENT language-server
 #+begin_src emacs-lisp
     (use-package lsp-mode
-      :demand t
       :config
 
       (defconst lsp-javascript--get-root
@@ -2432,7 +2392,6 @@ Multi-stage copy/pasting of files and bookmarks
 ** langtool
 #+BEGIN_SRC emacs-lisp
   (use-package langtool
-    :ensure t
     :config
     (setq langtool-language-tool-jar "~/Downloads/LanguageTool-4.1/languagetool-commandline.jar")
     (require 'langtool)
@@ -2440,13 +2399,7 @@ Multi-stage copy/pasting of files and bookmarks
 #+END_SRC
 ** format-all
 #+BEGIN_SRC emacs-lisp
-(use-package format-all
-    :ensure t)
-#+END_SRC
-** rg
-#+BEGIN_SRC emacs-lisp
-(use-package format-all
-    :ensure t)
+(use-package format-all)
 #+END_SRC
 * Temp
 #+begin_src emacs-lisp

@@ -1,5 +1,8 @@
 ;;; early-init.el --evaluated before init.el
-(package-initialize)
 
-(provide 'early-init)
-;;; early-init.el ends here
+;; Prevent the glimpse of un-styled Emacs by setting these early.
+(add-to-list 'default-frame-alist '(tool-bar-lines . 0))
+(add-to-list 'default-frame-alist '(menu-bar-lines . 0))
+(add-to-list 'default-frame-alist '(vertical-scroll-bars))
+
+(setq package-quickstart t)
