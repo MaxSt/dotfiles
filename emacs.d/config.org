@@ -49,9 +49,10 @@ Tell =use-package= to always defer loading packages unless explicitly told other
 initialization significantly as many packages are only loaded later when they are explicitly used.
 
 #+BEGIN_SRC emacs-lisp
-  (setq use-package-always-defer t
-        use-package-always-ensure t
-        use-package-verbose t)
+  (eval-and-compile
+    (setq use-package-always-defer t
+          use-package-always-ensure t
+          use-package-verbose t))
 #+END_SRC
 
 **** Manually Set Load Path
@@ -81,22 +82,18 @@ Since the code is automatically compiled during runtime, if the configuration ha
 previously compiled manually then all of the package initialization will still take place at startup.
 
 #+BEGIN_SRC emacs-lisp
+  (require 'package)
+  (unless (assoc-default "melpa" package-archives)
+    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
+  (unless (assoc-default "org" package-archives)
+    (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
+
   (eval-when-compile
-    (require 'package)
-
-    (unless (assoc-default "melpa" package-archives)
-      (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
-    (unless (assoc-default "org" package-archives)
-      (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
-
-    (when (< emacs-major-version 27)
-      (package-initialize)
-
-      (unless (package-installed-p 'use-package)
-        (package-refresh-contents)
-        (package-install 'use-package))
-      (require 'use-package)))
-
+    (unless package--initialized (package-initialize))
+    (unless (package-installed-p 'use-package)
+      (package-refresh-contents)
+      (package-install 'use-package))
+    )
 #+END_SRC
 
 * Defaults
@@ -241,33 +238,36 @@ These are the Files creating in the current Directory for files that have not be
 #+END_SRC
 ** Themes
 #+begin_src emacs-lisp
-  ;;(use-package challenger-deep-theme
-  ;;:demand t
-  ;;:config
-  ;;(load-theme 'challenger-deep t))
-  (add-to-list 'custom-theme-load-path "~/Documents/challenger-deep/emacs/")
-  (load-theme 'challenger-deep t)
+  (use-package challenger-deep-theme
+  :ensure t
+  :init
+  (load-theme 'challenger-deep t))
 
   (use-package all-the-icons
+    :init 
+    (require 'all-the-icons)
     :config
     ;; org-mode ellipsis
-    (setq-default org-ellipsis (concat " " (all-the-icons-faicon "angle-down")))
-    )
+    (setq-default org-ellipsis (concat " " (all-the-icons-faicon "angle-down"))))
+
   (use-package all-the-icons-dired
     :after (all-the-icons)
     :init
     (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 
   (use-package all-the-icons-ivy
-    :after (all-the-icons projectile ivy counsel counsel-projectile)
+    :after (all-the-icons ivy)
+    :init
+    (require 'all-the-icons-ivy)
     :config
+    (setq all-the-icons-ivy-buffer-commands '(ivy-switch-buffer))
     (setq all-the-icons-ivy-file-commands
           '(counsel-find-file
             counsel-file-jump
             counsel-recentf
-            counsel-projectile-find-file
-            counsel-projectile-find-dir
-            counsel-projectile))
+            projectile-find-file
+            projectile-find-buffer
+            projectile-find-dir))
     (all-the-icons-ivy-setup))
 #+end_src
 * custom Functions
@@ -558,7 +558,7 @@ These are the Files creating in the current Directory for files that have not be
 ** snippets
 #+BEGIN_SRC emacs-lisp
   (use-package yasnippet
-    :config
+    :init
     (yas-global-mode 1))
 #+END_SRC
 ** default-text-scale
@@ -586,17 +586,17 @@ These are the Files creating in the current Directory for files that have not be
       ("h" my-funcs/resize-window-left "left")))
   (defhydra hydra-projectile (:color teal :columns 4)
     "Projectile"
-    ("f"   counsel-projectile-find-file                "Find File")
-    ("r"   counsel-projectile-recentf                  "Recent Files")
-    ("z"   counsel-projectile-cache-current-file       "Cache Current File")
-    ("x"   counsel-projectile-remove-known-project     "Remove Known Project")
-    ("d"   counsel-projectile-find-dir                 "Find Directory")
-    ("b"   counsel-projectile-switch-to-buffer         "Switch to Buffer")
-    ("c"   counsel-projectile-invalidate-cache         "Clear Cache")
-    ("X"   counsel-projectile-cleanup-known-projects   "Cleanup Known Projects")
-    ("o"   counsel-projectile-multi-occur              "Multi Occur")
-    ("p"   counsel-projectile-switch-project           "Switch Project")
-    ("k"   counsel-projectile-kill-buffers             "Kill Buffers")
+    ("f"   projectile-find-file                "Find File")
+    ("r"   projectile-recentf                  "Recent Files")
+    ("z"   projectile-cache-current-file       "Cache Current File")
+    ("x"   projectile-remove-known-project     "Remove Known Project")
+    ("d"   projectile-find-dir                 "Find Directory")
+    ("b"   projectile-switch-to-buffer         "Switch to Buffer")
+    ("c"   projectile-invalidate-cache         "Clear Cache")
+    ("X"   projectile-cleanup-known-projects   "Cleanup Known Projects")
+    ("o"   projectile-multi-occur              "Multi Occur")
+    ("p"   projectile-switch-project           "Switch Project")
+    ("k"   projectile-kill-buffers             "Kill Buffers")
     ("q"   nil "Cancel" :color blue))
 #+END_SRC
 ** define lisp modes
@@ -649,7 +649,7 @@ These are the Files creating in the current Directory for files that have not be
    "gf" 'counsel-find-file
    "gS" 'my-funcs/open-snippet-dir
    "s" 'save-buffer
-   "S" 'counsel-projectile-find-file
+   "S" 'projectile-find-file
    "gs" 'magit-status
    "g/" (general-simulate-key ":g/\C-r//" :state 'normal)
    "`" 'evil-goto-mark-line
@@ -707,9 +707,9 @@ These are the Files creating in the current Directory for files that have not be
    "c" (general-simulate-key "C-c")
    "v" 'widen
    "i" 'ibuffer
-   "t" 'counsel-projectile-find-file
+   "t" 'projectile-find-file
    "/" 'counsel-rg-project
-   "e" 'counsel-projectile-switch-to-buffer
+   "e" 'projectile-switch-to-buffer
    "g s" 'magit-status
    "g t" 'git-timemachine
    "g n" 'git-gutter:next-hunk
@@ -741,7 +741,7 @@ These are the Files creating in the current Directory for files that have not be
 #+begin_src emacs-lisp
     (use-package evil-surround
       :after (evil)
-      :config
+      :init
       (global-evil-surround-mode))
 #+end_src
 ** aggressive indent
@@ -763,7 +763,7 @@ These are the Files creating in the current Directory for files that have not be
 #+begin_src emacs-lisp
 (use-package evil-lion
   :after (evil)
-  :config
+  :init
   (evil-lion-mode))
 #+end_src
 ** evil-indent-plus textobject
@@ -776,7 +776,7 @@ These are the Files creating in the current Directory for files that have not be
 #+begin_src emacs-lisp
   (use-package evil-indent-plus
     :after (evil)
-    :config
+    :init
     ;; bind evil-indent-plus text objects
     (evil-indent-plus-default-bindings)
     )
@@ -796,7 +796,7 @@ increment and decrement numbers with c-a and c-x
 #+begin_src emacs-lisp
     (use-package evil-matchit
       :after (evil)
-      :config
+      :init
       (global-evil-matchit-mode 1))
 #+end_src
 ** evil-exchange
@@ -814,18 +814,23 @@ increment and decrement numbers with c-a and c-x
 ))
 
 #+end_src
-** evil-commentary
+** evil-nerd-commenter
 #+begin_src emacs-lisp
-  (use-package evil-commentary
-      :after (evil)
-      :config
-      (evil-commentary-mode))
+  (use-package evil-nerd-commenter
+    :after general
+    :init
+    (evilnc-default-hotkeys nil t)
+    :config
+    (general-def 'normal "gc" 'evilnc-comment-operator)
+)
 #+end_src
 ** evil-anzu
+provides a minor mode which displays current match and total matches 
 #+begin_src emacs-lisp
   (use-package evil-anzu
       :after (evil)
-      )
+      :init
+      (require 'evil-anzu))
 #+end_src
 ** ibuffer
 #+begin_src emacs-lisp
@@ -946,7 +951,7 @@ increment and decrement numbers with c-a and c-x
 #+begin_src emacs-lisp
   (use-package evil-replace-with-register
     :after (evil)
-    :config
+    :init
     (setq evil-replace-with-register-key (kbd "gr"))
     (evil-replace-with-register-install))
 #+end_src
@@ -1036,33 +1041,35 @@ enable narrowing
 #+END_SRC
 ** clojure
 #+BEGIN_SRC emacs-lisp
-    (use-package clojure-mode
-      :config
-      (put-clojure-indent 'defui '(2 nil nil (1))))
-    (use-package clj-refactor
-      :config)
-    (use-package cider
-      :after (evil general)
-      :config
-      (setq cider-repl-display-in-current-window nil)
-      (setq cider-repl-use-pretty-printing t)
-      (autoload 'cider--make-result-overlay "cider-overlays")
-      (defun my-funcs/eval-overlay (value point)
-        (cider--make-result-overlay (format "%S" value)
-          :where point
-          :duration 'command)
-        ;; Preserve the return value.
-        value)
-      (advice-add 'eval-last-sexp :filter-return
-                  (lambda (r)
-                    (my-funcs/eval-overlay r (point))))
-      (advice-add 'eval-defun :filter-return
-                  (lambda (r)
-                    (my-funcs/eval-overlay
-                     r
-                     (save-excursion
-                       (end-of-defun)
-                       (point)))))
+  (defun my-funcs/eval-overlay (value point)
+    (cider--make-result-overlay (format "%S" value)
+                                :where point
+                                :duration 'command)
+    ;; Preserve the return value.
+    value)
+  (advice-add 'eval-last-sexp :filter-return
+              (lambda (r)
+                (my-funcs/eval-overlay r (point))))
+  (advice-add 'eval-defun :filter-return
+              (lambda (r)
+                (my-funcs/eval-overlay
+                 r
+                 (save-excursion
+                   (end-of-defun)
+                   (point)))))
+
+  (use-package clojure-mode
+    :config
+    (put-clojure-indent 'defui '(2 nil nil (1))))
+  (use-package clj-refactor
+    :config)
+  (use-package cider
+    :after (evil general)
+    :commands (cider--make-result-overlay)
+    :config
+    (setq cider-repl-display-in-current-window nil)
+    (setq cider-repl-use-pretty-printing t)
+    (autoload 'cider--make-result-overlay "cider-overlays")
     (evil-define-operator evil-eval-clojure-text-object (beg end)
       "Evil operator for evaluating code."
       :move-point nil
@@ -1106,12 +1113,12 @@ enable narrowing
             ;; isn't an existing command for the linewise version:
             ;; "c" (general-simulate-keys ('evil-change "c"))
             ))
-  )
-    (use-package cider-hydra
-      :after (evil clojure-mode)
-      :init
-      (add-hook 'cider-mode-hook #'cider-hydra-mode))
-      :config
+    )
+  (use-package cider-hydra
+    :after (evil clojure-mode)
+    :init
+    (add-hook 'cider-mode-hook #'cider-hydra-mode))
+  :config
 
 #+end_src
 ** elisp
@@ -1656,11 +1663,10 @@ and the `>` and `<` opererators for promoting and demoting headers and
     :config
     ;; test fn in hashtabe has to be equal because we will use strings as keys
     (setq my-projects-loaded (make-hash-table :test 'equal))
-    ;;(setq projectile-completion-system 'ivy)
+    (setq projectile-completion-system 'ivy)
     (projectile-global-mode))
 
-  (use-package counsel-projectile
-    :after (projectile))
+  (use-package counsel-projectile :after (projectile))
 #+end_src
 ** ag
 #+begin_src emacs-lisp
@@ -1673,7 +1679,7 @@ and the `>` and `<` opererators for promoting and demoting headers and
 ** rainbow-delimiters
 #+begin_src emacs-lisp
   (use-package rainbow-delimiters
-    :config
+    :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
     (add-hook 'cider-repl-mode #'rainbow-delimiters-mode)
     )

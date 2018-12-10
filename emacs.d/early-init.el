@@ -5,4 +5,4 @@
 (add-to-list 'default-frame-alist '(menu-bar-lines . 0))
 (add-to-list 'default-frame-alist '(vertical-scroll-bars))
 
-(setq package-quickstart t)
+;;(setq package-quickstart t)
