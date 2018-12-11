@@ -615,6 +615,7 @@ These are the Files creating in the current Directory for files that have not be
 [[https://github.com/noctuid/general.el][general.el]]
 #+BEGIN_SRC emacs-lisp
   (use-package general
+    :after (evil)
     :config
     (setq general-override-states '(insert
                                     emacs
@@ -627,115 +628,117 @@ These are the Files creating in the current Directory for files that have not be
     (general-override-mode)
     ;;(general-evil-setup)
     ;; bind a key globally in normal state; keymaps must be quoted
-    (setq general-default-keymaps 'evil-normal-state-map))
+    (setq general-default-keymaps 'evil-normal-state-map)
 
-  (general-define-key
-   :states 'normal
-   :keymaps 'override
-   "M-l" (lambda ()
-           (interactive)
-           (evil-window-vsplit)
-           (evil-window-right 1))
-   "M-h" (lambda ()
-           (interactive)
-           (evil-window-vsplit))
-   "M-k" (lambda ()
-           (interactive)
-           (evil-window-split))
-   "M-j" (lambda ()
-           (interactive)
-           (evil-window-split)
-           (evil-window-down 1))
-   "gf" 'counsel-find-file
-   "gS" 'my-funcs/open-snippet-dir
-   "s" 'save-buffer
-   "S" 'projectile-find-file
-   "gs" 'magit-status
-   "g/" (general-simulate-key ":g/\C-r//" :state 'normal)
-   "`" 'evil-goto-mark-line
-   "'" 'evil-goto-mark
-   "C-h" 'evil-window-left
-   "C-l" 'evil-window-right
-   "C-k" 'evil-window-up
-   "C-j" 'evil-window-down
-   "g ." 'my-funcs/open-dotfile
-   "g h" 'org-capture
-   "g i" (lambda ()
-           (interactive)
-           (find-file (concat org-directory "/inbox.org")))
-   "g o" (lambda ()
-           (interactive)
-           (counsel-find-file org-directory))
-   "] SPC" (lambda ()
+    (general-define-key
+     :states 'normal
+     :keymaps 'override
+     "M-l" (lambda ()
              (interactive)
-             (save-excursion
-               (evil-open-below 1))
-             (evil-normal-state))
-   "[ SPC" (lambda ()
+             (evil-window-vsplit)
+             (evil-window-right 1))
+     "M-h" (lambda ()
              (interactive)
-             (save-excursion
-               (evil-open-above 1))
-             (evil-normal-state))
-   )
-  ;; named prefix key
-  (setq my-leader "SPC")
-  (general-define-key
-   :states 'normal
-   :keymaps 'override
-   :prefix my-leader
-   ;;"r" 'restart-emacs
-   "a" 'org-agenda
-   "p" 'hydra-projectile/body
-   "q" 'evil-window-delete
-   "k" 'kill-buffer
-   "D" 'evil-delete-buffer
-   "d" 'kill-this-buffer
-   "SPC" 'ace-select-window
-   "s" 'dumb-jump-go
-   "S" 'dumb-jump-go-prompt
-   ;;"h" (general-simulate-keys "C-h")
-   "h k" 'describe-key
-   "h SPC" 'which-key-show-top-level
-   "h v" 'describe-variable
-   "h f" 'describe-function
-   "h m" 'describe-mode
-   "<return>" 'my/projectile-multi-term
-   "S-<return>" 'multi-term
-   ;;  Avoiding CTRL
-   "W" (general-simulate-key "C-w")
-   "x" (general-simulate-key "C-x")
-   "c" (general-simulate-key "C-c")
-   "v" 'widen
-   "i" 'ibuffer
-   "t" 'projectile-find-file
-   "/" 'counsel-rg-project
-   "e" 'projectile-switch-to-buffer
-   "g s" 'magit-status
-   "g t" 'git-timemachine
-   "g n" 'git-gutter:next-hunk
-   "g p" 'git-gutter:previous-hunk
-   "g r" 'git-gutter:revert-hunk
-   "g p" 'git-gutter:popup-hunk
-   "g h s" 'git-gutter:stage-hunk
-   "l" 'evil-avy-goto-line
-   "u" 'undo-tree-visualize
-   "f" 'counsel-find-file
-   "b" 'ivy-switch-buffer
-   "n" 'next-error
-   "N" 'previous-error
-   "z" 'hydra-zoom/body
-   "o" 'dired-jump
-   "O" 'dired)
-  (setq my-leader2 ",")
-  (setq local-leader "\\")
+             (evil-window-vsplit))
+     "M-k" (lambda ()
+             (interactive)
+             (evil-window-split))
+     "M-j" (lambda ()
+             (interactive)
+             (evil-window-split)
+             (evil-window-down 1))
+     "gf" 'counsel-find-file
+     "gS" 'my-funcs/open-snippet-dir
+     "s" 'save-buffer
+     "S" 'projectile-find-file
+     "gs" 'magit-status
+     "g/" (general-simulate-key ":g/\C-r//" :state 'normal)
+     "`" 'evil-goto-mark-line
+     "'" 'evil-goto-mark
+     "C-h" 'evil-window-left
+     "C-l" 'evil-window-right
+     "C-k" 'evil-window-up
+     "C-j" 'evil-window-down
+     "g ." 'my-funcs/open-dotfile
+     "g h" 'org-capture
+     "g i" (lambda ()
+             (interactive)
+             (find-file (concat org-directory "/inbox.org")))
+     "g o" (lambda ()
+             (interactive)
+             (counsel-find-file org-directory))
+     "] SPC" (lambda ()
+               (interactive)
+               (save-excursion
+                 (evil-open-below 1))
+               (evil-normal-state))
+     "[ SPC" (lambda ()
+               (interactive)
+               (save-excursion
+                 (evil-open-above 1))
+               (evil-normal-state))
+     )
+    ;; named prefix key
+    (setq my-leader "SPC")
+    (general-define-key
+     :states 'normal
+     :keymaps 'override
+     :prefix my-leader
+     ;;"r" 'restart-emacs
+     "a" 'org-agenda
+     "p" 'hydra-projectile/body
+     "q" 'evil-window-delete
+     "k" 'kill-buffer
+     "D" 'evil-delete-buffer
+     "d" 'kill-this-buffer
+     "SPC" 'ace-select-window
+     "s" 'dumb-jump-go
+     "S" 'dumb-jump-go-prompt
+     ;;"h" (general-simulate-keys "C-h")
+     "h k" 'describe-key
+     "h SPC" 'which-key-show-top-level
+     "h v" 'describe-variable
+     "h f" 'describe-function
+     "h m" 'describe-mode
+     "<return>" 'my/projectile-multi-term
+     "S-<return>" 'multi-term
+     ;;  Avoiding CTRL
+     "w" (general-simulate-key "C-w")
+     "x" (general-simulate-key "C-x")
+     "c" (general-simulate-key "C-c")
+     "v" 'widen
+     "i" 'ibuffer
+     "t" 'projectile-find-file
+     "/" 'counsel-rg-project
+     "e" 'projectile-switch-to-buffer
+     "g s" 'magit-status
+     "g t" 'git-timemachine
+     "g n" 'git-gutter:next-hunk
+     "g p" 'git-gutter:previous-hunk
+     "g r" 'git-gutter:revert-hunk
+     "g p" 'git-gutter:popup-hunk
+     "g h s" 'git-gutter:stage-hunk
+     "l" 'evil-avy-goto-line
+     "u" 'undo-tree-visualize
+     "f" 'counsel-find-file
+     "b" 'ivy-switch-buffer
+     "n" 'next-error
+     "N" 'previous-error
+     "z" 'hydra-zoom/body
+     "o" 'dired-jump
+     "O" 'dired)
+    (setq my-leader2 ",")
+    (setq local-leader "\\")
 
-  (general-define-key
-   :states '(operator normal visual)
-   :keymaps 'override
-   :prefix my-leader
-   "gf" 'evil-avy-goto-char
-   "gl" 'evil-avy-goto-line
-   "gw" 'evil-avy-goto-word-1 )
+    (general-define-key
+     :states '(operator normal visual)
+     :keymaps 'override
+     :prefix my-leader
+     "gf" 'evil-avy-goto-char
+     "gl" 'evil-avy-goto-line
+     "gw" 'evil-avy-goto-word-1)
+    )
+
 #+END_SRC
 ** evil-surround
 #+begin_src emacs-lisp
@@ -1060,6 +1063,7 @@ enable narrowing
 
   (use-package clojure-mode
     :config
+    (require 'cider)
     (put-clojure-indent 'defui '(2 nil nil (1))))
   (use-package clj-refactor
     :config)
@@ -1123,7 +1127,6 @@ enable narrowing
 #+end_src
 ** elisp
 #+BEGIN_SRC emacs-lisp
-  ;;todo only for elisp!
   (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
                       :states '(normal)
                       "c" (general-key-dispatch 'general-dispatch-evil-exchange
@@ -1135,13 +1138,11 @@ enable narrowing
                                                (beg (elt range 0))
                                                (end (elt range 1)))
                                           (evil-eval-elisp-text-object beg end))))))
-  ;;(add-hook 'emacs-lisp-mode-hook #'aggressive-indent-mode)
-  ;;(add-hook 'lisp-interaction-mode-hook #'aggressive-indent-mode)
 #+END_SRC
 ** which-key
 #+begin_src emacs-lisp
     (use-package which-key
-      :config
+      :init
       (which-key-mode))
 #+END_SRC
 ** Terminal
@@ -1446,6 +1447,8 @@ and the `>` and `<` opererators for promoting and demoting headers and
     (add-hook 'lisp-interaction-mode-hook 'turn-on-smartparens-strict-mode)
     (add-hook 'cider-repl-mode-hook 'turn-on-smartparens-strict-mode)
     (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
+    (smartparens-global-mode 1)
+    
     :config
     (setq sp-navigate-interactive-always-progress-point t)
 
@@ -1454,13 +1457,7 @@ and the `>` and `<` opererators for promoting and demoting headers and
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
-
-    (smartparens-global-mode 1)
-    )
-
-  (use-package evil-smartparens
-    :after (evil general)
-    :config
+    
     (defun maybe-join-lisp-line (orig-fun &rest r)
       (apply orig-fun r)
       (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
@@ -1632,6 +1629,8 @@ and the `>` and `<` opererators for promoting and demoting headers and
             ")" 'sp-forward-barf-sexp
             "(" 'sp-backward-slurp-sexp))
     )
+
+  (use-package evil-smartparens :after (evil general smartparens))
 
 #+END_SRC
 ** Latex
