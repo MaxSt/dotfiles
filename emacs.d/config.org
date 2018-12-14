@@ -1224,9 +1224,9 @@ enable narrowing
 #+END_SRC
 **** set org default directory
 #+BEGIN_SRC emacs-lisp
-  (setq org-agenda-files '("~/Dropbox/org/")
-        org-directory "~/Dropbox/org/"
-        org-archive-location "~/Dropbox/org-archive/%s::")
+  (setq org-agenda-files '("~/org/")
+        org-directory "~/org/"
+        org-archive-location "~/org-archive/%s::")
 #+END_SRC
 **** org src block indention
 #+BEGIN_SRC emacs-lisp
@@ -1630,7 +1630,9 @@ and the `>` and `<` opererators for promoting and demoting headers and
             "(" 'sp-backward-slurp-sexp))
     )
 
-  (use-package evil-smartparens :after (evil general smartparens))
+  (use-package evil-smartparens
+  :init (require 'evil-smartparens)
+  :after (evil general smartparens))
 
 #+END_SRC
 ** Latex
@@ -2016,7 +2018,7 @@ Multi-stage copy/pasting of files and bookmarks
   (use-package erlang
     :config)
 #+end_src
-** highlight-indent-guides
+** COMMENT highlight-indent-guides
 #+begin_src emacs-lisp
   (use-package highlight-indent-guides
     :init
