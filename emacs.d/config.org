@@ -1436,7 +1436,18 @@ and the `>` and `<` opererators for promoting and demoting headers and
     (require 'evil-org-agenda)
     (evil-org-agenda-set-keys))
 #+END_SRC
-
+*** org-download
+Download images and insert them into org buffers (drag and drop support)
+#+BEGIN_SRC emacs-lisp
+  (use-package org-download
+    :after org
+    :init
+    (setq-default org-download-screenshot-method "flameshot gui -r -d 3000 | magick png:- %s")
+    (setq-default org-download-image-dir "~/org/images"
+                  org-download-heading-lvl nil)
+    (add-hook 'dired-mode-hook 'org-download-enable)
+    (require 'org-download))
+#+END_SRC
 ** smartparens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
