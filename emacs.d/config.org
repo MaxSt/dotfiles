@@ -522,6 +522,8 @@ These are the Files creating in the current Directory for files that have not be
 #+BEGIN_SRC emacs-lisp
   (use-package evil-collection
     :after evil
+    :init
+    (require 'evil-collection)
     :config
     ;;(setq evil-collection-mode-list ...)
     ;; These are the mappings i use for window management and i don't want
@@ -711,13 +713,12 @@ These are the Files creating in the current Directory for files that have not be
      "t" 'projectile-find-file
      "/" 'counsel-rg-project
      "e" 'projectile-switch-to-buffer
-     "g s" 'magit-status
+     "g s" 'git-gutter:stage-hunk
      "g t" 'git-timemachine
      "g n" 'git-gutter:next-hunk
      "g p" 'git-gutter:previous-hunk
      "g r" 'git-gutter:revert-hunk
      "g p" 'git-gutter:popup-hunk
-     "g h s" 'git-gutter:stage-hunk
      "l" 'evil-avy-goto-line
      "u" 'undo-tree-visualize
      "f" 'counsel-find-file
@@ -1016,31 +1017,29 @@ enable narrowing
 ** Popup Window
 #+BEGIN_SRC emacs-lisp
   (use-package shackle
-    :config
-    (progn
-      (setq shackle-select-reused-windows nil) ; default nil
-      (setq shackle-default-alignment 'below) ; default below
-      (setq shackle-default-size 0.3) ; default 0.5
-      (setq shackle-rules
-            '(("*Warnings*"  :size 8  :noselect t)
-              ("*Messages*"  :size 12 :noselect t)
-              ("*Help*" :select t :align below :inhibit-window-quit nil :modeline nil)
-              ("*Metahelp*" :size 0.3 :align left)
-              (undo-tree-visualizer-mode :size 0.5 :align right)
-              (alchemist-iex-mode :align below)
-              (sql-interaction-mode :align below)
-              (alchemist-test-report-mode :size 0.4 :align right :noselect t)
-              ("*alchemist help*" :select t :align below :inhibit-window-quit nil :modeline nil)
-              (magit-status-mode :same t)
-              ("*HTTP Response*" :size 0.3 :align below)
-              (cider-repl-mode :align below :noselect t)
-              (cider-inspector-mode :size 0.3 :align above)
-              ("*cider-error*" :size 0.5 :align right)
-              (ivy-occur-grep-mode :size 0.3 :align below)
-              ))
-      (shackle-mode 1)
-      )
-    )
+    :init
+    (setq shackle-select-reused-windows nil) ; default nil
+    (setq shackle-default-alignment 'below) ; default below
+    (setq shackle-default-size 0.3) ; default 0.5
+    (setq shackle-rules
+          '(("*Warnings*"  :size 8  :noselect t)
+            ("*Messages*"  :size 12 :noselect t)
+            ("*Help*" :select t :align below :inhibit-window-quit nil :modeline nil)
+            ("*Metahelp*" :size 0.3 :align left)
+            (undo-tree-visualizer-mode :size 0.5 :align right)
+            (alchemist-iex-mode :align below)
+            (sql-interaction-mode :align below)
+            (alchemist-test-report-mode :size 0.4 :align right :noselect t)
+            ("*alchemist help*" :select t :align below :inhibit-window-quit nil :modeline nil)
+            (magit-status-mode :same t)
+            ("*git-gutter:diff*" :same t :inhibit-window-quit t)
+            ("*HTTP Response*" :size 0.3 :align below)
+            (cider-repl-mode :align below :noselect t)
+            (cider-inspector-mode :size 0.3 :align above)
+            ("*cider-error*" :size 0.5 :align right)
+            (ivy-occur-grep-mode :size 0.3 :align below)
+            ))
+    (shackle-mode 1))
 #+END_SRC
 ** clojure
 #+BEGIN_SRC emacs-lisp
@@ -1765,6 +1764,8 @@ http://oremacs.com/swiper/
 ** eyebrowse
 #+begin_src emacs-lisp
   (use-package eyebrowse
+    :init
+    (eyebrowse-mode t)
     :config
     (general-define-key :keymaps '(eyebrowse-mode-map)
                       :states '(normal)
@@ -1777,9 +1778,7 @@ http://oremacs.com/swiper/
                       "M-6" 'eyebrowse-switch-to-window-config-6
                       "M-7" 'eyebrowse-switch-to-window-config-7
                       "M-8" 'eyebrowse-switch-to-window-config-8
-                      "M-9" 'eyebrowse-switch-to-window-config-9)
-    (eyebrowse-mode t)
-)
+                      "M-9" 'eyebrowse-switch-to-window-config-9))
 #+end_src
 ** highlight-symbol
 #+begin_src emacs-lisp
@@ -1791,6 +1790,10 @@ http://oremacs.com/swiper/
 #+end_src
 ** dired
 *** settings
+load direx-x (for dired-jump)
+#+BEGIN_SRC emacs-lisp
+(load "dired-x")
+#+END_SRC
 Hide details by default (can be toggled with "(")
 #+BEGIN_SRC emacs-lisp
 (add-hook 'dired-mode-hook
@@ -1824,9 +1827,8 @@ Show subtree when pressing i
 *** dired-ranger
 Multi-stage copy/pasting of files and bookmarks
 #+BEGIN_SRC emacs-lisp
-  (use-package dired-ranger
-    :after (dired)
-    :config)
+  (use-package ranger
+    :after (dired))
 #+END_SRC
 *** dired-sidebar
 #+begin_src emacs-lisp
