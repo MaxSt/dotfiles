@@ -711,7 +711,7 @@ These are the Files creating in the current Directory for files that have not be
      "v" 'widen
      "i" 'ibuffer
      "t" 'projectile-find-file
-     "/" 'counsel-rg-project
+     "/" 'rg-project
      "e" 'projectile-switch-to-buffer
      "g s" 'git-gutter:stage-hunk
      "g t" 'git-timemachine
@@ -1002,7 +1002,7 @@ enable narrowing
       :states '(normal operator visual)
    :keymaps 'override
    :prefix my-leader
-   "n" 'evil-narrow-indirect)
+   "x" 'evil-narrow-indirect)
 #+end_src
 * Package config
 ** Exec-path
@@ -1034,6 +1034,7 @@ enable narrowing
             (magit-status-mode :same t)
             ("*git-gutter:diff*" :same t :inhibit-window-quit t)
             ("*HTTP Response*" :size 0.3 :align below)
+            (rg-mode :align below)
             (cider-repl-mode :align below :noselect t)
             (cider-inspector-mode :size 0.3 :align above)
             ("*cider-error*" :size 0.5 :align right)
@@ -1381,10 +1382,10 @@ enable narrowing
                               (org-insert-heading-respect-content)
                               (org-demote-subtree)
                               (evil-insert-state))
-                        "x" 'org-archive-subtree-default-with-confirmation
+                        "X" 'org-archive-subtree-default-with-confirmation
                         "s" 'org-schedule
                         "r" 'org-refile
-                        "n" 'org-narrow-to-subtree
+                        "x" 'org-narrow-to-subtree
                         "t" 'org-todo
                         "T" 'counsel-org-tag
                         "p" 'org-insert-link
@@ -1679,9 +1680,9 @@ Download images and insert them into org buffers (drag and drop support)
 
   (use-package counsel-projectile :after (projectile))
 #+end_src
-** ag
+** rg
 #+begin_src emacs-lisp
-  (use-package ag)
+  (use-package rg)
 #+end_src
 ** popup (dependency)
 #+begin_src emacs-lisp
@@ -2053,7 +2054,7 @@ Multi-stage copy/pasting of files and bookmarks
 #+begin_src emacs-lisp
   (use-package wgrep
     :config
-    (setq wgrep-enable-key "r")
+    (setq wgrep-enable-key "w")
     (setq wgrep-auto-save-buffer t)
     )
 #+end_src
