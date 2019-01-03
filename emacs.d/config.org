@@ -1182,7 +1182,13 @@ enable narrowing
     :config
     (require 'evil-magit))
   (use-package evil-magit
-    :after (magit))
+    :after (magit)
+    :config
+    (general-define-key :keymaps '(magit-mode-map)
+                        :states '(normal)
+                        "C-n" 'magit-section-forward
+                        "C-p" 'magit-section-backward)
+    )
 
   (use-package git-timemachine
     :after general
