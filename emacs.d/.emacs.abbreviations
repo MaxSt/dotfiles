@@ -1,0 +1,4 @@
+;;-*-coding: utf-8;-*-
+(define-abbrev-table 'latex-mode-abbrev-table
+  '())
+

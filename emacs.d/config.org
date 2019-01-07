@@ -271,6 +271,118 @@ These are the Files creating in the current Directory for files that have not be
     (all-the-icons-ivy-setup))
 #+end_src
 * custom Functions
+** local abbrev
+#+begin_src emacs-lisp
+  (add-to-list 'auto-mode-alist '("\\.emacs.abbreviations\\'" . emacs-lisp-mode))
+
+  (setq
+   global-abbrev-file-name "~/.emacs.d/.emacs.abbreviations"
+   abbrev-file-name "~/.emacs.d/.emacs.abbreviations")
+
+  ;; because the local abbrev functions depend on projectile and are only useful
+  ;; when projectile is loaded
+  (with-eval-after-load "projectile"
+
+    (defun my/save-abbrevs ()
+      (interactive)
+      (write-abbrev-file))
+
+    (defun my/reload-abbrevs ()
+      (interactive)
+      (message "Reloading abbrevs from %s" global-abbrev-file-name)
+      (quietly-read-abbrev-file global-abbrev-file-name)
+      (message "Loaded global abbrevs")
+      (if (projectile-project-p)
+          (let ((project-abbrevs-file (my/get-local-abbrev-file-name)))
+            (message "Loading local abbrevs")
+            (when (file-exists-p project-abbrevs-file)
+              (quietly-read-abbrev-file project-abbrevs-file)))
+        (message "No local abbrevs file to load")
+        ))
+
+    (defun my/get-local-abbrev-file-name ()
+      (concat (projectile-project-root) ".emacs.abbreviations"))
+
+
+    (defun my/edit-local-abbrevs ()
+      (interactive)
+      (message "Clearing tables")
+      (mapcar (lambda (table) (clear-abbrev-table (symbol-value table))) abbrev-table-name-list)
+      (message "Loading local abbrevs only")
+      (when (file-exists-p (my/get-local-abbrev-file-name))
+        (quietly-read-abbrev-file (my/get-local-abbrev-file-name)))
+      (message "Editing loaded abbrevs")
+      (edit-abbrevs)
+      (advice-add 'edit-abbrevs-redefine :after 'my/edit-abbrevs-redefine-local-after-advice))
+
+    (defun my/edit-abbrevs-redefine-global-after-advice ()
+      (message "Writing global abbrevs")
+      (write-abbrev-file)
+      (advice-remove 'edit-abbrevs-redefine 'my/edit-abbrevs-redefine-global-after-advice)
+      (my/reload-abbrevs))
+
+    (defun my/edit-abbrevs-redefine-local-after-advice ()
+      (message "Writing local abbrevs")
+      (write-abbrev-file (my/get-local-abbrev-file-name))
+      (advice-remove 'edit-abbrevs-redefine 'my/edit-abbrevs-redefine-local-after-advice)
+      (my/reload-abbrevs))
+
+    (defcustom abbrev-additional-chars
+      '((t ?-))
+      "Alist that maps major mode symbols to lists of characters that may appear in abbreviations.
+    The chars of the special major mode symbol `t' are active in all modes."
+      :group 'abbrev
+      :type '(repeat :tag "List of modes"
+                     (cons :tag "Map major mode symbols to lists of additional chars in abbrevs"
+                           (symbol :tag "Mode symbol (`t' stands for all modes)")
+                           (repeat :tag "List of additional word-consistent characters" character))))
+
+    (defvar-local T-abbrev-syntax-table nil
+      "List of additional characters in abbreviations.")
+
+    (defun T-abbrev-mode-hook-fun ()
+      "Populate T-abbrev-syntax-table with the local syntax table modfied by
+    the characters in `abbrev-additional-chars'."
+      (when abbrev-mode
+        (message "abbrev-mode active, building char-list")
+        (let ((char-list (append (cdr (assoc major-mode abbrev-additional-chars))
+                                 (cdr (assoc 't abbrev-additional-chars)))))
+          (message "creating normal syntax table")
+          (setq T-abbrev-syntax-table (make-syntax-table (syntax-table)))
+          (message "extending syntax table")
+          (mapcar (lambda (char)
+                    (message "Adding entry for '%c'" char)
+                    (modify-syntax-entry char "w" T-abbrev-syntax-table))
+                  char-list))
+        (my/reload-abbrevs)))
+
+    ;; Wrapping functions of the `abbrev` package with the local syntax table.
+    ;; I'm not sure I captured all fun's that need to run with the local syntax-table.
+    ;; Adding further functions is easy.
+    ;; Just add them to the list at the end of the next form.
+    (mapcar
+     (lambda (fun)
+       (let ((newfun (intern (concat "T-ad-" (symbol-name fun)))))
+         (eval
+          `(progn
+             (defun ,newfun (oldfun &rest args)
+               ,(concat "This function evaluates `" (symbol-name fun) "' with `T-abbrev-syntax-table' as active syntax table.
+    It is used for the advicing `" (symbol-name fun) "'.")
+               (if T-abbrev-syntax-table
+                   (with-syntax-table T-abbrev-syntax-table
+                     (apply oldfun args))
+                 (apply oldfun args)))
+             (advice-add (quote ,fun) :around (quote ,newfun))))))
+     '(define-mode-abbrev abbrev--before-point))
+
+    (defun my/abbrev-mode-on ()
+      (abbrev-mode 1))
+
+    (add-hook 'abbrev-mode-hook #'T-abbrev-mode-hook-fun)
+    (add-hook 'prog-mode-hook #'my/abbrev-mode-on)
+    (add-hook 'projectile-after-switch-project-hook #'my/reload-abbrevs))
+#+end_src
+
 #+BEGIN_SRC emacs-lisp
   (defconst org-config-file "~/.emacs.d/config.org")
   (defun my-funcs/reload-dotfile ()
@@ -963,6 +1075,11 @@ provides a minor mode which displays current match and total matches
 #+begin_src emacs-lisp
 (add-hook 'artist-mode-hook #'(lambda () (evil-emacs-state)))
 #+end_src
+** abbrev
+#+begin_src emacs-lisp
+(setq-default
+ abbrev-mode t)
+#+end_src
 ** company-mode
 #+begin_src emacs-lisp
   (use-package company
@@ -1066,6 +1183,8 @@ enable narrowing
     (require 'cider)
     (put-clojure-indent 'defui '(2 nil nil (1))))
   (use-package clj-refactor
+    :init
+    (add-hook 'clojure-mode-hook #'clj-refactor-mode-hook)
     :config)
   (use-package cider
     :after (evil general)
@@ -1276,16 +1395,30 @@ enable narrowing
               (lambda ()
               (org-bullets-mode 1))))
 #+END_SRC
-*** blank before new entry
+*** COMMENT blank before new entry
 #+BEGIN_SRC emacs-lisp
 (setq-default org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
 #+END_SRC
+*** babel languages
+#+begin_src emacs-lisp
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((sql . t)))
+#+end_src
 *** org-Reveal (HTML presentations)
 #+BEGIN_SRC emacs-lisp
   (use-package ox-reveal)
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
   ;;(setq org-reveal-mathjax t)
   (use-package htmlize)
+#+END_SRC
+*** org-templates
+
+#+BEGIN_SRC emacs-lisp
+  (when (version< "9.1.4" (org-version))
+    (require 'org-tempo)
+    (add-to-list 'org-modules 'org-tempo)
+    (add-to-list 'org-structure-template-alist '("S" . "src emacs-lisp")))
 #+END_SRC
 
 *** org-habit
@@ -1702,7 +1835,7 @@ Download images and insert them into org buffers (drag and drop support)
     (add-hook 'cider-repl-mode #'rainbow-delimiters-mode)
     )
 #+end_src
-** COMMENT undo-tree
+** undo-tree
 #+begin_src emacs-lisp
   (use-package undo-tree
     :config
@@ -1899,9 +2032,19 @@ Multi-stage copy/pasting of files and bookmarks
 #+begin_src emacs-lisp
   (use-package restclient)
 #+end_src
-** ejc-sql
+** SQL
+Fix Misaligned query result for postgres
+See https://www.emacswiki.org/emacs/SqlMode
 #+begin_src emacs-lisp
-  (use-package ejc-sql)
+ (defun my-sql-login-hook ()
+   "Custom SQL log-in behaviours. See `sql-login-hook'."
+   ;; n.b. If you are looking for a response and need to parse the
+   ;; response, use `sql-redirect-value' instead of `comint-send-string'.
+   (when (eq sql-product 'postgres)
+     (let ((proc (get-buffer-process (current-buffer))))
+       ;; Output each query before executing it. (n.b. this also avoids
+       ;; the psql prompt breaking the alignment of query results.)
+       (comint-send-string proc "\\set ECHO queries\n"))))
 #+end_src
 ** sql
 #+begin_src emacs-lisp
@@ -2084,6 +2227,8 @@ Multi-stage copy/pasting of files and bookmarks
 ** whitespace mode
 #+begin_src emacs-lisp
   (use-package whitespace
+    :init
+    (global-whitespace-mode 1)
     :config
     (setq-default
      whitespace-style '(face trailing lines-tail)
@@ -2093,8 +2238,7 @@ Multi-stage copy/pasting of files and bookmarks
                                     dired-mode
                                     alchemist-test-mode
                                     alchemist-iex-mode
-                                    cider-repl-mode))
-    (global-whitespace-mode 1))
+                                    cider-repl-mode)))
 #+end_src
 ** markdown-mode
 #+begin_src emacs-lisp
@@ -2420,7 +2564,10 @@ Multi-stage copy/pasting of files and bookmarks
 #+BEGIN_SRC emacs-lisp
   (use-package langtool
     :config
-    (setq langtool-language-tool-jar "~/Downloads/LanguageTool-4.1/languagetool-commandline.jar")
+    ;; (setq langtool-language-tool-jar "/usr/share/java/languagetool/languagetool-commandline.jar")
+    ;;(setq langtool-language-tool-jar "~/Downloads/LanguageTool-4.4/languagetool-commandline.jar")
+    (setq langtool-java-classpath
+      "/usr/share/languagetool:/usr/share/java/languagetool/*")
     (require 'langtool)
   )
 #+END_SRC
@@ -2455,6 +2602,7 @@ Multi-stage copy/pasting of files and bookmarks
   (setq custom-file "~/.emacs.d/local/custom-set.el")
   (load custom-file 'noerror)
 #+END_SRC
+
 
 ** Post Initialization
 Let's lower our GC thresholds back down to a sane level.
