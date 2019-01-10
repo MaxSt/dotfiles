@@ -790,8 +790,7 @@ These are the Files creating in the current Directory for files that have not be
                (interactive)
                (save-excursion
                  (evil-open-above 1))
-               (evil-normal-state))
-     )
+               (evil-normal-state)))
     ;; named prefix key
     (setq my-leader "SPC")
     (general-define-key
@@ -853,6 +852,14 @@ These are the Files creating in the current Directory for files that have not be
     )
 
 #+END_SRC
+** move-text
+#+begin_src emacs-lisp
+  (use-package move-text
+    :general
+    (:keymaps 'normal
+     "] e" 'move-text-down
+     "[ e" 'move-text-up))
+#+end_src
 ** evil-surround
 #+begin_src emacs-lisp
     (use-package evil-surround
@@ -1122,6 +1129,30 @@ enable narrowing
    "x" 'evil-narrow-indirect)
 #+end_src
 * Package config
+** Flycheck
+#+begin_src emacs-lisp
+  (use-package flycheck
+    :general
+    (:keymaps 'normal
+              "] q" 'flycheck-next-error
+              "[ q" 'flycheck-previous-error)
+    :after (fringe-helper)
+    :init
+    (global-flycheck-mode)
+    :config
+    (setq flycheck-indication-mode 'right-fringe)
+    ;; A non-descript, left-pointing arrow
+    (fringe-helper-define 'flycheck-fringe-bitmap-double-arrow 'center
+      "...X...."
+      "..XX...."
+      ".XXX...."
+      "XXXX...."
+      ".XXX...."
+      "..XX...."
+      "...X....")
+    )
+#+end_src
+
 ** Exec-path
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
@@ -1156,7 +1187,7 @@ enable narrowing
             (cider-inspector-mode :size 0.3 :align above)
             ("*cider-error*" :size 0.5 :align right)
             (ivy-occur-grep-mode :size 0.3 :align below)
-            ))
+            (flycheck-error-list-mode :select t :autokill t :align below)))
     (shackle-mode 1))
 #+END_SRC
 ** clojure
@@ -1181,11 +1212,21 @@ enable narrowing
   (use-package clojure-mode
     :config
     (require 'cider)
+    (setq clojure-align-forms-automatically t)
     (put-clojure-indent 'defui '(2 nil nil (1))))
+
+  (use-package flycheck-joker
+    :init
+    (require 'flycheck-joker)
+    :config
+    (add-to-list 'flycheck-checkers 'clojure-joker t)
+    (add-to-list 'flycheck-checkers 'clojurescript-joker t))
+
   (use-package clj-refactor
     :init
-    (add-hook 'clojure-mode-hook #'clj-refactor-mode-hook)
-    :config)
+    (defun my-clj-refactor-mode-hook ()
+    (clj-refactor-mode 1))
+    (add-hook 'clojure-mode-hook #'my-clj-refactor-mode-hook))
   (use-package cider
     :after (evil general)
     :commands (cider--make-result-overlay)
@@ -1264,39 +1305,35 @@ enable narrowing
       :init
       (which-key-mode))
 #+END_SRC
-** Terminal
-                        :prefix my-leader2
-                        "n" 'git-timemachine-show-next-revision
-                        "p" 'git-timemachine-show-previous-revision
-                        "r" 'git-timemachine-show-current-revision
-                        "q" 'git-timemachine-quit))
-#+END_SRC
+** Fringe helper
 #+BEGIN_SRC emacs-lisp
-  (use-package git-gutter-fringe)
-  (use-package fringe-helper)
-  (require 'fringe-helper)
-  (require 'git-gutter-fringe)
-  (fringe-mode 3)
-  ;; (push `(left-fringe  . 3) default-frame-alist)
-  ;; (push `(right-fringe . 3) default-frame-alist)
-  ;; ;; slightly larger default frame size on startup
-  ;; (push '(width . 120) default-frame-alist)
-  ;; (push '(height . 40) default-frame-alist)
-  ;; (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
-  ;; (set-fringe-bitmap-face 'tilde 'fringe)
-  ;; colored fringe "bars"
-  (define-fringe-bitmap 'git-gutter-fr:added
-    [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
-    nil nil 'center)
-  (define-fringe-bitmap 'git-gutter-fr:modified
-    [224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224 224]
-    nil nil 'center)
-  (define-fringe-bitmap 'git-gutter-fr:deleted
-    [0 0 0 0 0 0 0 0 0 0 0 0 0 128 192 224 240 248]
-    nil nil 'center)
-  (advice-add 'evil-force-normal-state :after 'git-gutter)
-  (add-hook 'focus-in-hook 'git-gutter:update-all-windows)
+  (use-package fringe-helper
+  :demand t)
+#+END_SRC
+** Git Gutter
+#+BEGIN_SRC emacs-lisp
+  (use-package git-gutter-fringe
+    :after (fringe-helper)
+    :demand t
+    :init
+    (advice-add 'evil-force-normal-state :after 'git-gutter)
+    (add-hook 'focus-in-hook 'git-gutter:update-all-windows)
+    :config
+    (fringe-mode 3)
+    (fringe-helper-define 'git-gutter-fr:added '(center repeated)
+      "XXX.....")
+    (fringe-helper-define 'git-gutter-fr:modified '(center repeated)
+      "XXX.....")
+    (fringe-helper-define 'git-gutter-fr:deleted 'bottom
+      "X......."
+      "XX......"
+      "XXX....."
+      "XXXX....")
+    )
+#+END_SRC
 
+** Magit
+#+BEGIN_SRC emacs-lisp
   (use-package magit
     :config
     (require 'evil-magit))
@@ -2348,6 +2385,8 @@ See https://www.emacswiki.org/emacs/SqlMode
 ** ace-window
 #+begin_src emacs-lisp
   (use-package ace-window
+    :init
+    (general-define-key :prefix my-leader "W" 'ace-window)
     :config
     (set-face-attribute 'aw-leading-char-face nil :foreground nil :inherit 'evil-goggles-delete-face)
     (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
@@ -2361,15 +2400,14 @@ See https://www.emacswiki.org/emacs/SqlMode
             (?b balance-windows)
             ))
 
-      (defhydra hydra-window-size (:color red)
-        "Windows size"
-        ("h" shrink-window-horizontally "shrink horizontal")
-        ("j" shrink-window "shrink vertical")
-        ("k" enlarge-window "enlarge vertical")
-        ("l" enlarge-window-horizontally "enlarge horizontal"))
-      (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t)
+    (defhydra hydra-window-size (:color red)
+      "Windows size"
+      ("h" shrink-window-horizontally "shrink horizontal")
+      ("j" shrink-window "shrink vertical")
+      ("k" enlarge-window "enlarge vertical")
+      ("l" enlarge-window-horizontally "enlarge horizontal"))
+    (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t)
 
-    (general-define-key :prefix my-leader "w" 'ace-window)
 
     (define-minor-mode my-ace-window-display-mode
       "Minor mode for showing the ace window key in the mode line."
