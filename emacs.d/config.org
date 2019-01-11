@@ -1452,7 +1452,7 @@ enable narrowing
 *** org-templates
 
 #+BEGIN_SRC emacs-lisp
-  (when (version< "9.1.4" (org-version))
+  (when (version<= "9.2.0" (org-version))
     (require 'org-tempo)
     (add-to-list 'org-modules 'org-tempo)
     (add-to-list 'org-structure-template-alist '("S" . "src emacs-lisp")))
