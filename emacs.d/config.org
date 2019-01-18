@@ -821,7 +821,7 @@ These are the Files creating in the current Directory for files that have not be
      "c" (general-simulate-key "C-c")
      "v" 'widen
      "i" 'ibuffer
-     "t" 'projectile-find-file
+     "j" 'projectile-find-file
      "/" 'rg-project
      "e" 'projectile-switch-to-buffer
      "g s" 'git-gutter:stage-hunk
@@ -1257,6 +1257,7 @@ enable narrowing
       :prefix local-leader
       "r" 'cider-hydra-repl/body
       "j" 'cider-jack-in
+      "s" 'cider-jack-in-clojurescript
       "i" 'cider-inspect-last-result
       "g" 'my/goto-or-switch-back-from-repl
       "c" 'cider-jack-in
@@ -1372,6 +1373,10 @@ enable narrowing
 #+END_SRC
 ** Org Mode
 *** org settings
+**** use default log drawer
+#+BEGIN_SRC emacs-lisp
+(setq org-log-into-drawer t)
+#+END_SRC
 **** adapt indentation
 #+BEGIN_SRC emacs-lisp
   (setq org-adapt-indentation nil)
@@ -1452,17 +1457,17 @@ enable narrowing
 *** org-templates
 
 #+BEGIN_SRC emacs-lisp
-  (when (version< "9.2.0" (org-version))
-    (use-package org-tempo
-      :init
-      (add-to-list 'org-modules 'org-tempo)
-      (add-to-list 'org-structure-template-alist '("S" . "src emacs-lisp"))))
+  (when (version<= "9.2.0" (org-version))
+    (require 'org-tempo)
+    (add-to-list 'org-modules 'org-tempo)
+    (add-to-list 'org-structure-template-alist '("S" . "src emacs-lisp")))
 #+END_SRC
 
 *** org-habit
 #+BEGIN_SRC emacs-lisp
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit)
+  (setq org-habit-show-habits-only-for-today nil)
 #+END_SRC
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
@@ -1896,8 +1901,7 @@ for keeping track of recent files, provides helm-recentf with data
 http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
     (use-package ivy
-      :init
-      (ivy-mode t)
+      :init (ivy-mode t)
       :config
       ;; regex order
       (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
@@ -1929,7 +1933,7 @@ http://oremacs.com/swiper/
                    (setq-local pop-target-window (selected-window)))))))
       )
     (use-package counsel
-      :config)
+      :init (counsel-mode t))
     (use-package swiper)
     (use-package avy
       :config
@@ -1939,6 +1943,9 @@ http://oremacs.com/swiper/
           (avy-goto-line)
           (move-to-column col)))
       )
+     
+      (use-package ivy-rich
+      :init (ivy-rich-mode 1))
 #+END_SRC
 ** hex colors
 #+begin_src emacs-lisp
@@ -2602,13 +2609,22 @@ See https://www.emacswiki.org/emacs/SqlMode
 ** langtool
 #+BEGIN_SRC emacs-lisp
   (use-package langtool
+    :init
+    (general-define-key
+     :states '(normal visual)
+     :keymaps 'override
+     :prefix my-leader
+     "t" 'langtool-check)
     :config
     ;; (setq langtool-language-tool-jar "/usr/share/java/languagetool/languagetool-commandline.jar")
     ;;(setq langtool-language-tool-jar "~/Downloads/LanguageTool-4.4/languagetool-commandline.jar")
-    (setq langtool-java-classpath
-      "/usr/share/languagetool:/usr/share/java/languagetool/*")
-    (require 'langtool)
-  )
+    (setq langtool-java-classpath "/usr/share/languagetool:/usr/share/java/languagetool/*"
+          langtool-mother-tongue "de-AT")
+    (set-face-attribute 'langtool-errline nil :foreground nil :background (face-attribute 'trailing-whitespace :background))
+
+   (face-attribute 'warning :foreground)
+    (require 'langtool))
+
 #+END_SRC
 ** format-all
 #+BEGIN_SRC emacs-lisp
