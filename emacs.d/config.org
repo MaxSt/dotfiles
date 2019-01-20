@@ -1393,7 +1393,7 @@ enable narrowing
 #+BEGIN_SRC emacs-lisp
   (setq org-agenda-files '("~/org/")
         org-directory "~/org/"
-        org-archive-location "~/org-archive/%s::")
+        org-archive-location "~/org/archive/%s::")
 #+END_SRC
 **** org src block indention
 #+BEGIN_SRC emacs-lisp
