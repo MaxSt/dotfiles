@@ -1,4 +1,8 @@
 #zsh theme
+
+setopt prompt_subst
+autoload zsh/terminfo
+
 PROMPTCOLOR='green'
 PROMPTERRORCOLOR='red'
 

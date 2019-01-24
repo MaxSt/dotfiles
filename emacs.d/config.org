@@ -1883,8 +1883,8 @@ Download images and insert them into org buffers (drag and drop support)
   (use-package undo-tree
     :config
     (progn
-      (global-undo-tree-mode)
-      (setq undo-tree-auto-save-history t
+      (setq undo-tree-auto-save-history nil
+            undo-tree-enable-undo-in-region nil
             undo-tree-visualizer-diff t
             undo-tree-visualizer-timestamps t
             undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo")))))
@@ -1989,6 +1989,10 @@ http://oremacs.com/swiper/
 load direx-x (for dired-jump)
 #+BEGIN_SRC emacs-lisp
 (load "dired-x")
+#+END_SRC
+Dired tries to guess a default target directory, when dired windows a next to each other.
+#+BEGIN_SRC emacs-lisp
+(setq dired-dwim-target t)
 #+END_SRC
 Hide details by default (can be toggled with "(")
 #+BEGIN_SRC emacs-lisp
@@ -2277,7 +2281,7 @@ See https://www.emacswiki.org/emacs/SqlMode
     :config
     (setq-default
      whitespace-style '(face trailing lines-tail)
-     whitespace-line-column nil)
+     whitespace-line-column fill-column)
     (set-face-attribute 'whitespace-line nil :underline "#ff0000" :inherit 'normal)
     (setq whitespace-global-modes '(not
                                     dired-mode
@@ -2629,6 +2633,11 @@ See https://www.emacswiki.org/emacs/SqlMode
 ** format-all
 #+BEGIN_SRC emacs-lisp
 (use-package format-all)
+#+END_SRC
+** tramp
+Make tramp recognize fancy coloured prompts
+#+BEGIN_SRC emacs-lisp
+(setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
 #+END_SRC
 * Temp
 #+begin_src emacs-lisp

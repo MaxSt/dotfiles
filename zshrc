@@ -34,7 +34,9 @@ if ! zgen saved; then
   zgen oh-my-zsh plugins/tmux
   zgen oh-my-zsh plugins/docker
   zgen oh-my-zsh plugins/docker-compose
-
+  zgen oh-my-zsh plugins/asdf
+  zgen oh-my-zsh plugins/yarn
+  zgen oh-my-zsh plugins/rvm
 
   # completions
   zgen load zsh-users/zsh-completions src
@@ -51,24 +53,18 @@ if [[ -z "$LANG" ]]; then
   export LANG='en_US.UTF-8'
 fi
 
+# Load FZF when available
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
 
 # PATH setting
-PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/local/rvm/bin:/usr/bin/vendor_perl:/usr/bin/core_perl
+PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/bin/vendor_perl:/usr/bin/core_perl
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 PATH=$PATH:$HOME/.scripts
 PATH=$PATH:$HOME/.bin
-
-if [[ -s "$HOME/.rvm/scripts/rvm" ]] ; then source "$HOME/.rvm/scripts/rvm" ; fi
 
 #chpwd is called after changing directories
 function chpwd(){
   #call ls after cd
   ls;
 }
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
-
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
-
-. $HOME/.asdf/asdf.sh
-
-. $HOME/.asdf/completions/asdf.bash
