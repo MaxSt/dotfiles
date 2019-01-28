@@ -206,6 +206,10 @@ These are the Files creating in the current Directory for files that have not be
   (setq ediff-split-window-function 'split-window-horizontally)
 #+END_SRC
 * GUI
+** internal border
+#+BEGIN_SRC emacs-lisp
+  (set-frame-parameter nil 'internal-border-width 3)
+#+END_SRC
 ** font
 #+BEGIN_SRC emacs-lisp
   ;;(set-default-font "Iosevka-12:spacing=110")
@@ -241,14 +245,22 @@ These are the Files creating in the current Directory for files that have not be
   (use-package challenger-deep-theme
   :ensure t
   :init
-  (load-theme 'challenger-deep t))
+  (load-theme 'challenger-deep t)
+  :config
+  (set-face-attribute 'org-level-1 nil :background "#2b2942")
+  (set-face-attribute 'org-level-2 nil :background "#2b2942" :foreground (face-attribute 'warning :foreground)))
+  (set-face-attribute 'org-level-3 nil :background "#2b2942" :foreground (face-attribute 'error :foreground))
+  (set-face-attribute 'org-level-4 nil :background "#2b2942" :foreground (face-attribute 'success :foreground))
+  (set-face-attribute 'org-level-5 nil :background "#2b2942" :foreground (face-attribute 'org-special-keyword :foreground))
+  (set-face-attribute 'org-level-6 nil :background "#2b2942" :foreground (face-attribute 'org-table :foreground))
+
 
   (use-package all-the-icons
-    :init 
+    :init
     (require 'all-the-icons)
     :config
     ;; org-mode ellipsis
-    (setq-default org-ellipsis (concat " " (all-the-icons-faicon "angle-down"))))
+    (setq-default org-ellipsis (concat " " (all-the-icons-faicon "angle-down") " ")))
 
   (use-package all-the-icons-dired
     :after (all-the-icons)
@@ -1469,6 +1481,12 @@ enable narrowing
   (add-to-list 'org-modules 'org-habit)
   (setq org-habit-show-habits-only-for-today nil)
 #+END_SRC
+
+*** fontify-whole-heading-line
+Fontify the whole line for headings (with a background color).
+#+BEGIN_SRC emacs-lisp
+(setq-default org-fontify-whole-heading-line t)
+#+END_SRC
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
   (use-package worf
@@ -2553,7 +2571,7 @@ See https://www.emacswiki.org/emacs/SqlMode
                         (powerline-render rhs))))))
     )
 #+END_SRC
-** emojify
+** COMMENT emojify
 #+begin_src emacs-lisp
   (use-package emojify
     :init
