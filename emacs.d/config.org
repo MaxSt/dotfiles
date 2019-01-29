@@ -129,6 +129,7 @@ previously compiled manually then all of the package initialization will still t
    highlight-nonselected-windows nil
    ;; Disable bidirectional text support for slight performance bonus
    bidi-display-reordering nil
+   bidi-paragraph-direction nil
    ;; Remove continuation arrow on right fringe
    ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
    ;;                              fringe-indicator-alist)
@@ -1370,21 +1371,33 @@ enable narrowing
                         "r" 'git-timemachine-show-current-revision
                         "q" 'git-timemachine-quit))
 #+END_SRC
-** imenu-list
+** imenu-list (file overview)
 #+BEGIN_SRC emacs-lisp
   (use-package imenu-list
     :config
     (setq imenu-list-focus-after-activation t)
+    (setq imenu-list-position 'left)
     (general-define-key :keymaps 'imenu-list-major-mode-map
                         :states '(normal)
                         "|" 'imenu-list-minor-mode
                         "RET" 'imenu-list-goto-entry
+                        (kbd "S-<return>") (lambda ()
+                                             (interactive)
+                                             (imenu-list-goto-entry)
+                                             (org-narrow-to-subtree))
                         "i" 'imenu-list-goto-entry
-                        "q" 'imenu-list-quit-window)
-    )
+                        "q" 'imenu-list-quit-window))
 #+END_SRC
 ** Org Mode
 *** org settings
+**** org-indent-mode (indent sub-headings)
+#+BEGIN_SRC emacs-lisp
+(add-hook 'org-mode-hook 'org-indent-mode)
+#+END_SRC
+**** org-imenu-depth
+#+BEGIN_SRC emacs-lisp
+(setq org-imenu-depth 10)
+#+END_SRC
 **** use default log drawer
 #+BEGIN_SRC emacs-lisp
 (setq org-log-into-drawer t)
@@ -1396,10 +1409,6 @@ enable narrowing
 **** enable syntax highlighting in org-babel source code
 #+BEGIN_SRC emacs-lisp
 (setq org-src-fontify-natively t)
-#+END_SRC
-**** COMMENT Org indent Mode
-#+BEGIN_SRC emacs-lisp
-    (setq org-startup-indented t)
 #+END_SRC
 **** set org default directory
 #+BEGIN_SRC emacs-lisp
@@ -1532,15 +1541,15 @@ Fontify the whole line for headings (with a background color).
           (my-org-before-or-after before)
           (if before
               (org-insert-heading)
-              (org-insert-heading-respect-content)))
+            (org-insert-heading-respect-content)))
       (if (org-at-item-checkbox-p)
           (progn
             (my-org-before-or-after before)
             (org-insert-todo-heading 1))
         (if (org-at-item-p)
-          (progn
-            (my-org-before-or-after before)
-            (org-insert-item))
+            (progn
+              (my-org-before-or-after before)
+              (org-insert-item))
           (progn
             (worf-back-to-heading)
             (my-org-new-item before))))))
@@ -1553,59 +1562,64 @@ Fontify the whole line for headings (with a background color).
     (interactive)
     (my-org-new-item nil))
 
-    (general-define-key :keymaps 'org-mode-map
-                        :states '(normal)
-                        "TAB" 'org-cycle
-                        "<" 'org-metaleft
-                        ">" 'org-metaright
-                        "|" 'imenu-list-minor-mode
-                        "RET" (lambda ()
-                                (interactive)
-                                (if (org-in-src-block-p)
-                                    (org-edit-special)
-                                  (if (org-at-item-checkbox-p)
-                                      (org-toggle-checkbox)
-                                      (org-open-at-point)
-                                      ))
-                                (evil-normal-state)))
-    (general-define-key :prefix my-leader2
-                        :keymaps 'org-mode-map
-                        :states '(normal)
-                        ;;"o" (lambda ()
-                              ;;(interactive)
-                              ;;(org-insert-heading-respect-content)
-                              ;;(evil-insert-state))
-                        "o" 'my-org-new-item-after
-                        "O" 'my-org-new-item-before
-                        "a" (lambda ()
+  (general-define-key :keymaps 'org-mode-map
+                      :states '(normal)
+                      "TAB" 'org-cycle
+                      "<" 'org-metaleft
+                      ">" 'org-metaright
+                      "|" 'imenu-list-minor-mode
+                      "RET" (lambda ()
                               (interactive)
-                              (org-insert-heading-respect-content)
-                              (org-demote-subtree)
-                              (evil-insert-state))
-                        "X" 'org-archive-subtree-default-with-confirmation
-                        "s" 'org-schedule
-                        "r" 'org-refile
-                        "x" 'org-narrow-to-subtree
-                        "t" 'org-todo
-                        "T" 'counsel-org-tag
-                        "p" 'org-insert-link
-                        "y" 'org-store-link
-                        "c" 'myorg-hydra-change/body
-                        "l" 'worf-right
-                        "g" 'counsel-org-goto
-                        "j" 'worf-down
-                        "k" 'worf-up
-                        "h" 'worf-left
-                        "/" 'org-toggle-comment
-                        "SPC" 'worf-back-to-heading
-                        "H" (lambda ()
-                              (interactive)
-                              (worf-left)
-                              (org-cycle)))
-    ;; key for exiting src edit mode
-    (general-define-key :keymaps 'org-src-mode-map
-                        :states '(normal)
-                        "RET" 'org-edit-src-exit)
+                              (if (org-in-src-block-p)
+                                  (org-edit-special)
+                                (if (org-at-item-checkbox-p)
+                                    (org-toggle-checkbox)
+                                  (org-open-at-point)))
+                              (evil-normal-state))
+                      (kbd "S-<return>") 'org-narrow-to-subtree)
+  (general-define-key :prefix my-leader2
+                      :keymaps 'org-mode-map
+                      :states '(normal)
+                      ;;"o" (lambda ()
+                      ;;(interactive)
+                      ;;(org-insert-heading-respect-content)
+                      ;;(evil-insert-state))
+                      "e" 'outline-show-branches
+                      "o" 'my-org-new-item-after
+                      "O" 'my-org-new-item-before
+                      "a" (lambda ()
+                            (interactive)
+                            (org-insert-heading-respect-content)
+                            (org-demote-subtree)
+                            (evil-insert-state))
+                      "X" 'org-archive-subtree-default-with-confirmation
+                      "s" 'org-schedule
+                      "r" 'org-refile
+                      "x" 'org-narrow-to-subtree
+                      "t" 'org-todo
+                      "T" 'counsel-org-tag
+                      "p" 'org-insert-link
+                      "y" 'org-store-link
+                      "c" 'myorg-hydra-change/body
+                      "l" 'worf-right
+                      "g" 'counsel-org-goto
+                      "j" 'worf-down
+                      "k" 'worf-up
+                      "h" 'worf-left
+                      "J" 'org-metadown
+                      "K" 'org-metaup
+                      "H" 'org-metaleft
+                      "L" 'org-metaright
+                      "/" 'org-toggle-comment
+                      "SPC" 'worf-back-to-heading
+                      "H" (lambda ()
+                            (interactive)
+                            (worf-left)
+                            (org-cycle)))
+  ;; key for exiting src edit mode
+  (general-define-key :keymaps 'org-src-mode-map
+                      :states '(normal)
+                      "RET" 'org-edit-src-exit)
 #+END_SRC
 *** open source code in same windowemacs
 #+BEGIN_SRC emacs-lisp
@@ -1997,11 +2011,27 @@ http://oremacs.com/swiper/
 ** highlight-symbol
 #+begin_src emacs-lisp
   (use-package highlight-symbol
-    :config
-    (setq highlight-symbol-idle-delay 1)
+    :init
     (highlight-symbol-mode t)
-    )
-#+end_src
+    :config
+    ;; Overwrite functions for performance imporments.
+    ;; See  https://github.com/nschum/highlight-symbol.el/issues/26   
+    (defun highlight-symbol-add-symbol-with-face (symbol face)
+      (save-excursion
+        (goto-char (point-min))
+        (while (re-search-forward symbol nil t)
+          (let ((ov (make-overlay (match-beginning 0)
+                                  (match-end 0))))
+            (overlay-put ov 'highlight-symbol t)
+            (overlay-put ov 'face face)))))
+    (defun highlight-symbol-remove-symbol (_symbol)
+      (dolist (ov (overlays-in (point-min) (point-max)))
+        (when (overlay-get ov 'highlight-symbol)
+          (delete-overlay ov))))
+
+    ;; Configuration
+    (setq highlight-symbol-idle-delay 1.5))
+    #+end_src
 ** dired
 *** settings
 load direx-x (for dired-jump)
