@@ -518,6 +518,9 @@ These are the Files creating in the current Directory for files that have not be
     :init
     (setq evil-want-integration nil)
     (setq evil-want-keybinding nil)
+
+    ;; whichwrap like movement across lines
+    (setq-default evil-cross-lines t)
     (setq-default evil-search-module 'evil-search
                   evil-shift-width 2
                   ;; prevent esc-key from translating to meta-key in terminal mode
@@ -776,6 +779,7 @@ These are the Files creating in the current Directory for files that have not be
              (evil-window-down 1))
      "gf" 'counsel-find-file
      "gS" 'my-funcs/open-snippet-dir
+     "zw" 'widen
      "s" 'save-buffer
      "S" 'projectile-find-file
      "gs" 'magit-status
@@ -832,7 +836,6 @@ These are the Files creating in the current Directory for files that have not be
      "w" (general-simulate-key "C-w")
      "x" (general-simulate-key "C-x")
      "c" (general-simulate-key "C-c")
-     "v" 'widen
      "i" 'ibuffer
      "j" 'projectile-find-file
      "/" 'rg-project
@@ -935,20 +938,21 @@ increment and decrement numbers with c-a and c-x
       :init
       (global-evil-matchit-mode 1))
 #+end_src
+** evil-quickscope
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-quickscope
+    :init
+    (global-evil-quickscope-mode 1))
+
+#+END_SRC
 ** evil-exchange
 #+begin_src emacs-lisp
-   ;;gx to mark exchange second time to do it
-   ;;gX to cancel
-  (use-package evil-exchange
-    :commands (evil-exchange))
-
-  (general-def 'normal
-    "c" (general-key-dispatch 'evil-change
-    :name general-dispatch-evil-exchange
-          "x" 'evil-exchange
-          "X" 'evil-exchange-cancel
-))
-
+     ;;cx to mark exchange second time to do it
+     ;;cxc to cancel
+    (use-package evil-exchange
+      :commands (evil-exchange)
+      :init
+      (evil-exchange-cx-install))
 #+end_src
 ** evil-nerd-commenter
 #+begin_src emacs-lisp
@@ -1138,8 +1142,7 @@ enable narrowing
   (general-define-key
       :states '(normal operator visual)
    :keymaps 'override
-   :prefix my-leader
-   "x" 'evil-narrow-indirect)
+   "zn" 'evil-narrow-indirect)
 #+end_src
 * Package config
 ** Flycheck
@@ -1165,7 +1168,6 @@ enable narrowing
       "...X....")
     )
 #+end_src
-
 ** Exec-path
 #+BEGIN_SRC emacs-lisp
   (use-package exec-path-from-shell
@@ -1241,6 +1243,8 @@ enable narrowing
     (clj-refactor-mode 1))
     (add-hook 'clojure-mode-hook #'my-clj-refactor-mode-hook))
   (use-package cider
+    :init
+    (add-hook 'clojure-mode-hook 'cider-mode)
     :after (evil general)
     :commands (cider--make-result-overlay)
     :config
@@ -1278,7 +1282,7 @@ enable narrowing
       "e" 'cider-hydra-eval/body
       "q" 'hydra-cljr-help-menu/body)
     (general-def 'normal '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
-      "c" (general-key-dispatch 'general-dispatch-evil-exchange
+      "c" (general-key-dispatch 'evil-change
             "p" (general-key-dispatch 'evil-eval-clojure-text-object
                   :name general-dispatch-eval-clojure-text-object
                   "p" (lambda ()
@@ -1291,6 +1295,10 @@ enable narrowing
             ;; isn't an existing command for the linewise version:
             ;; "c" (general-simulate-keys ('evil-change "c"))
             ))
+   ;; for some reason the above also overrides visual state
+  (general-define-key :states 'visual
+                      :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
+                      "c" 'evil-change)
     )
   (use-package cider-hydra
     :after (evil clojure-mode)
@@ -1301,9 +1309,10 @@ enable narrowing
 #+end_src
 ** elisp
 #+BEGIN_SRC emacs-lisp
-  (general-define-key :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
-                      :states '(normal)
-                      "c" (general-key-dispatch 'general-dispatch-evil-exchange
+  (general-define-key :states 'normal
+                      :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
+                      "c" (general-key-dispatch 'evil-change
+                      :name list-evil-change-dispatch
                             "p" (general-key-dispatch 'evil-eval-elisp-text-object
                                   :name general-dispatch-eval-elisp-text-object
                                   "p" (lambda ()
@@ -1312,6 +1321,12 @@ enable narrowing
                                                (beg (elt range 0))
                                                (end (elt range 1)))
                                           (evil-eval-elisp-text-object beg end))))))
+
+   ;; for some reason the above also overrides visual state keybindings
+  (general-define-key :states 'visual
+                      :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
+                      "c" 'evil-change)
+
 #+END_SRC
 ** which-key
 #+begin_src emacs-lisp
@@ -1673,7 +1688,6 @@ Download images and insert them into org buffers (drag and drop support)
     (add-hook 'cider-repl-mode-hook 'turn-on-smartparens-strict-mode)
     (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
     (smartparens-global-mode 1)
-    
     :config
     (setq sp-navigate-interactive-always-progress-point t)
 
@@ -1682,7 +1696,7 @@ Download images and insert them into org buffers (drag and drop support)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
-    
+
     (defun maybe-join-lisp-line (orig-fun &rest r)
       (apply orig-fun r)
       (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
@@ -2251,14 +2265,14 @@ See https://www.emacswiki.org/emacs/SqlMode
                         "i p" 'alchemist-iex-project-run)
     (general-define-key :keymaps '(elixir-mode-map)
                         :states '(visual)
-                        "c" (general-key-dispatch 'general-dispatch-evil-exchange
+                        "c" (general-key-dispatch 'evil-change
                               "p" 'alchemist-iex-send-region))
     (general-define-key :keymaps '(alchemist-test-report-mode-map)
                         :states '(normal)
                         "q" 'quit-window)
     (general-define-key :keymaps '(elixir-mode-map)
                         :states '(normal)
-                        "c" (general-key-dispatch 'general-dispatch-evil-exchange
+                        "c" (general-key-dispatch 'evil-change
                               :name general-dispatch-change-elixir
                               "p" (general-key-dispatch 'evil-eval-elixir-text-object
                                     :name general-dispatch-eval-elixir-text-object

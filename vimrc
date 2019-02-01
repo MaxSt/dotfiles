@@ -7,6 +7,7 @@ syntax on
 set virtualedit=block
 set nojoinspaces
 set expandtab smarttab
+set whichwrap+=<,>,h,l,[,]
 
 set formatoptions+=1
 if has('patch-7.3.541')
