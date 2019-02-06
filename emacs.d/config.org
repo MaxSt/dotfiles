@@ -522,6 +522,7 @@ These are the Files creating in the current Directory for files that have not be
     ;; whichwrap like movement across lines
     (setq-default evil-cross-lines t)
     (setq-default evil-search-module 'evil-search
+                  evil-ex-substitute-global t ;; make substitue global by default
                   evil-shift-width 2
                   ;; prevent esc-key from translating to meta-key in terminal mode
                   evil-esc-delay 0
@@ -783,7 +784,7 @@ These are the Files creating in the current Directory for files that have not be
      "s" 'save-buffer
      "S" 'projectile-find-file
      "gs" 'magit-status
-     "g/" (general-simulate-key ":g/\C-r//" :state 'normal)
+     ;;"g/" (general-simulate-key ":g/\C-r//" :state 'normal)
      "`" 'evil-goto-mark-line
      "'" 'evil-goto-mark
      "C-h" 'evil-window-left
@@ -821,6 +822,7 @@ These are the Files creating in the current Directory for files that have not be
      "k" 'kill-buffer
      "D" 'evil-delete-buffer
      "d" 'kill-this-buffer
+     "r" (general-simulate-key ":%s/\C-r//" :state 'normal)
      "SPC" 'ace-select-window
      "s" 'dumb-jump-go
      "S" 'dumb-jump-go-prompt
@@ -887,6 +889,14 @@ These are the Files creating in the current Directory for files that have not be
 #+begin_src emacs-lisp
   (use-package aggressive-indent
     :config)
+#+end_src
+** evil-expat (extra ex-commands)
+#+begin_src emacs-lisp
+(use-package evil-expat
+  :ensure t
+  ;; optional, defer loading until 1 second of inactivity,
+  ;; hence not affecting emacs startup time
+  :defer 1)
 #+end_src
 ** evil-args
 #+begin_src emacs-lisp
@@ -971,6 +981,25 @@ provides a minor mode which displays current match and total matches
       :after (evil)
       :init
       (require 'evil-anzu))
+#+end_src
+** evil textobject-to-search
+#+begin_src emacs-lisp
+(evil-define-operator evil-search-textobject (beg end)
+  "Evil operator for evaluating code."
+  :move-point nil
+  (let ((textobj-str (buffer-substring beg end)))
+    (setq evil-ex-search-pattern (evil-ex-make-pattern textobj-str t t))
+    (evil-ex-search-activate-highlight evil-ex-search-pattern)
+    ;; update search history unless this pattern equals the
+    ;; previous pattern
+    (unless (equal (car-safe evil-ex-search-history) textobj-str)
+      (push textobj-str evil-ex-search-history))
+    (evil-push-search-history textobj-str t)
+    (goto-char beg)))
+
+
+    (general-def 'normal 'override
+      "g/" 'evil-search-textobject)
 #+end_src
 ** ibuffer
 #+begin_src emacs-lisp
@@ -2166,7 +2195,7 @@ See https://www.emacswiki.org/emacs/SqlMode
 ** web-mode
 #+begin_src emacs-lisp
   (use-package web-mode
-    :config
+    :init
     (setq web-mode-markup-indent-offset 2)
     (setq css-indent-offset 2)
     (add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
