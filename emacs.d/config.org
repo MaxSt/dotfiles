@@ -8,6 +8,11 @@
 * Package Config
 ** Emacs Initialization
 *** Settings
+Set Lexical binding to true
+#+BEGIN_SRC emacs-lisp
+;;; -*- lexical-binding: t -*-
+#+END_SRC
+
 We're going to increase the gc-cons-threshold to a very high number to decrease the load and compile time.
 We'll lower this value significantly after initialization has completed. We don't want to keep this value
 too high or it will result in long GC pauses during normal usage.
@@ -243,22 +248,18 @@ These are the Files creating in the current Directory for files that have not be
 #+END_SRC
 ** Themes
 #+begin_src emacs-lisp
-  (use-package challenger-deep-theme
-  :ensure t
-  :init
-  (load-theme 'challenger-deep t)
-  :config
-  (set-face-attribute 'org-level-1 nil :background "#2b2942")
-  (set-face-attribute 'org-level-2 nil :background "#2b2942" :foreground (face-attribute 'warning :foreground)))
-  (set-face-attribute 'org-level-3 nil :background "#2b2942" :foreground (face-attribute 'error :foreground))
-  (set-face-attribute 'org-level-4 nil :background "#2b2942" :foreground (face-attribute 'success :foreground))
-  (set-face-attribute 'org-level-5 nil :background "#2b2942" :foreground (face-attribute 'org-special-keyword :foreground))
-  (set-face-attribute 'org-level-6 nil :background "#2b2942" :foreground (face-attribute 'org-table :foreground))
-
+(use-package challenger-deep-theme
+ :ensure t
+ :init (load-theme 'challenger-deep t)
+ :config
+ (set-face-attribute 'org-level-1 nil :background "#2b2942")
+ (set-face-attribute 'org-level-2 nil :background "#2b2942" :foreground (face-attribute 'warning :foreground))
+ (set-face-attribute 'org-level-3 nil :background "#2b2942" :foreground (face-attribute 'error :foreground))
+ (set-face-attribute 'org-level-4 nil :background "#2b2942" :foreground (face-attribute 'success :foreground))
+ (set-face-attribute 'org-level-5 nil :background "#2b2942" :foreground (face-attribute 'org-special-keyword :foreground))
+ (set-face-attribute 'org-level-6 nil :background "#2b2942" :foreground (face-attribute 'org-table :foreground)))
 
   (use-package all-the-icons
-    :init
-    (require 'all-the-icons)
     :config
     ;; org-mode ellipsis
     (setq-default org-ellipsis (concat " " (all-the-icons-faicon "angle-down") " ")))
@@ -267,21 +268,6 @@ These are the Files creating in the current Directory for files that have not be
     :after (all-the-icons)
     :init
     (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
-
-  (use-package all-the-icons-ivy
-    :after (all-the-icons ivy)
-    :init
-    (require 'all-the-icons-ivy)
-    :config
-    (setq all-the-icons-ivy-buffer-commands '(ivy-switch-buffer))
-    (setq all-the-icons-ivy-file-commands
-          '(counsel-find-file
-            counsel-file-jump
-            counsel-recentf
-            projectile-find-file
-            projectile-find-buffer
-            projectile-find-dir))
-    (all-the-icons-ivy-setup))
 #+end_src
 * custom Functions
 ** local abbrev
@@ -893,7 +879,6 @@ These are the Files creating in the current Directory for files that have not be
 ** evil-expat (extra ex-commands)
 #+begin_src emacs-lisp
 (use-package evil-expat
-  :ensure t
   ;; optional, defer loading until 1 second of inactivity,
   ;; hence not affecting emacs startup time
   :defer 1)
@@ -1434,6 +1419,10 @@ enable narrowing
 #+END_SRC
 ** Org Mode
 *** org settings
+**** latex syntax highlight
+#+BEGIN_SRC emacs-lisp
+(setq org-highlight-latex-and-related '(latex script entities))
+#+END_SRC
 **** org-indent-mode (indent sub-headings)
 #+BEGIN_SRC emacs-lisp
 (add-hook 'org-mode-hook 'org-indent-mode)
@@ -1466,6 +1455,19 @@ enable narrowing
         org-edit-src-content-indentation 2)
 #+END_SRC
 
+**** latex export class book-noparts (skip part in book layout)
+#+BEGIN_SRC emacs-lisp
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+             '("book-noparts"
+                "\\documentclass{book}"
+                ("\\chapter{%s}" . "\\chapter*{%s}")
+                ("\\section{%s}" . "\\section*{%s}")
+                ("\\subsection{%s}" . "\\subsection*{%s}")
+                ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+#+END_SRC
 **** capture templates
 #+BEGIN_SRC emacs-lisp
   (setq org-capture-templates
@@ -1484,8 +1486,33 @@ enable narrowing
      ;; use a depth level of 6 max
      (setq org-refile-targets
            '((org-agenda-files . (:maxlevel . 4))))
-     #+END_SRC
      (setq-default org-catch-invisible-edits 'smart)
+     #+END_SRC
+**** set inline image background
+#+BEGIN_SRC emacs-lisp
+  (defcustom org-inline-image-background nil
+    "The color used as the default background for inline images.
+    When nil, use the default face background."
+    :group 'org
+    :type '(choice color (const nil)))
+
+    (defun org-display-inline-images--with-color-theme-background-color (args)
+      "Specify background color of Org-mode inline image through modify `ARGS'."
+      (let* ((file (car args))
+             (type (cadr args))
+             (data-p (caddr args))
+             (props (cdddr args)))
+        ;; get this return result style from `create-image'
+        (append (list file type data-p)
+                ;;(list :background (face-background 'default))
+                (list :background org-inline-image-background)
+                props)))
+
+    (advice-add 'create-image :filter-args
+                #'org-display-inline-images--with-color-theme-background-color)
+
+    (setq org-inline-image-background "#ffffff")
+#+END_SRC
 **** smart invisible edits
      #+BEGIN_SRC emacs-lisp
 (setq-default org-catch-invisible-edits 'smart)
@@ -1639,7 +1666,7 @@ Fontify the whole line for headings (with a background color).
                       "X" 'org-archive-subtree-default-with-confirmation
                       "s" 'org-schedule
                       "r" 'org-refile
-                      "x" 'org-narrow-to-subtree
+                      "n" 'org-narrow-to-subtree
                       "t" 'org-todo
                       "T" 'counsel-org-tag
                       "p" 'org-insert-link
@@ -1726,6 +1753,10 @@ Download images and insert them into org buffers (drag and drop support)
     (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
 
+  (use-package evil-smartparens
+    :init (require 'evil-smartparens)
+    :after (evil general smartparens evil-surround)
+    :config
     (defun maybe-join-lisp-line (orig-fun &rest r)
       (apply orig-fun r)
       (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
@@ -1782,9 +1813,10 @@ Download images and insert them into org buffers (drag and drop support)
     (general-define-key
      :states '(normal operator visual)
      :keymaps lisp-mode-maps
-     [remap evil-delete] 'evil-sp-delete
+     ;;[remap evil-delete] 'evil-sp-delete
+     "d" (general-key-dispatch 'evil-sp-delete
+           "s" 'evil-surround-delete)
      [remap evil-change] 'evil-sp-change)
-
 
     (general-define-key
      :states 'normal
@@ -1886,8 +1918,10 @@ Download images and insert them into org buffers (drag and drop support)
                  (evil-insert nil))
            ")" 'sp-forward-barf-sexp
            "(" 'sp-backward-slurp-sexp)
-     "C" 'evil-sp-change-line
-     "D" 'evil-sp-delete-line)
+
+     [remap evil-change-line] 'evil-sp-change-line
+     [remap evil-delete-line] 'evil-sp-delete-line)
+
 
     (general-def 'normal
       ">" (general-key-dispatch 'evil-shift-right
@@ -1898,9 +1932,7 @@ Download images and insert them into org buffers (drag and drop support)
             "(" 'sp-backward-slurp-sexp))
     )
 
-  (use-package evil-smartparens
-  :init (require 'evil-smartparens)
-  :after (evil general smartparens))
+    )
 
 #+END_SRC
 ** Latex
@@ -2372,7 +2404,7 @@ See https://www.emacswiki.org/emacs/SqlMode
     :config
     (setq-default
      whitespace-style '(face trailing lines-tail)
-     whitespace-line-column fill-column)
+     whitespace-line-column nil) ;; use fill-column by default
     (set-face-attribute 'whitespace-line nil :underline "#ff0000" :inherit 'normal)
     (setq whitespace-global-modes '(not
                                     dired-mode
@@ -2466,7 +2498,7 @@ See https://www.emacswiki.org/emacs/SqlMode
 ** editorconfig
 #+begin_src emacs-lisp
   (use-package editorconfig
-    :config
+    :init
     (editorconfig-mode 1))
 #+end_src
 ** COMMENT fill-column-indicator
