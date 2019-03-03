@@ -1757,13 +1757,34 @@ Download images and insert them into org buffers (drag and drop support)
     :init (require 'evil-smartparens)
     :after (evil general smartparens evil-surround)
     :config
-    (defun maybe-join-lisp-line (orig-fun &rest r)
-      (apply orig-fun r)
-      (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
-        (evil-previous-line-first-non-blank)
-        (save-excursion (join-line 1))))
-    (advice-add 'evil-sp-delete-line :around 'maybe-join-lisp-line)
-    (advice-add 'evil-sp-delete :around 'maybe-join-lisp-line)
+    (add-to-list 'evil-surround-operator-alist
+    '(evil-sp-change . change))
+    (add-to-list 'evil-surround-operator-alist
+    '(my-evil-sp-change . change))
+    (add-to-list 'evil-surround-operator-alist
+    '(evil-sp-delete . delete))
+    (add-to-list 'evil-surround-operator-alist
+    '(my-evil-sp-delete . delete))
+
+    (defun maybe-join-lisp-line ()
+      (save-excursion
+        (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
+          (evil-previous-line-first-non-blank)
+          (join-line 1))))
+
+    (evil-define-operator my-evil-sp-delete (&rest r)
+      "Call `evil-sp-delete' and join lines"
+      (interactive "<R><x><y>")
+      (apply 'evil-sp-delete r)
+      (maybe-join-lisp-line))
+
+    (evil-define-operator my-evil-sp-change (&rest r)
+      "Call `evil-sp-change' and join lines"
+      (interactive "<R><x><y>")
+      (apply 'evil-sp-change r)
+      (maybe-join-lisp-line))
+
+
     (defun in-sexp ()
       (> (nth 0 (syntax-ppss)) 0))
     (defun next-sexp ()
@@ -1813,10 +1834,8 @@ Download images and insert them into org buffers (drag and drop support)
     (general-define-key
      :states '(normal operator visual)
      :keymaps lisp-mode-maps
-     ;;[remap evil-delete] 'evil-sp-delete
-     "d" (general-key-dispatch 'evil-sp-delete
-           "s" 'evil-surround-delete)
-     [remap evil-change] 'evil-sp-change)
+     [remap evil-delete] 'my-evil-sp-delete
+     [remap evil-change] 'my-evil-sp-change)
 
     (general-define-key
      :states 'normal
