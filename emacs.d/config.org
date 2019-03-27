@@ -2723,7 +2723,7 @@ See https://www.emacswiki.org/emacs/SqlMode
 ** view-large-files
 #+begin_src emacs-lisp
   (use-package vlf
-    :config
+    :init
     (require 'vlf-setup))
 #+end_src
 ** COMMENT language-server
@@ -2793,6 +2793,11 @@ Make tramp recognize fancy coloured prompts
 #+BEGIN_SRC emacs-lisp
   (use-package scratch)
 #+END_SRC
+** elisp-demos
+#+BEGIN_SRC emacs-lisp
+(use-package elisp-demos
+  :init
+ (advice-add 'describe-function-1 :after #'elisp-demos-advice-describe-function-1)
 * Temp
 #+begin_src emacs-lisp
   ;; (use-package nlinum

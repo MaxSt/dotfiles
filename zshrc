@@ -12,6 +12,10 @@ if ~/.scripts/command_is_available trash-put; then
   alias rm="trash-put"
 fi
 
+# remove command lines from the history list when the first character on the
+# line is a space
+setopt histignorespace
+
 # load zgen
 source "${HOME}/.zgen/zgen.zsh"
 
@@ -40,6 +44,7 @@ if ! zgen saved; then
 
   # completions
   zgen load zsh-users/zsh-completions src
+  zgen load zsh-users/zsh-autosuggestions
 
   # theme
   #zgen oh-my-zsh themes/arrow
