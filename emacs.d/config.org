@@ -1426,7 +1426,9 @@ enable narrowing
 #+END_SRC
 **** org-indent-mode (indent sub-headings)
 #+BEGIN_SRC emacs-lisp
-(add-hook 'org-mode-hook 'org-indent-mode)
+  (setq-default org-indent-indentation-per-level 1
+                org-hide-leading-stars nil)
+  (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
 **** org-imenu-depth
 #+BEGIN_SRC emacs-lisp
