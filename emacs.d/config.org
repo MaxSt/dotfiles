@@ -1794,9 +1794,7 @@ Download images and insert them into org buffers (drag and drop support)
 
     (defun in-sexp ()
       (> (nth 0 (syntax-ppss)) 0))
-    (defun next-sexp ()
-      "Go to the next sexp"
-      (interactive))
+
     (defun next-paren (&optional closing)
       "Go to the next/previous closing/opening parenthesis/bracket/brace."
       (if closing
@@ -1805,14 +1803,7 @@ Download images and insert them into org buffers (drag and drop support)
             (unless (eq curr (search-forward-regexp "[])}]"))
               (backward-char)))
         (search-backward-regexp "[[({]")))
-    (defun prev-opening-paren ()
-      "Go to the next closing parenthesis."
-      (interactive)
-      (next-paren))
-    (defun next-closing-paren ()
-      "Go to the next closing parenthesis."
-      (interactive)
-      (next-paren 'closing))
+
     (defun open-paren-around (paren element beginning)
       (when (and element (in-sexp))
         (next-paren))
@@ -1826,12 +1817,14 @@ Download images and insert them into org buffers (drag and drop support)
           (evil-forward-char 1)
           (insert " ")))
       (evil-insert nil))
+
     (evil-define-command lisp-next-paren (count)
       (interactive "<c>")
       (if count
           (dotimes (number count)
             (call-interactively 'sp-next-sexp))
         (call-interactively 'sp-next-sexp)))
+
     (evil-define-command lisp-previous-paren (count)
       (interactive "<c>")
       (if count
@@ -1928,10 +1921,6 @@ Download images and insert them into org buffers (drag and drop support)
                  (when (not (char-equal (preceding-char)  ?  ))
                    (insert " "))
                  (evil-insert nil))
-           "f" (lambda ()
-                 (interactive)
-                 (when (in-sexp)
-                   ))
            ")" 'sp-forward-slurp-sexp
            "(" 'sp-backward-barf-sexp)
      "<" (general-key-dispatch 'evil-shift-left
@@ -1955,10 +1944,7 @@ Download images and insert them into org buffers (drag and drop support)
             "(" 'sp-backward-barf-sexp)
       "<" (general-key-dispatch 'evil-shift-left
             ")" 'sp-forward-barf-sexp
-            "(" 'sp-backward-slurp-sexp))
-    )
-
-    )
+            "(" 'sp-backward-slurp-sexp))))
 
 #+END_SRC
 ** Latex
@@ -2604,106 +2590,7 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+BEGIN_SRC emacs-lisp
   (use-package doom-modeline
     :hook (after-init . doom-modeline-init)
-    :config
-    (setq doom-modeline-major-mode-color-icon t))
-#+END_SRC
-** COMMENT powerline
-#+BEGIN_SRC emacs-lisp
-  (use-package powerline
-    :config
-    (add-hook 'desktop-after-read-hook 'powerline-reset)
-    (defun make-rect (color height width)
-      "Create an XPM bitmap."
-      (when window-system
-        (propertize
-         " " 'display
-         (let ((data nil)
-               (i 0))
-           (setq data (make-list height (make-list width 1)))
-           (pl/make-xpm "percent" color color (reverse data))))))
-    (defun powerline-mode-icon ()
-      (let ((icon (all-the-icons-icon-for-buffer)))
-        (unless (symbolp icon) ;; This implies it's the major mode
-          (format " %s"
-                  (propertize icon
-                              'help-echo (format "Major-mode: `%s`" major-mode)
-                              'face `(:height 1.2 :family ,(all-the-icons-icon-family-for-buffer)))))))
-    (defun powerline-modeline-vc ()
-      (when vc-mode
-        (let* ((text-props (text-properties-at 1 vc-mode))
-               (vc-without-props (substring-no-properties vc-mode))
-               (new-text (concat
-                          " "
-                          (all-the-icons-faicon "code-fork"
-                                                :v-adjust -0.1)
-                          vc-without-props
-                          " "))
-               )
-          (apply 'propertize
-                 new-text
-                 'face (when (powerline-selected-window-active) 'success)
-                 text-props
-                 ))))
-    (defun powerline-buffer-info ()
-      (let ((proj (projectile-project-name)))
-        (if (string= proj "-")
-            (buffer-name)
-          (concat
-           (propertize (concat
-                        proj)
-                       'face 'warning)
-           " "
-           (buffer-name)))))
-    (defun powerline-ace-window () (propertize (or (window-parameter (selected-window) 'my-ace-window-path) "") 'face 'error))
-    (setq-default mode-line-format
-                  '("%e"
-                    (:eval
-                     (let* ((active (powerline-selected-window-active))
-                            (modified (buffer-modified-p))
-                            (face1 (if active 'powerline-active1 'powerline-inactive1))
-                            (face2 (if active 'powerline-active2 'powerline-inactive2))
-                            (bar-color (cond ((and active modified) (face-foreground 'error))
-                                             (active (face-background 'cursor))
-                                             (t (face-background 'tooltip))))
-                            (lhs (list
-                                  (make-rect bar-color 30 3)
-                                  (when modified
-                                    (concat
-                                     " "
-                                     (all-the-icons-faicon "floppy-o"
-                                                           :face (when active 'error)
-                                                           :v-adjust -0.01)))
-                                  " "
-                                  (powerline-buffer-info)
-                                  " "
-                                  (powerline-modeline-vc)
-                                  ))
-                            (center (list
-                                     " "
-                                     (powerline-mode-icon)
-                                     " "
-                                     ;;major-mode
-                                     (powerline-major-mode)
-                                     " "))
-                            (rhs (list
-                                  (powerline-ace-window)
-                                  " | "
-                                  (format "%s" (eyebrowse--get 'current-slot))
-                                  " | "
-                                  (powerline-raw "%l:%c" face1 'r)
-                                  " | "
-                                  (powerline-raw "%6p" face1 'r)
-                                  (powerline-hud 'highlight 'region 1)
-                                  " "
-                                  ))
-                            )
-                       (concat
-                        (powerline-render lhs)
-                        (powerline-fill-center face1 (/ (powerline-width center) 2.0))
-                        (powerline-render center)
-                        (powerline-fill face2 (powerline-width rhs))
-                        (powerline-render rhs))))))
-    )
+    :config)
 #+END_SRC
 ** COMMENT emojify
 #+begin_src emacs-lisp
