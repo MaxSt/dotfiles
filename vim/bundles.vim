@@ -448,9 +448,12 @@ call plug#begin('~/.vim/plugged')
   let g:airline_right_sep='░'
 
   Plug 'vladh/tagbar'
+  Plug 'w0rp/ale'
 
   Plug 'machakann/vim-highlightedyank'
   highlight link HighlightedyankRegion Folded
+
+  Plug 'jceb/vim-orgmode'
 
 call plug#end()
 filetype plugin indent on

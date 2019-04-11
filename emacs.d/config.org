@@ -89,9 +89,9 @@ previously compiled manually then all of the package initialization will still t
 #+BEGIN_SRC emacs-lisp
   (require 'package)
   (unless (assoc-default "melpa" package-archives)
-    (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/") t))
+    (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
   (unless (assoc-default "org" package-archives)
-    (add-to-list 'package-archives '("org" . "http://orgmode.org/elpa/") t))
+    (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t))
 
   (eval-when-compile
     (unless package--initialized (package-initialize))
@@ -1458,6 +1458,20 @@ enable narrowing
         org-edit-src-content-indentation 2)
 #+END_SRC
 
+**** set default output directory (and not use the current directory by default)
+#+BEGIN_SRC emacs-lisp
+  (defvar org-export-output-directory (concat (getenv "HOME") "/Downloads/org-exports") "directory used for org-mode export")
+
+  (defadvice org-export-output-file-name (before org-add-export-dir activate)
+    "Modifies org-export to place exported files in a different directory"
+    (when (not pub-dir)
+      (setq pub-dir org-export-output-directory)
+        (when (not (file-directory-p pub-dir))
+         (make-directory pub-dir))))
+
+  (setq org-babel-default-header-args:dot `((:results . "file") (:exports . "results") (:dir . ,org-export-output-directory)))
+#+END_SRC
+
 **** latex export class book-noparts (skip part in book layout)
 #+BEGIN_SRC emacs-lisp
 (with-eval-after-load 'ox-latex
@@ -1538,9 +1552,10 @@ enable narrowing
 #+END_SRC
 *** babel languages
 #+begin_src emacs-lisp
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((sql . t)))
+    (org-babel-do-load-languages
+     'org-babel-load-languages
+     '((sql . t)
+       (dot . t)))
 #+end_src
 *** org-Reveal (HTML presentations)
 #+BEGIN_SRC emacs-lisp
