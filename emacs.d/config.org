@@ -114,10 +114,14 @@ previously compiled manually then all of the package initialization will still t
 
    tab-stop-list (number-sequence 2 120 2))
   ;; relative line numbers
-  (setq-default display-line-numbers 'visual)
-  ;;(setq-default display-line-numbers nil)
+  ;; The problem with 'visual is that it does not play very nice with
+  ;; visual-fill-column, because it shows a line number for a wrapped line.
+  ;; The problem with 'relative is, that it does not work for folded org-mode headers.
+  ;;(setq-default display-line-numbers 'visual)
+  (setq-default display-line-numbers nil)
   ;; make current line 0
   (setq display-line-numbers-current-absolute nil)
+  (setq display-line-numbers-widen t)
   (setq-default fill-column 80)
   (setq-default truncate-lines nil) ; line wrap
   (setq-default indent-tabs-mode nil
@@ -226,7 +230,6 @@ These are the Files creating in the current Directory for files that have not be
   (scroll-bar-mode 0)
   (tool-bar-mode -1)     ; disable the tool-bar
   (menu-bar-mode -1)     ; disable the menu-bar
-  (global-linum-mode -1)  ; dont show line-numbers everywhere
   (show-paren-mode)
   ;;(electric-pair-mode 1)
 
@@ -639,6 +642,8 @@ These are the Files creating in the current Directory for files that have not be
     :after evil
     :init
     (require 'evil-collection)
+     ;; edebug mode clashes with helpful.
+    (setq evil-collection-mode-list (delete 'edebug evil-collection-mode-list))
     :config
     ;;(setq evil-collection-mode-list ...)
     ;; These are the mappings i use for window management and i don't want
@@ -646,6 +651,8 @@ These are the Files creating in the current Directory for files that have not be
     (defun my-control-hjkl-rotation (_mode mode-keymaps &rest _rest)
       (evil-collection-translate-key 'normal mode-keymaps
         (kbd "SPC") nil
+        (kbd "gj") nil ;; outline mode would rebind gj
+        (kbd "gk") nil ;; outline mode would rebind gj
         (kbd "]") nil
         (kbd "[") nil
         (kbd "M-j") nil
@@ -813,10 +820,10 @@ These are the Files creating in the current Directory for files that have not be
      "s" 'dumb-jump-go
      "S" 'dumb-jump-go-prompt
      ;;"h" (general-simulate-keys "C-h")
-     "h k" 'describe-key
+     "h k" 'helpful-key
      "h SPC" 'which-key-show-top-level
-     "h v" 'describe-variable
-     "h f" 'describe-function
+     "h v" 'helpful-variable
+     "h f" 'helpful-function
      "h m" 'describe-mode
      "<return>" 'my/projectile-multi-term
      "S-<return>" 'multi-term
@@ -849,10 +856,9 @@ These are the Files creating in the current Directory for files that have not be
     (general-define-key
      :states '(operator normal visual)
      :keymaps 'override
-     :prefix my-leader
      "gf" 'evil-avy-goto-char
      "gl" 'evil-avy-goto-line
-     "gw" 'evil-avy-goto-word-1)
+     "gW" 'evil-avy-goto-word-1)
     )
 
 #+END_SRC
@@ -1122,19 +1128,19 @@ provides a minor mode which displays current match and total matches
 #+begin_src emacs-lisp
   (use-package company
    :init
-    (progn
-      (setq company-idle-delay 0.2
-            company-minimum-prefix-length 2
-            company-require-match nil
-            company-selection-wrap-around t
-            company-dabbrev-ignore-case nil
-            company-dabbrev-downcase nil))
-   :config
-   (global-company-mode)
+   (setq company-idle-delay 0.2
+         company-minimum-prefix-length 2
+         company-require-match nil
+         company-selection-wrap-around t
+         company-dabbrev-ignore-case nil
+         company-dabbrev-downcase nil)
 
+   (global-company-mode)
    (define-key company-active-map [tab] 'company-complete)
    (define-key company-active-map (kbd "C-n") 'company-select-next)
    (define-key company-active-map (kbd "C-p") 'company-select-previous))
+
+   (use-package company-box :hook (company-mode . company-box-mode))
 #+end_src
 ** narrowing
 enable narrowing
@@ -1417,6 +1423,17 @@ enable narrowing
                                              (org-narrow-to-subtree))
                         "i" 'imenu-list-goto-entry
                         "q" 'imenu-list-quit-window))
+#+END_SRC
+** Visual fill Column
+#+BEGIN_SRC emacs-lisp
+(use-package visual-fill-column
+  :ghook 'text-mode-hook)
+
+;; soft-wrap lines
+(general-add-hook 'text-mode-hook #'visual-line-mode)
+;; show right-curly arrow on right of wrapped lines
+(setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+
 #+END_SRC
 ** Org Mode
 *** org settings
@@ -1733,14 +1750,11 @@ and the `>` and `<` opererators for promoting and demoting headers and
   (use-package evil-org
     :after org
     :init
+    (setf evil-org-key-theme '(operators textobjects table))
     (add-hook 'org-mode-hook 'evil-org-mode)
-    (add-hook 'evil-org-mode-hook
-              (lambda ()
-                (evil-org-set-key-theme '(operators textobjects table))))
     :config
     ;; diable o/O special handling for items
     (setq evil-org-special-o/O nil)
-
     (require 'evil-org-agenda)
     (evil-org-agenda-set-keys))
 #+END_SRC
@@ -2425,19 +2439,22 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** whitespace mode
 #+begin_src emacs-lisp
-  (use-package whitespace
-    :init
-    (global-whitespace-mode 1)
-    :config
-    (setq-default
-     whitespace-style '(face trailing lines-tail)
-     whitespace-line-column nil) ;; use fill-column by default
-    (set-face-attribute 'whitespace-line nil :underline "#ff0000" :inherit 'normal)
-    (setq whitespace-global-modes '(not
-                                    dired-mode
-                                    alchemist-test-mode
-                                    alchemist-iex-mode
-                                    cider-repl-mode)))
+    (use-package whitespace
+      :init
+      (global-whitespace-mode 1)
+      :config
+      (setq-default
+       whitespace-style '(face trailing space-before-tab::tab tab-mark)
+       whitespace-line-column nil) ;; use fill-column by default
+      (set-face-attribute 'whitespace-line nil :underline "#ff0000" :inherit 'normal)
+      (general-add-hook 'prog-mode-hook (lambda ()
+                                          (setq-local whitespace-style
+                                                    (cons 'lines-tail whitespace-style))))
+      (setq whitespace-global-modes '(not
+                                      dired-mode
+                                      alchemist-test-mode
+                                      alchemist-iex-mode
+                                      cider-repl-mode)))
 #+end_src
 ** markdown-mode
 #+begin_src emacs-lisp
@@ -2697,28 +2714,52 @@ Make tramp recognize fancy coloured prompts
 #+BEGIN_SRC emacs-lisp
   (use-package scratch)
 #+END_SRC
+** Highlight escape sequences
+#+BEGIN_SRC emacs-lisp
+(use-package highlight-escape-sequences
+  :init (hes-mode))
+#+END_SRC
+** Evil Visual Mark Mode
+#+BEGIN_SRC emacs-lisp
+(use-package evil-visual-mark-mode
+  :init (evil-visual-mark-mode))
+#+END_SRC
+** Adaptive Wrap
+This package will visually indent soft-wrapped lines that are bullet points.
+#+BEGIN_SRC emacs-lisp
+(use-package adaptive-wrap
+  :ghook ('text-mode-hook #'adaptive-wrap-prefix-mode))
+#+END_SRC
+** COMMENT Stripe Buffer
+Deactivated, because it makes org mode very slow.
+#+BEGIN_SRC emacs-lisp
+(use-package stripe-buffer
+  :ghook ('org-mode-hook #'turn-on-stripe-table-mode))
+#+END_SRC
 ** elisp-demos
 #+BEGIN_SRC emacs-lisp
-(use-package elisp-demos
-  :init
- (advice-add 'describe-function-1 :after #'elisp-demos-advice-describe-function-1)
+  (use-package elisp-demos
+    :init
+    (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update)
+   (advice-add 'describe-function-1 :after #'elisp-demos-advice-describe-function-1))
+ #+END_SRC
+** helpful
+#+BEGIN_SRC emacs-lisp
+  (use-package helpful)
+ #+END_SRC
+** ivy-posframe
+#+BEGIN_SRC emacs-lisp
+  (use-package ivy-posframe
+    :init
+    (ivy-posframe-enable)
+    :config
+    (setq ivy-display-function #'ivy-posframe-display-at-frame-center)
+    (setq ivy-posframe-parameters
+          '((left-fringe . 8)
+            (right-fringe . 8)))
+)
+ #+END_SRC
 * Temp
-#+begin_src emacs-lisp
-  ;; (use-package nlinum
-  ;;   :demand t
-  ;;   :init
-  ;;   (progn
-  ;;     (setq nlinum-format "%3d ")
-  ;;     ))
-  ;; (use-package nlinum-relative
-  ;;   :demand t
-  ;;   :init
-  ;;   (progn
-  ;;     ;;(add-hook 'prog-mode-hook 'nlinum-relative-mode)
-  ;;     (global-nlinum-relative-mode t)
-  ;;     (setq nlinum-relative-current-symbol "")
-  ;;     (nlinum-relative-setup-evil)))
-  ;; default values for indentation (possibly overwritten by editorconfig)
   (setq
    js2-basic-offset 2
    js-indent-level 2
