@@ -1283,8 +1283,11 @@ enable narrowing
       (if (eq major-mode 'cider-repl-mode)
           (cider-switch-to-last-clojure-buffer)
         (cider-switch-to-repl-buffer)))
-    (general-def 'normal ':keymaps '(cider-inspector-mode-map)
+    (general-define-key
+     :states 'normal
+     :keymaps '(cider-inspector-mode-map)
       "n" 'cider-inspector-next-page
+      "q" 'quit-window
       "N" 'cider-inspector-prev-page
       "RET" 'cider-inspector-operate-on-point
       "d" 'cider-inspector-pop
