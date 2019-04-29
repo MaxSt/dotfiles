@@ -19,8 +19,22 @@ too high or it will result in long GC pauses during normal usage.
 
 #+BEGIN_SRC emacs-lisp
 (eval-and-compile
-  (setq gc-cons-threshold 402653184
-        gc-cons-percentage 0.6))
+;; Speed up startup
+(defvar default-file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+(setq gc-cons-threshold 80000000)
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            "Restore defalut values after init."
+            (setq file-name-handler-alist default-file-name-handler-alist)
+            (setq gc-cons-threshold 800000)
+            (if (boundp 'after-focus-change-function)
+                (add-function :after after-focus-change-function
+                              (lambda ()
+                                (unless (frame-focus-state)
+                                  (garbage-collect))))
+(add-hook 'focus-out-hook 'garbage-collect))))
+)
 #+END_SRC
 
 Disable certain byte compiler warnings to cut down on the noise. This is a personal choice and can be removed
@@ -2722,11 +2736,6 @@ Make tramp recognize fancy coloured prompts
 (use-package highlight-escape-sequences
   :init (hes-mode))
 #+END_SRC
-** Evil Visual Mark Mode
-#+BEGIN_SRC emacs-lisp
-(use-package evil-visual-mark-mode
-  :init (evil-visual-mark-mode))
-#+END_SRC
 ** Adaptive Wrap
 This package will visually indent soft-wrapped lines that are bullet points.
 #+BEGIN_SRC emacs-lisp
@@ -2772,13 +2781,4 @@ Deactivated, because it makes org mode very slow.
   ;; Don't litter my init file
   (setq custom-file "~/.emacs.d/local/custom-set.el")
   (load custom-file 'noerror)
-#+END_SRC
-
-
-** Post Initialization
-Let's lower our GC thresholds back down to a sane level.
-
-#+BEGIN_SRC emacs-lisp
-(setq gc-cons-threshold 16777216
-      gc-cons-percentage 0.1)
 #+END_SRC
