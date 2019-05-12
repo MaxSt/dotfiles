@@ -1456,7 +1456,7 @@ enable narrowing
 *** org settings
 **** latex syntax highlight
 #+BEGIN_SRC emacs-lisp
-(setq org-highlight-latex-and-related '(latex script entities))
+  (setq org-highlight-latex-and-related '(latex script entities))
 #+END_SRC
 **** org-indent-mode (indent sub-headings)
 #+BEGIN_SRC emacs-lisp
@@ -1537,7 +1537,6 @@ enable narrowing
      ;; use a depth level of 6 max
      (setq org-refile-targets
            '((org-agenda-files . (:maxlevel . 4))))
-     (setq-default org-catch-invisible-edits 'smart)
      #+END_SRC
 **** set inline image background
 #+BEGIN_SRC emacs-lisp
@@ -1564,7 +1563,7 @@ enable narrowing
 
     (setq org-inline-image-background "#ffffff")
 #+END_SRC
-**** smart invisible edits
+**** smart invisible edits (show edits and don't allow deletion)
      #+BEGIN_SRC emacs-lisp
 (setq-default org-catch-invisible-edits 'smart)
      #+END_SRC
@@ -1572,7 +1571,7 @@ enable narrowing
      #+BEGIN_SRC emacs-lisp
 (setq-default org-hide-leading-stars t)
      #+END_SRC
-*** COMMENT org-bullets (pretty bullets)
+*** org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
     :init
