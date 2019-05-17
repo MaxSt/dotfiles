@@ -265,16 +265,16 @@ These are the Files creating in the current Directory for files that have not be
 #+END_SRC
 ** Themes
 #+begin_src emacs-lisp
-(use-package challenger-deep-theme
- :ensure t
- :init (load-theme 'challenger-deep t)
- :config
- (set-face-attribute 'org-level-1 nil :background "#2b2942")
- (set-face-attribute 'org-level-2 nil :background "#2b2942" :foreground (face-attribute 'warning :foreground))
- (set-face-attribute 'org-level-3 nil :background "#2b2942" :foreground (face-attribute 'error :foreground))
- (set-face-attribute 'org-level-4 nil :background "#2b2942" :foreground (face-attribute 'success :foreground))
- (set-face-attribute 'org-level-5 nil :background "#2b2942" :foreground (face-attribute 'org-special-keyword :foreground))
- (set-face-attribute 'org-level-6 nil :background "#2b2942" :foreground (face-attribute 'org-table :foreground)))
+  (use-package challenger-deep-theme
+    :ensure t
+    :init (load-theme 'challenger-deep t)
+    :config
+    (set-face-attribute 'org-level-1 nil :background "#2b2942")
+    (set-face-attribute 'org-level-2 nil :background "#2b2942" :foreground (face-attribute 'warning :foreground))
+    (set-face-attribute 'org-level-3 nil :background "#2b2942" :foreground (face-attribute 'error :foreground))
+    (set-face-attribute 'org-level-4 nil :background "#2b2942" :foreground (face-attribute 'success :foreground))
+    (set-face-attribute 'org-level-5 nil :background "#2b2942" :foreground (face-attribute 'org-special-keyword :foreground))
+    (set-face-attribute 'org-level-6 nil :background "#2b2942" :foreground (face-attribute 'org-table :foreground)))
 
   (use-package all-the-icons
     :config
@@ -1579,6 +1579,14 @@ enable narrowing
               (lambda ()
               (org-bullets-mode 1))))
 #+END_SRC
+*** org-sticky-header
+#+BEGIN_SRC emacs-lisp
+   (use-package org-sticky-header
+     :init
+     (add-hook 'org-mode-hook 'org-sticky-header-mode)
+     :config
+     (setq org-sticky-header-full-path 'full))
+#+END_SRC
 *** COMMENT blank before new entry
 #+BEGIN_SRC emacs-lisp
 (setq-default org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
@@ -1722,6 +1730,7 @@ Fontify the whole line for headings (with a background color).
                       "T" 'counsel-org-tag
                       "p" 'org-insert-link
                       "y" 'org-store-link
+                      "x" 'org-archive-subtree
                       "c" 'myorg-hydra-change/body
                       "l" 'worf-right
                       "g" 'counsel-org-goto
@@ -2198,7 +2207,6 @@ Recursive copy and deletion
         dired-recursive-deletes 'always)
 #+END_SRC
 *** dired-subtree
-Show subtree when pressing i
 #+BEGIN_SRC emacs-lisp
   (use-package dired-subtree
     :after (dired)
@@ -2217,7 +2225,22 @@ Multi-stage copy/pasting of files and bookmarks
         :commands (dired-sidebar-toggle-sidebar)
         :init
         (general-define-key :prefix my-leader "TAB" 'dired-sidebar-toggle-sidebar)
-  )
+        ;; (setq dired-sidebar-use-custom-modeline t)
+        ;; (setq dired-sidebar-mode-line-format nil)
+        (add-hook 'dired-sidebar-mode-hook (lambda ()
+                                             (linum-mode -1)
+                                             (fringe-mode 0)
+                                             (hl-line-mode)
+                                             (set-face-background hl-line-face "#1b182c")
+                                             (setq buffer-face-mode-face `(:background "#100e23"))
+                                             (buffer-face-mode 1)))
+
+
+        :config
+        ;; (setq dired-sidebar-theme 'nerd)
+        ;; (setq dired-sidebar-use-term-integration t)
+        ;; (setq dired-sidebar-use-custom-font t)
+        )
 #+end_src
 *** Keybindings
 #+BEGIN_SRC emacs-lisp
@@ -2770,6 +2793,14 @@ Deactivated, because it makes org mode very slow.
             (right-fringe . 8)))
 )
  #+END_SRC
+** restart-emacs
+#+BEGIN_SRC emacs-lisp
+  (use-package restart-emacs)
+#+END_SRC
+** suggest (suggest emacs lisp functions based on input/output)
+#+BEGIN_SRC emacs-lisp
+  (use-package suggest)
+#+END_SRC
 * Temp
   (setq
    js2-basic-offset 2
