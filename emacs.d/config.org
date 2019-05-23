@@ -1494,7 +1494,7 @@ enable narrowing
 
 **** set default output directory (and not use the current directory by default)
 #+BEGIN_SRC emacs-lisp
-  (defvar org-export-output-directory (concat (getenv "HOME") "/Downloads/org-exports") "directory used for org-mode export")
+  (defvar-local org-export-output-directory (concat (getenv "HOME") "/Downloads/org-exports") "directory used for org-mode export")
 
   (defadvice org-export-output-file-name (before org-add-export-dir activate)
     "Modifies org-export to place exported files in a different directory"
