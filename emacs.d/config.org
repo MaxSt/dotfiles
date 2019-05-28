@@ -126,6 +126,9 @@ previously compiled manually then all of the package initialization will still t
    ;; faster scrolling (see https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag/28746)
    auto-window-vscroll nil
 
+   ;; scroll line by line (https://www.gnu.org/software/emacs/manual/html_node/efaq/Scrolling-only-one-line.html)
+   scroll-conservatively most-positive-fixnum
+
    tab-stop-list (number-sequence 2 120 2))
   ;; relative line numbers
   ;; The problem with 'visual is that it does not play very nice with
@@ -1368,9 +1371,12 @@ enable narrowing
 #+END_SRC
 ** which-key
 #+begin_src emacs-lisp
-    (use-package which-key
+  (use-package which-key
+    :init
+    (which-key-mode))
+    (use-package which-key-posframe
       :init
-      (which-key-mode))
+      (which-key-posframe-mode))
 #+END_SRC
 ** Fringe helper
 #+BEGIN_SRC emacs-lisp
@@ -1443,13 +1449,15 @@ enable narrowing
 #+END_SRC
 ** Visual fill Column
 #+BEGIN_SRC emacs-lisp
-(use-package visual-fill-column
-  :ghook 'text-mode-hook)
+  (use-package visual-fill-column
+    :config
+    (setq-default visual-fill-column-center-text t)
+    :ghook 'text-mode-hook)
 
-;; soft-wrap lines
-(general-add-hook 'text-mode-hook #'visual-line-mode)
-;; show right-curly arrow on right of wrapped lines
-(setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
+  ;; soft-wrap lines
+  (general-add-hook 'text-mode-hook #'visual-line-mode)
+  ;; show right-curly arrow on right of wrapped lines
+  (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 
 #+END_SRC
 ** Org Mode
@@ -1458,7 +1466,11 @@ enable narrowing
 #+BEGIN_SRC emacs-lisp
   (setq org-highlight-latex-and-related '(latex script entities))
 #+END_SRC
-**** org-indent-mode (indent sub-headings)
+**** COMMENT org-indent-mode (indent sub-headings)
+Although I really like this mode, the display of the indentation is very buggy
+and does not work all the time. (See
+https://github.com/syl20bnr/spacemacs/issues/2732). This is why I decided to not
+use it right now.
 #+BEGIN_SRC emacs-lisp
   (setq-default org-indent-indentation-per-level 1
                 org-hide-leading-stars nil)
@@ -2800,6 +2812,13 @@ Deactivated, because it makes org mode very slow.
 ** suggest (suggest emacs lisp functions based on input/output)
 #+BEGIN_SRC emacs-lisp
   (use-package suggest)
+#+END_SRC
+** keyfreq
+#+BEGIN_SRC emacs-lisp
+(use-package keyfreq
+  :init
+  (keyfreq-mode)
+  (keyfreq-autosave-mode 1))
 #+END_SRC
 * Temp
   (setq
