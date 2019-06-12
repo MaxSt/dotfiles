@@ -755,128 +755,134 @@ These are the Files creating in the current Directory for files that have not be
 ** General (keybindings)
 [[https://github.com/noctuid/general.el][general.el]]
 #+BEGIN_SRC emacs-lisp
-  (use-package general
-    :after (evil)
-    :config
-    (setq general-override-states '(insert
-                                    emacs
-                                    hybrid
-                                    normal
-                                    visual
-                                    motion
-                                    operator
-                                    replace))
-    (general-override-mode)
-    ;;(general-evil-setup)
-    ;; bind a key globally in normal state; keymaps must be quoted
-    (setq general-default-keymaps 'evil-normal-state-map)
+    (use-package general
+      :after (evil)
+      :config
+      (setq general-override-states '(insert
+                                      emacs
+                                      hybrid
+                                      normal
+                                      visual
+                                      motion
+                                      operator
+                                      replace))
+      (general-override-mode)
+      ;;(general-evil-setup)
+      ;; bind a key globally in normal state; keymaps must be quoted
+      (setq general-default-keymaps 'evil-normal-state-map)
 
-    (general-define-key
-     :states 'normal
-     :keymaps 'override
-     "M-l" (lambda ()
-             (interactive)
-             (evil-window-vsplit)
-             (evil-window-right 1))
-     "M-h" (lambda ()
-             (interactive)
-             (evil-window-vsplit))
-     "M-k" (lambda ()
-             (interactive)
-             (evil-window-split))
-     "M-j" (lambda ()
-             (interactive)
-             (evil-window-split)
-             (evil-window-down 1))
-     "gf" 'counsel-find-file
-     "gS" 'my-funcs/open-snippet-dir
-     "zw" 'widen
-     "s" 'save-buffer
-     "S" 'projectile-find-file
-     "gs" 'magit-status
-     ;;"g/" (general-simulate-key ":g/\C-r//" :state 'normal)
-     "`" 'evil-goto-mark-line
-     "'" 'evil-goto-mark
-     "C-h" 'evil-window-left
-     "C-l" 'evil-window-right
-     "C-k" 'evil-window-up
-     "C-j" 'evil-window-down
-     "g ." 'my-funcs/open-dotfile
-     "g h" 'org-capture
-     "g i" (lambda ()
-             (interactive)
-             (find-file (concat org-directory "/inbox.org")))
-     "g o" (lambda ()
-             (interactive)
-             (counsel-find-file org-directory))
-     "] SPC" (lambda ()
+      (general-define-key
+       :states 'normal
+       :keymaps 'override
+       "M-l" (lambda ()
                (interactive)
-               (save-excursion
-                 (evil-open-below 1))
-               (evil-normal-state))
-     "[ SPC" (lambda ()
+               (evil-window-vsplit)
+               (evil-window-right 1))
+       "M-h" (lambda ()
                (interactive)
-               (save-excursion
-                 (evil-open-above 1))
-               (evil-normal-state)))
-    ;; named prefix key
-    (setq my-leader "SPC")
-    (general-define-key
-     :states 'normal
-     :keymaps 'override
-     :prefix my-leader
-     ;;"r" 'restart-emacs
-     "a" 'org-agenda
-     "p" 'hydra-projectile/body
-     "q" 'evil-window-delete
-     "k" 'kill-buffer
-     "D" 'evil-delete-buffer
-     "d" 'kill-this-buffer
-     "r" (general-simulate-key ":%s/\C-r//" :state 'normal)
-     "SPC" 'ace-select-window
-     "s" 'dumb-jump-go
-     "S" 'dumb-jump-go-prompt
-     ;;"h" (general-simulate-keys "C-h")
-     "h k" 'helpful-key
-     "h SPC" 'which-key-show-top-level
-     "h v" 'helpful-variable
-     "h f" 'helpful-function
-     "h m" 'describe-mode
-     "<return>" 'my/projectile-multi-term
-     "S-<return>" 'multi-term
-     ;;  Avoiding CTRL
-     "w" (general-simulate-key "C-w")
-     "x" (general-simulate-key "C-x")
-     "c" (general-simulate-key "C-c")
-     "i" 'ibuffer
-     "j" 'projectile-find-file
-     "/" 'rg-project
-     "e" 'projectile-switch-to-buffer
-     "g s" 'git-gutter:stage-hunk
-     "g t" 'git-timemachine
-     "g n" 'git-gutter:next-hunk
-     "g p" 'git-gutter:previous-hunk
-     "g r" 'git-gutter:revert-hunk
-     "g p" 'git-gutter:popup-hunk
-     "l" 'evil-avy-goto-line
-     "u" 'undo-tree-visualize
-     "f" 'counsel-find-file
-     "b" 'ivy-switch-buffer
-     "n" 'next-error
-     "N" 'previous-error
-     "z" 'hydra-zoom/body
-     "o" 'dired-jump
-     "O" 'dired)
-    (setq my-leader2 ",")
-    (setq local-leader "\\")
+               (evil-window-vsplit))
+       "M-k" (lambda ()
+               (interactive)
+               (evil-window-split))
+       "M-j" (lambda ()
+               (interactive)
+               (evil-window-split)
+               (evil-window-down 1))
+       "gf" 'counsel-find-file
+       "gS" 'my-funcs/open-snippet-dir
+       "zw" 'widen
+       "s" 'save-buffer
+       "S" 'projectile-find-file
+       "gs" 'magit-status
+       ;;"g/" (general-simulate-key ":g/\C-r//" :state 'normal)
+       "`" 'evil-goto-mark-line
+       "'" 'evil-goto-mark
+       "C-h" 'evil-window-left
+       "C-l" 'evil-window-right
+       "C-k" 'evil-window-up
+       "C-j" 'evil-window-down
+       "g ." 'my-funcs/open-dotfile
+       "g h" 'org-capture
+       "g i" (lambda ()
+               (interactive)
+               (find-file (concat org-directory "/inbox.org")))
+       "g o" (lambda ()
+               (interactive)
+               (counsel-find-file org-directory))
+       "] SPC" (lambda ()
+                 (interactive)
+                 (save-excursion
+                   (evil-open-below 1))
+                 (evil-normal-state))
+       "[ SPC" (lambda ()
+                 (interactive)
+                 (save-excursion
+                   (evil-open-above 1))
+                 (evil-normal-state)))
+      ;; named prefix key
+      (setq my-leader "SPC")
+      (general-define-key
+       :states 'normal
+       :keymaps 'override
+       :prefix my-leader
+       ;;"r" 'restart-emacs
+       "a" 'org-agenda
+       "p" 'hydra-projectile/body
+       "q" 'evil-window-delete
+       "k" 'kill-buffer
+       "D" 'evil-delete-buffer
+       "d" 'kill-this-buffer
+       "r" (general-simulate-key ":%s/\C-r//" :state 'normal)
+       "SPC" 'ace-select-window
+       "s" 'dumb-jump-go
+       "S" 'dumb-jump-go-prompt
+       ;;"h" (general-simulate-keys "C-h")
+       "h k" 'helpful-key
+       "h SPC" 'which-key-show-top-level
+       "h v" 'helpful-variable
+       "h f" 'helpful-function
+       "h m" 'describe-mode
+       "<return>" 'my/projectile-multi-term
+       "S-<return>" 'multi-term
+       ;;  Avoiding CTRL
+       "w" (general-simulate-key "C-w")
+       "x" (general-simulate-key "C-x")
+       "c" (general-simulate-key "C-c")
+       "i" 'ibuffer
+       "j" 'projectile-find-file
+       "/" 'rg-project
+       "e" 'projectile-switch-to-buffer
+       "g s" 'git-gutter:stage-hunk
+       "g t" 'git-timemachine
+       "g n" 'git-gutter:next-hunk
+       "g p" 'git-gutter:previous-hunk
+       "g r" 'git-gutter:revert-hunk
+       "g p" 'git-gutter:popup-hunk
+       "l" 'evil-avy-goto-line
+       "u" 'undo-tree-visualize
+       "f" 'counsel-find-file
+       "b" 'ivy-switch-buffer
+       "n" 'next-error
+       "N" 'previous-error
+       "z" 'hydra-zoom/body
+       "o" 'dired-jump
+       "O" 'dired)
+      (setq my-leader2 ",")
+      (setq local-leader "\\")
 
-    (general-define-key
-     :states '(operator normal visual)
-     :keymaps 'override
-     "gf" 'evil-avy-goto-char
-     "gl" 'evil-avy-goto-line
-     "gW" 'evil-avy-goto-word-1)
-    )
+      (general-define-key
+       :states '(operator normal visual)
+       :keymaps 'override
+       :prefix my-leader2
+       "," 'evil-repeat-find-char-reverse)
+
+      (general-define-key
+       :states '(operator normal visual)
+       :keymaps 'override
+       "gf" 'evil-avy-goto-char
+       "gl" 'evil-avy-goto-line
+       "gW" 'evil-avy-goto-word-1)
+      )
 
 #+END_SRC
 ** move-text
@@ -961,7 +967,6 @@ increment and decrement numbers with c-a and c-x
   (use-package evil-quickscope
     :init
     (global-evil-quickscope-mode 1))
-
 #+END_SRC
 ** evil-exchange
 #+begin_src emacs-lisp
@@ -976,11 +981,12 @@ increment and decrement numbers with c-a and c-x
 #+begin_src emacs-lisp
   (use-package evil-nerd-commenter
     :after general
+    :demand t
     :init
-    (evilnc-default-hotkeys nil t)
-    :config
-    (general-def 'normal "gc" 'evilnc-comment-operator)
-)
+    (general-define-key
+     :states 'normal
+     :keymaps 'override
+     "gc" 'evilnc-comment-operator))
 #+end_src
 ** evil-anzu
 provides a minor mode which displays current match and total matches 
@@ -2799,7 +2805,7 @@ Deactivated, because it makes org mode very slow.
     :init
     (ivy-posframe-enable)
     :config
-    (setq ivy-display-function #'ivy-posframe-display-at-frame-center)
+    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-center)))
     (setq ivy-posframe-parameters
           '((left-fringe . 8)
             (right-fringe . 8)))
