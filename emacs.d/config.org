@@ -121,6 +121,12 @@ previously compiled manually then all of the package initialization will still t
   (setq
    inhibit-startup-screen t
    x-select-enable-clipboard t
+
+   ;; Save whatever’s in the current (system) clipboard before
+   ;; replacing it with the Emacs’ text.
+   ;; https://github.com/dakrone/eos/blob/master/eos.org
+   save-interprogram-paste-before-kill t
+
    column-number-mode t
 
    ;; faster scrolling (see https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag/28746)
@@ -802,6 +808,7 @@ These are the Files creating in the current Directory for files that have not be
        "C-k" 'evil-window-up
        "C-j" 'evil-window-down
        "g ." 'my-funcs/open-dotfile
+       "g p" 'counsel-yank-pop
        "g h" 'org-capture
        "g i" (lambda ()
                (interactive)
@@ -850,7 +857,7 @@ These are the Files creating in the current Directory for files that have not be
        "c" (general-simulate-key "C-c")
        "i" 'ibuffer
        "j" 'projectile-find-file
-       "/" 'rg-project
+       "/" 'deadgrep
        "e" 'projectile-switch-to-buffer
        "g s" 'git-gutter:stage-hunk
        "g t" 'git-timemachine
@@ -2055,7 +2062,7 @@ Download images and insert them into org buffers (drag and drop support)
 #+end_src
 ** rg
 #+begin_src emacs-lisp
-  (use-package rg)
+  (use-package deadgrep)
 #+end_src
 ** popup (dependency)
 #+begin_src emacs-lisp
@@ -2091,52 +2098,57 @@ for keeping track of recent files, provides helm-recentf with data
 ** ivy
 http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
-    (use-package ivy
-      :init (ivy-mode t)
-      :config
-      ;; regex order
-      (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
-      (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
-      (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
-      (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
-    (general-define-key :keymaps '(ivy-occur-grep-mode-map)
-                        :states '(normal)
-                        "q" 'evil-delete-buffer)
-      (defvar pop-target-window)
-      (make-variable-buffer-local 'pop-target-window)
-      (advice-add 'compilation-goto-locus :around #'my-around-compilation-goto-locus)
-      (defun my-around-compilation-goto-locus (orig-func &rest args)
-        (advice-add 'pop-to-buffer :override #'my-pop-to-buffer)
-        (apply orig-func args))
-      (defun my-pop-to-buffer (buffer &optional action norecord)
-        (advice-remove 'pop-to-buffer #'my-pop-to-buffer)
-        (let ((from-buffer (current-buffer))
-              (reused-window (display-buffer-reuse-window buffer nil)))
-          (cond (reused-window
-                 (select-window reused-window norecord))
-                ((and (bound-and-true-p pop-target-window)
-                      (window-live-p pop-target-window))
-                 (window--display-buffer buffer pop-target-window 'reuse)
-                 (select-window pop-target-window norecord))
-                (t
-                 (pop-to-buffer buffer action norecord)
-                 (with-current-buffer from-buffer
-                   (setq-local pop-target-window (selected-window)))))))
-      )
-    (use-package counsel
-      :init (counsel-mode t))
-    (use-package swiper)
-    (use-package avy
-      :config
-      (defun avy-line-saving-column ()
-        (interactive)
-        (let ((col (current-column)))
-          (avy-goto-line)
-          (move-to-column col)))
-      )
-     
-      (use-package ivy-rich
-      :init (ivy-rich-mode 1))
+  (use-package ivy
+    :init (ivy-mode t)
+    :config
+    ;; regex order
+    (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+    (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
+    (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
+    (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
+  (general-define-key :keymaps '(ivy-occur-grep-mode-map)
+                      :states '(normal)
+                      "q" 'evil-delete-buffer)
+    (defvar pop-target-window)
+    (make-variable-buffer-local 'pop-target-window)
+    (advice-add 'compilation-goto-locus :around #'my-around-compilation-goto-locus)
+    (defun my-around-compilation-goto-locus (orig-func &rest args)
+      (advice-add 'pop-to-buffer :override #'my-pop-to-buffer)
+      (apply orig-func args))
+    (defun my-pop-to-buffer (buffer &optional action norecord)
+      (advice-remove 'pop-to-buffer #'my-pop-to-buffer)
+      (let ((from-buffer (current-buffer))
+            (reused-window (display-buffer-reuse-window buffer nil)))
+        (cond (reused-window
+               (select-window reused-window norecord))
+              ((and (bound-and-true-p pop-target-window)
+                    (window-live-p pop-target-window))
+               (window--display-buffer buffer pop-target-window 'reuse)
+               (select-window pop-target-window norecord))
+              (t
+               (pop-to-buffer buffer action norecord)
+               (with-current-buffer from-buffer
+                 (setq-local pop-target-window (selected-window)))))))
+    )
+  (use-package counsel
+    :init (counsel-mode t))
+  (use-package swiper)
+  (use-package avy
+    :config
+    (defun avy-line-saving-column ()
+      (interactive)
+      (let ((col (current-column)))
+        (avy-goto-line)
+        (move-to-column col)))
+    )
+
+    (use-package ivy-rich
+      :after ivy)
+
+    (use-package ivy-prescient
+      :after ivy
+      :init
+      (ivy-prescient-mode))
 #+END_SRC
 ** hex colors
 #+begin_src emacs-lisp
@@ -2747,6 +2759,11 @@ See https://www.emacswiki.org/emacs/SqlMode
      :keymaps 'override
      :prefix my-leader
      "t" 'langtool-check)
+    (general-define-key
+     :states '(normal)
+     :keymaps 'override
+     "]t" 'langtool-goto-next-error
+     "[t" 'langtool-goto-previous-error)
     :config
     ;; (setq langtool-language-tool-jar "/usr/share/java/languagetool/languagetool-commandline.jar")
     ;;(setq langtool-language-tool-jar "~/Downloads/LanguageTool-4.4/languagetool-commandline.jar")
