@@ -2572,6 +2572,14 @@ See https://www.emacswiki.org/emacs/SqlMode
     (setq evil-goggles-duration 0.150)
     (evil-goggles-mode))
 #+end_src
+
+** evil-traces
+#+begin_src emacs-lisp
+  (use-package evil-traces
+    :config
+    (evil-traces-use-diff-faces)
+    (evil-traces-mode))
+#+end_src
 ** editorconfig
 #+begin_src emacs-lisp
   (use-package editorconfig
