@@ -183,7 +183,7 @@ previously compiled manually then all of the package initialization will still t
   (set-default-coding-systems 'utf-8)
   (set-terminal-coding-system 'utf-8)
   (set-keyboard-coding-system 'utf-8)
-  ;;(global-hl-line-mode t) ;; highlight current line
+  (global-hl-line-mode t) ;; highlight current line
 #+END_SRC
 ** flyspell
 #+BEGIN_SRC emacs-lisp
@@ -967,6 +967,16 @@ provides a minor mode which displays current match and total matches
       :init
       (require 'evil-anzu))
 #+end_src
+** evil-owl
+view your registers and marks in a posframe before using them
+#+begin_src emacs-lisp
+  (use-package evil-owl
+    :config
+    (setq evil-owl-extra-posframe-args '(:width 50 :height 20)
+          evil-owl-register-char-limit 50)
+    :init
+    (evil-owl-mode))
+#+end_src
 ** evil textobject-to-search
 #+begin_src emacs-lisp
 (evil-define-operator evil-search-textobject (beg end)
@@ -1428,14 +1438,15 @@ enable narrowing
 #+BEGIN_SRC emacs-lisp
   (use-package visual-fill-column
     :config
-    (setq-default visual-fill-column-center-text t)
+    ;;(setq-default visual-fill-column-center-text t)
     :ghook 'text-mode-hook)
-
+#+END_SRC
+** Visual Line Mode
+#+BEGIN_SRC emacs-lisp
   ;; soft-wrap lines
-  (general-add-hook 'text-mode-hook #'visual-line-mode)
+  (add-hook 'text-mode-hook #'visual-line-mode)
   ;; show right-curly arrow on right of wrapped lines
   (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
-
 #+END_SRC
 ** Org Mode
 *** org settings
@@ -1443,14 +1454,8 @@ enable narrowing
 #+BEGIN_SRC emacs-lisp
   (setq org-highlight-latex-and-related '(latex script entities))
 #+END_SRC
-**** COMMENT org-indent-mode (indent sub-headings)
-Although I really like this mode, the display of the indentation is very buggy
-and does not work all the time. (See
-https://github.com/syl20bnr/spacemacs/issues/2732). This is why I decided to not
-use it right now.
+**** org-indent-mode (indent sub-headings)
 #+BEGIN_SRC emacs-lisp
-  (setq-default org-indent-indentation-per-level 1
-                org-hide-leading-stars nil)
   (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
 **** org-imenu-depth
@@ -1563,12 +1568,14 @@ use it right now.
 *** org-bullets (pretty bullets)
 #+BEGIN_SRC emacs-lisp
   (use-package org-bullets
+    :config
+    ;;(setq org-bullets-bullet-list '("·"))
     :init
     (add-hook 'org-mode-hook
               (lambda ()
               (org-bullets-mode 1))))
 #+END_SRC
-*** org-sticky-header
+*** COMMENT org-sticky-header
 #+BEGIN_SRC emacs-lisp
    (use-package org-sticky-header
      :init
@@ -1752,13 +1759,14 @@ Fontify the whole line for headings (with a background color).
 *** evil-org
 I only use a few features from this mode like testobjects: 
 
-|-----+---------------|
-| Key | Object        |
-|-----+---------------|
-| e   | Org Element   |
-| r   | Inner Subtree |
-|-----+---------------|
-
+|-----+---------------------|
+| Key | Object              |
+|-----+---------------------|
+| e   | Org Object          |
+| E   | Org Element         |
+| r   | Org greater Element |
+| R   | Org Subtree         |
+|-----+---------------------|
 and the `>` and `<` opererators for promoting and demoting headers and
 #+BEGIN_SRC emacs-lisp
   (use-package evil-org
@@ -2565,11 +2573,12 @@ See https://www.emacswiki.org/emacs/SqlMode
                           "q" 'evil-window-delete)))
 
 #+end_src
-** COMMENT evil-goggles
+** evil-goggles
 #+begin_src emacs-lisp
   (use-package evil-goggles
     :config
     (setq evil-goggles-duration 0.150)
+    :init
     (evil-goggles-mode))
 #+end_src
 
@@ -2738,8 +2747,9 @@ Make tramp recognize fancy coloured prompts
 (use-package highlight-escape-sequences
   :init (hes-mode))
 #+END_SRC
-** Adaptive Wrap
+** COMMENT Adaptive Wrap
 This package will visually indent soft-wrapped lines that are bullet points.
+Deactivated because it could not handle long lines with org-indent-mode and visual-line-mode.
 #+BEGIN_SRC emacs-lisp
 (use-package adaptive-wrap
   :ghook ('text-mode-hook #'adaptive-wrap-prefix-mode))
