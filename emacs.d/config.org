@@ -18,23 +18,26 @@ We'll lower this value significantly after initialization has completed. We don'
 too high or it will result in long GC pauses during normal usage.
 
 #+BEGIN_SRC emacs-lisp
-(eval-and-compile
-;; Speed up startup
-(defvar default-file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
-(setq gc-cons-threshold 80000000)
-(add-hook 'emacs-startup-hook
-          (lambda ()
-            "Restore defalut values after init."
-            (setq file-name-handler-alist default-file-name-handler-alist)
-            (setq gc-cons-threshold 800000)
-            (if (boundp 'after-focus-change-function)
-                (add-function :after after-focus-change-function
-                              (lambda ()
-                                (unless (frame-focus-state)
-                                  (garbage-collect))))
-(add-hook 'focus-out-hook 'garbage-collect))))
-)
+  (eval-and-compile
+  ;; Speed up startup
+  (defvar default-file-name-handler-alist file-name-handler-alist)
+  (setq file-name-handler-alist nil)
+  (setq gc-cons-threshold 80000000)
+  (add-hook 'emacs-startup-hook
+            (lambda ()
+              "Restore defalut values after init."
+              ;; we append default-file-name-handler-alist with the current
+              ;; file-name-handler-alist in order to set the values we have set in
+              ;; the init config.
+              (setq file-name-handler-alist (append default-file-name-handler-alist file-name-handler-alist))
+              (setq gc-cons-threshold 800000)
+              (if (boundp 'after-focus-change-function)
+                  (add-function :after after-focus-change-function
+                                (lambda ()
+                                  (unless (frame-focus-state)
+                                    (garbage-collect))))
+  (add-hook 'focus-out-hook 'garbage-collect))))
+  )
 #+END_SRC
 
 Disable certain byte compiler warnings to cut down on the noise. This is a personal choice and can be removed
@@ -229,6 +232,17 @@ previously compiled manually then all of the package initialization will still t
 These are the Files creating in the current Directory for files that have not been saved yet #File#
 #+BEGIN_SRC emacs-lisp
 (setq create-lockfiles nil)
+#+END_SRC
+** Custom File
+#+begin_src emacs-lisp
+  ;; Don't litter my init file
+  (setq custom-file "~/.emacs.d/local/custom-set.el")
+  (load custom-file 'noerror)
+#+END_SRC
+** Encryption
+#+BEGIN_SRC emacs-lisp
+  (require 'epa-file)
+  (epa-file-enable)
 #+END_SRC
 ** MacOS
 #+BEGIN_SRC emacs-lisp
@@ -2810,15 +2824,4 @@ Deactivated, because it makes org mode very slow.
   :init
   (keyfreq-mode)
   (keyfreq-autosave-mode 1))
-#+END_SRC
-* Temp
-  (setq
-   js2-basic-offset 2
-   js-indent-level 2
-   js-expr-indent-offset -2)
-#+end_src
-#+begin_src emacs-lisp
-  ;; Don't litter my init file
-  (setq custom-file "~/.emacs.d/local/custom-set.el")
-  (load custom-file 'noerror)
 #+END_SRC
