@@ -8,6 +8,7 @@
     ~/.emacs.d: emacs.d
     ~/.config/nvim: vim
     ~/.vimrc: vimrc
+    ~/.zprint.edn: zprint.edn
     ~/.scripts: scripts
     ~/.terminalcolors: terminalcolors
     ~/.Xresources: Xresources

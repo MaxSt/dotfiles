@@ -837,7 +837,7 @@ These are the Files creating in the current Directory for files that have not be
      "c" (general-simulate-key "C-c")
      "i" 'ibuffer
      "j" 'projectile-find-file
-     "/" 'deadgrep
+     "/" 'rg-project
      "e" 'projectile-switch-to-buffer
      "g s" 'git-gutter:stage-hunk
      "g t" 'git-timemachine
@@ -1268,12 +1268,17 @@ enable narrowing
     (setq clojure-align-forms-automatically t)
     (put-clojure-indent 'defui '(2 nil nil (1))))
 
-  (use-package flycheck-joker
+  (use-package flycheck-clj-kondo
+    :after clojure-mode
     :init
-    (require 'flycheck-joker)
-    :config
-    (add-to-list 'flycheck-checkers 'clojure-joker t)
-    (add-to-list 'flycheck-checkers 'clojurescript-joker t))
+    (require 'flycheck-clj-kondo))
+
+  ;; (use-package flycheck-joker
+  ;;   :init
+  ;;   (require 'flycheck-joker)
+  ;;   :config
+  ;;   (add-to-list 'flycheck-checkers 'clojure-joker t)
+  ;;   (add-to-list 'flycheck-checkers 'clojurescript-joker t))
 
   (use-package clj-refactor
     :init
@@ -2054,7 +2059,9 @@ Download images and insert them into org buffers (drag and drop support)
 #+end_src
 ** rg
 #+begin_src emacs-lisp
-  (use-package deadgrep)
+  (use-package rg
+    :config
+    (rg-enable-menu))
 #+end_src
 ** popup (dependency)
 #+begin_src emacs-lisp
@@ -2755,6 +2762,14 @@ See https://www.emacswiki.org/emacs/SqlMode
    (face-attribute 'warning :foreground)
     (require 'langtool))
 
+#+END_SRC
+** reformatter
+#+BEGIN_SRC emacs-lisp
+  (use-package reformatter
+    :config
+    (reformatter-define
+     clojure-format
+     :program "zprint"))
 #+END_SRC
 ** format-all
 #+BEGIN_SRC emacs-lisp
