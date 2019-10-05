@@ -1483,10 +1483,6 @@ Load org-plus-contrib
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
-**** org-imenu-depth
-#+BEGIN_SRC emacs-lisp
-(setq org-imenu-depth 10)
-#+END_SRC
 **** use default log drawer
 #+BEGIN_SRC emacs-lisp
 (setq org-log-into-drawer t)
@@ -1718,7 +1714,7 @@ Fontify the whole line for headings (with a background color).
                       "TAB" 'org-cycle
                       "<" 'org-metaleft
                       ">" 'org-metaright
-                      "|" 'imenu-list-minor-mode
+                      "|" 'org-sidebar-tree
                       "RET" (lambda ()
                               (interactive)
                               (if (org-in-src-block-p)
@@ -1780,6 +1776,10 @@ Fontify the whole line for headings (with a background color).
 *** open source code in same windowemacs
 #+BEGIN_SRC emacs-lisp
   (setq org-src-window-setup 'current-window)
+#+END_SRC
+*** org-sidebar
+#+BEGIN_SRC emacs-lisp
+  (use-package org-sidebar)
 #+END_SRC
 *** evil-org
 I only use a few features from this mode like testobjects: 
