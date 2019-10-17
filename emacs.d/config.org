@@ -560,7 +560,7 @@ These are the Files creating in the current Directory for files that have not be
     (evil-set-initial-state 'package-menu-mode 'normal)
     (evil-set-initial-state 'help-mode 'normal)
     (evil-set-initial-state 'ibuffer-mode 'normal)
-    (evil-set-initial-state 'pdf-view-mode 'normal)
+    ;;(evil-set-initial-state 'pdf-view-mode 'normal)
     (evil-set-initial-state 'ivy-occur-grep-mode 'normal)
     (evil-set-initial-state 'occur-mode 'normal)
     ;;(setq evil-emacs-state-modes nil)
@@ -798,7 +798,7 @@ These are the Files creating in the current Directory for files that have not be
      "'" 'evil-goto-mark
      "g ." 'my-funcs/open-dotfile
      "g p" 'counsel-yank-pop
-     "g h" 'org-capture
+     "Q" 'org-capture
      "g i" (lambda ()
              (interactive)
              (find-file (concat org-directory "/inbox.org")))
@@ -1536,12 +1536,24 @@ Load org-plus-contrib
 #+END_SRC
 **** capture templates
 #+BEGIN_SRC emacs-lisp
+  (defun my/add-org-id (properties)
+    (let ((id  ":ID: %(shell-command-to-string \"uuidgen\"):CREATED: %U"))
+      (cons id properties)))
+
+  (defun my/properties-list->string (properties)
+    (let ((head  "\n:PROPERTIES:"))
+      (concat (string-join (cons head properties) "\n")
+              "\n:END:")))
+
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
+
   (setq org-capture-templates
-           '(("i"
+           `(("i"
               "INBOX"
               entry
               (file "inbox.org")
-              "* %?")
+              ,(concat "* %?" (my/properties-list->string (my/add-org-id nil)))
+              :prepend t)
              ("t"
               "INBOX TODO"
               entry
@@ -2137,9 +2149,12 @@ http://oremacs.com/swiper/
                  (setq-local pop-target-window (selected-window)))))))
     )
   (use-package counsel
+    :after ivy
     :init (counsel-mode t))
-  (use-package swiper)
+  (use-package swiper
+    :after ivy)
   (use-package avy
+    :after ivy
     :config
     (defun avy-line-saving-column ()
       (interactive)
@@ -2545,66 +2560,20 @@ See https://www.emacswiki.org/emacs/SqlMode
   (use-package pdf-tools
     :mode (("\\.pdf\\'" . pdf-view-mode))
     :config
-    (progn
-      (pdf-tools-install)
-      (add-hook 'pdf-view-mode-hook (lambda ()
-                                      (setq display-line-numbers nil)))
-      (general-define-key :keymaps '(pdf-view-mode-map)
-                          :states '(normal)
-                          ;;Navigation
-                          "j"  'pdf-view-next-line-or-next-page
-                          "k"  'pdf-view-previous-line-or-previous-page
-                          "l"  'image-forward-hscroll
-                          "h"  'image-backward-hscroll
-                          "C-f"  'pdf-view-next-page
-                          "C-b"  'pdf-view-previous-page
-                          "u"  'pdf-view-scroll-down-or-previous-page
-                          "d"  'pdf-view-scroll-up-or-next-page
-                          "0"  'image-bol
-                          "$"  'image-eol
-                          "P" 'pdf-view-goto-page
+    (pdf-tools-install)
+    (add-hook 'pdf-view-mode-hook (lambda ()
+                                    (setq display-line-numbers nil)))
 
-                          ;; mark
-                          "'" 'pdf-view-jump-to-register
-                          "m" 'pdf-view-position-to-register
+    (setq pdf-view-midnight-colors '("#cbe3e7" . "#1b182c" ))
 
-                          ;; zoom
-                          "+" 'pdf-view-enlarge
-                          "-" 'pdf-view-shrink
-                          "0" 'pdf-view-scale-reset
-                          "=" 'pdf-view-enlarge
-
-                          ;; Copy
-                          "y" 'pdf-view-kill-ring-save
-                          ;; Scale/Fit
-                          "W"  'pdf-view-fit-width-to-window
-                          "H"  'pdf-view-fit-height-to-window
-                          "zP"  'pdf-view-fit-page-to-window
-                          "b"  'pdf-view-set-slice-from-bounding-box
-                          "R"  'pdf-view-reset-slice
-                          "zr" 'pdf-view-scale-reset
-                          ;; Annotations
-                          "aD" 'pdf-annot-delete
-                          "at" 'pdf-annot-attachment-dired
-                          "al" 'pdf-annot-list-annotations
-                          "am" 'pdf-annot-add-markup-annotation
-                          ;; Actions
-                          "s" 'pdf-occur
-                          "O" 'pdf-outline
-                          "p" 'pdf-misc-print-document
-                          "o" 'pdf-links-action-perform
-                          "r" 'pdf-view-revert-buffer
-                          "t" 'pdf-annot-attachment-dired
-                          "n" 'pdf-view-midnight-minor-mode)
-
-      (general-define-key :keymaps '(pdf-occur-buffer-mode-map)
-                          :states '(normal)
-                          (kbd "S-<return>") 'pdf-occur-goto-occurrence
-                          (kbd "<return>") 'pdf-occur-view-occurrence
-                          "r" 'pdf-occur-revert-buffer-with-args
-                          "gd" 'pdf-occur-goto-occurrence
-                          "gD" 'pdf-occur-view-occurrence
-                          "q" 'evil-window-delete)))
+    (general-define-key :keymaps '(pdf-occur-buffer-mode-map)
+                        :states '(normal)
+                        (kbd "S-<return>") 'pdf-occur-goto-occurrence
+                        (kbd "<return>") 'pdf-occur-view-occurrence
+                        "r" 'pdf-occur-revert-buffer-with-args
+                        "gd" 'pdf-occur-goto-occurrence
+                        "gD" 'pdf-occur-view-occurrence
+                        "q" 'evil-window-delete))
 
 #+end_src
 ** evil-goggles
