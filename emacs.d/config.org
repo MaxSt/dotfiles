@@ -1479,6 +1479,10 @@ Load org-plus-contrib
 #+BEGIN_SRC emacs-lisp
   (setq org-highlight-latex-and-related '(latex script entities))
 #+END_SRC
+**** log done date
+#+BEGIN_SRC emacs-lisp
+  (setq org-log-done t)
+#+END_SRC
 **** org-indent-mode (indent sub-headings)
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-mode-hook 'org-indent-mode)
