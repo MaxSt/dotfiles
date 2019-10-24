@@ -2299,41 +2299,49 @@ Multi-stage copy/pasting of files and bookmarks
 #+end_src
 *** Keybindings
 #+BEGIN_SRC emacs-lisp
-  (defun my/dired-up-directory ()
-    "Take dired up one directory, but behave like dired-find-alternative-file (leave no orphan buffer)"
-    (interactive)
-    (let ((old (current-buffer)))
-      (dired-up-directory)
-      (kill-buffer old)))
-  (defun my/dired-create-file (file)
-    (interactive
-     (list
-      (read-file-name "Create file: " (dired-current-directory))))
-    (write-region "" nil (expand-file-name file) t)
-    (dired-add-file file)
-    (revert-buffer)
-    (dired-goto-file (expand-file-name file)))
-  (general-define-key :keymaps '(dired-mode-map)
-                      :states '(normal)
-                      "h" 'my/dired-up-directory
-                      "DEL" 'my/dired-up-directory
-                      "RET" 'dired-find-alternate-file
-                      "TAB" 'dired-subtree-toggle
-                      "l" 'dired-find-alternate-file
-                      "c" 'dired-do-rename
-                      "C" 'dired-do-copy
-                      "y" 'dired-ranger-copy
-                      "p" 'dired-ranger-paste
-                      "v" 'dired-ranger-move
-                      "R" 'dired-do-redisplay
-                      "r" 'wdired-change-to-wdired-mode
-                      "f" 'counsel-file-jump
-                      "o" 'my/dired-create-file
-                      "O" 'dired-create-directory
-                      "n" 'evil-ex-search-next
-                      "N" 'evil-ex-search-previous
-                      "q" 'kill-this-buffer
-                      "!" 'dired-do-shell-command)
+  (defun my/dired-open-file ()
+        "In dired, open the file named on this line."
+        (interactive)
+        (let* ((file (dired-get-filename nil t)))
+          (call-process "xdg-open" nil 0 nil file)))
+
+    (defun my/dired-up-directory ()
+      "Take dired up one directory, but behave like dired-find-alternative-file (leave no orphan buffer)"
+      (interactive)
+      (let ((old (current-buffer)))
+        (dired-up-directory)
+        (kill-buffer old)))
+    (defun my/dired-create-file (file)
+      (interactive
+       (list
+        (read-file-name "Create file: " (dired-current-directory))))
+      (write-region "" nil (expand-file-name file) t)
+      (dired-add-file file)
+      (revert-buffer)
+      (dired-goto-file (expand-file-name file)))
+
+    (general-define-key :keymaps '(dired-mode-map)
+                        :states '(normal)
+                        "h" 'my/dired-up-directory
+                        "DEL" 'my/dired-up-directory
+                        (kbd "S-<return>") 'my/dired-open-file
+                        "RET" 'dired-find-alternate-file
+                        "TAB" 'dired-subtree-toggle
+                        "l" 'dired-find-alternate-file
+                        "c" 'dired-do-rename
+                        "C" 'dired-do-copy
+                        "y" 'dired-ranger-copy
+                        "p" 'dired-ranger-paste
+                        "v" 'dired-ranger-move
+                        "R" 'dired-do-redisplay
+                        "r" 'wdired-change-to-wdired-mode
+                        "f" 'counsel-file-jump
+                        "o" 'my/dired-create-file
+                        "O" 'dired-create-directory
+                        "n" 'evil-ex-search-next
+                        "N" 'evil-ex-search-previous
+                        "q" 'kill-this-buffer
+                        "!" 'dired-do-shell-command)
 #+END_SRC
 ** restclient
 #+begin_src emacs-lisp
