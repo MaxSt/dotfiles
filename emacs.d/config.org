@@ -2261,6 +2261,18 @@ Recursive copy and deletion
   (setq dired-recursive-copies 'always
         dired-recursive-deletes 'always)
 #+END_SRC
+*** Colourful columns
+#+BEGIN_SRC emacs-lisp
+  (use-package diredfl
+    :init
+    (diredfl-global-mode 1))
+#+END_SRC
+
+*** Git info
+#+BEGIN_SRC emacs-lisp
+  (use-package dired-git-info)
+#+END_SRC
+
 *** dired-subtree
 #+BEGIN_SRC emacs-lisp
   (use-package dired-subtree
@@ -2610,21 +2622,10 @@ See https://www.emacswiki.org/emacs/SqlMode
     :init
     (editorconfig-mode 1))
 #+end_src
-** COMMENT fill-column-indicator
+** fill-column-indicator
 #+begin_src emacs-lisp
-  (use-package fill-column-indicator
-  :init
-    (add-hook 'prog-mode-hook #'fci-mode)
-    (add-hook 'text-mode-hook #'fci-mode)
-    :config
-  (defun on-off-fci-before-company(command)
-    (when (string= "show" command)
-      (turn-off-fci-mode))
-    (when (string= "hide" command)
-      (turn-on-fci-mode)))
-  (advice-add 'company-call-frontends :before #'on-off-fci-before-company)
-  (setq-default fci-rule-color "#906cff")
-  )
+  (when (fboundp 'global-display-fill-column-indicator-mode)
+    (global-display-fill-column-indicator-mode))
 #+end_src
 ** ace-window
 #+begin_src emacs-lisp
