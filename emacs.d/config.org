@@ -550,6 +550,7 @@ These are the Files creating in the current Directory for files that have not be
     ;; whichwrap like movement across lines
     (setq-default evil-cross-lines t)
     (setq-default evil-search-module 'evil-search
+                  evil-want-abbrev-expand-on-insert-exit nil
                   evil-ex-substitute-global t ;; make substitue global by default
                   evil-shift-width 2
                   ;; prevent esc-key from translating to meta-key in terminal mode
