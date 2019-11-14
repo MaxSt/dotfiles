@@ -1416,7 +1416,8 @@ enable narrowing
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :config
-    (require 'evil-magit))
+    (require 'evil-magit)
+    (setq magit-diff-refine-hunk (quote all)))
   (use-package evil-magit
     :after (magit)
     :config
