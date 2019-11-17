@@ -1529,6 +1529,7 @@ Load org-plus-contrib
 
 **** latex export class book-noparts (skip part in book layout)
 #+BEGIN_SRC emacs-lisp
+(setq org-latex-caption-above nil)
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
              '("book-noparts"
@@ -1631,6 +1632,8 @@ Load org-plus-contrib
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((shell . t)
+     (gnuplot . t)
+     (R . t)
      (sql . t)
      (dot . t)))
 #+end_src
