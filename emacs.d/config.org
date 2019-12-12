@@ -2298,6 +2298,10 @@ Multi-stage copy/pasting of files and bookmarks
   (use-package ranger
     :after (dired))
 #+END_SRC
+*** peep-dired
+#+begin_src emacs-lisp
+  (use-package peep-dired)
+#+end_src
 *** dired-sidebar
 #+begin_src emacs-lisp
   (use-package dired-sidebar
@@ -2352,6 +2356,7 @@ Multi-stage copy/pasting of files and bookmarks
                         (kbd "S-<return>") 'my/dired-open-file
                         "RET" 'dired-find-alternate-file
                         "TAB" 'dired-subtree-toggle
+                        "i" 'peep-dired
                         "l" 'dired-find-alternate-file
                         "c" 'dired-do-rename
                         "C" 'dired-do-copy
