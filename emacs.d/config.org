@@ -791,6 +791,9 @@ These are the Files creating in the current Directory for files that have not be
      "zw" 'widen
      "s" 'save-buffer
      "S" 'projectile-find-file
+     ;; to jump to next enxty in ivy occur
+     "] n" 'ivy-occur-next-line
+     "[ n" 'ivy-occur-previous-line
      "g s" 'magit-status
      "g G" (lambda ()
              (interactive)
@@ -838,7 +841,7 @@ These are the Files creating in the current Directory for files that have not be
      "c" (general-simulate-key "C-c")
      "i" 'ibuffer
      "j" 'projectile-find-file
-     "/" 'rg-project
+     "/" 'counsel-rg-project
      "e" 'projectile-switch-to-buffer
      "g s" 'git-gutter:stage-hunk
      "g t" 'git-timemachine
@@ -1637,11 +1640,16 @@ Load org-plus-contrib
      (sql . t)
      (dot . t)))
 #+end_src
+*** org-ref
+#+BEGIN_SRC emacs-lisp
+  (use-package org-ref)
+#+END_SRC
 *** org-Reveal (HTML presentations)
 #+BEGIN_SRC emacs-lisp
   (use-package ox-reveal)
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
   ;;(setq org-reveal-mathjax t)
+  (use-package org-re-reveal-ref)
   (use-package htmlize)
 #+END_SRC
 *** org-templates
@@ -2085,12 +2093,6 @@ Download images and insert them into org buffers (drag and drop support)
     (projectile-global-mode))
 
   (use-package counsel-projectile :after (projectile))
-#+end_src
-** rg
-#+begin_src emacs-lisp
-  (use-package rg
-    :config
-    (rg-enable-menu))
 #+end_src
 ** popup (dependency)
 #+begin_src emacs-lisp
@@ -2554,6 +2556,10 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** ag, ripgrep,.. (global search)
 #+begin_src emacs-lisp
+  (use-package rg
+    :config
+    (rg-enable-menu))
+
   (setq ag-highlight-search t)
   (defun counsel-ag-project (&optional options)
     (interactive)
