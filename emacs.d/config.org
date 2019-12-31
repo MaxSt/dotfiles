@@ -2592,6 +2592,7 @@ See https://www.emacswiki.org/emacs/SqlMode
                                       dired-mode
                                       alchemist-test-mode
                                       alchemist-iex-mode
+                                      vterm-mode
                                       cider-repl-mode)))
 #+end_src
 ** markdown-mode
@@ -2851,4 +2852,8 @@ Deactivated, because it makes org mode very slow.
   (use-package ob-async
     :init
     (require 'ob-async))
+#+END_SRC
+** libvterm
+#+BEGIN_SRC emacs-lisp
+  (use-package vterm)
 #+END_SRC
