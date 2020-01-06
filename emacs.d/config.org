@@ -2538,8 +2538,10 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** docker
 #+begin_src emacs-lisp
-  (use-package dockerfile-mode
-      :config)
+  (use-package docker)
+#+end_src
+#+begin_src emacs-lisp
+  (use-package dockerfile-mode)
 #+end_src
 ** yaml
 #+begin_src emacs-lisp
