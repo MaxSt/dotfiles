@@ -2606,24 +2606,13 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** pdf-tools
 #+begin_src emacs-lisp
-  (use-package pdf-tools
-    :mode (("\\.pdf\\'" . pdf-view-mode))
-    :config
-    (pdf-tools-install)
-    (add-hook 'pdf-view-mode-hook (lambda ()
-                                    (setq display-line-numbers nil)))
-
-    (setq pdf-view-midnight-colors '("#cbe3e7" . "#1b182c" ))
-
-    (general-define-key :keymaps '(pdf-occur-buffer-mode-map)
-                        :states '(normal)
-                        (kbd "S-<return>") 'pdf-occur-goto-occurrence
-                        (kbd "<return>") 'pdf-occur-view-occurrence
-                        "r" 'pdf-occur-revert-buffer-with-args
-                        "gd" 'pdf-occur-goto-occurrence
-                        "gD" 'pdf-occur-view-occurrence
-                        "q" 'evil-window-delete))
-
+    (use-package pdf-tools
+      :mode (("\\.pdf\\'" . pdf-view-mode))
+      :config
+      (pdf-tools-install)
+      (add-hook 'pdf-view-mode-hook (lambda ()
+                                      (setq display-line-numbers nil)))
+                                      (setq pdf-view-midnight-colors '("#cbe3e7" . "#1b182c" )))
 #+end_src
 ** evil-goggles
 #+begin_src emacs-lisp
