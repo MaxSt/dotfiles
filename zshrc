@@ -73,3 +73,6 @@ function chpwd(){
   #call ls after cd
   ls;
 }
+
+# direnv integration
+eval "$(direnv hook zsh)"

@@ -1546,34 +1546,51 @@ Load org-plus-contrib
 #+END_SRC
 **** capture templates
 #+BEGIN_SRC emacs-lisp
-  (defun my/add-org-id (properties)
-    (let ((id  ":ID: %(shell-command-to-string \"uuidgen\"):CREATED: %U"))
-      (cons id properties)))
+    (add-hook 'org-capture-mode-hook 'evil-insert-state)
+    (require 'org-id)
+    (with-eval-after-load "org-id"
+      (defun my/add-org-id (properties)
+        (let ((id  (concat ":ID: " (org-id-uuid) ":CREATED: %U")))
+          (cons id properties)))
 
-  (defun my/properties-list->string (properties)
-    (let ((head  "\n:PROPERTIES:"))
-      (concat (string-join (cons head properties) "\n")
-              "\n:END:")))
+      (defun my/properties-list->string (properties)
+        (let ((head  "\n:PROPERTIES:"))
+          (concat (string-join (cons head properties) "\n")
+                  "\n:END:")))
 
-  (add-hook 'org-capture-mode-hook 'evil-insert-state)
+      (defun my/new-note-file ()
+        (find-file (concat org-directory "notes/" (org-id-uuid) ".org")))
 
-  (setq org-capture-templates
-           `(("i"
-              "INBOX"
-              entry
-              (file "inbox.org")
-              ,(concat "* %?" (my/properties-list->string (my/add-org-id nil)))
-              :prepend t)
-             ("t"
-              "INBOX TODO"
-              entry
-              (file "inbox.org")
-              "* TODO %? SCHEDULED: %t")))
-     (setq org-refile-use-outline-path 'file)
-     (setq org-outline-path-complete-in-steps nil)
-     ;; use a depth level of 6 max
-     (setq org-refile-targets
-           '((org-agenda-files . (:maxlevel . 4))))
+      (setq org-capture-templates
+               `(
+                 ("n"
+                  "NOTE"
+                  plain
+                  (function my/new-note-file)
+                  "#+TITLE:  %^{TITLE}\n#+FILETAGS: %^{TAGS}\n#+CREATED: %T\n\n%?"
+                  :kill-buffer t
+                  :unnarrowed t
+                  )
+                 ("i"
+                  "INBOX"
+                  entry
+                  (file "inbox.org")
+                  ,(concat "* %?" (my/properties-list->string (my/add-org-id nil)))
+                  :prepend t)
+                 ("t"
+                  "INBOX TODO"
+                  entry
+                  (file "inbox.org")
+                  "* TODO %? SCHEDULED: %t")))
+    )
+         (setq org-refile-use-outline-path 'file)
+         (setq org-outline-path-complete-in-steps nil)
+         ;; use a depth level of 6 max
+         (setq org-refile-targets
+               '((org-agenda-files . (:maxlevel . 4))))
+
+    (use-package org-capture-pop-frame
+      :init (require 'org-capture-pop-frame))
      #+END_SRC
 **** set inline image background
 #+BEGIN_SRC emacs-lisp
@@ -1777,6 +1794,7 @@ Fontify the whole line for headings (with a background color).
                             (evil-insert-state))
                       "X" 'org-archive-subtree-default-with-confirmation
                       "s" 'org-schedule
+                      "S" 'org-deadline
                       "r" 'org-refile
                       "n" 'org-narrow-to-subtree
                       "t" 'org-todo
@@ -2085,7 +2103,7 @@ Download images and insert them into org buffers (drag and drop support)
 #+END_SRC
 ** projectile
 #+begin_src emacs-lisp
-  (use-package projectile
+(use-package projectile
     :config
     ;; test fn in hashtabe has to be equal because we will use strings as keys
     (setq my-projects-loaded (make-hash-table :test 'equal))
@@ -2848,3 +2866,34 @@ Deactivated, because it makes org mode very slow.
 #+BEGIN_SRC emacs-lisp
   (use-package vterm)
 #+END_SRC
+** deft
+#+BEGIN_SRC emacs-lisp
+  ;;   (use-package deft
+  ;;     :config
+  ;;     (setq deft-directory "~/org/notes")
+  ;;     (setq deft-extensions '("org"))
+  ;;     (setq deft-default-extension "org")
+  ;;     (setq deft-text-mode 'org-mode)
+  ;;     (setq deft-use-filename-as-title nil)
+  ;;     (setq deft-auto-save-interval 0)
+  ;; )
+
+  (add-to-list 'load-path "~/Documents/notdeft")
+
+  (load "notdeft-example")
+
+
+  (setq notdeft-directories '("~/org/notes"))
+  (setq notdeft-extension "org")
+  (setq notdeft-secondary-extensions '("md" "txt"))
+
+  (add-hook 'org-mode-hook 'notdeft-note-mode)
+
+
+#+END_SRC
+** direnv
+#+begin_src emacs-lisp
+(use-package direnv
+ :config
+ (direnv-mode))
+#+end_src
