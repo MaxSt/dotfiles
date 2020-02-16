@@ -109,6 +109,8 @@ previously compiled manually then all of the package initialization will still t
     (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
   (unless (assoc-default "org" package-archives)
     (add-to-list 'package-archives '("org" . "https://orgmode.org/elpa/") t))
+  (unless (assoc-default "melpa-stable" package-archives)
+    (add-to-list 'package-archives '("melpa-stable" . "https://stable.melpa.org/packages/") t))
 
   (eval-when-compile
     (unless package--initialized (package-initialize))
@@ -310,6 +312,10 @@ These are the Files creating in the current Directory for files that have not be
     :after (all-the-icons)
     :init
     (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
+
+  (use-package all-the-icons-ibuffer
+    :ensure t
+    :init (all-the-icons-ibuffer-mode 1))
 #+end_src
 * custom Functions
 ** local abbrev
@@ -543,6 +549,7 @@ These are the Files creating in the current Directory for files that have not be
 ** initialize
 #+BEGIN_SRC emacs-lisp
   (use-package evil
+    :pin melpa-stable
     :init
     (setq evil-want-integration nil)
     (setq evil-want-keybinding nil)
@@ -818,8 +825,8 @@ These are the Files creating in the current Directory for files that have not be
      "p" 'hydra-projectile/body
      "q" 'evil-window-delete
      "k" 'kill-buffer
-     "D" 'evil-delete-buffer
-     "d" 'kill-this-buffer
+     "X" 'evil-delete-buffer
+     "d" 'docker
      "r" (lambda ()
            (interactive)
            (evil-ex (concat "%s/" (evil-get-register ?/) "/")))
@@ -1101,6 +1108,14 @@ view your registers and marks in a posframe before using them
                       "j" 'ibuffer-forward-line
                       "k" 'ibuffer-backward-line
                       "J" 'ibuffer-jump-to-buffer)
+#+end_src
+** ibuffer-project
+#+begin_src emacs-lisp
+  (use-package ibuffer-project
+    :init
+    (add-hook 'ibuffer-hook
+              (lambda ()
+                (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups)))))
 #+end_src
 ** help
 #+begin_src emacs-lisp
