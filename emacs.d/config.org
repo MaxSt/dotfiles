@@ -2912,3 +2912,20 @@ Deactivated, because it makes org mode very slow.
  :config
  (direnv-mode))
 #+end_src
+** dashboard
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :init
+    (setq dashboard-startup-banner 3)
+    (setq dashboard-center-content t)
+    (setq dashboard-set-heading-icons t)
+    (setq dashboard-set-file-icons t)
+    (setq dashboard-set-navigator t)
+    (setq dashboard-set-init-info t)
+    (setq dashboard-items '((projects  . 5)
+                            (bookmarks . 5)
+                            (recents . 5)))
+
+    (dashboard-setup-startup-hook)
+  )
+#+end_src
