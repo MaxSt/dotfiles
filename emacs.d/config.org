@@ -46,7 +46,7 @@ if you would like to see any and all byte compiler warnings.
 #+BEGIN_SRC emacs-lisp
 (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
 #+END_SRC
-*** Package Management
+*** COMMENT Package Management
 
 **** Package Settings
 We're going to set the =load-path= ourselves and avoid calling =(package-initilize)= (for
@@ -73,7 +73,7 @@ initialization significantly as many packages are only loaded later when they ar
 #+BEGIN_SRC emacs-lisp
   (eval-and-compile
     (setq use-package-always-defer t
-          use-package-always-ensure t
+          ;;use-package-always-ensure t
           use-package-verbose t))
 #+END_SRC
 
@@ -118,6 +118,26 @@ previously compiled manually then all of the package initialization will still t
       (package-refresh-contents)
       (package-install 'use-package))
     )
+#+END_SRC
+*** Bootstrapping Straight.el
+#+BEGIN_SRC emacs-lisp
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+        (bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+          (url-retrieve-synchronously
+           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+           'silent 'inhibit-cookies)
+        (goto-char (point-max))
+        (eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage)) 
+
+  ;; Install use-package
+  (straight-use-package 'use-package)
+  (setq straight-use-package-by-default t)
+
 #+END_SRC
 
 * Defaults
@@ -216,6 +236,22 @@ previously compiled manually then all of the package initialization will still t
     ;; causes an enormous slowdown, thats why I deactivated it:
     (setq flyspell-issue-message-flag nil)
     )
+#+END_SRC
+** Startup Optimizations
+*** delay tty-run-terminal-initialization
+Taken from
+https://github.com/hlissner/doom-emacs/blob/a0a7c34517db81b3f8c83ac87c882c4f0b0b72ee/core/core.el#L286-L291
+#+BEGIN_SRC emacs-lisp
+;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some
+;;      reason. Disabling it completely could have many side-effects, so we
+;;      defer it until later.
+(unless (display-graphic-p)
+  (advice-add #'tty-run-terminal-initialization :override #'ignore)
+  (add-hook! 'window-setup-hook
+    (defun doom-init-tty-h ()
+      (advice-remove #'tty-run-terminal-initialization #'ignore)
+      (tty-run-terminal-initialization (selected-frame) nil t))))
+
 #+END_SRC
 ** Backups
 #+BEGIN_SRC emacs-lisp
@@ -549,7 +585,7 @@ These are the Files creating in the current Directory for files that have not be
 ** initialize
 #+BEGIN_SRC emacs-lisp
   (use-package evil
-    :pin melpa-stable
+    :straight (:host github :repo "emacs-evil/evil")
     :init
     (setq evil-want-integration nil)
     (setq evil-want-keybinding nil)
@@ -563,7 +599,6 @@ These are the Files creating in the current Directory for files that have not be
                   ;; prevent esc-key from translating to meta-key in terminal mode
                   evil-esc-delay 0
                   evil-want-Y-yank-to-eol t)
-    (evil-mode t)
     :config
     (evil-set-initial-state 'package-menu-mode 'normal)
     (evil-set-initial-state 'help-mode 'normal)
@@ -574,6 +609,7 @@ These are the Files creating in the current Directory for files that have not be
     ;;(setq evil-emacs-state-modes nil)
     ;;(setq evil-insert-state-modes nil)
     ;;(setq evil-motion-state-modes nil)
+    (evil-mode t)
 
     ;;Evil smartparens text objects
     (evil-define-text-object evil-a-sexp (count &optional beg end type)
@@ -1201,7 +1237,7 @@ enable narrowing
    :keymaps 'override
    "zn" 'evil-narrow-indirect)
 #+end_src
-* Package config
+* Packages
 ** Flycheck
 #+begin_src emacs-lisp
   (use-package flycheck
@@ -1282,8 +1318,8 @@ enable narrowing
                    (point)))))
 
   (use-package clojure-mode
+    :after '(cider)
     :config
-    (require 'cider)
     (setq clojure-align-forms-automatically t)
     (put-clojure-indent 'defui '(2 nil nil (1))))
 
@@ -1434,7 +1470,6 @@ enable narrowing
 #+BEGIN_SRC emacs-lisp
   (use-package magit
     :config
-    (require 'evil-magit)
     (setq magit-diff-refine-hunk (quote all)))
   (use-package evil-magit
     :after (magit)
@@ -1492,7 +1527,7 @@ enable narrowing
 Load org-plus-contrib
 #+BEGIN_SRC emacs-lisp
 (use-package org
-  :ensure org-plus-contrib)
+  :straight org-plus-contrib)
 #+END_SRC
 *** org settings
 **** latex syntax highlight
@@ -1561,51 +1596,55 @@ Load org-plus-contrib
 #+END_SRC
 **** capture templates
 #+BEGIN_SRC emacs-lisp
-    (add-hook 'org-capture-mode-hook 'evil-insert-state)
-    (require 'org-id)
-    (with-eval-after-load "org-id"
-      (defun my/add-org-id (properties)
-        (let ((id  (concat ":ID: " (org-id-uuid) ":CREATED: %U")))
-          (cons id properties)))
+  (add-hook 'org-capture-mode-hook 'evil-insert-state)
+  (use-package org-id
+    :after (org org-plus-contrib)
+    :straight org-plus-contrib
+    :config
 
-      (defun my/properties-list->string (properties)
-        (let ((head  "\n:PROPERTIES:"))
-          (concat (string-join (cons head properties) "\n")
-                  "\n:END:")))
+    (defun my/add-org-id (properties)
+      (let ((id  (concat ":ID: " (org-id-uuid) ":CREATED: %U")))
+        (cons id properties)))
 
-      (defun my/new-note-file ()
-        (find-file (concat org-directory "notes/" (org-id-uuid) ".org")))
+    (defun my/properties-list->string (properties)
+      (let ((head  "\n:PROPERTIES:"))
+        (concat (string-join (cons head properties) "\n")
+                "\n:END:")))
 
-      (setq org-capture-templates
-               `(
-                 ("n"
-                  "NOTE"
-                  plain
-                  (function my/new-note-file)
-                  "#+TITLE:  %^{TITLE}\n#+FILETAGS: %^{TAGS}\n#+CREATED: %T\n\n%?"
-                  :kill-buffer t
-                  :unnarrowed t
-                  )
-                 ("i"
-                  "INBOX"
-                  entry
-                  (file "inbox.org")
-                  ,(concat "* %?" (my/properties-list->string (my/add-org-id nil)))
-                  :prepend t)
-                 ("t"
-                  "INBOX TODO"
-                  entry
-                  (file "inbox.org")
-                  "* TODO %? SCHEDULED: %t")))
-    )
-         (setq org-refile-use-outline-path 'file)
-         (setq org-outline-path-complete-in-steps nil)
-         ;; use a depth level of 6 max
-         (setq org-refile-targets
-               '((org-agenda-files . (:maxlevel . 4))))
+    (defun my/new-note-file ()
+      (find-file (concat org-directory "notes/" (org-id-uuid) ".org")))
 
-    (use-package org-capture-pop-frame
-      :init (require 'org-capture-pop-frame))
+    (setq org-capture-templates
+          `(
+            ("n"
+             "NOTE"
+             plain
+             (function my/new-note-file)
+             "#+TITLE:  %^{TITLE}\n#+FILETAGS: %^{TAGS}\n#+CREATED: %T\n\n%?"
+             :kill-buffer t
+             :unnarrowed t
+             )
+            ("i"
+             "INBOX"
+             entry
+             (file "inbox.org")
+             ,(concat "* %?" (my/properties-list->string (my/add-org-id nil)))
+             :prepend t)
+            ("t"
+             "INBOX TODO"
+             entry
+             (file "inbox.org")
+             "* TODO %? SCHEDULED: %t"))))
+
+  (setq org-refile-use-outline-path 'file)
+  (setq org-outline-path-complete-in-steps nil)
+
+  ;; use a depth level of 6 max
+  (setq org-refile-targets
+        '((org-agenda-files . (:maxlevel . 4))))
+
+  (use-package org-capture-pop-frame
+    :init (require 'org-capture-pop-frame))
      #+END_SRC
 **** set inline image background
 #+BEGIN_SRC emacs-lisp
@@ -1708,139 +1747,139 @@ Fontify the whole line for headings (with a background color).
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
   (use-package worf
+    :after '(org hydra)
     :init
     (add-hook 'org-mode-hook 'worf-mode)
     ;; set the worf-mode keymap to an empty keymap to remove all worf bindings
     (add-hook 'worf-mode-hook
               (lambda ()
                 (push `(worf-mode . ,(make-sparse-keymap)) minor-mode-overriding-map-alist)))
-
-    )
-
-  (defhydra myorg-hydra-change (:hint nil)
-    "
+    :config
+    (defhydra myorg-hydra-change (:hint nil)
+      "
   ^ ^ _k_ ^ ^    _t_ags    _p_rop | _x_:archive
   _h_ ^+^ _l_    _n_ame    _e_ol  |
   ^ ^ _j_ ^ ^    ^ ^       ^ ^    |
   "
-    ;; arrows
-    ("j" org-metadown)
-    ("k" org-metaup)
-    ("h" org-metaleft)
-    ("l" org-metaright)
+      ;; arrows
+      ("j" org-metadown)
+      ("k" org-metaup)
+      ("h" org-metaleft)
+      ("l" org-metaright)
 
-    ("e" move-end-of-line :exit t)
-    ;; misc
-    ("p" org-set-property :exit t)
-    ("t" org-set-tags :exit t)
-    ("n" worf-change-name :exit t)
-    ("x" org-archive-subtree-default-with-confirmation :exit t)
-    ("q" nil)
-    ("c" nil))
+      ("e" move-end-of-line :exit t)
+      ;; misc
+      ("p" org-set-property :exit t)
+      ("t" org-set-tags :exit t)
+      ("n" worf-change-name :exit t)
+      ("x" org-archive-subtree-default-with-confirmation :exit t)
+      ("q" nil)
+      ("c" nil))
 
 
-  (defun my-org-before-or-after (before)
-    (if before
-        (evil-insert-line nil)
-      (evil-append-line nil)))
+    (defun my-org-before-or-after (before)
+      (if before
+          (evil-insert-line nil)
+        (evil-append-line nil)))
 
-  (defun my-org-new-item (before)
-    (if (org-at-heading-p)
-        (progn
-          (my-org-before-or-after before)
-          (if before
-              (org-insert-heading)
-            (org-insert-heading-respect-content)))
-      (if (org-at-item-checkbox-p)
+    (defun my-org-new-item (before)
+      (if (org-at-heading-p)
           (progn
             (my-org-before-or-after before)
-            (org-insert-todo-heading 1))
-        (if (org-at-item-p)
+            (if before
+                (org-insert-heading)
+              (org-insert-heading-respect-content)))
+        (if (org-at-item-checkbox-p)
             (progn
               (my-org-before-or-after before)
-              (org-insert-item))
-          (progn
-            (worf-back-to-heading)
-            (my-org-new-item before))))))
+              (org-insert-todo-heading 1))
+          (if (org-at-item-p)
+              (progn
+                (my-org-before-or-after before)
+                (org-insert-item))
+            (progn
+              (worf-back-to-heading)
+              (my-org-new-item before))))))
 
-  (defun my-org-new-item-before ()
-    (interactive)
-    (my-org-new-item t))
+    (defun my-org-new-item-before ()
+      (interactive)
+      (my-org-new-item t))
 
-  (defun my-org-new-item-after ()
-    (interactive)
-    (my-org-new-item nil))
+    (defun my-org-new-item-after ()
+      (interactive)
+      (my-org-new-item nil))
 
-  (defun my-org-export-widen ()
-    (interactive)
-    (save-restriction
-      (widen)
-      (org-export-dispatch)))
+    (defun my-org-export-widen ()
+      (interactive)
+      (save-restriction
+        (widen)
+        (org-export-dispatch)))
 
-  (general-define-key :keymaps 'org-mode-map
-                      :states '(normal)
-                      ;;"TAB" 'org-cycle
-                      "<" 'org-metaleft
-                      ">" 'org-metaright
-                      "|" 'org-sidebar-tree
-                      "RET" (lambda ()
+    (general-define-key :keymaps 'org-mode-map
+                        :states '(normal)
+                        ;;"TAB" 'org-cycle
+                        "<" 'org-metaleft
+                        ">" 'org-metaright
+                        "|" 'org-sidebar-tree
+                        "RET" (lambda ()
+                                (interactive)
+                                (if (org-in-src-block-p)
+                                    (org-edit-special)
+                                  (if (org-at-item-checkbox-p)
+                                      (org-toggle-checkbox)
+                                    (org-open-at-point)))
+                                (evil-normal-state))
+                        (kbd "S-<return>") 'org-narrow-to-subtree)
+    (general-define-key :prefix my-leader2
+                        :keymaps 'org-mode-map
+                        :states '(normal)
+                        ;;"o" (lambda ()
+                        ;;(interactive)
+                        ;;(org-insert-heading-respect-content)
+                        ;;(evil-insert-state))
+                        "e" 'my-org-export-widen
+                        "o" 'my-org-new-item-after
+                        "O" 'my-org-new-item-before
+                        "a" (lambda ()
                               (interactive)
-                              (if (org-in-src-block-p)
-                                  (org-edit-special)
-                                (if (org-at-item-checkbox-p)
-                                    (org-toggle-checkbox)
-                                  (org-open-at-point)))
-                              (evil-normal-state))
-                      (kbd "S-<return>") 'org-narrow-to-subtree)
-  (general-define-key :prefix my-leader2
-                      :keymaps 'org-mode-map
-                      :states '(normal)
-                      ;;"o" (lambda ()
-                      ;;(interactive)
-                      ;;(org-insert-heading-respect-content)
-                      ;;(evil-insert-state))
-                      "e" 'my-org-export-widen
-                      "o" 'my-org-new-item-after
-                      "O" 'my-org-new-item-before
-                      "a" (lambda ()
-                            (interactive)
-                            (org-insert-heading-respect-content)
-                            (org-demote-subtree)
-                            (evil-insert-state))
-                      "X" 'org-archive-subtree-default-with-confirmation
-                      "s" 'org-schedule
-                      "S" 'org-deadline
-                      "r" 'org-refile
-                      "n" 'org-narrow-to-subtree
-                      "t" 'org-todo
-                      "T" 'counsel-org-tag
-                      "p" 'org-insert-link
-                      "y" 'org-store-link
-                      "x" 'org-archive-subtree
-                      "c" 'myorg-hydra-change/body
-                      "l" 'worf-right
-                      "g" 'counsel-org-goto
-                      "j" 'worf-down
-                      "k" 'worf-up
-                      "h" 'worf-left
-                      "J" 'org-metadown
-                      "K" 'org-metaup
-                      "H" 'org-metaleft
-                      "L" 'org-metaright
-                      "/" 'org-toggle-comment
-                      "RET" (lambda ()
-                             (interactive)
-                             (org-tree-to-indirect-buffer)
-                             (other-window 1))
-                      "SPC" 'worf-back-to-heading
-                      "H" (lambda ()
-                            (interactive)
-                            (worf-left)
-                            (org-cycle)))
-  ;; key for exiting src edit mode
-  (general-define-key :keymaps 'org-src-mode-map
-                      :states '(normal)
-                      "RET" 'org-edit-src-exit)
+                              (org-insert-heading-respect-content)
+                              (org-demote-subtree)
+                              (evil-insert-state))
+                        "X" 'org-archive-subtree-default-with-confirmation
+                        "s" 'org-schedule
+                        "S" 'org-deadline
+                        "r" 'org-refile
+                        "n" 'org-narrow-to-subtree
+                        "t" 'org-todo
+                        "T" 'counsel-org-tag
+                        "p" 'org-insert-link
+                        "y" 'org-store-link
+                        "x" 'org-archive-subtree
+                        "c" 'myorg-hydra-change/body
+                        "l" 'worf-right
+                        "g" 'counsel-org-goto
+                        "j" 'worf-down
+                        "k" 'worf-up
+                        "h" 'worf-left
+                        "J" 'org-metadown
+                        "K" 'org-metaup
+                        "H" 'org-metaleft
+                        "L" 'org-metaright
+                        "/" 'org-toggle-comment
+                        "RET" (lambda ()
+                                (interactive)
+                                (org-tree-to-indirect-buffer)
+                                (other-window 1))
+                        "SPC" 'worf-back-to-heading
+                        "H" (lambda ()
+                              (interactive)
+                              (worf-left)
+                              (org-cycle)))
+    ;; key for exiting src edit mode
+    (general-define-key :keymaps 'org-src-mode-map
+                        :states '(normal)
+                        "RET" 'org-edit-src-exit)
+    )
 #+END_SRC
 *** open source code in same windowemacs
 #+BEGIN_SRC emacs-lisp

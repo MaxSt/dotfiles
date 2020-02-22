@@ -1,5 +1,11 @@
 .emacs.desktop
 .emacs.desktop.lock
+session.*
+tramp
+transient/
+bookmarks
+smex-items
+.org-id-locations
 
 projectile-bookmarks.eld
 config.el
@@ -10,6 +16,7 @@ eshell/
 elpa/
 auto-save-list/
 emojis/
+bookmarks/
 
 undo/*
 !undo/.gitkeep
@@ -26,3 +33,7 @@ backup/*
 # transient files
 *.cache-*
 *.log
+
+# straight
+straight/*
+!straight/versions/

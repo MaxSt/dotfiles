@@ -6,6 +6,10 @@
 ;; Defer garbage collection further back in the startup process
 (setq gc-cons-threshold 268435456)
 
+;;Emacs resizes the (GUI) frame when your newly set font is larger (or smaller)
+;;than the system default. This seems to add 0.4-1s to startup.
+(setq frame-inhibit-implied-resize t)
+
 ;; Package initialize occurs automatically, before `user-init-file' is
 ;; loaded, but after `early-init-file'. We handle package
 ;; initialization, so we must prevent Emacs from doing it early!
