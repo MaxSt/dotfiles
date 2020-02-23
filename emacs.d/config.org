@@ -136,6 +136,7 @@ previously compiled manually then all of the package initialization will still t
 
   ;; Install use-package
   (straight-use-package 'use-package)
+  ;;(setq straight-check-for-modifications '(check-on-save find-when-checking))
   (setq straight-use-package-by-default t)
 
 #+END_SRC
@@ -1679,15 +1680,11 @@ Load org-plus-contrib
      #+BEGIN_SRC emacs-lisp
 (setq-default org-hide-leading-stars t)
      #+END_SRC
-*** org-bullets (pretty bullets)
+*** org-superstar (pretty bullets)
 #+BEGIN_SRC emacs-lisp
-  (use-package org-bullets
-    :config
-    ;;(setq org-bullets-bullet-list '("·"))
-    :init
-    (add-hook 'org-mode-hook
-              (lambda ()
-              (org-bullets-mode 1))))
+   (use-package org-superstar
+     :straight (:host github :repo "integral-dw/org-superstar-mode")
+     :hook org-mode)
 #+END_SRC
 *** COMMENT org-sticky-header
 #+BEGIN_SRC emacs-lisp
