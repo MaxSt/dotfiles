@@ -8,6 +8,7 @@ smex-items
 .org-id-locations
 
 projectile-bookmarks.eld
+projectile.cache
 config.el
 recentf
 
