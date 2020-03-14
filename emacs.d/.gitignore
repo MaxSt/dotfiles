@@ -12,6 +12,7 @@ projectile.cache
 config.el
 recentf
 
+url
 desktop/
 eshell/
 elpa/

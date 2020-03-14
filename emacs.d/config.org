@@ -119,21 +119,8 @@ previously compiled manually then all of the package initialization will still t
       (package-install 'use-package))
     )
 #+END_SRC
-*** Bootstrapping Straight.el
+*** straight.el configuration
 #+BEGIN_SRC emacs-lisp
-  (defvar bootstrap-version)
-  (let ((bootstrap-file
-         (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-        (bootstrap-version 5))
-    (unless (file-exists-p bootstrap-file)
-      (with-current-buffer
-          (url-retrieve-synchronously
-           "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-           'silent 'inhibit-cookies)
-        (goto-char (point-max))
-        (eval-print-last-sexp)))
-    (load bootstrap-file nil 'nomessage)) 
-
   ;; Install use-package
   (straight-use-package 'use-package)
   ;;(setq straight-check-for-modifications '(check-on-save find-when-checking))
@@ -1524,12 +1511,6 @@ enable narrowing
   (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 #+END_SRC
 ** Org Mode
-*** init org-mode
-Load org-plus-contrib
-#+BEGIN_SRC emacs-lisp
-(use-package org
-  :straight org-plus-contrib)
-#+END_SRC
 *** org settings
 **** latex syntax highlight
 #+BEGIN_SRC emacs-lisp
@@ -1682,9 +1663,10 @@ Load org-plus-contrib
      #+END_SRC
 *** org-superstar (pretty bullets)
 #+BEGIN_SRC emacs-lisp
-   (use-package org-superstar
-     :straight (:host github :repo "integral-dw/org-superstar-mode")
-     :hook org-mode)
+  (use-package org-superstar
+    :straight (:host github :repo "integral-dw/org-superstar-mode")
+    :init
+    (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1))))
 #+END_SRC
 *** COMMENT org-sticky-header
 #+BEGIN_SRC emacs-lisp
@@ -1744,9 +1726,9 @@ Fontify the whole line for headings (with a background color).
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
   (use-package worf
-    :after '(org hydra)
+    :after (org hydra)
     :init
-    (add-hook 'org-mode-hook 'worf-mode)
+    (add-hook 'org-mode-hook (lambda () (worf-mode 1)))
     ;; set the worf-mode keymap to an empty keymap to remove all worf bindings
     (add-hook 'worf-mode-hook
               (lambda ()
