@@ -1580,7 +1580,7 @@ enable narrowing
 #+BEGIN_SRC emacs-lisp
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
   (use-package org-id
-    :after (org org-plus-contrib)
+    :after (org)
     :straight org-plus-contrib
     :config
 
@@ -1625,9 +1625,50 @@ enable narrowing
   (setq org-refile-targets
         '((org-agenda-files . (:maxlevel . 4))))
 
-  (use-package org-capture-pop-frame
-    :init (require 'org-capture-pop-frame))
      #+END_SRC
+***** Fullscreen org capture
+Copied from https://fuco1.github.io/2017-09-02-Maximize-the-org-capture-buffer.html:
+
+Org capture provides several hooks we can use to tweak the default behaviour.
+
+First, we make sure the capture buffer window takes the whole frame. To do this, we first save the current window configuration and then delete all other windows on entering the org-capture-mode. Unfortunately there is no "before anything happens" hook so we use a before advice instead.
+
+#+begin_src emacs-lisp
+  (defvar my-org-capture-before-config nil
+    "Window configuration before `org-capture'.")
+
+  (defun my-org-capture-advice-before (&optional GOTO KEYS)
+    "Save the window configuration before `org-capture'."
+    (setq my-org-capture-before-config (current-window-configuration))
+    (delete-other-windows)
+    )
+
+  (advice-add 'org-capture :before #'my-org-capture-advice-before)
+  (advice-add 'org-capture :after #'delete-other-windows)
+
+
+  ;;(add-hook 'org-capture-mode-hook 'delete-other-windows)
+#+end_src
+
+Next, after we finish the capture work flow (either with success or cancellation) we restore the window configuration saved previously.
+
+Finally, let's make sure that after we refile the captured content the frame which was possibly created (if capture was invoked with org-protocol) closes itself automatically. This keeps us in the flow and keeps the distraction of killing the frame manually away. We use the frame name to decide if we wish to kill the frame or not (this is the -F argument from above).
+
+#+begin_src emacs-lisp
+(defun my-org-capture-cleanup ()
+  "Clean up the frame created while capturing via org-protocol."
+  ;; In case we run capture from emacs itself and not an external app,
+  ;; we want to restore the old window config
+  (when my-org-capture-before-config
+    (set-window-configuration my-org-capture-before-config))
+  (-when-let ((&alist 'name name) (frame-parameters))
+    (when (equal name "org-protocol-capture")
+      (delete-frame))))
+
+(add-hook 'org-capture-after-finalize-hook 'my-org-capture-cleanup)
+#+end_src
+
+With these tweaks the whole capture experience is much more streamlined for me. When I invoke capture from anywhere (Emacs or via org-protocol), I get a full screen frame/window where I can quickly jot my thoughts. After I'm finished everything restores itself to the previous state and I can continue with whatever task I was consumed prior to the capture process. 
 **** set inline image background
 #+BEGIN_SRC emacs-lisp
   (defcustom org-inline-image-background nil
