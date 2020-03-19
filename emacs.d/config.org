@@ -846,6 +846,7 @@ These are the Files creating in the current Directory for files that have not be
      :prefix my-leader
      ;;"r" 'restart-emacs
      "a" 'org-agenda
+     "A" 'notdeft
      "p" 'hydra-projectile/body
      "q" 'evil-window-delete
      "k" 'kill-buffer
@@ -864,8 +865,8 @@ These are the Files creating in the current Directory for files that have not be
      "h v" 'helpful-variable
      "h f" 'helpful-function
      "h m" 'describe-mode
-     "<return>" 'my/projectile-multi-term
-     "S-<return>" 'multi-term
+     "<return>" 'projectile-run-vterm
+     "S-<return>" 'vterm
      ;;  Avoiding CTRL
      "w" (general-simulate-key "C-w")
      "x" (general-simulate-key "C-x")
