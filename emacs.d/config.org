@@ -2943,28 +2943,17 @@ Deactivated, because it makes org mode very slow.
 #+END_SRC
 ** deft
 #+BEGIN_SRC emacs-lisp
-  ;;   (use-package deft
-  ;;     :config
-  ;;     (setq deft-directory "~/org/notes")
-  ;;     (setq deft-extensions '("org"))
-  ;;     (setq deft-default-extension "org")
-  ;;     (setq deft-text-mode 'org-mode)
-  ;;     (setq deft-use-filename-as-title nil)
-  ;;     (setq deft-auto-save-interval 0)
-  ;; )
-
-  (add-to-list 'load-path "~/Documents/notdeft")
-
-  (load "notdeft-example")
-
-
-  (setq notdeft-directories '("~/org/notes"))
-  (setq notdeft-extension "org")
-  (setq notdeft-secondary-extensions '("md" "txt"))
-
-  (add-hook 'org-mode-hook 'notdeft-note-mode)
-
-
+     (use-package notdeft
+       :straight (:host github
+                  :repo "MaxSt/notdeft"
+                  ;;:repo "hasu/notdeft"
+                  :branch "xapian"
+                  :files ("*" (:exclude "images" "Makefile" "web" "README.org")))
+       :init
+       (add-hook 'org-mode-hook 'notdeft-note-mode)
+       (setq notdeft-directories '("~/org/notes"))
+       (setq notdeft-extension "org")
+       (setq notdeft-secondary-extensions '("md" "txt")))
 #+END_SRC
 ** direnv
 #+begin_src emacs-lisp
