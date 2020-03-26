@@ -714,11 +714,11 @@ These are the Files creating in the current Directory for files that have not be
     :init
     ;; disable company tng (to be able to complete with rtn)
     (setq evil-collection-company-use-tng nil)
-    (require 'evil-collection)
-     ;; edebug mode clashes with helpful.
-    (setq evil-collection-mode-list (delete 'edebug evil-collection-mode-list))
     :config
     ;;(setq evil-collection-mode-list ...)
+     ;; edebug mode clashes with helpful.
+    (setq evil-collection-mode-list (delete 'edebug evil-collection-mode-list))
+
     ;; These are the mappings i use for window management and i don't want
     ;; evil-collection to override those
     (defun my-evil-collection-key-setup (_mode mode-keymaps &rest _rest)
