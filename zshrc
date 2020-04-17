@@ -22,7 +22,7 @@ source "${HOME}/.zgen/zgen.zsh"
 #theme
 source "${HOME}/dotfiles/settings/maxtheme"
 
-source "${HOME}/.bash_profile"
+source "${HOME}/.profile"
 
 # check if there's no init script
 if ! zgen saved; then
