@@ -1947,6 +1947,13 @@ Download images and insert them into org buffers (drag and drop support)
     (add-hook 'dired-mode-hook 'org-download-enable)
     (require 'org-download))
 #+END_SRC
+*** org-treeusage
+#+BEGIN_SRC emacs-lisp
+  (use-package org-treeusage
+     :straight (:host github
+                :repo "mtekman/org-treeusage.el")
+    :after org)
+#+END_SRC
 ** smartparens
 #+BEGIN_SRC emacs-lisp
   (use-package smartparens
@@ -2916,6 +2923,14 @@ Deactivated, because it makes org mode very slow.
             (right-fringe . 8)))
 )
  #+END_SRC
+** hydra-posframe
+#+begin_src emacs-lisp
+    (use-package hydra-posframe
+     :straight (:host github
+                :repo "Ladicle/hydra-posframe")
+     :after hydra
+     :hook (after-init . hydra-posframe-enable))
+#+end_src
 ** restart-emacs
 #+BEGIN_SRC emacs-lisp
   (use-package restart-emacs)
@@ -2924,7 +2939,7 @@ Deactivated, because it makes org mode very slow.
 #+BEGIN_SRC emacs-lisp
   (use-package suggest)
 #+END_SRC
-** keyfreq
+** COMMENT keyfreq
 #+BEGIN_SRC emacs-lisp
 (use-package keyfreq
   :init
