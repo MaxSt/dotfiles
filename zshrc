@@ -67,6 +67,8 @@ PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
 PATH=$PATH:$HOME/.scripts
 PATH=$PATH:$HOME/.bin
+PATH=$PATH:$HOME/.bin
+PATH=$PATH:$HOME/.config/yarn/global/node_modules/.bin
 
 #chpwd is called after changing directories
 function chpwd(){

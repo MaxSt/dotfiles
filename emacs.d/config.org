@@ -833,13 +833,16 @@ These are the Files creating in the current Directory for files that have not be
      "'" 'evil-goto-mark
      "g ." 'my-funcs/open-dotfile
      "g p" 'counsel-yank-pop
-     "Q" 'org-capture
+     "Q" (lambda ()
+           (interactive)
+           (org-capture))
      "g i" (lambda ()
              (interactive)
              (find-file (concat org-directory "/inbox.org")))
      "g o" (lambda ()
              (interactive)
              (counsel-find-file org-directory)))
+
     (general-define-key
      :states 'normal
      :keymaps 'override
@@ -2958,17 +2961,21 @@ Deactivated, because it makes org mode very slow.
 #+END_SRC
 ** deft
 #+BEGIN_SRC emacs-lisp
-     (use-package notdeft
-       :straight (:host github
-                  :repo "MaxSt/notdeft"
-                  ;;:repo "hasu/notdeft"
-                  :branch "xapian"
-                  :files ("*" (:exclude "images" "Makefile" "web" "README.org")))
-       :init
-       (add-hook 'org-mode-hook 'notdeft-note-mode)
-       (setq notdeft-directories '("~/org/notes"))
-       (setq notdeft-extension "org")
-       (setq notdeft-secondary-extensions '("md" "txt")))
+  (use-package notdeft
+    :straight (:host github
+                     :repo "hasu/notdeft"
+                     :branch "xapian"
+                     :files ("*" (:exclude "images" "Makefile" "web" "README.org")))
+    :init
+    (autoload 'notdeft-xapian-make-program-when-uncurrent "notdeft-xapian-make")
+    (add-hook 'notdeft-load-hook 'notdeft-xapian-make-program-when-uncurrent)
+    (add-hook 'org-mode-hook 'notdeft-note-mode)
+    :config
+    (setq notdeft-directories '("~/org/notes"))
+    (setq notdeft-extension "org")
+    ;;(setq notdeft-xapian-programm "~/.emacs.d/straight/build/notdeft/xapian/notdeft-xapian")
+    (setq notdeft-secondary-extensions '("md" "txt"))
+    )
 #+END_SRC
 ** direnv
 #+begin_src emacs-lisp
@@ -2992,4 +2999,36 @@ Deactivated, because it makes org mode very slow.
 
     (dashboard-setup-startup-hook)
   )
+#+end_src
+
+** ansible
+#+begin_src emacs-lisp
+    (use-package ansible
+      :ensure t
+      :init
+      (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt)
+    )
+#+end_src
+** gcmh (Garbage Collector Magic Hack)
+#+begin_src emacs-lisp
+    (use-package gcmh
+      :ensure t
+      :init (gcmh-mode 1))
+#+end_src
+
+** ledger-mode
+#+begin_src emacs-lisp
+    (use-package ledger-mode)
+#+end_src
+
+** journalctl mode
+#+begin_src emacs-lisp
+  (use-package journalctl-mode)
+#+end_src
+
+** mermaid graphs
+#+begin_src emacs-lisp
+  (use-package ob-mermaid
+    :config
+    (setq ob-mermaid-cli-path "/home/max/.config/yarn/global/node_modules/.bin/mmdc"))
 #+end_src
