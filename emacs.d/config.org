@@ -1292,10 +1292,19 @@ enable narrowing
 #+END_SRC
 ** clojure
 #+BEGIN_SRC emacs-lisp
+  (defun json->edn ()
+    (interactive)
+    (shell-command-on-region (region-beginning)
+                             (region-end)
+                             "jet --pretty --keywordize keyword --from json --to edn"
+                             (current-buffer)
+                             t))
+
+
   (defun my-funcs/eval-overlay (value point)
     (cider--make-result-overlay (format "%S" value)
-                                :where point
-                                :duration 'command)
+      :where point
+      :duration 'command)
     ;; Preserve the return value.
     value)
   (advice-add 'eval-last-sexp :filter-return
@@ -1330,7 +1339,7 @@ enable narrowing
   (use-package clj-refactor
     :init
     (defun my-clj-refactor-mode-hook ()
-    (clj-refactor-mode 1))
+      (clj-refactor-mode 1))
     (add-hook 'clojure-mode-hook #'my-clj-refactor-mode-hook))
   (use-package cider
     :init
@@ -1356,12 +1365,12 @@ enable narrowing
     (general-define-key
      :states 'normal
      :keymaps '(cider-inspector-mode-map)
-      "n" 'cider-inspector-next-page
-      "q" 'quit-window
-      "N" 'cider-inspector-prev-page
-      "RET" 'cider-inspector-operate-on-point
-      "d" 'cider-inspector-pop
-      "r" 'cider-inspector-refresh)
+     "n" 'cider-inspector-next-page
+     "q" 'quit-window
+     "N" 'cider-inspector-prev-page
+     "RET" 'cider-inspector-operate-on-point
+     "d" 'cider-inspector-pop
+     "r" 'cider-inspector-refresh)
     (general-def 'normal '(cider-popup-buffer-mode-map cider-stacktrace-mode-map)
       "q" 'cider-popup-buffer-quit)
     (general-def 'normal '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
@@ -1389,10 +1398,10 @@ enable narrowing
             ;; isn't an existing command for the linewise version:
             ;; "c" (general-simulate-keys ('evil-change "c"))
             ))
-   ;; for some reason the above also overrides visual state
-  (general-define-key :states 'visual
-                      :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
-                      "c" 'evil-change)
+    ;; for some reason the above also overrides visual state
+    (general-define-key :states 'visual
+                        :keymaps '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
+                        "c" 'evil-change)
     )
   (use-package cider-hydra
     :after (evil clojure-mode)
