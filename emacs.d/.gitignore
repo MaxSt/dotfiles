@@ -33,9 +33,20 @@ backup/*
 *.elc
 
 # transient files
+.cache
 *.cache-*
 *.log
 
 # straight
 straight/*
 !straight/versions/
+
+# lsp
+.lsp-session-v1
+
+# network security
+network-security.data
+
+.dap-breakpoints
+eln-cache
+var

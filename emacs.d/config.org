@@ -569,143 +569,150 @@ These are the Files creating in the current Directory for files that have not be
     (my-desktop-save "last-session"))
   (add-hook 'kill-emacs-hook 'my-desktop-kill-emacs-hook)
 #+END_SRC
+* Install org-plus-contrib
+Installing it this early should prevent mixed Org installations.
+#+BEGIN_SRC emacs-lisp
+(straight-use-package 'org-plus-contrib)
+#+END_SRC
 * Evil
 ** initialize
 #+BEGIN_SRC emacs-lisp
-  (use-package evil
-    :straight (:host github :repo "emacs-evil/evil")
-    :init
-    (setq evil-want-integration nil)
-    (setq evil-want-keybinding nil)
+    (use-package evil
+      :straight (:host github :repo "emacs-evil/evil")
+      :init
+      (setq evil-want-integration nil)
+      (setq evil-want-keybinding nil)
 
-    ;; whichwrap like movement across lines
-    (setq-default evil-cross-lines t)
-    (setq-default evil-search-module 'evil-search
-                  evil-want-abbrev-expand-on-insert-exit nil
-                  evil-ex-substitute-global t ;; make substitue global by default
-                  evil-shift-width 2
-                  ;; prevent esc-key from translating to meta-key in terminal mode
-                  evil-esc-delay 0
-                  evil-want-Y-yank-to-eol t)
-    :config
-    (evil-set-initial-state 'package-menu-mode 'normal)
-    (evil-set-initial-state 'help-mode 'normal)
-    (evil-set-initial-state 'ibuffer-mode 'normal)
-    ;;(evil-set-initial-state 'pdf-view-mode 'normal)
-    (evil-set-initial-state 'ivy-occur-grep-mode 'normal)
-    (evil-set-initial-state 'occur-mode 'normal)
-    ;;(setq evil-emacs-state-modes nil)
-    ;;(setq evil-insert-state-modes nil)
-    ;;(setq evil-motion-state-modes nil)
-    (evil-mode t)
+      ;; whichwrap like movement across lines
+      (setq-default evil-cross-lines t)
+      (setq-default evil-search-module 'evil-search
+                    evil-want-abbrev-expand-on-insert-exit nil
+                    evil-ex-substitute-global t ;; make substitue global by default
+                    evil-shift-width 2
+                    ;; prevent esc-key from translating to meta-key in terminal mode
+                    evil-esc-delay 0
+                    evil-want-fine-undo t
+                    evil-undo-system 'undo-tree
+                    evil-want-Y-yank-to-eol t)
+      :config
+      (evil-set-initial-state 'package-menu-mode 'normal)
+      (evil-set-initial-state 'help-mode 'normal)
+      (evil-set-initial-state 'ibuffer-mode 'normal)
+      ;;(evil-set-initial-state 'pdf-view-mode 'normal)
+      (evil-set-initial-state 'ivy-occur-grep-mode 'normal)
+      (evil-set-initial-state 'occur-mode 'normal)
+      ;;(setq evil-emacs-state-modes nil)
+      ;;(setq evil-insert-state-modes nil)
+      ;;(setq evil-motion-state-modes nil)
+      (evil-mode t)
 
-    ;;Evil smartparens text objects
-    (evil-define-text-object evil-a-sexp (count &optional beg end type)
-      "outer sexp"
-      (evil-range (progn
-                    (save-excursion
-                      (sp-beginning-of-sexp)
-                      (- (point) 1)))
-                  (progn
-                    (save-excursion
-                      (sp-end-of-sexp)
-                      (+ (point) 1)))))
-    (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
-    (evil-define-text-object evil-i-sexp (count &optional beg end type)
-      "inner sexp"
-      (evil-range (progn
-                    (save-excursion
-                      (sp-beginning-of-sexp)
-                      (point)))
-                  (progn
-                    (save-excursion
-                      (sp-end-of-sexp)
-                      (point)))))
-    (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
-    (evil-define-text-object evil-a-top-level-sexp (count &optional beg end type)
-      "outer top level sexp"
-      (evil-range (progn
-                    (save-excursion
-                      (beginning-of-defun)
-                      (- (point) 1)))
-                  (progn
-                    (save-excursion
-                      (end-of-defun)
-                      (+ (point) 1)))))
-    (define-key evil-outer-text-objects-map "F" 'evil-a-top-level-sexp)
-    (evil-define-text-object evil-i-top-level-sexp (count &optional beg end type)
-      "inner top level sexp"
-      (evil-range (progn
-                    (save-excursion
-                      (beginning-of-defun)
-                      (point)))
-                  (progn
-                    (save-excursion
-                      (end-of-defun)
-                      (point)))))
-    (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
-    (evil-define-text-object evil-a-lisp-element (count &optional beg end type)
-      "outer sexp"
-      (evil-range (progn
-                    (save-excursion
-                      ;;TODO
-                      ))
-                  (progn
-                    (save-excursion
-                      ;;TODO
-                      ))))
-    ;;(define-key evil-outer-text-objects-map "e" 'evil-a-lisp-element)
-    (evil-define-text-object evil-i-lisp-element (count &optional beg end type)
-      "inner sexp"
-      (evil-range (progn
-                    (save-excursion
-                      ;;TODO
-                      ))
-                  (progn
-                    (save-excursion
-                      ;;TODO
-                      ))))
-    ;;(define-key evil-inner-text-objects-map "e" 'evil-i-lisp-element)
+      ;;Evil smartparens text objects
+      (evil-define-text-object evil-a-sexp (count &optional beg end type)
+        "outer sexp"
+        (evil-range (progn
+                      (save-excursion
+                        (sp-beginning-of-sexp)
+                        (- (point) 1)))
+                    (progn
+                      (save-excursion
+                        (sp-end-of-sexp)
+                        (+ (point) 1)))))
+      (define-key evil-outer-text-objects-map "f" 'evil-a-sexp)
+      (evil-define-text-object evil-i-sexp (count &optional beg end type)
+        "inner sexp"
+        (evil-range (progn
+                      (save-excursion
+                        (sp-beginning-of-sexp)
+                        (point)))
+                    (progn
+                      (save-excursion
+                        (sp-end-of-sexp)
+                        (point)))))
+      (define-key evil-inner-text-objects-map "f" 'evil-i-sexp)
+      (evil-define-text-object evil-a-top-level-sexp (count &optional beg end type)
+        "outer top level sexp"
+        (evil-range (progn
+                      (save-excursion
+                        (beginning-of-defun)
+                        (- (point) 1)))
+                    (progn
+                      (save-excursion
+                        (end-of-defun)
+                        (+ (point) 1)))))
+      (define-key evil-outer-text-objects-map "F" 'evil-a-top-level-sexp)
+      (evil-define-text-object evil-i-top-level-sexp (count &optional beg end type)
+        "inner top level sexp"
+        (evil-range (progn
+                      (save-excursion
+                        (beginning-of-defun)
+                        (point)))
+                    (progn
+                      (save-excursion
+                        (end-of-defun)
+                        (point)))))
+      (define-key evil-inner-text-objects-map "F" 'evil-i-top-level-sexp)
+      (evil-define-text-object evil-a-lisp-element (count &optional beg end type)
+        "outer sexp"
+        (evil-range (progn
+                      (save-excursion
+                        ;;TODO
+                        ))
+                    (progn
+                      (save-excursion
+                        ;;TODO
+                        ))))
+      ;;(define-key evil-outer-text-objects-map "e" 'evil-a-lisp-element)
+      (evil-define-text-object evil-i-lisp-element (count &optional beg end type)
+        "inner sexp"
+        (evil-range (progn
+                      (save-excursion
+                        ;;TODO
+                        ))
+                    (progn
+                      (save-excursion
+                        ;;TODO
+                        ))))
+      ;;(define-key evil-inner-text-objects-map "e" 'evil-i-lisp-element)
 
-    (evil-define-text-object evil-i-line (count &optional beg end type)
-      "inner line"
-      (evil-range (progn
-                    (save-excursion
-                      (back-to-indentation)
-                      (point)))
-                  (progn
-                    (save-excursion
-                      (end-of-line)
-                      (point)))))
-    (define-key evil-inner-text-objects-map "l" 'evil-i-line)
-    (evil-define-text-object evil-a-line (count &optional beg end type)
-      "outer line"
-      (evil-range (progn
-                    (save-excursion
-                      (evil-beginning-of-line)
-                      (point)))
-                  (progn
-                    (save-excursion
-                      (end-of-line)
-                      (point)))))
-    (define-key evil-outer-text-objects-map "l" 'evil-a-line)
+      (evil-define-text-object evil-i-line (count &optional beg end type)
+        "inner line"
+        (evil-range (progn
+                      (save-excursion
+                        (back-to-indentation)
+                        (point)))
+                    (progn
+                      (save-excursion
+                        (end-of-line)
+                        (point)))))
+      (define-key evil-inner-text-objects-map "l" 'evil-i-line)
+      (evil-define-text-object evil-a-line (count &optional beg end type)
+        "outer line"
+        (evil-range (progn
+                      (save-excursion
+                        (evil-beginning-of-line)
+                        (point)))
+                    (progn
+                      (save-excursion
+                        (end-of-line)
+                        (point)))))
+      (define-key evil-outer-text-objects-map "l" 'evil-a-line)
 
-  (evil-define-operator evil-eval-elisp-text-object (beg end)
-    "Evil operator for evaluating code."
-    :move-point nil
-    (save-excursion
-      (let (eval-str
-            value)
-        (setq eval-str (buffer-substring beg end))
-        (setq value (eval (car (read-from-string eval-str)) lexical-binding))
-        (my-funcs/flash-region beg end)
-        (my-funcs/eval-overlay value end)
-        (message (format "%s" value)))))
+    (evil-define-operator evil-eval-elisp-text-object (beg end)
+      "Evil operator for evaluating code."
+      :move-point nil
+      (save-excursion
+        (let (eval-str
+              value)
+          (setq eval-str (buffer-substring beg end))
+          (setq value (eval (car (read-from-string eval-str)) lexical-binding))
+          (my-funcs/flash-region beg end)
+          (my-funcs/eval-overlay value end)
+          (message (format "%s" value)))))
 
-  (evil-define-operator evil-narrow-indirect (beg end type)
-    "Indirectly narrow the region from BEG to END."
-    (interactive "<R>")
-    (narrow-to-region-indirect beg end)))
+    (evil-define-operator evil-narrow-indirect (beg end type)
+      "Indirectly narrow the region from BEG to END."
+      (interactive "<R>")
+      (narrow-to-region-indirect beg end)))
 #+end_src
 ** evil-collection
 #+BEGIN_SRC emacs-lisp
@@ -2221,16 +2228,18 @@ Download images and insert them into org buffers (drag and drop support)
 ** undo-tree
 #+begin_src emacs-lisp
   (use-package undo-tree
-    :init (setq undo-tree-visualizer-timestamps t
-                undo-tree-visualizer-diff t
-                ;; 10X bump of the undo limits to avoid issues with premature
-                ;; Emacs GC which truncages the undo history very aggresively
-                undo-limit 800000
-                undo-strong-limit 12000000
-                undo-outer-limit 120000000)
-
+    :init
+    (setq undo-tree-visualizer-timestamps t
+          undo-tree-visualizer-diff t
+          ;; 10X bump of the undo limits to avoid issues with premature
+          ;; Emacs GC which truncages the undo history very aggresively
+          undo-limit 800000
+          undo-strong-limit 12000000
+          undo-outer-limit 120000000)
     :config
     (progn
+
+    (global-undo-tree-mode 1)
       (setq undo-tree-enable-undo-in-region nil
             undo-tree-visualizer-diff t
             undo-tree-visualizer-timestamps t
@@ -2843,10 +2852,32 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** language-server
 #+begin_src emacs-lisp
-(use-package company-lsp)
-(use-package lsp-mode)
-(use-package lsp-ui)
-(use-package dap-mode)
+    (use-package company-lsp)
+    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
+    (setq lsp-keymap-prefix "C-c l")
+
+    (use-package lsp-mode
+        :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+                (clojure-mode . lsp)
+                (clojurec-mode . lsp)
+                (clojurescript-mode . lsp)
+                (sql-mode . lsp)
+                (ruby-mode . lsp)
+                (java-mode . lsp)
+                (javascript-mode . lsp)
+                ;; if you want which-key integration
+                (lsp-mode . lsp-enable-which-key-integration))
+        ;;:commands (lsp lsp-deferred)
+        :commands lsp)
+
+    ;; optionally
+    (use-package lsp-ui :commands lsp-ui-mode)
+    ;; if you are ivy user
+    (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+
+    ;; optionally if you want to use debugger
+    (use-package dap-mode)
+    ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
 #+end_src
 ** langtool
 #+BEGIN_SRC emacs-lisp
@@ -2927,13 +2958,13 @@ Deactivated, because it makes org mode very slow.
 #+BEGIN_SRC emacs-lisp
   (use-package ivy-posframe
     :init
-    (ivy-posframe-enable)
+    (ivy-posframe-mode 1)
     :config
     (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-center)))
     (setq ivy-posframe-parameters
           '((left-fringe . 8)
             (right-fringe . 8)))
-)
+    )
  #+END_SRC
 ** hydra-posframe
 #+begin_src emacs-lisp
@@ -3041,3 +3072,24 @@ Deactivated, because it makes org mode very slow.
     :config
     (setq ob-mermaid-cli-path "/home/max/.config/yarn/global/node_modules/.bin/mmdc"))
 #+end_src
+
+** bufler
+#+begin_src emacs-lisp
+  (use-package bufler)
+#+end_src
+
+** no-littering
+Package `no-littering' changes the default paths for lots of
+different packages, with the net result that the ~/.emacs.d folder
+is much more clean and organized.
+#+begin_src emacs-lisp
+(use-package no-littering)
+#+end_src
+
+** COMMENT svg-tag-mode
+#+begin_src emacs-lisp
+    (use-package svg-tag-mode
+        :straight (:host github :repo "rougier/svg-tag-mode"))
+#+end_src
+
+

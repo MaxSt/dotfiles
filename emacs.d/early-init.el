@@ -20,6 +20,13 @@
 (add-to-list 'default-frame-alist '(menu-bar-lines . 0))
 (add-to-list 'default-frame-alist '(vertical-scroll-bars))
 
+;;We want the =org-plus-contrib= version of Org mode.
+;;Removing the Emacs bundled version from the load-path *should* prevent loading mixed Org versions.
+;;e.g. After updating Org mode.
+(when-let (orglib (locate-library "org" nil load-path))
+  (setq-default load-path (delete (substring (file-name-directory orglib) 0 -1)
+                                  load-path)))
+
 (setq menu-bar-mode nil)
 (setq tool-bar-mode nil)
 (setq scroll-bar-mode nil)
