@@ -298,15 +298,23 @@ These are the Files creating in the current Directory for files that have not be
   (show-paren-mode)
   ;;(electric-pair-mode 1)
 
-;;; Transparent titlebar
-;; https://github.com/d12frosted/homebrew-emacs-plus/blob/master/Formula/emacs-plus.rb#L98
-;; https://github.com/d12frosted/homebrew-emacs-plus/issues/55
-;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Properties-in-Mode.html#Properties-in-Mode
-(when (memq window-system '(mac ns))
-  (add-to-list 'default-frame-alist '(ns-appearance . dark))
-  (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
+  ;;; Transparent titlebar
+  ;; https://github.com/d12frosted/homebrew-emacs-plus/blob/master/Formula/emacs-plus.rb#L98
+  ;; https://github.com/d12frosted/homebrew-emacs-plus/issues/55
+  ;; https://www.gnu.org/software/emacs/manual/html_node/elisp/Properties-in-Mode.html#Properties-in-Mode
+  (when (memq window-system '(mac ns))
+    (add-to-list 'default-frame-alist '(ns-appearance . dark))
+    (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
 
-(setq frame-title-format "%b")
+  (add-to-list 'default-frame-alist '(internal-border-width . 24))
+
+  (setq frame-title-format "%b")
+
+  (setq window-divider-default-right-width 24)
+  (setq window-divider-default-bottom-width 12)
+  (setq window-divider-default-places t)
+  (window-divider-mode 1)
+
 
 #+END_SRC
 ** fringe
@@ -320,6 +328,9 @@ These are the Files creating in the current Directory for files that have not be
     :ensure t
     :init (load-theme 'challenger-deep t)
     :config
+    (set-face-attribute 'window-divider nil :foreground "#1b182c")
+    (set-face-attribute 'window-divider-first-pixel nil :foreground "#1b182c")
+    (set-face-attribute 'window-divider-last-pixel nil :foreground "#1b182c")
     (set-face-attribute 'org-level-1 nil :background "#2b2942")
     (set-face-attribute 'org-level-2 nil :background "#2b2942" :foreground (face-attribute 'warning :foreground))
     (set-face-attribute 'org-level-3 nil :background "#2b2942" :foreground (face-attribute 'error :foreground))
@@ -2050,6 +2061,22 @@ Download images and insert them into org buffers (drag and drop support)
           (insert " ")))
       (evil-insert nil))
 
+    (evil-define-command lisp-next-symbol (count)
+      (interactive "<c>")
+      (call-interactively 'sp-forward-symbol)
+      (if count
+          (dotimes (number count)
+            (call-interactively 'sp-forward-symbol))
+        (call-interactively 'sp-forward-symbol))
+      (sp-backward-symbol))
+
+    (evil-define-command lisp-previous-symbol (count)
+        (interactive "<c>")
+        (if count
+            (dotimes (number count)
+              (call-interactively 'sp-backward-symbol))
+          (call-interactively 'sp-backward-symbol)))
+
     (evil-define-command lisp-next-paren (count)
       (interactive "<c>")
       (if count
@@ -2140,7 +2167,9 @@ Download images and insert them into org buffers (drag and drop support)
      :keymaps lisp-mode-maps
      ;;c is defined in vim-exchange
      "W" 'lisp-next-paren
+     "w" 'lisp-next-symbol
      "B" 'lisp-previous-paren
+     "b" 'lisp-previous-symbol
      "(" 'sp-backward-up-sexp
      ")" (lambda ()
            (interactive)
@@ -2824,9 +2853,9 @@ See https://www.emacswiki.org/emacs/SqlMode
 ** doom-modeline
 #+BEGIN_SRC emacs-lisp
   (use-package doom-modeline
-    :hook (after-init . doom-modeline-init)
-    :config)
+    :hook (after-init . doom-modeline-init))
 #+END_SRC
+
 ** COMMENT emojify
 #+begin_src emacs-lisp
   (use-package emojify
