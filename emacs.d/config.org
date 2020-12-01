@@ -283,7 +283,7 @@ These are the Files creating in the current Directory for files that have not be
 * GUI
 ** internal border
 #+BEGIN_SRC emacs-lisp
-  (set-frame-parameter nil 'internal-border-width 3)
+  (set-frame-parameter nil 'internal-border-width 24)
 #+END_SRC
 ** font
 #+BEGIN_SRC emacs-lisp
@@ -306,12 +306,10 @@ These are the Files creating in the current Directory for files that have not be
     (add-to-list 'default-frame-alist '(ns-appearance . dark))
     (add-to-list 'default-frame-alist '(ns-transparent-titlebar . t)))
 
-  (add-to-list 'default-frame-alist '(internal-border-width . 24))
-
   (setq frame-title-format "%b")
 
   (setq window-divider-default-right-width 24)
-  (setq window-divider-default-bottom-width 12)
+  ;;(setq window-divider-default-bottom-width 12)
   (setq window-divider-default-places t)
   (window-divider-mode 1)
 
@@ -2852,8 +2850,13 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** doom-modeline
 #+BEGIN_SRC emacs-lisp
-  (use-package doom-modeline
-    :hook (after-init . doom-modeline-init))
+    (use-package doom-modeline
+      ;;:hook (after-init . doom-modeline-init)
+      :config
+      (setq-default mode-line-format 
+                    '((:eval (propertize "%-" 'face '(:foreground "#100e23" :background "#1b182c" :height 0.9 :weight normal)))))
+      (setq-default header-line-format
+                    '((:eval (doom-modeline 'main)))))
 #+END_SRC
 
 ** COMMENT emojify
@@ -3120,5 +3123,4 @@ is much more clean and organized.
     (use-package svg-tag-mode
         :straight (:host github :repo "rougier/svg-tag-mode"))
 #+end_src
-
 
