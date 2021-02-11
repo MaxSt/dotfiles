@@ -320,9 +320,18 @@ These are the Files creating in the current Directory for files that have not be
   (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
   (set-fringe-bitmap-face 'tilde 'fringe)
 #+END_SRC
+** Popup Window
+#+begin_src emacs-lisp
+  (setq display-buffer-alist
+        '((".*" (display-buffer-reuse-window display-buffer-same-window))))
+
+  (setq display-buffer-reuse-frames t)         ; reuse windows in other frames
+  (setq even-window-sizes nil)                 ; display-buffer: avoid resizing
+#+end_src
 ** Themes
 #+begin_src emacs-lisp
   (use-package challenger-deep-theme
+    :straight (:host github :repo "challenger-deep-theme/emacs" :branch "master" :local-repo-name "challenger-deep-theme")
     :ensure t
     :init (load-theme 'challenger-deep t)
     :config
@@ -864,6 +873,7 @@ Installing it this early should prevent mixed Org installations.
      :keymaps 'override
      :prefix my-leader
      ;;"r" 'restart-emacs
+     "t" 'tab-switcher
      "a" 'org-agenda
      "A" 'notdeft
      "p" 'hydra-projectile/body
@@ -1278,33 +1288,34 @@ enable narrowing
         (exec-path-from-shell-copy-env "PGPASSWORD")
         (exec-path-from-shell-initialize)))
 #+END_SRC
-** Popup Window
+** COMMENT Shackle
 #+BEGIN_SRC emacs-lisp
-  (use-package shackle
-    :init
-    (setq shackle-select-reused-windows nil) ; default nil
-    (setq shackle-default-alignment 'below) ; default below
-    (setq shackle-default-size 0.3) ; default 0.5
-    (setq shackle-rules
-          '(("*Warnings*"  :size 8  :noselect t)
-            ("*Messages*"  :size 12 :noselect t)
-            ("*Help*" :select t :align below :inhibit-window-quit nil :modeline nil)
-            ("*Metahelp*" :size 0.3 :align left)
-            (undo-tree-visualizer-mode :size 0.5 :align right)
-            (alchemist-iex-mode :align below)
-            (sql-interaction-mode :align below)
-            (alchemist-test-report-mode :size 0.4 :align right :noselect t)
-            ("*alchemist help*" :select t :align below :inhibit-window-quit nil :modeline nil)
-            (magit-status-mode :same t)
-            ("*git-gutter:diff*" :same t :inhibit-window-quit t)
-            ("*HTTP Response*" :size 0.3 :align below)
-            (rg-mode :align below)
-            (cider-repl-mode :align below :noselect t)
-            (cider-inspector-mode :size 0.3 :align above)
-            ("*cider-error*" :size 0.5 :align right)
-            (ivy-occur-grep-mode :size 0.3 :align below)
-            (flycheck-error-list-mode :select t :autokill t :align below)))
-    (shackle-mode 1))
+
+    (use-package shackle
+      :init
+      (setq shackle-select-reused-windows nil) ; default nil
+      (setq shackle-default-alignment 'below) ; default below
+      (setq shackle-default-size 0.3) ; default 0.5
+      (setq shackle-rules
+            '(("*Warnings*"  :size 8  :noselect t)
+              ("*Messages*"  :size 12 :noselect t)
+              ("*Help*" :select t :align below :inhibit-window-quit nil :modeline nil)
+              ("*Metahelp*" :size 0.3 :align left)
+              (undo-tree-visualizer-mode :size 0.5 :align right)
+              (alchemist-iex-mode :align below)
+              (sql-interaction-mode :align below)
+              (alchemist-test-report-mode :size 0.4 :align right :noselect t)
+              ("*alchemist help*" :select t :align below :inhibit-window-quit nil :modeline nil)
+              (magit-status-mode :same t)
+              ("*git-gutter:diff*" :same t :inhibit-window-quit t)
+              ("*HTTP Response*" :size 0.3 :align below)
+              (rg-mode :align below)
+              (cider-repl-mode :align below :noselect t)
+              (cider-inspector-mode :size 0.3 :align above)
+              ("*cider-error*" :size 0.5 :align right)
+              (ivy-occur-grep-mode :size 0.3 :align below)
+              (flycheck-error-list-mode :select t :autokill t :align below)))
+      (shackle-mode 1))
 #+END_SRC
 ** clojure
 #+BEGIN_SRC emacs-lisp
@@ -1488,14 +1499,6 @@ enable narrowing
   (use-package magit
     :config
     (setq magit-diff-refine-hunk (quote all)))
-  (use-package evil-magit
-    :after (magit)
-    :config
-    (general-define-key :keymaps '(magit-mode-map)
-                        :states '(normal)
-                        "C-n" 'magit-section-forward
-                        "C-p" 'magit-section-backward)
-    )
 
   (use-package git-timemachine
     :after general
@@ -2580,7 +2583,7 @@ See https://www.emacswiki.org/emacs/SqlMode
     (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode)))
 
 #+end_src
-** elixir
+** COMMENT elixir
 #+begin_src emacs-lisp
     (use-package elixir-mode
       :init
@@ -2659,18 +2662,10 @@ See https://www.emacswiki.org/emacs/SqlMode
                                              (point)))))))
     )
 #+end_src
-** erlang
+** COMMENT erlang
 #+begin_src emacs-lisp
   (use-package erlang
     :config)
-#+end_src
-** COMMENT highlight-indent-guides
-#+begin_src emacs-lisp
-  (use-package highlight-indent-guides
-    :init
-    (add-hook 'prog-mode-hook 'highlight-indent-guides-mode)
-    :config
-    (setq highlight-indent-guides-method 'column))
 #+end_src
 ** docker
 #+begin_src emacs-lisp
@@ -2870,7 +2865,7 @@ See https://www.emacswiki.org/emacs/SqlMode
     :init
     (require 'vlf-setup))
 #+end_src
-** language-server
+** COMMENT language-server
 #+begin_src emacs-lisp
     (use-package company-lsp)
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -2907,12 +2902,12 @@ See https://www.emacswiki.org/emacs/SqlMode
      :states '(normal visual)
      :keymaps 'override
      :prefix my-leader
-     "t" 'langtool-check)
+     "L" 'langtool-check)
     (general-define-key
      :states '(normal)
      :keymaps 'override
-     "]t" 'langtool-goto-next-error
-     "[t" 'langtool-goto-previous-error)
+     "]L" 'langtool-goto-next-error
+     "[L" 'langtool-goto-previous-error)
     :config
     ;; (setq langtool-language-tool-jar "/usr/share/java/languagetool/languagetool-commandline.jar")
     ;;(setq langtool-language-tool-jar "~/Downloads/LanguageTool-4.4/languagetool-commandline.jar")
@@ -3023,14 +3018,15 @@ Deactivated, because it makes org mode very slow.
 #+BEGIN_SRC emacs-lisp
   (use-package notdeft
     :straight (:host github
-                     :repo "hasu/notdeft"
-                     :branch "xapian"
-                     :files ("*" (:exclude "images" "Makefile" "web" "README.org")))
+               :repo "hasu/notdeft"
+               :branch "devel"
+               :files ("*.el" "xapian"))
     :init
     (autoload 'notdeft-xapian-make-program-when-uncurrent "notdeft-xapian-make")
     (add-hook 'notdeft-load-hook 'notdeft-xapian-make-program-when-uncurrent)
     (add-hook 'org-mode-hook 'notdeft-note-mode)
     :config
+    (autoload 'notdeft-mode-hydra/body "notdeft-mode-hydra")
     (setq notdeft-directories '("~/org/notes"))
     (setq notdeft-extension "org")
     ;;(setq notdeft-xapian-programm "~/.emacs.d/straight/build/notdeft/xapian/notdeft-xapian")
@@ -3116,4 +3112,3 @@ is much more clean and organized.
 #+begin_src emacs-lisp
   (use-package symex)
 #+end_src
-
