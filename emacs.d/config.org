@@ -1463,9 +1463,9 @@ enable narrowing
   (use-package which-key
     :init
     (which-key-mode))
-    (use-package which-key-posframe
-      :init
-      (which-key-posframe-mode))
+  ;; (use-package which-key-posframe
+  ;;  :init
+  ;;  (which-key-posframe-mode))
 #+END_SRC
 ** Fringe helper
 #+BEGIN_SRC emacs-lisp
@@ -2286,60 +2286,67 @@ for keeping track of recent files, provides helm-recentf with data
 ** ivy
 http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
-  (use-package ivy
-    :init (ivy-mode t)
-    :config
-    ;; regex order
-    (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
-    (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
-    (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
-    (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
-  (general-define-key :keymaps '(ivy-occur-grep-mode-map)
-                      :states '(normal)
-                      "q" 'evil-delete-buffer)
-    (defvar pop-target-window)
-    (make-variable-buffer-local 'pop-target-window)
-    (advice-add 'compilation-goto-locus :around #'my-around-compilation-goto-locus)
-    (defun my-around-compilation-goto-locus (orig-func &rest args)
-      (advice-add 'pop-to-buffer :override #'my-pop-to-buffer)
-      (apply orig-func args))
-    (defun my-pop-to-buffer (buffer &optional action norecord)
-      (advice-remove 'pop-to-buffer #'my-pop-to-buffer)
-      (let ((from-buffer (current-buffer))
-            (reused-window (display-buffer-reuse-window buffer nil)))
-        (cond (reused-window
-               (select-window reused-window norecord))
-              ((and (bound-and-true-p pop-target-window)
-                    (window-live-p pop-target-window))
-               (window--display-buffer buffer pop-target-window 'reuse)
-               (select-window pop-target-window norecord))
-              (t
-               (pop-to-buffer buffer action norecord)
-               (with-current-buffer from-buffer
-                 (setq-local pop-target-window (selected-window)))))))
-    )
-  (use-package counsel
-    :after ivy
-    :init (counsel-mode t))
-  (use-package swiper
-    :after ivy)
-  (use-package avy
-    :after ivy
-    :config
-    (defun avy-line-saving-column ()
-      (interactive)
-      (let ((col (current-column)))
-        (avy-goto-line)
-        (move-to-column col)))
-    )
+      (use-package ivy
+        :init (ivy-mode t)
+        :config
+        ;; regex order
+        (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+        (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
+        (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
+        (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
+      (general-define-key :keymaps '(ivy-occur-grep-mode-map)
+                          :states '(normal)
+                          "q" 'evil-delete-buffer)
+        (defvar pop-target-window)
+        (make-variable-buffer-local 'pop-target-window)
+        (advice-add 'compilation-goto-locus :around #'my-around-compilation-goto-locus)
+        (defun my-around-compilation-goto-locus (orig-func &rest args)
+          (advice-add 'pop-to-buffer :override #'my-pop-to-buffer)
+          (apply orig-func args))
+        (defun my-pop-to-buffer (buffer &optional action norecord)
+          (advice-remove 'pop-to-buffer #'my-pop-to-buffer)
+          (let ((from-buffer (current-buffer))
+                (reused-window (display-buffer-reuse-window buffer nil)))
+            (cond (reused-window
+                   (select-window reused-window norecord))
+                  ((and (bound-and-true-p pop-target-window)
+                        (window-live-p pop-target-window))
+                   (window--display-buffer buffer pop-target-window 'reuse)
+                   (select-window pop-target-window norecord))
+                  (t
+                   (pop-to-buffer buffer action norecord)
+                   (with-current-buffer from-buffer
+                     (setq-local pop-target-window (selected-window)))))))
+        )
+      (use-package counsel
+        :after ivy
+        :init (counsel-mode t))
+      (use-package swiper
+        :after ivy)
+      (use-package avy
+        :after ivy
+        :config
+        (defun avy-line-saving-column ()
+          (interactive)
+          (let ((col (current-column)))
+            (avy-goto-line)
+            (move-to-column col)))
+        )
+
+        (use-package ivy-rich
+          :after ivy)
+    (use-package all-the-icons-ivy-rich
+      :after ivy
+      :init (all-the-icons-ivy-rich-mode 1))
 
     (use-package ivy-rich
-      :after ivy)
-
-    (use-package ivy-prescient
       :after ivy
-      :init
-      (ivy-prescient-mode))
+      :init (ivy-rich-mode 1))
+
+        (use-package ivy-prescient
+          :after ivy
+          :init
+          (ivy-prescient-mode))
 #+END_SRC
 ** hex colors
 #+begin_src emacs-lisp
@@ -2353,7 +2360,7 @@ http://oremacs.com/swiper/
 #+end_src
 ** tabbar-mode
 #+begin_src emacs-lisp
-  (tab-bar-mode)
+  ;;(tab-bar-mode 1)
   (setq tab-bar-close-button-show nil)
   (setq tab-bar-new-button-show nil)
   (setq tab-bar-position nil)
@@ -2833,13 +2840,16 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** doom-modeline
 #+BEGIN_SRC emacs-lisp
-    (use-package doom-modeline
-      ;;:hook (after-init . doom-modeline-init)
-      :config
-      (setq-default mode-line-format 
-                    '((:eval (propertize "%-" 'face '(:foreground "#100e23" :background "#1b182c" :height 0.9 :weight normal)))))
-      (setq-default header-line-format
-                    '((:eval (doom-modeline 'main)))))
+      (use-package doom-modeline
+        ;;:hook (after-init . doom-modeline-init)
+        :config
+        (setq doom-modeline-height 25)
+        (doom-modeline-mode 1)
+
+        ;; header modeline
+        ;;(setq-default mode-line-format '((:eval (propertize "%-" 'face '(:foreground "#100e23" :background "#1b182c" :weight normal)))))
+        ;;(setq-default header-line-format '((:eval (doom-modeline 'main))))
+  )
 #+END_SRC
 
 ** COMMENT emojify
@@ -2969,19 +2979,19 @@ Deactivated, because it makes org mode very slow.
 #+BEGIN_SRC emacs-lisp
   (use-package helpful)
  #+END_SRC
-** ivy-posframe
+** COMMENT ivy-posframe
 #+BEGIN_SRC emacs-lisp
   (use-package ivy-posframe
     :init
     (ivy-posframe-mode 1)
     :config
-    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-window-center)))
+    (setq ivy-posframe-display-functions-alist '((t . ivy-posframe-display-at-frame-center)))
     (setq ivy-posframe-parameters
           '((left-fringe . 8)
             (right-fringe . 8)))
     )
  #+END_SRC
-** hydra-posframe
+** COMMENT hydra-posframe
 #+begin_src emacs-lisp
     (use-package hydra-posframe
      :straight (:host github
