@@ -21,6 +21,8 @@ too high or it will result in long GC pauses during normal usage.
   (eval-and-compile
   ;; Speed up startup
   (defvar default-file-name-handler-alist file-name-handler-alist)
+  ;;disable native comp warnings popup
+  (setq comp-async-report-warnings-errors nil)
   (setq file-name-handler-alist nil)
   (setq gc-cons-threshold 80000000)
   (add-hook 'emacs-startup-hook
@@ -124,6 +126,7 @@ previously compiled manually then all of the package initialization will still t
   ;; Install use-package
   (straight-use-package 'use-package)
   ;;(setq straight-check-for-modifications '(check-on-save find-when-checking))
+  (setq straight-check-for-modifications '(check-on-save find-when-checking))
   (setq straight-use-package-by-default t)
 
 #+END_SRC
@@ -3069,11 +3072,9 @@ Deactivated, because it makes org mode very slow.
 
 ** ansible
 #+begin_src emacs-lisp
-    (use-package ansible
-      :ensure t
-      :init
-      (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt)
-    )
+  (use-package ansible
+    :init (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt))
+
 #+end_src
 ** gcmh (Garbage Collector Magic Hack)
 #+begin_src emacs-lisp
