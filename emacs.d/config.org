@@ -228,22 +228,6 @@ previously compiled manually then all of the package initialization will still t
     (setq flyspell-issue-message-flag nil)
     )
 #+END_SRC
-** Startup Optimizations
-*** delay tty-run-terminal-initialization
-Taken from
-https://github.com/hlissner/doom-emacs/blob/a0a7c34517db81b3f8c83ac87c882c4f0b0b72ee/core/core.el#L286-L291
-#+BEGIN_SRC emacs-lisp
-;; HACK `tty-run-terminal-initialization' is *tremendously* slow for some
-;;      reason. Disabling it completely could have many side-effects, so we
-;;      defer it until later.
-(unless (display-graphic-p)
-  (advice-add #'tty-run-terminal-initialization :override #'ignore)
-  (add-hook! 'window-setup-hook
-    (defun doom-init-tty-h ()
-      (advice-remove #'tty-run-terminal-initialization #'ignore)
-      (tty-run-terminal-initialization (selected-frame) nil t))))
-
-#+END_SRC
 ** Backups
 #+BEGIN_SRC emacs-lisp
   (setq
