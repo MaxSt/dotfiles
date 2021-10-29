@@ -23,7 +23,6 @@ gsettings set org.gnome.shell.keybindings switch-to-application-6 "[]"
 gsettings set org.gnome.shell.keybindings switch-to-application-7 "[]"
 gsettings set org.gnome.shell.keybindings switch-to-application-8 "[]"
 gsettings set org.gnome.shell.keybindings switch-to-application-9 "[]"
-gsettings set org.gnome.shell.keybindings switch-to-application-10 "[]"
 
 # map workspace keybindings
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-1 "['<Super>1']"
@@ -35,7 +34,6 @@ gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-6 "['<Super>6
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-7 "['<Super>7']"
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-8 "['<Super>8']"
 gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-9 "['<Super>9']"
-gsettings set org.gnome.desktop.wm.keybindings switch-to-workspace-10 "['<Super>0']"
 gsettings set org.gnome.desktop.wm.keybindings toggle-maximized "['<Super>m']"
 gsettings set org.gnome.desktop.wm.keybindings close "['<Alt>F4', '<Super>w']"
 gsettings set org.gnome.desktop.wm.keybindings minimize "[]"
@@ -59,7 +57,6 @@ gsettings set org.gnome.mutter.keybindings toggle-tiled-right "['<Super>l','<Sup
 gsettings set org.gnome.shell.keybindings toggle-application-view "['<Super>a']"
 gsettings set org.gnome.shell.keybindings toggle-overview "['<Super>Space']"
 gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>v']"
-gsettings set org.gnome.settings-daemon.plugins.media-keys screensaver "<Shift><Super>l"
 
 
 #define custom keybindings

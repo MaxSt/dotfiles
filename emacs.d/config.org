@@ -574,10 +574,10 @@ These are the Files creating in the current Directory for files that have not be
     (my-desktop-save "last-session"))
   (add-hook 'kill-emacs-hook 'my-desktop-kill-emacs-hook)
 #+END_SRC
-* Install org-plus-contrib
+* Install org-contrib
 Installing it this early should prevent mixed Org installations.
 #+BEGIN_SRC emacs-lisp
-(straight-use-package 'org-plus-contrib)
+(straight-use-package 'org-contrib)
 #+END_SRC
 * Evil
 ** initialize
@@ -1600,7 +1600,7 @@ enable narrowing
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
   (use-package org-id
     :after (org)
-    :straight org-plus-contrib
+    :straight org-contrib
     :config
 
     (defun my/add-org-id (properties)
@@ -1786,14 +1786,13 @@ Fontify the whole line for headings (with a background color).
 *** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp
   (use-package worf
-    :after (org hydra)
+    :after (evil org hydra)
     :init
-    (add-hook 'org-mode-hook (lambda () (worf-mode 1)))
+    (add-hook #'org-mode-hook (lambda () (worf-mode 1)))
     ;; set the worf-mode keymap to an empty keymap to remove all worf bindings
-    (add-hook 'worf-mode-hook
+    (add-hook #'worf-mode-hook
               (lambda ()
                 (push `(worf-mode . ,(make-sparse-keymap)) minor-mode-overriding-map-alist)))
-    :config
     (defhydra myorg-hydra-change (:hint nil)
       "
   ^ ^ _k_ ^ ^    _t_ags    _p_rop | _x_:archive
@@ -1853,7 +1852,6 @@ Fontify the whole line for headings (with a background color).
       (save-restriction
         (widen)
         (org-export-dispatch)))
-
     (general-define-key :keymaps 'org-mode-map
                         :states '(normal)
                         ;;"TAB" 'org-cycle
@@ -2862,7 +2860,7 @@ See https://www.emacswiki.org/emacs/SqlMode
     :init
     (require 'vlf-setup))
 #+end_src
-** COMMENT language-server
+** language-server
 #+begin_src emacs-lisp
     (use-package company-lsp)
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -3106,4 +3104,9 @@ is much more clean and organized.
 ** symex
 #+begin_src emacs-lisp
   (use-package symex)
+#+end_src
+
+** zenity-color-picker
+#+begin_src emacs-lisp
+  (use-package zenity-color-picker)
 #+end_src

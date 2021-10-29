@@ -21,7 +21,7 @@
   (load bootstrap-file nil 'nomessage))
 
 ;; load org
-(straight-use-package 'org-plus-contrib)
+(straight-use-package 'org-contrib)
 (straight-use-package 'org)
 
 
