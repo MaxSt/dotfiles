@@ -604,7 +604,7 @@ Installing it this early should prevent mixed Org installations.
     (evil-set-initial-state 'help-mode 'normal)
     (evil-set-initial-state 'ibuffer-mode 'normal)
     ;;(evil-set-initial-state 'pdf-view-mode 'normal)
-    (evil-set-initial-state 'ivy-occur-grep-mode 'normal)
+    ;;(evil-set-initial-state 'ivy-occur-grep-mode 'normal)
     (evil-set-initial-state 'occur-mode 'normal)
     ;;(setq evil-emacs-state-modes nil)
     ;;(setq evil-insert-state-modes nil)
@@ -2268,7 +2268,7 @@ for keeping track of recent files, provides helm-recentf with data
        (recentf-mode 1)
        )
 #+end_src
-** ivy
+** COMMENT ivy
 http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp
       (use-package ivy
@@ -2333,6 +2333,119 @@ http://oremacs.com/swiper/
           :init
           (ivy-prescient-mode))
 #+END_SRC
+** Completion
+*** vertico
+#+begin_src emacs-lisp
+  ;; Enable vertico
+(use-package vertico
+  :init
+  (vertico-mode)
+
+  ;; Grow and shrink the Vertico minibuffer
+  ;; (setq vertico-resize t)
+
+  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+  ;; (setq vertico-cycle t)
+  )
+
+;; Optionally use the `orderless' completion style. See
+;; `+orderless-dispatch' in the Consult wiki for an advanced Orderless style
+;; dispatcher. Additionally enable `partial-completion' for file path
+;; expansion. `partial-completion' is important for wildcard support.
+;; Multiple files can be opened at once with `find-file' if you enter a
+;; wildcard. You may also give the `initials' completion style a try.
+(use-package orderless
+  :init
+  ;; Configure a custom style dispatcher (see the Consult wiki)
+  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+  (setq completion-styles '(orderless)
+        completion-category-defaults nil
+        completion-category-overrides '((file (styles partial-completion)))))
+
+;; Persist history over Emacs restarts. Vertico sorts by history position.
+(use-package savehist
+  :init
+  (savehist-mode))
+
+;; A few more useful configurations...
+(use-package emacs
+  :init
+  ;; Add prompt indicator to `completing-read-multiple'.
+  ;; Alternatively try `consult-completing-read-multiple'.
+  (defun crm-indicator (args)
+    (cons (concat "[CRM] " (car args)) (cdr args)))
+  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+
+  ;; Do not allow the cursor in the minibuffer prompt
+  (setq minibuffer-prompt-properties
+        '(read-only t cursor-intangible t face minibuffer-prompt))
+  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+
+  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+  ;; Vertico commands are hidden in normal buffers.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable recursive minibuffers
+  (setq enable-recursive-minibuffers t))
+#+END_SRC
+*** consult
+#+begin_src emacs-lisp
+  ;; Enable consult
+(use-package consult)
+#+END_SRC
+*** orderless
+#+begin_src emacs-lisp
+  ;; Enable orderless
+  (use-package orderless
+  :ensure t
+  :custom (completion-styles '(orderless)))
+#+end_src
+*** marginalia
+#+begin_src emacs-lisp
+;; Enable richer annotations using the Marginalia package
+(use-package marginalia
+  ;; The :init configuration is always executed (Not lazy!)
+  :init
+  ;; Must be in the :init section of use-package such that the mode gets
+  ;; enabled right away. Note that this forces loading the package.
+  (marginalia-mode))
+#+end_src
+*** embark
+#+begin_src emacs-lisp
+  (use-package embark
+    :ensure t
+    :bind
+
+    (("C-." . embark-act)         ;; pick some comfortable binding
+     ("C-;" . embark-dwim)        ;; good alternative: M-.
+     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+
+    :init
+
+    ;; Optionally replace the key help with a completing-read interface
+    (setq prefix-help-command #'embark-prefix-help-command)
+
+    :config
+
+    ;; Hide the mode line of the Embark live/completions buffers
+    (add-to-list 'display-buffer-alist
+                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                   nil
+                   (window-parameters (mode-line-format . none)))))
+
+  ;; Consult users will also want the embark-consult package.
+  (use-package embark-consult
+    :ensure t
+    :after (embark consult)
+    :demand t ; only necessary if you have the hook below
+    ;; if you want to have consult previews as you move around an
+    ;; auto-updating embark collect buffer
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
 ** hex colors
 #+begin_src emacs-lisp
   (use-package rainbow-mode
@@ -3110,3 +3223,9 @@ is much more clean and organized.
 #+begin_src emacs-lisp
   (use-package zenity-color-picker)
 #+end_src
+** COMMENT proctrack-mode (terminal buffer name)
+#+begin_src emacs-lisp
+    (use-package proctrack-mode
+        :straight (:host gitlab :repo "pennersr/proctrack-mode"))
+#+end_src
+

@@ -13,6 +13,7 @@
     ~/.terminalcolors: terminalcolors
     ~/.Xresources: Xresources
     ~/.zshrc: zshrc
+    ~/.ansible.cfg: ansible.cfg
     ~/.config/:
       glob: true
       path: config/*
