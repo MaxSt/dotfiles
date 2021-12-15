@@ -1483,6 +1483,7 @@ enable narrowing
 
 ** Magit
 #+BEGIN_SRC emacs-lisp
+  (use-package magit-section)
   (use-package magit
     :config
     (setq magit-diff-refine-hunk (quote all)))
@@ -1746,6 +1747,7 @@ With these tweaks the whole capture experience is much more streamlined for me. 
    'org-babel-load-languages
    '((shell . t)
      (gnuplot . t)
+     (python .t)
      (R . t)
      (sql . t)
      (dot . t)))
@@ -3127,8 +3129,8 @@ Deactivated, because it makes org mode very slow.
   (use-package notdeft
     :straight (:host github
                :repo "hasu/notdeft"
-               :branch "devel"
                :files ("*.el" "xapian"))
+    :ensure t
     :init
     (autoload 'notdeft-xapian-make-program-when-uncurrent "notdeft-xapian-make")
     (add-hook 'notdeft-load-hook 'notdeft-xapian-make-program-when-uncurrent)
@@ -3143,9 +3145,10 @@ Deactivated, because it makes org mode very slow.
 #+END_SRC
 ** direnv
 #+begin_src emacs-lisp
-(use-package direnv
- :config
- (direnv-mode))
+  (use-package envrc
+   :ensure t
+   :config
+   (envrc-global-mode))
 #+end_src
 ** dashboard
 #+begin_src emacs-lisp
@@ -3216,7 +3219,11 @@ is much more clean and organized.
 
 ** symex
 #+begin_src emacs-lisp
-  (use-package symex)
+  (use-package symex
+    :custom
+    (symex-modal-backend 'evil)
+    :config
+    (symex-initialize))
 #+end_src
 
 ** zenity-color-picker
@@ -3228,4 +3235,3 @@ is much more clean and organized.
     (use-package proctrack-mode
         :straight (:host gitlab :repo "pennersr/proctrack-mode"))
 #+end_src
-
