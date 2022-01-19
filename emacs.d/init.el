@@ -34,4 +34,9 @@
     (require 'org)
     (org-babel-load-file (expand-file-name "config.org" user-emacs-directory))))
 
+;; Start the emacs-server, so you can open files from the command line with
+;; `emacsclient -n <file>' (we like to put `alias en="emacsclient -n"' in our
+;; shell config).
+(server-start)
+
 ;;; init.el ends here

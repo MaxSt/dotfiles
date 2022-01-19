@@ -14,14 +14,20 @@
     ~/.Xresources: Xresources
     ~/.zshrc: zshrc
     ~/.ansible.cfg: ansible.cfg
-    ~/.config/:
+    ~/.local/:
       glob: true
-      path: config/*
+      create: true
+      path: local/**
+      canonicalize: true
+      relink: true
+    ~/.config/alacritty:
+      path: config/alacritty
       relink: true
 
 - shell:
   - [git submodule update --init --recursive, Installing submodules]
   - ["test -e ~/.zgen || git clone https://github.com/tarjoilija/zgen.git $HOME/.zgen", "installing zgen..." ]
+  - ["systemctl daemon-reload; systemctl --user enable --now emacs"]
   - zsh:
     command: "chsh -s /usr/bin/zsh"
     stdin: true

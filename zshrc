@@ -1,4 +1,6 @@
-export PAGER='less'
+export PAGER="less"
+export EDITOR="emacsclient -c -n"
+export VISUAL="emacsclient -c -n"
 
 # Aliases
 alias t="task"
@@ -6,6 +8,8 @@ alias v="vim"
 alias g="git"
 alias l="ls"
 alias c="cd"
+alias e="emacsclient -r -n"
+alias en="emacsclient -c -n"
 alias dc="docker-compose"
 alias mux="tmuxinator"
 if ~/.scripts/command_is_available trash-put; then

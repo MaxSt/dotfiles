@@ -1350,11 +1350,12 @@ enable narrowing
   ;;   (add-to-list 'flycheck-checkers 'clojure-joker t)
   ;;   (add-to-list 'flycheck-checkers 'clojurescript-joker t))
 
-  (use-package clj-refactor
-    :init
-    (defun my-clj-refactor-mode-hook ()
-      (clj-refactor-mode 1))
-    (add-hook 'clojure-mode-hook #'my-clj-refactor-mode-hook))
+  ;;(use-package clj-refactor
+    ;;:init
+    ;;(defun my-clj-refactor-mode-hook ()
+      ;;(clj-refactor-mode 1))
+    ;;(add-hook 'clojure-mode-hook #'my-clj-refactor-mode-hook))
+
   (use-package cider
     :init
     (add-hook 'clojure-mode-hook 'cider-mode)
@@ -3120,7 +3121,7 @@ Deactivated, because it makes org mode very slow.
     :init
     (require 'ob-async))
 #+END_SRC
-** libvterm
+** COMMENT libvterm
 #+BEGIN_SRC emacs-lisp
   (use-package vterm)
 #+END_SRC
@@ -3163,7 +3164,8 @@ Deactivated, because it makes org mode very slow.
     (setq dashboard-items '((projects  . 5)
                             (bookmarks . 5)
                             (recents . 5)))
-
+    (setq initial-buffer-choice
+          (lambda () (get-buffer "*dashboard*")))
     (dashboard-setup-startup-hook)
   )
 #+end_src
