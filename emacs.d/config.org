@@ -275,7 +275,7 @@ These are the Files creating in the current Directory for files that have not be
 ** font
 #+BEGIN_SRC emacs-lisp
   ;;(set-default-font "Iosevka-12:spacing=110")
-  (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=14"))
+  (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=18"))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp
@@ -584,6 +584,7 @@ Installing it this early should prevent mixed Org installations.
 #+BEGIN_SRC emacs-lisp
   (use-package evil
     :straight (:host github :repo "emacs-evil/evil")
+    :ensure t
     :init
     (setq evil-want-integration nil)
     (setq evil-want-keybinding nil)
@@ -722,6 +723,7 @@ Installing it this early should prevent mixed Org installations.
 ** evil-collection
 #+BEGIN_SRC emacs-lisp
   (use-package evil-collection
+    :ensure t
     :after evil
     :init
     ;; disable company tng (to be able to complete with rtn)
@@ -829,14 +831,12 @@ Installing it this early should prevent mixed Org installations.
     (general-define-key
      :states 'normal
      :keymaps 'override
-     "gf" 'counsel-find-file
+     "gf" 'find-file
      "gS" 'my-funcs/open-snippet-dir
      "zw" 'widen
      "s" 'save-buffer
      "S" 'projectile-find-file
      ;; to jump to next enxty in ivy occur
-     "] n" 'ivy-occur-next-line
-     "[ n" 'ivy-occur-previous-line
      "g s" 'magit-status
      "g G" (lambda ()
              (interactive)
@@ -844,7 +844,7 @@ Installing it this early should prevent mixed Org installations.
      "`" 'evil-goto-mark-line
      "'" 'evil-goto-mark
      "g ." 'my-funcs/open-dotfile
-     "g p" 'counsel-yank-pop
+     "g p" 'consult-yank-pop
      "Q" (lambda ()
            (interactive)
            (org-capture))
@@ -853,7 +853,7 @@ Installing it this early should prevent mixed Org installations.
              (find-file (concat org-directory "/inbox.org")))
      "g o" (lambda ()
              (interactive)
-             (counsel-find-file org-directory)))
+             (find-file org-directory)))
 
     (general-define-key
      :states 'normal
@@ -889,7 +889,7 @@ Installing it this early should prevent mixed Org installations.
      "c" (general-simulate-key "C-c")
      "i" 'ibuffer
      "j" 'projectile-find-file
-     "/" 'counsel-rg-project
+     "/" 'consult-ripgrep
      "e" 'projectile-switch-to-buffer
      "g s" 'git-gutter:stage-hunk
      "g t" 'git-timemachine
@@ -899,8 +899,8 @@ Installing it this early should prevent mixed Org installations.
      "g p" 'git-gutter:popup-hunk
      "l" 'evil-avy-goto-line
      "u" 'undo-tree-visualize
-     "f" 'counsel-find-file
-     "b" 'ivy-switch-buffer
+     "f" 'find-file
+     "b" 'consult-buffer
      "n" 'next-error
      "N" 'previous-error
      "z" 'hydra-zoom/body
@@ -1300,7 +1300,6 @@ enable narrowing
               (cider-repl-mode :align below :noselect t)
               (cider-inspector-mode :size 0.3 :align above)
               ("*cider-error*" :size 0.5 :align right)
-              (ivy-occur-grep-mode :size 0.3 :align below)
               (flycheck-error-list-mode :select t :autokill t :align below)))
       (shackle-mode 1))
 #+END_SRC
@@ -1603,6 +1602,7 @@ enable narrowing
   (use-package org-id
     :after (org)
     :straight org-contrib
+    :ensure t
     :config
 
     (defun my/add-org-id (properties)
@@ -1723,13 +1723,6 @@ With these tweaks the whole capture experience is much more streamlined for me. 
      #+BEGIN_SRC emacs-lisp
 (setq-default org-hide-leading-stars t)
      #+END_SRC
-*** org-superstar (pretty bullets)
-#+BEGIN_SRC emacs-lisp
-  (use-package org-superstar
-    :straight (:host github :repo "integral-dw/org-superstar-mode")
-    :init
-    (add-hook 'org-mode-hook (lambda () (org-superstar-mode 1))))
-#+END_SRC
 *** COMMENT org-sticky-header
 #+BEGIN_SRC emacs-lisp
    (use-package org-sticky-header
@@ -1891,13 +1884,13 @@ Fontify the whole line for headings (with a background color).
                         "r" 'org-refile
                         "n" 'org-narrow-to-subtree
                         "t" 'org-todo
-                        "T" 'counsel-org-tag
+                        ;;"T" 'counsel-org-tag
                         "p" 'org-insert-link
                         "y" 'org-store-link
                         "x" 'org-archive-subtree
                         "c" 'myorg-hydra-change/body
                         "l" 'worf-right
-                        "g" 'counsel-org-goto
+                        "g" 'consult-org-heading
                         "j" 'worf-down
                         "k" 'worf-up
                         "h" 'worf-left
@@ -1969,6 +1962,7 @@ Download images and insert them into org buffers (drag and drop support)
 *** org-treeusage
 #+BEGIN_SRC emacs-lisp
   (use-package org-treeusage
+     :ensure t
      :straight (:host github
                 :repo "mtekman/org-treeusage.el")
     :after org)
@@ -2216,20 +2210,14 @@ Download images and insert them into org buffers (drag and drop support)
   (setq-default TeX-quote-after-quote t)
 
 #+END_SRC
-*** Bibtex
-#+BEGIN_SRC emacs-lisp
-(use-package ivy-bibtex)
-#+END_SRC
 ** projectile
 #+begin_src emacs-lisp
 (use-package projectile
     :config
     ;; test fn in hashtabe has to be equal because we will use strings as keys
     (setq my-projects-loaded (make-hash-table :test 'equal))
-    (setq projectile-completion-system 'ivy)
+    (setq projectile-completion-system 'default)
     (projectile-global-mode))
-
-  (use-package counsel-projectile :after (projectile))
 #+end_src
 ** popup (dependency)
 #+begin_src emacs-lisp
@@ -2306,35 +2294,6 @@ http://oremacs.com/swiper/
                    (with-current-buffer from-buffer
                      (setq-local pop-target-window (selected-window)))))))
         )
-      (use-package counsel
-        :after ivy
-        :init (counsel-mode t))
-      (use-package swiper
-        :after ivy)
-      (use-package avy
-        :after ivy
-        :config
-        (defun avy-line-saving-column ()
-          (interactive)
-          (let ((col (current-column)))
-            (avy-goto-line)
-            (move-to-column col)))
-        )
-
-        (use-package ivy-rich
-          :after ivy)
-    (use-package all-the-icons-ivy-rich
-      :after ivy
-      :init (all-the-icons-ivy-rich-mode 1))
-
-    (use-package ivy-rich
-      :after ivy
-      :init (ivy-rich-mode 1))
-
-        (use-package ivy-prescient
-          :after ivy
-          :init
-          (ivy-prescient-mode))
 #+END_SRC
 ** Completion
 *** vertico
@@ -2417,36 +2376,47 @@ http://oremacs.com/swiper/
 #+end_src
 *** embark
 #+begin_src emacs-lisp
-  (use-package embark
-    :ensure t
-    :bind
+    (use-package embark
+      :ensure t
+      :after (evil general)
+      :bind
+      (("C-." . embark-act)         ;; pick some comfortable binding
+       ("C-;" . embark-dwim)        ;; good alternative: M-.
+       ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
 
-    (("C-." . embark-act)         ;; pick some comfortable binding
-     ("C-;" . embark-dwim)        ;; good alternative: M-.
-     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings'
+      :init
 
-    :init
+      ;; Optionally replace the key help with a completing-read interface
+      (setq prefix-help-command #'embark-prefix-help-command)
 
-    ;; Optionally replace the key help with a completing-read interface
-    (setq prefix-help-command #'embark-prefix-help-command)
+      ;;(setq embark-prompter 'embark-keymap-prompter)
 
-    :config
 
-    ;; Hide the mode line of the Embark live/completions buffers
-    (add-to-list 'display-buffer-alist
-                 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-                   nil
-                   (window-parameters (mode-line-format . none)))))
+      :config
+      (general-define-key
+       :states 'normal
+       :keymaps 'override
+       "C-." 'embark-act)
 
-  ;; Consult users will also want the embark-consult package.
-  (use-package embark-consult
-    :ensure t
-    :after (embark consult)
-    :demand t ; only necessary if you have the hook below
-    ;; if you want to have consult previews as you move around an
-    ;; auto-updating embark collect buffer
-    :hook
-    (embark-collect-mode . consult-preview-at-point-mode))
+
+      ;; Hide the mode line of the Embark live/completions buffers
+
+      (add-to-list 'display-buffer-alist
+                   '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                     nil
+                     (window-parameters (mode-line-format . none))))
+
+  )
+
+    ;; Consult users will also want the embark-consult package.
+    (use-package embark-consult
+      :ensure t
+      :after (embark consult)
+      :demand t ; only necessary if you have the hook below
+      ;; if you want to have consult previews as you move around an
+      ;; auto-updating embark collect buffer
+      :hook
+      (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 
 ** hex colors
@@ -2614,7 +2584,6 @@ Multi-stage copy/pasting of files and bookmarks
                         "v" 'dired-ranger-move
                         "R" 'dired-do-redisplay
                         "r" 'wdired-change-to-wdired-mode
-                        "f" 'counsel-file-jump
                         "o" 'my/dired-create-file
                         "O" 'dired-create-directory
                         "n" 'evil-ex-search-next
@@ -2802,18 +2771,6 @@ See https://www.emacswiki.org/emacs/SqlMode
     (rg-enable-menu))
 
   (setq ag-highlight-search t)
-  (defun counsel-ag-project (&optional options)
-    (interactive)
-    (counsel-ag nil
-                (projectile-project-root)
-                options
-                (projectile-prepend-project-name "ag")))
-  (defun counsel-rg-project (&optional options)
-    (interactive)
-    (counsel-rg nil
-                (projectile-project-root)
-                options
-                (projectile-prepend-project-name "rg")))
     ;;(setq ag-reuse-window 't)
 #+end_src
 ** whitespace mode
@@ -2909,34 +2866,6 @@ See https://www.emacswiki.org/emacs/SqlMode
       ("l" enlarge-window-horizontally "enlarge horizontal"))
     (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t)
 
-
-    (define-minor-mode my-ace-window-display-mode
-      "Minor mode for showing the ace window key in the mode line."
-      :global t
-      (if my-ace-window-display-mode
-          (progn
-            (my-aw-update)
-            (force-mode-line-update t)
-            ;; Each time a window is created or deleted, Emacs
-            ;; will run the `window-configuration-change-hook' -
-            ;; exactly what I need to update `mode-line-format'.
-            (add-hook 'window-configuration-change-hook 'my-aw-update))
-        (remove-hook 'window-configuration-change-hook 'my-aw-update)))
-    (defun my-aw-update ()
-      "Update my-ace-window-path window parameter for all windows."
-      (avy-traverse
-       (avy-tree (aw-window-list) aw-keys)
-       (lambda (path leaf)
-         ;; Use `set-window-parameter' to store a variable for
-         ;; each window.  Buffer local variables would not work
-         ;; here, since one buffer can be displayed in multiple
-         ;; windows, and those would need a different key each.
-         (set-window-parameter
-          leaf 'my-ace-window-path
-          (propertize
-           (apply #'string (reverse path)))))))
-    (my-ace-window-display-mode)
-
     )
 #+end_src
 ** doom-modeline
@@ -2952,16 +2881,13 @@ See https://www.emacswiki.org/emacs/SqlMode
         ;;(setq-default header-line-format '((:eval (doom-modeline 'main))))
   )
 #+END_SRC
-
 ** COMMENT emojify
 #+begin_src emacs-lisp
   (use-package emojify
     :init
     (add-hook 'after-init-hook #'global-emojify-mode)
     :config
-    (when (memq window-system '(mac ns))
-      (setq emojify-display-style 'unicode)
-      (set-fontset-font t 'symbol (font-spec :family "Apple Color Emoji") nil 'prepend)))
+    (setq emojify-display-style 'unicode))
 #+end_src
 ** dumb-jump
 #+begin_src emacs-lisp
@@ -2999,7 +2925,7 @@ See https://www.emacswiki.org/emacs/SqlMode
     ;; optionally
     (use-package lsp-ui :commands lsp-ui-mode)
     ;; if you are ivy user
-    (use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
+    ;;(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
 
     ;; optionally if you want to use debugger
     (use-package dap-mode)
@@ -3121,7 +3047,7 @@ Deactivated, because it makes org mode very slow.
     :init
     (require 'ob-async))
 #+END_SRC
-** COMMENT libvterm
+** libvterm
 #+BEGIN_SRC emacs-lisp
   (use-package vterm)
 #+END_SRC
@@ -3213,10 +3139,10 @@ is much more clean and organized.
 (use-package no-littering)
 #+end_src
 
-** COMMENT svg-tag-mode
+** COMMENT svg-lib
 #+begin_src emacs-lisp
-    (use-package svg-tag-mode
-        :straight (:host github :repo "rougier/svg-tag-mode"))
+  (use-package svg-lib
+  :config)
 #+end_src
 
 ** symex
@@ -3237,3 +3163,61 @@ is much more clean and organized.
     (use-package proctrack-mode
         :straight (:host gitlab :repo "pennersr/proctrack-mode"))
 #+end_src
+
+** org-modern
+#+BEGIN_SRC emacs-lisp
+  (use-package org-modern
+      :hook (org-mode . org-modern-mode))
+#+END_SRC
+
+** COMMENT mixed-font-mode
+#+BEGIN_SRC emacs-lisp
+  (use-package mixed-pitch
+      :hook
+      (text-mode . mixed-pitch-mode)
+      :config
+      (set-face-attribute 'variable-pitch nil :font "Vollkorn" :height 130))
+
+#+END_SRC
+*** ligature
+#+BEGIN_SRC emacs-lisp
+  (use-package ligature
+    :straight (:host github :repo "mickeynp/ligature.el")
+    :ensure t
+    :config
+    ;; Enable the "www" ligature in every possible major mode
+    (ligature-set-ligatures 't '("www"))
+    ;; Enable traditional ligature support in eww-mode, if the
+    ;; `variable-pitch' face supports it
+    (ligature-set-ligatures 'eww-mode '("ff" "fi" "ffi"))
+    ;; Enable all Cascadia Code ligatures in programming modes
+    (ligature-set-ligatures 'prog-mode '("<---" "<--"  "<<-" "<-" "->" "-->" "--->" "<->" "<-->" "<--->" "<---->" "<!--"
+                                         "<==" "<===" "<=" "=>" "=>>" "==>" "===>" ">=" "<=>" "<==>" "<===>" "<====>" "<!---"
+                                         "<~~" "<~" "~>" "~~>" "::" ":::" "==" "!=" "===" "!=="
+                                         ":=" ":-" ":+" "<*" "<*>" "*>" "<|" "<|>" "|>" "+:" "-:" "=:" "<******>" "++" "+++"))
+    ;; Enables ligature checks globally in all buffers. You can also do it
+    ;; Enables ligature checks globally in all buffers. You can also do it
+    ;; per mode with `ligature-mode'.
+    (global-ligature-mode t))
+
+#+END_SRC
+
+*** Open Street Map
+#+BEGIN_SRC emacs-lisp
+  (use-package osm
+    :ensure t
+    :custom
+    ;; Take a look at the customization group `osm' for more options.
+    (osm-server 'default) ;; Configure the tile server
+    (osm-home '())
+    ;;(osm-copyright t)     ;; Display the copyright information
+
+    :init
+    ;; Load Org link support
+    (with-eval-after-load 'org
+      (require 'osm-ol)))
+#+END_SRC
+
+
+
+

@@ -11,6 +11,7 @@ projectile-bookmarks.eld
 projectile.cache
 config.el
 recentf
+multisession
 
 url
 desktop/
