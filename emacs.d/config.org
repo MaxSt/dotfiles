@@ -829,8 +829,7 @@ Installing it this early should prevent mixed Org installations.
     (setq local-leader "\\")
 
     (general-define-key
-     :states 'normal
-     :keymaps 'override
+     :keymaps 'normal
      "gf" 'find-file
      "gS" 'my-funcs/open-snippet-dir
      "zw" 'widen
@@ -3179,7 +3178,7 @@ is much more clean and organized.
       (set-face-attribute 'variable-pitch nil :font "Vollkorn" :height 130))
 
 #+END_SRC
-*** ligature
+** ligature
 #+BEGIN_SRC emacs-lisp
   (use-package ligature
     :straight (:host github :repo "mickeynp/ligature.el")
@@ -3199,17 +3198,16 @@ is much more clean and organized.
     ;; Enables ligature checks globally in all buffers. You can also do it
     ;; per mode with `ligature-mode'.
     (global-ligature-mode t))
-
 #+END_SRC
 
-*** Open Street Map
+** Open Street Map
 #+BEGIN_SRC emacs-lisp
   (use-package osm
     :ensure t
     :custom
     ;; Take a look at the customization group `osm' for more options.
     (osm-server 'default) ;; Configure the tile server
-    (osm-home '())
+    ;;(osm-home '())
     ;;(osm-copyright t)     ;; Display the copyright information
 
     :init
@@ -3218,6 +3216,8 @@ is much more clean and organized.
       (require 'osm-ol)))
 #+END_SRC
 
-
-
-
+** Literate calc mode
+#+BEGIN_SRC emacs-lisp
+  (use-package literate-calc-mode
+  :ensure t)
+#+END_SRC
