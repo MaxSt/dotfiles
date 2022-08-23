@@ -48,6 +48,12 @@ if you would like to see any and all byte compiler warnings.
 #+BEGIN_SRC emacs-lisp
 (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
 #+END_SRC
+
+Increase the amount of data which Emacs reads from processes.
+The emacs default is too low 4k considering that the some of the language server responses are in 800k - 3M range.
+#+BEGIN_SRC emacs-lisp
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
+#+END_SRC
 *** COMMENT Package Management
 
 **** Package Settings
@@ -307,14 +313,6 @@ These are the Files creating in the current Directory for files that have not be
   (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
   (set-fringe-bitmap-face 'tilde 'fringe)
 #+END_SRC
-** Popup Window
-#+begin_src emacs-lisp
-  (setq display-buffer-alist
-        '((".*" (display-buffer-reuse-window display-buffer-same-window))))
-
-  (setq display-buffer-reuse-frames t)         ; reuse windows in other frames
-  (setq even-window-sizes nil)                 ; display-buffer: avoid resizing
-#+end_src
 ** Themes
 #+begin_src emacs-lisp
   (use-package challenger-deep-theme
@@ -336,11 +334,6 @@ These are the Files creating in the current Directory for files that have not be
     :config
     ;; org-mode ellipsis
     (setq-default org-ellipsis (concat " " (all-the-icons-faicon "angle-down") " ")))
-
-  (use-package all-the-icons-dired
-    :after (all-the-icons)
-    :init
-    (add-hook 'dired-mode-hook 'all-the-icons-dired-mode))
 
   (use-package all-the-icons-ibuffer
     :ensure t
@@ -607,10 +600,11 @@ Installing it this early should prevent mixed Org installations.
     ;;(evil-set-initial-state 'pdf-view-mode 'normal)
     ;;(evil-set-initial-state 'ivy-occur-grep-mode 'normal)
     (evil-set-initial-state 'occur-mode 'normal)
+    ;;(evil-set-initial-state 'dirvish-mode 'normal)
     ;;(setq evil-emacs-state-modes nil)
     ;;(setq evil-insert-state-modes nil)
     ;;(setq evil-motion-state-modes nil)
-    (evil-mode t)
+  (evil-mode t)
 
     ;;Evil smartparens text objects
     (evil-define-text-object evil-a-sexp (count &optional beg end type)
@@ -903,7 +897,7 @@ Installing it this early should prevent mixed Org installations.
      "n" 'next-error
      "N" 'previous-error
      "z" 'hydra-zoom/body
-     "o" 'dired-jump
+     "o" 'dirvish
      "O" 'dired)
 
     (general-define-key
@@ -2492,31 +2486,31 @@ Recursive copy and deletion
   (setq dired-recursive-copies 'always
         dired-recursive-deletes 'always)
 #+END_SRC
-*** Colourful columns
+*** COMMENT Colourful columns
 #+BEGIN_SRC emacs-lisp
   (use-package diredfl
     :init
     (diredfl-global-mode 1))
 #+END_SRC
 
-*** Git info
+*** COMMENT Git info
 #+BEGIN_SRC emacs-lisp
   (use-package dired-git-info)
 #+END_SRC
 
-*** dired-subtree
+*** COMMENT dired-subtree
 #+BEGIN_SRC emacs-lisp
   (use-package dired-subtree
     :after (dired)
     :config)
 #+END_SRC
-*** dired-ranger
+*** COMMENT dired-ranger
 Multi-stage copy/pasting of files and bookmarks
 #+BEGIN_SRC emacs-lisp
   (use-package ranger
     :after (dired))
 #+END_SRC
-*** peep-dired
+*** COMMENT peep-dired
 #+begin_src emacs-lisp
   (use-package peep-dired)
 #+end_src
@@ -2544,7 +2538,17 @@ Multi-stage copy/pasting of files and bookmarks
         ;; (setq dired-sidebar-use-custom-font t)
         )
 #+end_src
-*** Keybindings
+
+*** COMMENT all-the-icons-dired
+#+begin_src emacs-lisp
+    (use-package all-the-icons-dired
+      :after (all-the-icons)
+      :init
+      ;;(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+  )
+#+end_src
+
+*** COMMENT Keybindings
 #+BEGIN_SRC emacs-lisp
   (defun my/dired-open-file ()
         "In dired, open the file named on this line."
@@ -2840,32 +2844,32 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** ace-window
 #+begin_src emacs-lisp
-  (use-package ace-window
-    :init
-    (general-define-key :prefix my-leader "W" 'ace-window)
-    (ace-window-display-mode 1)
-    :config
-    (set-face-attribute 'aw-leading-char-face nil :background nil :foreground (face-attribute 'error :foreground))
-    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
-          ;;aw-background nil
-          aw-dispatch-always t
-          aw-dispatch-alist
-          '((?x aw-delete-window     "Ace - Delete Window")
-            (?c aw-swap-window       "Ace - Swap Window")
-            (?w aw-flip-window)
-            (?o delete-other-windows)
-            (?b balance-windows)
-            ))
+(use-package ace-window
+  :init
+  (general-define-key :prefix my-leader "W" 'ace-window)
+  (ace-window-display-mode 1)
+  :config
+  (set-face-attribute 'aw-leading-char-face nil :background nil :foreground (face-attribute 'error :foreground))
+  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+        ;;aw-background nil
+        aw-dispatch-always t
+        aw-dispatch-alist
+        '((?x aw-delete-window     "Ace - Delete Window")
+          (?c aw-swap-window       "Ace - Swap Window")
+          (?w aw-flip-window)
+          (?o delete-other-windows)
+          (?b balance-windows)
+          ))
 
-    (defhydra hydra-window-size (:color red)
-      "Windows size"
-      ("h" shrink-window-horizontally "shrink horizontal")
-      ("j" shrink-window "shrink vertical")
-      ("k" enlarge-window "enlarge vertical")
-      ("l" enlarge-window-horizontally "enlarge horizontal"))
-    (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t)
+  (defhydra hydra-window-size (:color red)
+    "Windows size"
+    ("h" shrink-window-horizontally "shrink horizontal")
+    ("j" shrink-window "shrink vertical")
+    ("k" enlarge-window "enlarge vertical")
+    ("l" enlarge-window-horizontally "enlarge horizontal"))
+  (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t)
 
-    )
+  )
 #+end_src
 ** doom-modeline
 #+BEGIN_SRC emacs-lisp
@@ -3220,4 +3224,166 @@ is much more clean and organized.
 #+BEGIN_SRC emacs-lisp
   (use-package literate-calc-mode
   :ensure t)
+#+END_SRC
+
+
+** Dirvish
+Dirvish is an improved version of the Emacs inbuilt package Dired. It not only gives Dired an appealing and highly customizable user interface, but also comes together with almost all possible parts required for full usability as a modern file manager.
+
+#+BEGIN_SRC emacs-lisp
+  (use-package dirvish
+    :ensure t
+    :init
+    ;; Let Dirvish take over Dired globally
+    (dirvish-override-dired-mode)
+    :custom
+    ;; Go back home? Just press `bh'
+    (dirvish-bookmark-entries
+     '(("h" "~/"                          "Home")
+       ("d" "~/Downloads/"                "Downloads")
+       ("m" "/mnt/"                       "Drives")
+       ("t" "~/.local/share/Trash/files/" "TrashCan")))
+    ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
+    ;; (dirvish-mode-line-format ; it's ok to place string inside
+    ;;  '(:left (sort file-time " " file-size symlink) :right (omit yank index)))
+    ;; Don't worry, Dirvish is still performant even you enable all these attributes
+    (dirvish-attributes '(all-the-icons file-size collapse subtree-state vc-state git-msg))
+    ;; Maybe the icons are too big to your eyes
+    (dirvish-all-the-icons-height 0.8)
+    ;; In case you want the details at startup like `dired'
+    ;; (dirvish-hide-details nil)
+    :config
+    (dirvish-peek-mode)
+    ;; Dired options are respected except a few exceptions, see *In relation to Dired* section above
+    (setq dired-dwim-target t)
+    (setq delete-by-moving-to-trash t)
+    ;; Enable mouse drag-and-drop files to other applications
+    (setq dired-mouse-drag-files t)                   ; added in Emacs 29
+    (setq mouse-drag-and-drop-region-cross-program t) ; added in Emacs 29
+    ;; Make sure to use the long name of flags when exists
+    ;; eg. use "--almost-all" instead of "-A"
+    ;; Otherwise some commands won't work properly
+    (setq dired-listing-switches
+          "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
+
+    (general-define-key :keymaps '(dirvish-mode-map)
+                        :states '(normal)
+                        "h" 'dired-up-directory
+                        "j" 'dired-next-line
+                        "q" 'dirvish-quit
+                        "?" 'dirvish-dispatch
+                        "k" 'dired-previous-line
+                        "l" 'dired-find-file
+                        "r" 'wdired-change-to-wdired-mode
+                        "." 'dired-omit-mode
+                        "b" 'dirvish-bookmark-jump
+                        "f" 'dirvish-file-info-menu
+                        "y" 'dirvish-yank-menu
+                        "N" 'dirvish-narrow
+                        "^" 'dirvish-history-last
+                        "!" 'dired-do-shell-command))
+
+#+END_SRC
+
+** COMMENT MEOW
+#+BEGIN_SRC emacs-lisp
+  (use-package meow
+    :ensure t
+    :config
+    (defun meow-setup ()
+      (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+      (meow-motion-overwrite-define-key
+       '("j" . meow-next)
+       '("k" . meow-prev)
+       '("<escape>" . ignore))
+      (meow-leader-define-key
+       ;; SPC j/k will run the original command in MOTION state.
+       '("j" . "H-j")
+       '("k" . "H-k")
+       ;; Use SPC (0-9) for digit arguments.
+       '("1" . meow-digit-argument)
+       '("2" . meow-digit-argument)
+       '("3" . meow-digit-argument)
+       '("4" . meow-digit-argument)
+       '("5" . meow-digit-argument)
+       '("6" . meow-digit-argument)
+       '("7" . meow-digit-argument)
+       '("8" . meow-digit-argument)
+       '("9" . meow-digit-argument)
+       '("0" . meow-digit-argument)
+       '("b" . switch-to-buffer)
+       '("p" . projectile-find-file)
+       '("f" . find-file)
+       '("w" . ace-window)
+       '("/" . meow-keypad-describe-key)
+       '("?" . meow-cheatsheet))
+      (meow-normal-define-key
+       '("0" . meow-expand-0)
+       '("9" . meow-expand-9)
+       '("8" . meow-expand-8)
+       '("7" . meow-expand-7)
+       '("6" . meow-expand-6)
+       '("5" . meow-expand-5)
+       '("4" . meow-expand-4)
+       '("3" . meow-expand-3)
+       '("2" . meow-expand-2)
+       '("1" . meow-expand-1)
+       '("-" . negative-argument)
+       '(";" . meow-reverse)
+       '("," . meow-inner-of-thing)
+       '("." . meow-bounds-of-thing)
+       '("[" . meow-beginning-of-thing)
+       '("]" . meow-end-of-thing)
+       '("a" . meow-append)
+       '("o" . meow-open-below)
+       '("b" . meow-back-word)
+       '("B" . meow-back-symbol)
+       '("c" . meow-change)
+       '("x" . meow-delete)
+       '("X" . meow-backward-delete)
+       '("e" . meow-next-word)
+       '("E" . meow-next-symbol)
+       '("f" . meow-find)
+       '("g" . meow-cancel-selection)
+       '("|" . meow-grab)
+       '("h" . meow-left)
+       '("H" . meow-left-expand)
+       '("i" . meow-insert)
+       '("O" . meow-open-above)
+       '("j" . meow-next)
+       '("J" . meow-next-expand)
+       '("k" . meow-prev)
+       '("K" . meow-prev-expand)
+       '("l" . meow-right)
+       '("L" . meow-right-expand)
+       '("m" . meow-join)
+       '("n" . meow-search)
+       '("v" . meow-block)
+       '("V" . meow-to-block)
+       '("p" . meow-yank)
+       '("q" . meow-quit)
+       '("Q" . meow-goto-line)
+       '("r" . meow-replace)
+       '("s" . save-buffer)
+       '("R" . meow-swap-grab)
+       '("d" . meow-kill)
+       '("t" . meow-till)
+       '("u" . meow-undo)
+       '("U" . meow-undo-in-selection)
+       '("/" . meow-visit)
+       '("w" . meow-mark-word)
+       '("W" . meow-mark-symbol)
+       '("F" . meow-line)
+       '("X" . meow-goto-line)
+       '("y" . meow-save)
+       '("Y" . meow-sync-grab)
+       '("z" . meow-pop-selection)
+       '("." . repeat)
+       '("<escape>" . ignore)))
+  
+    (meow-setup)
+    :init
+    (require 'meow)
+    (meow-global-mode 1)
+    )
 #+END_SRC
