@@ -604,7 +604,7 @@ Installing it this early should prevent mixed Org installations.
     ;;(setq evil-emacs-state-modes nil)
     ;;(setq evil-insert-state-modes nil)
     ;;(setq evil-motion-state-modes nil)
-  (evil-mode t)
+    (evil-mode t)
 
     ;;Evil smartparens text objects
     (evil-define-text-object evil-a-sexp (count &optional beg end type)
@@ -1962,226 +1962,213 @@ Download images and insert them into org buffers (drag and drop support)
 #+END_SRC
 ** smartparens
 #+BEGIN_SRC emacs-lisp
-  (use-package smartparens
-    :init
-    (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode)
-    (add-hook 'cide-clojure-interaction-mode-hook 'turn-on-smartparens-strict-mode)
-    (add-hook 'lisp-interaction-mode-hook 'turn-on-smartparens-strict-mode)
-    (add-hook 'cider-repl-mode-hook 'turn-on-smartparens-strict-mode)
-    (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
-    (smartparens-global-mode 1)
-    :config
-    (setq sp-navigate-interactive-always-progress-point t)
+    (use-package smartparens
+      :init
+      (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode)
+      (add-hook 'cide-clojure-interaction-mode-hook 'turn-on-smartparens-strict-mode)
+      (add-hook 'lisp-interaction-mode-hook 'turn-on-smartparens-strict-mode)
+      (add-hook 'cider-repl-mode-hook 'turn-on-smartparens-strict-mode)
+      (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
+      (smartparens-global-mode 1)
+      :config
+      (setq sp-navigate-interactive-always-progress-point t)
 
-    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-    (sp-local-pair 'clojure-mode "'" nil :actions nil)
-    (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
-    (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
-    (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
+      (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+      (sp-local-pair 'clojure-mode "'" nil :actions nil)
+      (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
+      (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
+      (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
 
-  (use-package evil-smartparens
-    :init (require 'evil-smartparens)
-    :after (evil general smartparens evil-surround)
-    :config
-    (add-to-list 'evil-surround-operator-alist
-    '(evil-sp-change . change))
-    (add-to-list 'evil-surround-operator-alist
-    '(my-evil-sp-change . change))
-    (add-to-list 'evil-surround-operator-alist
-    '(evil-sp-delete . delete))
-    (add-to-list 'evil-surround-operator-alist
-    '(my-evil-sp-delete . delete))
+    (use-package evil-smartparens
+      ;;:init (require 'evil-smartparens)
+      :after (evil general smartparens evil-surround)
+      :config
+      (add-to-list 'evil-surround-operator-alist
+      '(evil-sp-change . change))
+      (add-to-list 'evil-surround-operator-alist
+      '(evil-sp-change . change))
+      (add-to-list 'evil-surround-operator-alist
+      '(evil-sp-delete . delete))
+      (add-to-list 'evil-surround-operator-alist
+      '(evil-sp-delete . delete))
 
-    (defun maybe-join-lisp-line ()
-      (save-excursion
-        (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
-          (evil-previous-line-first-non-blank)
-          (join-line 1))))
+      (defun maybe-join-lisp-line ()
+        (save-excursion
+          (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
+            (evil-previous-line-first-non-blank)
+            (join-line 1))))
 
-    (evil-define-operator my-evil-sp-delete (&rest r)
-      "Call `evil-sp-delete' and join lines"
-      (interactive "<R><x><y>")
-      (apply 'evil-sp-delete r)
-      (maybe-join-lisp-line))
+      (defun in-sexp ()
+        (> (nth 0 (syntax-ppss)) 0))
 
-    (evil-define-operator my-evil-sp-change (&rest r)
-      "Call `evil-sp-change' and join lines"
-      (interactive "<R><x><y>")
-      (apply 'evil-sp-change r)
-      (maybe-join-lisp-line))
+      (defun next-paren (&optional closing)
+        "Go to the next/previous closing/opening parenthesis/bracket/brace."
+        (if closing
+            (let ((curr (point)))
+              (forward-char)
+              (unless (eq curr (search-forward-regexp "[])}]"))
+                (backward-char)))
+          (search-backward-regexp "[[({]")))
 
-
-    (defun in-sexp ()
-      (> (nth 0 (syntax-ppss)) 0))
-
-    (defun next-paren (&optional closing)
-      "Go to the next/previous closing/opening parenthesis/bracket/brace."
-      (if closing
-          (let ((curr (point)))
-            (forward-char)
-            (unless (eq curr (search-forward-regexp "[])}]"))
-              (backward-char)))
-        (search-backward-regexp "[[({]")))
-
-    (defun open-paren-around (paren element beginning)
-      (when (and element (in-sexp))
-        (next-paren))
-      (sp-wrap-with-pair paren)
-      (if beginning
+      (defun open-paren-around (paren element beginning)
+        (when (and element (in-sexp))
+          (next-paren))
+        (sp-wrap-with-pair paren)
+        (if beginning
+            (progn
+              (insert " ")
+              (evil-backward-char 1))
           (progn
-            (insert " ")
-            (evil-backward-char 1))
-        (progn
-          (evilmi-jump-items)
-          (evil-forward-char 1)
-          (insert " ")))
-      (evil-insert nil))
+            (evilmi-jump-items)
+            (evil-forward-char 1)
+            (insert " ")))
+        (evil-insert nil))
 
-    (evil-define-command lisp-next-symbol (count)
-      (interactive "<c>")
-      (call-interactively 'sp-forward-symbol)
-      (if count
-          (dotimes (number count)
-            (call-interactively 'sp-forward-symbol))
-        (call-interactively 'sp-forward-symbol))
-      (sp-backward-symbol))
+      (evil-define-command lisp-next-symbol (count)
+        (interactive "<c>")
+        (call-interactively 'sp-forward-symbol)
+        (if count
+            (dotimes (number count)
+              (call-interactively 'sp-forward-symbol))
+          (call-interactively 'sp-forward-symbol))
+        (sp-backward-symbol))
 
-    (evil-define-command lisp-previous-symbol (count)
+      (evil-define-command lisp-previous-symbol (count)
+          (interactive "<c>")
+          (if count
+              (dotimes (number count)
+                (call-interactively 'sp-backward-symbol))
+            (call-interactively 'sp-backward-symbol)))
+
+      (evil-define-command lisp-next-paren (count)
         (interactive "<c>")
         (if count
             (dotimes (number count)
-              (call-interactively 'sp-backward-symbol))
-          (call-interactively 'sp-backward-symbol)))
+              (call-interactively 'sp-next-sexp))
+          (call-interactively 'sp-next-sexp)))
 
-    (evil-define-command lisp-next-paren (count)
-      (interactive "<c>")
-      (if count
-          (dotimes (number count)
-            (call-interactively 'sp-next-sexp))
-        (call-interactively 'sp-next-sexp)))
+      (evil-define-command lisp-previous-paren (count)
+        (interactive "<c>")
+        (if count
+            (sp-next-sexp (* count -1))
+          (sp-next-sexp -1)))
 
-    (evil-define-command lisp-previous-paren (count)
-      (interactive "<c>")
-      (if count
-          (sp-next-sexp (* count -1))
-        (sp-next-sexp -1)))
+      (general-define-key
+       :states '(normal operator visual)
+       :keymaps lisp-mode-maps
+       [remap evil-delete] 'evil-sp-delete
+       [remap evil-change] 'evil-sp-change)
 
-    (general-define-key
-     :states '(normal operator visual)
-     :keymaps lisp-mode-maps
-     [remap evil-delete] 'my-evil-sp-delete
-     [remap evil-change] 'my-evil-sp-change)
+      (general-define-key
+       :states 'normal
+       :keymaps lisp-mode-maps
+       :prefix my-leader2
+       "W" (lambda ()
+             (interactive)
+             (open-paren-around "(" t nil))
+       "w" (lambda ()
+             (interactive)
+             (open-paren-around "(" t t))
+       "e)" (lambda ()
+              (interactive)
+              (open-paren-around "(" t nil))
+       "e(" (lambda ()
+              (interactive)
+              (open-paren-around "(" t t))
+       "e}" (lambda ()
+              (interactive)
+              (open-paren-around "{" t nil))
+       "e{" (lambda ()
+              (interactive)
+              (open-paren-around "{" t t))
+       "e]" (lambda ()
+              (interactive)
+              (open-paren-around "[" t nil))
+       "e[" (lambda ()
+              (interactive)
+              (open-paren-around "[" t t))
+       "e}" (lambda ()
+              (interactive)
+              (open-paren-around "{" t nil))
+       "e{" (lambda ()
+              (interactive)
+              (open-paren-around "{" t t))
+       "i" (lambda ()
+             (interactive)
+             (open-paren-around "(" nil t))
+       "I" (lambda ()
+             (interactive)
+             (open-paren-around "(" nil nil))
+       "(" (lambda ()
+             (interactive)
+             (open-paren-around "(" nil t))
+       ")" (lambda ()
+             (interactive)
+             (open-paren-around "(" nil nil))
+       "[" (lambda ()
+             (interactive)
+             (open-paren-around "[" nil t))
+       "]" (lambda ()
+             (interactive)
+             (open-paren-around "[" nil nil))
+       "{" (lambda ()
+             (interactive)
+             (open-paren-around "{" nil t))
+       "}" (lambda ()
+             (interactive)
+             (open-paren-aroundn "{" nil nil))
+       "@" 'sp-splice-sexp
+       "o" (lambda ()
+             (interactive)
+             (when (string-match-p "^[^\[({]" (thing-at-point 'sexp t))
+               (sp-backward-up-sexp))
+             (sp-raise-sexp))
+       "O" 'sp-raise-sexp)
 
-    (general-define-key
-     :states 'normal
-     :keymaps lisp-mode-maps
-     :prefix my-leader2
-     "W" (lambda ()
-           (interactive)
-           (open-paren-around "(" t nil))
-     "w" (lambda ()
-           (interactive)
-           (open-paren-around "(" t t))
-     "e)" (lambda ()
-            (interactive)
-            (open-paren-around "(" t nil))
-     "e(" (lambda ()
-            (interactive)
-            (open-paren-around "(" t t))
-     "e}" (lambda ()
-            (interactive)
-            (open-paren-around "{" t nil))
-     "e{" (lambda ()
-            (interactive)
-            (open-paren-around "{" t t))
-     "e]" (lambda ()
-            (interactive)
-            (open-paren-around "[" t nil))
-     "e[" (lambda ()
-            (interactive)
-            (open-paren-around "[" t t))
-     "e}" (lambda ()
-            (interactive)
-            (open-paren-around "{" t nil))
-     "e{" (lambda ()
-            (interactive)
-            (open-paren-around "{" t t))
-     "i" (lambda ()
-           (interactive)
-           (open-paren-around "(" nil t))
-     "I" (lambda ()
-           (interactive)
-           (open-paren-around "(" nil nil))
-     "(" (lambda ()
-           (interactive)
-           (open-paren-around "(" nil t))
-     ")" (lambda ()
-           (interactive)
-           (open-paren-around "(" nil nil))
-     "[" (lambda ()
-           (interactive)
-           (open-paren-around "[" nil t))
-     "]" (lambda ()
-           (interactive)
-           (open-paren-around "[" nil nil))
-     "{" (lambda ()
-           (interactive)
-           (open-paren-around "{" nil t))
-     "}" (lambda ()
-           (interactive)
-           (open-paren-aroundn "{" nil nil))
-     "@" 'sp-splice-sexp
-     "o" (lambda ()
-           (interactive)
-           (when (string-match-p "^[^\[({]" (thing-at-point 'sexp t))
-             (sp-backward-up-sexp))
-           (sp-raise-sexp))
-     "O" 'sp-raise-sexp)
+      (general-define-key
+       :states 'normal
+       :keymaps lisp-mode-maps
+       ;;c is defined in vim-exchange
+       "W" 'symex-traverse-forward-skip
+       "w" 'symex-traverse-forward
+       "B" 'symex-traverse-backward-skip
+       "b" 'symex-traverse-backward
+       "(" 'sp-backward-up-sexp
+       ")" (lambda ()
+             (interactive)
+             (sp-backward-up-sexp)
+             (evilmi-jump-items))
+       ">" (general-key-dispatch 'evil-shift-right
+             "I" (lambda ()
+                   (interactive)
+                   (sp-end-of-sexp)
+                   (when (not (char-equal (preceding-char)  ?  ))
+                     (insert " "))
+                   (evil-insert nil))
+             ")" 'sp-forward-slurp-sexp
+             "(" 'sp-backward-barf-sexp)
+       "<" (general-key-dispatch 'evil-shift-left
+             "I" (lambda ()
+                   (interactive)
+                   (sp-beginning-of-sexp)
+                   (when (not (char-equal (following-char)  ?  ))
+                     (insert " ")
+                     (evil-backward-char))
+                   (evil-insert nil))
+             ")" 'sp-forward-barf-sexp
+             "(" 'sp-backward-slurp-sexp)
 
-    (general-define-key
-     :states 'normal
-     :keymaps lisp-mode-maps
-     ;;c is defined in vim-exchange
-     "W" 'symex-traverse-forward-skip
-     "w" 'symex-traverse-forward
-     "B" 'symex-traverse-backward-skip
-     "b" 'symex-traverse-backward
-     "(" 'sp-backward-up-sexp
-     ")" (lambda ()
-           (interactive)
-           (sp-backward-up-sexp)
-           (evilmi-jump-items))
-     ">" (general-key-dispatch 'evil-shift-right
-           "I" (lambda ()
-                 (interactive)
-                 (sp-end-of-sexp)
-                 (when (not (char-equal (preceding-char)  ?  ))
-                   (insert " "))
-                 (evil-insert nil))
-           ")" 'sp-forward-slurp-sexp
-           "(" 'sp-backward-barf-sexp)
-     "<" (general-key-dispatch 'evil-shift-left
-           "I" (lambda ()
-                 (interactive)
-                 (sp-beginning-of-sexp)
-                 (when (not (char-equal (following-char)  ?  ))
-                   (insert " ")
-                   (evil-backward-char))
-                 (evil-insert nil))
-           ")" 'sp-forward-barf-sexp
-           "(" 'sp-backward-slurp-sexp)
-
-     [remap evil-change-line] 'evil-sp-change-line
-     [remap evil-delete-line] 'evil-sp-delete-line)
+       [remap evil-change-line] 'evil-sp-change-line
+       [remap evil-delete-line] 'evil-sp-delete-line)
 
 
-    (general-def 'normal
-      ">" (general-key-dispatch 'evil-shift-right
-            ")" 'sp-forward-slurp-sexp
-            "(" 'sp-backward-barf-sexp)
-      "<" (general-key-dispatch 'evil-shift-left
-            ")" 'sp-forward-barf-sexp
-            "(" 'sp-backward-slurp-sexp))))
+      (general-def 'normal
+        ">" (general-key-dispatch 'evil-shift-right
+              ")" 'sp-forward-slurp-sexp
+              "(" 'sp-backward-barf-sexp)
+        "<" (general-key-dispatch 'evil-shift-left
+              ")" 'sp-forward-barf-sexp
+              "(" 'sp-backward-slurp-sexp))))
 
 #+END_SRC
 ** Latex
@@ -3328,10 +3315,10 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
        '("3" . meow-expand-3)
        '("2" . meow-expand-2)
        '("1" . meow-expand-1)
-       '("-" . negative-argument)
+       '("F" . negative-argument)
        '(";" . meow-reverse)
-       '("," . meow-inner-of-thing)
-       '("." . meow-bounds-of-thing)
+       '("<" . meow-inner-of-thing)
+       '(">" . meow-bounds-of-thing)
        '("[" . meow-beginning-of-thing)
        '("]" . meow-end-of-thing)
        '("a" . meow-append)
@@ -3373,14 +3360,37 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
        '("/" . meow-visit)
        '("w" . meow-mark-word)
        '("W" . meow-mark-symbol)
-       '("F" . meow-line)
-       '("X" . meow-goto-line)
+       '("T" . meow-line)
+       '("G" . meow-goto-line)
        '("y" . meow-save)
        '("Y" . meow-sync-grab)
        '("z" . meow-pop-selection)
        '("." . repeat)
+       '("C-f". meow-page-down)
+       '("C-b" . meow-page-up)
        '("<escape>" . ignore)))
-  
+
+    (setq meow-paren-keymap (make-keymap))
+    (meow-define-state paren
+      "meow state for interacting with smartparens"
+      :lighter " [P]"
+      :keymap meow-paren-keymap)
+
+    ;; meow-define-state creates the variable
+    (setq meow-cursor-type-paren 'hollow)
+
+    (meow-define-keys 'paren
+      '("<escape>" . meow-normal-mode)
+      '("l" . sp-forward-sexp)
+      '("h" . sp-backward-sexp)
+      '("j" . sp-down-sexp)
+      '("k" . sp-up-sexp)
+      '("n" . sp-forward-slurp-sexp)
+      '("b" . sp-forward-barf-sexp)
+      '("v" . sp-backward-barf-sexp)
+      '("c" . sp-backward-slurp-sexp)
+      '("u" . meow-undo))
+
     (meow-setup)
     :init
     (require 'meow)
