@@ -1387,7 +1387,9 @@ enable narrowing
       "s" 'cider-jack-in-clojurescript
       "i" 'cider-inspect-last-result
       "g" 'my/goto-or-switch-back-from-repl
+      "\\" 'clj-dev-go
       "c" 'cider-jack-in
+      "t" 'cider-hydra-test/body
       "d" 'cider-hydra-doc/body
       "e" 'cider-hydra-eval/body
       "q" 'hydra-cljr-help-menu/body)
@@ -1415,6 +1417,11 @@ enable narrowing
     :init
     (add-hook 'cider-mode-hook #'cider-hydra-mode))
   :config
+
+  (defun clj-dev-go ()
+    (interactive)
+    (cider-interactive-eval "(go)" nil nil `(("ns" "user"))))
+
 
 #+end_src
 ** elisp
@@ -2858,11 +2865,12 @@ See https://www.emacswiki.org/emacs/SqlMode
 
   )
 #+end_src
-** doom-modeline
+** COMMENT doom-modeline
 #+BEGIN_SRC emacs-lisp
       (use-package doom-modeline
         ;;:hook (after-init . doom-modeline-init)
         :config
+        (setq doom-modeline-minor-modes t)
         (setq doom-modeline-height 25)
         (doom-modeline-mode 1)
 
@@ -2871,6 +2879,16 @@ See https://www.emacswiki.org/emacs/SqlMode
         ;;(setq-default header-line-format '((:eval (doom-modeline 'main))))
   )
 #+END_SRC
+** mood-line modeline
+#+BEGIN_SRC emacs-lisp
+    (use-package mood-line
+      :ensure t
+      ;; Enable mood-line
+      :config
+      (mood-line-mode))
+
+#+END_SRC
+
 ** COMMENT emojify
 #+begin_src emacs-lisp
   (use-package emojify
@@ -2892,7 +2910,7 @@ See https://www.emacswiki.org/emacs/SqlMode
     :init
     (require 'vlf-setup))
 #+end_src
-** language-server
+** COMMENT language-server
 #+begin_src emacs-lisp
     (use-package company-lsp)
     ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
@@ -3396,4 +3414,20 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
     (require 'meow)
     (meow-global-mode 1)
     )
+#+END_SRC
+
+** COMMENT org-menu
+#+BEGIN_SRC emacs-lisp
+  (use-package org-menu
+    :straight (:host github :repo "sheijk/org-menu" :branch "main")
+    :ensure t
+)
+#+END_SRC
+
+
+** minions (better minior mode modeline menu)
+#+BEGIN_SRC emacs-lisp
+  ;; open minions minior mode menu with: minions-minor-modes-menu
+    (use-package minions
+      :config (minions-mode 1))
 #+END_SRC
