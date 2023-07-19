@@ -84,7 +84,7 @@ font:
     # style: Italic
 
   # Point size
-  size: 10.0
+  size: 14.0
 
   thin_strokes: true
   antialias: lcd # Can have values like lcd, lcdv, gray, and none

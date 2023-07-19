@@ -281,7 +281,7 @@ These are the Files creating in the current Directory for files that have not be
 ** font
 #+BEGIN_SRC emacs-lisp
   ;;(set-default-font "Iosevka-12:spacing=110")
-  (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=18"))
+  (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20"))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp
@@ -1181,9 +1181,9 @@ view your registers and marks in a posframe before using them
 ** evil-replace-with-register
 #+begin_src emacs-lisp
   (use-package evil-replace-with-register
-    :after (evil)
+    :after (evil evil-collection)
     :init
-    (setq evil-replace-with-register-key (kbd "gr"))
+    (setq evil-replace-with-register-key (kbd "gR"))
     (evil-replace-with-register-install))
 #+end_src
 ** artist-mode
@@ -1195,24 +1195,45 @@ view your registers and marks in a posframe before using them
 (setq-default
  abbrev-mode t)
 #+end_src
-** company-mode
-#+begin_src emacs-lisp
-  (use-package company
-   :init
-   (setq company-idle-delay 0.2
-         company-minimum-prefix-length 2
-         company-require-match nil
-         company-selection-wrap-around t
-         company-dabbrev-ignore-case nil
-         company-dabbrev-downcase nil)
+* corfu
+#+BEGIN_SRC emacs-lisp
+  (use-package corfu
+    ;; Optional customizations
+    :custom
+    (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+    (corfu-auto t)                 ;; Enable auto completion
+    ;; (corfu-separator ?\s)          ;; Orderless field separator
+    ;; (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+    ;; (corfu-quit-no-match nil)      ;; Never quit, even if there is no match
+    ;; (corfu-preview-current nil)    ;; Disable current candidate preview
+    ;; (corfu-preselect 'prompt)      ;; Preselect the prompt
+    ;; (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+    ;; (corfu-scroll-margin 5)        ;; Use scroll margin
 
-   (global-company-mode)
-   (define-key company-active-map [tab] 'company-complete)
-   (define-key company-active-map (kbd "C-n") 'company-select-next)
-   (define-key company-active-map (kbd "C-p") 'company-select-previous))
+    ;; Enable Corfu only for certain modes.
+    ;; :hook ((prog-mode . corfu-mode)
+    ;;        (shell-mode . corfu-mode)
+    ;;        (eshell-mode . corfu-mode))
 
-   (use-package company-box :hook (company-mode . company-box-mode))
-#+end_src
+    ;; Recommended: Enable Corfu globally.
+    ;; This is recommended since Dabbrev can be used globally (M-/).
+    ;; See also `corfu-exclude-modes'.
+    :init
+    (global-corfu-mode))
+
+  ;; A few more useful configurations...
+  ;; TAB cycle if there are only few candidates
+  (setq completion-cycle-threshold 3)
+
+  ;; Emacs 28: Hide commands in M-x which do not apply to the current mode.
+  ;; Corfu commands are hidden, since they are not supposed to be used via M-x.
+  ;; (setq read-extended-command-predicate
+  ;;       #'command-completion-default-include-p)
+
+  ;; Enable indentation+completion using the TAB key.
+  ;; `completion-at-point' is often bound to M-TAB.
+  (setq tab-always-indent 'complete)
+#+END_SRC
 ** narrowing
 enable narrowing
 #+begin_src emacs-lisp
@@ -1235,6 +1256,29 @@ enable narrowing
    :keymaps 'override
    "zn" 'evil-narrow-indirect)
 #+end_src
+* cape
+#+BEGIN_SRC emacs-lisp
+      (use-package cape
+        :after '(corfu)
+        :init
+        ;; Add `completion-at-point-functions', used by `completion-at-point'.
+        ;; NOTE: The order matters!
+        (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+        (add-to-list 'completion-at-point-functions #'cape-file)
+        (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+        ;(add-to-list 'completion-at-point-functions #'cape-history)
+        (add-to-list 'completion-at-point-functions #'cape-keyword)
+        ;;(add-to-list 'completion-at-point-functions #'cape-tex)
+        ;;(add-to-list 'completion-at-point-functions #'cape-sgml)
+        ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345)
+        ;;(add-to-list 'completion-at-point-functions #'cape-abbrev)
+        ;;(add-to-list 'completion-at-point-functions #'cape-dict)
+        (add-to-list 'completion-at-point-functions #'cape-symbol)
+        (add-to-list 'completion-at-point-functions #'cape-line)
+  )
+#+END_SRC
+
+
 * Packages
 ** Flycheck
 #+begin_src emacs-lisp
@@ -1551,6 +1595,15 @@ enable narrowing
 **** adapt indentation
 #+BEGIN_SRC emacs-lisp
   (setq org-adapt-indentation nil)
+#+END_SRC
+**** set image width
+#+BEGIN_SRC emacs-lisp
+  (setq org-image-actual-width 250)
+#+END_SRC
+**** show images
+#+BEGIN_SRC emacs-lisp
+  (setq org-image-actual-width 250)
+  (setq org-startup-with-inline-images t)
 #+END_SRC
 **** enable syntax highlighting in org-babel source code
 #+BEGIN_SRC emacs-lisp
@@ -2140,6 +2193,7 @@ Download images and insert them into org buffers (drag and drop support)
        "w" 'symex-traverse-forward
        "B" 'symex-traverse-backward-skip
        "b" 'symex-traverse-backward
+  
        "(" 'sp-backward-up-sexp
        ")" (lambda ()
              (interactive)
@@ -2910,34 +2964,11 @@ See https://www.emacswiki.org/emacs/SqlMode
     :init
     (require 'vlf-setup))
 #+end_src
-** COMMENT language-server
+** language-server
 #+begin_src emacs-lisp
-    (use-package company-lsp)
-    ;; set prefix for lsp-command-keymap (few alternatives - "C-l", "C-c l")
-    (setq lsp-keymap-prefix "C-c l")
-
-    (use-package lsp-mode
-        :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-                (clojure-mode . lsp)
-                (clojurec-mode . lsp)
-                (clojurescript-mode . lsp)
-                (sql-mode . lsp)
-                (ruby-mode . lsp)
-                (java-mode . lsp)
-                (javascript-mode . lsp)
-                ;; if you want which-key integration
-                (lsp-mode . lsp-enable-which-key-integration))
-        ;;:commands (lsp lsp-deferred)
-        :commands lsp)
-
-    ;; optionally
-    (use-package lsp-ui :commands lsp-ui-mode)
-    ;; if you are ivy user
-    ;;(use-package lsp-ivy :commands lsp-ivy-workspace-symbol)
-
-    ;; optionally if you want to use debugger
-    (use-package dap-mode)
-    ;; (use-package dap-LANGUAGE) to load the dap adapter for your language
+  (use-package eglot
+    :init
+    (add-hook 'clojure-mode-hook 'eglot-ensure))
 #+end_src
 ** langtool
 #+BEGIN_SRC emacs-lisp
@@ -3155,11 +3186,25 @@ is much more clean and organized.
 
 ** symex
 #+begin_src emacs-lisp
-  (use-package symex
-    :custom
-    (symex-modal-backend 'evil)
-    :config
-    (symex-initialize))
+      (use-package symex
+        :custom
+        (symex-modal-backend 'evil)
+        :config
+        (symex-initialize)
+        (general-define-key
+         :states '(normal)
+         :keymaps lisp-mode-maps
+         :prefix my-leader2
+         "s" 'symex-mode-interface)
+        #_(general-define-key
+         :states '(normal)
+         :keymaps lisp-mode-maps
+         "<escape>" 'symex-mode-interface)
+        (general-define-key
+         :states '(insert)
+         :keymaps lisp-mode-maps
+         "<escape>" 'symex-mode-interface))
+
 #+end_src
 
 ** zenity-color-picker
