@@ -1,15 +1,66 @@
-#+TITLE: My GNU Emacs configuration
-#+OPTIONS: toc:4 h:4
-#+LAYOUT: post
-#+DESCRIPTION: Loading emacs configuration using org-babel
-#+TAGS: emacs
-#+CATEGORIES: editing
-#+PROPERTY: header-args:emacs-lisp :results silent :tangle yes
+#+TITLE: My GNU Emacs Configuration
+#+AUTHOR: MaxSt
+#+STARTUP: overview
+#+AUTO_TANGLE: true
+
+* Elpaca
+** Bootstrap
+#+begin_src elisp :tangle init.el
+  (defvar elpaca-installer-version 0.5)
+  (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+  (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+  (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+  (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+                                :ref nil
+                                :files (:defaults (:exclude "extensions"))
+                                :build (:not elpaca--activate-package)))
+  (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+         (build (expand-file-name "elpaca/" elpaca-builds-directory))
+         (order (cdr elpaca-order))
+         (default-directory repo))
+    (add-to-list 'load-path (if (file-exists-p build) build repo))
+    (unless (file-exists-p repo)
+      (make-directory repo t)
+      (when (< emacs-major-version 28) (require 'subr-x))
+      (condition-case-unless-debug err
+          (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                   ((zerop (call-process "git" nil buffer t "clone"
+                                         (plist-get order :repo) repo)))
+                   ((zerop (call-process "git" nil buffer t "checkout"
+                                         (or (plist-get order :ref) "--"))))
+                   (emacs (concat invocation-directory invocation-name))
+                   ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                         "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                   ((require 'elpaca))
+                   ((elpaca-generate-autoloads "elpaca" repo)))
+              (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+            (error "%s" (with-current-buffer buffer (buffer-string))))
+        ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+    (unless (require 'elpaca-autoloads nil t)
+      (require 'elpaca)
+      (elpaca-generate-autoloads "elpaca" repo)
+      (load "./elpaca-autoloads")))
+  (add-hook 'after-init-hook #'elpaca-process-queues)
+  (elpaca `(,@elpaca-order))
+#+end_src
+
+#+begin_src elisp :tangle early-init.el
+  (setq package-enable-at-startup nil)
+#+end_src
+
+** Use-package
+#+begin_src elisp :tangle init.el
+    (elpaca elpaca-use-package
+      (elpaca-use-package-mode)
+      (setq elpaca-use-package-by-default t))
+    (elpaca-wait)
+#+end_src
 * Package Config
+
 ** Emacs Initialization
 *** Settings
 Set Lexical binding to true
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 ;;; -*- lexical-binding: t -*-
 #+END_SRC
 
@@ -17,7 +68,7 @@ We're going to increase the gc-cons-threshold to a very high number to decrease 
 We'll lower this value significantly after initialization has completed. We don't want to keep this value
 too high or it will result in long GC pauses during normal usage.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (eval-and-compile
   ;; Speed up startup
   (defvar default-file-name-handler-alist file-name-handler-alist)
@@ -45,13 +96,13 @@ too high or it will result in long GC pauses during normal usage.
 Disable certain byte compiler warnings to cut down on the noise. This is a personal choice and can be removed
 if you would like to see any and all byte compiler warnings.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq byte-compile-warnings '(not free-vars unresolved noruntime lexical make-local))
 #+END_SRC
 
 Increase the amount of data which Emacs reads from processes.
 The emacs default is too low 4k considering that the some of the language server responses are in 800k - 3M range.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
 #+END_SRC
 *** COMMENT Package Management
@@ -63,7 +114,7 @@ to not automatically call it on our behalf. Additionally we're setting
 =package-enable-at-startup= to nil so that packages will not automatically be loaded for us since
 =use-package= will be handling that.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (eval-and-compile
     (setq load-prefer-newer t
           package-user-dir "~/.emacs.d/elpa"
@@ -78,7 +129,7 @@ to not automatically call it on our behalf. Additionally we're setting
 Tell =use-package= to always defer loading packages unless explicitly told otherwise. This speeds up
 initialization significantly as many packages are only loaded later when they are explicitly used.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (eval-and-compile
     (setq use-package-always-defer t
           ;;use-package-always-ensure t
@@ -92,7 +143,7 @@ created by =package-initialize= because it appends the elpa packages to the end 
 Otherwise any time a builtin package was required it would have to search all of third party paths
 first.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (eval-and-compile
     (setq load-path (append load-path (directory-files package-user-dir t "^[^.]" t))))
 #+END_SRC
@@ -111,7 +162,7 @@ in the macro being fully expanded at which point =use-package= isn't actually re
 Since the code is automatically compiled during runtime, if the configuration hasn't already been
 previously compiled manually then all of the package initialization will still take place at startup.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (require 'package)
   (unless (assoc-default "melpa" package-archives)
     (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t))
@@ -127,19 +178,13 @@ previously compiled manually then all of the package initialization will still t
       (package-install 'use-package))
     )
 #+END_SRC
-*** straight.el configuration
-#+BEGIN_SRC emacs-lisp
-  ;; Install use-package
-  (straight-use-package 'use-package)
-  ;;(setq straight-check-for-modifications '(check-on-save find-when-checking))
-  (setq straight-check-for-modifications '(check-on-save find-when-checking))
-  (setq straight-use-package-by-default t)
-
+*** elpaca configuration
+#+BEGIN_SRC emacs-lisp :tangle init.el
 #+END_SRC
 
 * Defaults
 ** global
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq
    inhibit-startup-screen t
    x-select-enable-clipboard t
@@ -208,34 +253,28 @@ previously compiled manually then all of the package initialization will still t
   (global-hl-line-mode t) ;; highlight current line
 #+END_SRC
 ** flyspell
-#+BEGIN_SRC emacs-lisp
-  ;;(use-package auto-dictionary :init (add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1))))
-  (setq-default ispell-really-hunspell t)
-  (setq-default ispell-program-name "hunspell")
+#+BEGIN_SRC emacs-lisp :tangle init.el
+    ;;(use-package auto-dictionary :init (add-hook 'flyspell-mode-hook (lambda () (auto-dictionary-mode 1))))
+    (setq-default ispell-really-hunspell t)
+    (setq-default ispell-program-name "hunspell")
 
-  ;; you could set `ispell-dictionary` instead but `ispell-local-dictionary' has higher priority
-  (setq ispell-local-dictionary "en_US")
+    ;; you could set `ispell-dictionary` instead but `ispell-local-dictionary' has higher priority
+    (setq ispell-local-dictionary "en_US")
 
-  ;; use the hunspell -d flag to add more dictionaries
-  (setq ispell-local-dictionary-alist
-        '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US,de_AT") nil utf-8)))
+    ;; use the hunspell -d flag to add more dictionaries
+    (setq ispell-local-dictionary-alist
+          '(("en_US" "[[:alpha:]]" "[^[:alpha:]]" "[']" nil ("-d" "en_US,de_AT") nil utf-8)))
 
   (use-package flyspell
-    :init
-    ;; to slow for magit commit for example:
-    ;;(add-hook 'flyspell-mode-hook #'flyspell-buffer)
-    ;; didn't work with magit commit? why?
-    ;;(add-hook 'text-mode-local-vars-hook #'flyspell-mode)
-    ;;(add-hook 'prog-mode-local-vars-hook #'flyspell-prog-mode)
-    (add-hook 'text-mode-hook #'flyspell-mode)
-    (add-hook 'prog-mode-hook #'flyspell-prog-mode)
-    ;; printing messages for every word (when checking the entire buffer)
-    ;; causes an enormous slowdown, thats why I deactivated it:
-    (setq flyspell-issue-message-flag nil)
+    :ensure nil
+    :elpaca nil
+    :hook ((prog-mode . flyspell-prog-mode)
+           (text-mode . flyspell-mode))
+    :config (setq flyspell-issue-message-flag nil)
     )
 #+END_SRC
 ** Backups
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq
    make-backup-files t
    version-control t   ; use numbers for backup files
@@ -249,42 +288,42 @@ previously compiled manually then all of the package initialization will still t
 #+END_SRC
 ** Disable Lockfiles
 These are the Files creating in the current Directory for files that have not been saved yet #File#
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq create-lockfiles nil)
 #+END_SRC
 ** Custom File
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   ;; Don't litter my init file
   (setq custom-file "~/.emacs.d/local/custom-set.el")
   (load custom-file 'noerror)
 #+END_SRC
 ** Encryption
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (require 'epa-file)
   (epa-file-enable)
 #+END_SRC
 ** MacOS
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq mac-option-modifier nil)
   (setq mac-command-modifier 'meta)
 #+END_SRC
 * ediff
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq ediff-window-setup-function 'ediff-setup-windows-plain)
   (setq ediff-split-window-function 'split-window-horizontally)
 #+END_SRC
 * GUI
 ** internal border
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (set-frame-parameter nil 'internal-border-width 10)
 #+END_SRC
 ** font
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   ;;(set-default-font "Iosevka-12:spacing=110")
   (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20"))
 #+END_SRC
 ** disable menubar
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (scroll-bar-mode 0)
   (tool-bar-mode -1)     ; disable the tool-bar
   (menu-bar-mode -1)     ; disable the menu-bar
@@ -309,14 +348,14 @@ These are the Files creating in the current Directory for files that have not be
 
 #+END_SRC
 ** fringe
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
   (set-fringe-bitmap-face 'tilde 'fringe)
 #+END_SRC
 ** Themes
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package challenger-deep-theme
-    :straight (:host github :repo "challenger-deep-theme/emacs" :branch "master" :local-repo-name "challenger-deep-theme")
+    :elpaca (:host github :repo "challenger-deep-theme/emacs" :branch "master" :local-repo-name "challenger-deep-theme")
     :ensure t
     :init (load-theme 'challenger-deep t)
     :config
@@ -341,7 +380,7 @@ These are the Files creating in the current Directory for files that have not be
 #+end_src
 * custom Functions
 ** local abbrev
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (add-to-list 'auto-mode-alist '("\\.emacs.abbreviations\\'" . emacs-lisp-mode))
 
   (setq
@@ -452,7 +491,7 @@ These are the Files creating in the current Directory for files that have not be
     (add-hook 'projectile-after-switch-project-hook #'my/reload-abbrevs))
 #+end_src
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (defconst org-config-file "~/.emacs.d/config.org")
   (defun my-funcs/reload-dotfile ()
     "Reload '~/.emacs.d/init.el'."
@@ -494,14 +533,14 @@ These are the Files creating in the current Directory for files that have not be
       (find-alternate-file (concat "/sudo:root@localhost:" buffer-file-name))))
 #+END_SRC
 * dir-locals hook
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (defun run-local-vars-mode-hook ()
   "Run a hook for the major-mode after the local variables have been processed."
   (run-hooks (intern (format "%S-local-vars-hook" major-mode))))
 (add-hook 'hack-local-variables-hook #'run-local-vars-mode-hook)
 #+end_src
 ** Session save/restore
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (require 'desktop)
   (defvar my-desktop-session-dir
     (concat (getenv "HOME") "/.emacs.d/desktop/")
@@ -567,16 +606,11 @@ These are the Files creating in the current Directory for files that have not be
     (my-desktop-save "last-session"))
   (add-hook 'kill-emacs-hook 'my-desktop-kill-emacs-hook)
 #+END_SRC
-* Install org-contrib
-Installing it this early should prevent mixed Org installations.
-#+BEGIN_SRC emacs-lisp
-(straight-use-package 'org-contrib)
-#+END_SRC
 * Evil
 ** initialize
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil
-    :straight (:host github :repo "emacs-evil/evil")
+    :elpaca (:host github :repo "emacs-evil/evil")
     :ensure t
     :init
     (setq evil-want-integration nil)
@@ -715,7 +749,7 @@ Installing it this early should prevent mixed Org installations.
     (narrow-to-region-indirect beg end)))
 #+end_src
 ** evil-collection
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-collection
     :ensure t
     :after evil
@@ -743,13 +777,13 @@ Installing it this early should prevent mixed Org installations.
     )
 #+END_SRC
 ** snippets
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package yasnippet
     :init
     (yas-global-mode 1))
 #+END_SRC
 ** default-text-scale
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package default-text-scale
   :after (hydra)
   :init
@@ -762,32 +796,33 @@ Installing it this early should prevent mixed Org installations.
       ("o" text-scale-decrease "out Buffer")))
 #+END_SRC
 ** hydra
-#+BEGIN_SRC emacs-lisp
-  (use-package hydra
-    :config
-    (defhydra hydra-window-resize ()
-      "Window resizing"
-      ("j" my-funcs/resize-window-down "down")
-      ("k" my-funcs/resize-window-up "up")
-      ("l" my-funcs/resize-window-right "right")
-      ("h" my-funcs/resize-window-left "left")))
-  (defhydra hydra-projectile (:color teal :columns 4)
-    "Projectile"
-    ("f"   projectile-find-file                "Find File")
-    ("r"   projectile-recentf                  "Recent Files")
-    ("z"   projectile-cache-current-file       "Cache Current File")
-    ("x"   projectile-remove-known-project     "Remove Known Project")
-    ("d"   projectile-find-dir                 "Find Directory")
-    ("b"   projectile-switch-to-buffer         "Switch to Buffer")
-    ("c"   projectile-invalidate-cache         "Clear Cache")
-    ("X"   projectile-cleanup-known-projects   "Cleanup Known Projects")
-    ("o"   projectile-multi-occur              "Multi Occur")
-    ("p"   projectile-switch-project           "Switch Project")
-    ("k"   projectile-kill-buffers             "Kill Buffers")
-    ("q"   nil "Cancel" :color blue))
+#+BEGIN_SRC emacs-lisp :tangle init.el
+    (use-package hydra)
+
+  (with-eval-after-load 'hydra
+            (defhydra hydra-window-resize ()
+              "Window resizing"
+              ("j" my-funcs/resize-window-down "down")
+              ("k" my-funcs/resize-window-up "up")
+              ("l" my-funcs/resize-window-right "right")
+                ("h" my-funcs/resize-window-left "left"))
+            (defhydra hydra-projectile (:color teal :columns 4)
+              "Projectile"
+              ("f"   projectile-find-file                "Find File")
+              ("r"   projectile-recentf                  "Recent Files")
+              ("z"   projectile-cache-current-file       "Cache Current File")
+              ("x"   projectile-remove-known-project     "Remove Known Project")
+              ("d"   projectile-find-dir                 "Find Directory")
+              ("b"   projectile-switch-to-buffer         "Switch to Buffer")
+              ("c"   projectile-invalidate-cache         "Clear Cache")
+              ("X"   projectile-cleanup-known-projects   "Cleanup Known Projects")
+              ("o"   projectile-multi-occur              "Multi Occur")
+              ("p"   projectile-switch-project           "Switch Project")
+              ("k"   projectile-kill-buffers             "Kill Buffers")
+              ("q"   nil "Cancel" :color blue)))
 #+END_SRC
 ** define lisp modes
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq lisp-modes '(clojure-mode
                      clojurescript-mode
                      lisp-interaction-mode
@@ -800,9 +835,9 @@ Installing it this early should prevent mixed Org installations.
 #+END_SRC
 ** General (keybindings)
 [[https://github.com/noctuid/general.el][general.el]]
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package general
-    :after (evil)
+    :after (evil hydra)
     :config
     (setq general-override-states '(insert
                                     emacs
@@ -916,34 +951,37 @@ Installing it this early should prevent mixed Org installations.
 
 #+END_SRC
 ** move-text
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package move-text
-    :general
-    (:keymaps 'normal
-     "] e" 'move-text-down
-     "[ e" 'move-text-up))
+    :after (general)
+  :config 
+  (general-define-key
+     :states 'normal
+       "] e" 'move-text-down
+       "[ e" 'move-text-up)
+    )
 #+end_src
 ** evil-surround
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package evil-surround
       :after (evil)
       :init
       (global-evil-surround-mode))
 #+end_src
 ** aggressive indent
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package aggressive-indent
     :config)
 #+end_src
 ** evil-expat (extra ex-commands)
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package evil-expat
   ;; optional, defer loading until 1 second of inactivity,
   ;; hence not affecting emacs startup time
   :defer 1)
 #+end_src
 ** evil-args
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-args
     :after (evil)
     :config
@@ -953,7 +991,7 @@ Installing it this early should prevent mixed Org installations.
     )
 #+end_src
 ** evil-lion
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package evil-lion
   :after (evil)
   :init
@@ -966,7 +1004,7 @@ Installing it this early should prevent mixed Org installations.
 - aI: The same as iI, plus whitespace.
 - iJ: A block of text with the same or higher indentation, including the first line above and below with less indentation.
 - aJ: The same as iJ, plus whitespace.
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-indent-plus
     :after (evil)
     :init
@@ -976,7 +1014,7 @@ Installing it this early should prevent mixed Org installations.
 #+end_src
 ** evil-numbers
 increment and decrement numbers with c-a and c-x
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package evil-numbers
       :after (evil)
       :commands (evil-numbers/inc-at-pt evil-numbers/dec-at-pt)
@@ -986,20 +1024,20 @@ increment and decrement numbers with c-a and c-x
 #+end_src
 ** evil-matchit
 % to jump between matched tags
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package evil-matchit
       :after (evil)
       :init
       (global-evil-matchit-mode 1))
 #+end_src
 ** evil-quickscope
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-quickscope
     :init
     (global-evil-quickscope-mode 1))
 #+END_SRC
 ** evil-exchange
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
      ;;cx to mark exchange second time to do it
      ;;cxc to cancel
     (use-package evil-exchange
@@ -1008,7 +1046,7 @@ increment and decrement numbers with c-a and c-x
       (evil-exchange-cx-install))
 #+end_src
 ** evil-nerd-commenter
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-nerd-commenter
     :after general
     :demand t
@@ -1020,7 +1058,7 @@ increment and decrement numbers with c-a and c-x
 #+end_src
 ** evil-anzu
 provides a minor mode which displays current match and total matches 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-anzu
       :after (evil)
       :init
@@ -1028,7 +1066,7 @@ provides a minor mode which displays current match and total matches
 #+end_src
 ** evil-owl
 view your registers and marks in a posframe before using them
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-owl
     :config
     (setq evil-owl-extra-posframe-args '(:width 50 :height 20)
@@ -1037,114 +1075,123 @@ view your registers and marks in a posframe before using them
     (evil-owl-mode))
 #+end_src
 ** evil textobject-to-search
-#+begin_src emacs-lisp
-(evil-define-operator evil-search-textobject (beg end)
-  "Evil operator for evaluating code."
-  :move-point nil
-  (let ((textobj-str (buffer-substring beg end)))
-    (setq evil-ex-search-pattern (evil-ex-make-pattern textobj-str t t))
-    (evil-ex-search-activate-highlight evil-ex-search-pattern)
-    ;; update search history unless this pattern equals the
-    ;; previous pattern
-    (unless (equal (car-safe evil-ex-search-history) textobj-str)
-      (push textobj-str evil-ex-search-history))
-    (evil-push-search-history textobj-str t)
-    (goto-char beg)))
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (with-eval-after-load 'evil
+  (with-eval-after-load 'general
+    (evil-define-operator evil-search-textobject (beg end)
+      "Evil operator for evaluating code."
+      :move-point nil
+      (let ((textobj-str (buffer-substring beg end)))
+        (setq evil-ex-search-pattern (evil-ex-make-pattern textobj-str t t))
+        (evil-ex-search-activate-highlight evil-ex-search-pattern)
+        ;; update search history unless this pattern equals the
+        ;; previous pattern
+        (unless (equal (car-safe evil-ex-search-history) textobj-str)
+          (push textobj-str evil-ex-search-history))
+        (evil-push-search-history textobj-str t)
+        (goto-char beg)))
 
 
-    (general-def 'normal 'override
-      "g/" 'evil-search-textobject)
+        (general-def 'normal 'override
+          "g/" 'evil-search-textobject)
+        ))
 #+end_src
 ** ibuffer
-#+begin_src emacs-lisp
-  (defhydra hydra-ibuffer-main (:color pink :hint nil)
+#+BEGIN_SRC emacs-lisp :tangle init.el
+
+  (with-eval-after-load 'hydra
+    (defhydra hydra-ibuffer-main (:color pink :hint nil)
+      "
+     ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
+    -^----------^-+-^----^--------+-^-------^--------+-^----^-------
+      _k_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
+     _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
+      _j_:    v   | _*_: specific | _a_: all actions | _/_: filter
+    -^----------^-+-^----^--------+-^-------^--------+-^----^-------
     "
-   ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
-  -^----------^-+-^----^--------+-^-------^--------+-^----^-------
-    _k_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
-   _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
-    _j_:    v   | _*_: specific | _a_: all actions | _/_: filter
-  -^----------^-+-^----^--------+-^-------^--------+-^----^-------
-  "
-    ("j" ibuffer-forward-line)
-    ("RET" ibuffer-visit-buffer :color blue)
-    ("k" ibuffer-backward-line)
-    ("m" ibuffer-mark-forward)
-    ("u" ibuffer-unmark-forward)
-    ("*" hydra-ibuffer-mark/body :color blue)
-    ("D" ibuffer-do-delete)
-    ("S" ibuffer-do-save)
-    ("a" hydra-ibuffer-action/body :color blue)
-    ("g" ibuffer-update)
-    ("s" hydra-ibuffer-sort/body :color blue)
-    ("/" hydra-ibuffer-filter/body :color blue)
-    ("q" ibuffer-quit "quit ibuffer" :color blue))
-  (defhydra hydra-ibuffer-mark (:color teal :columns 5
-                                :after-exit (hydra-ibuffer-main/body))
-    "Mark"
-    ("*" ibuffer-unmark-all "unmark all")
-    ("M" ibuffer-mark-by-mode "mode")
-    ("m" ibuffer-mark-modified-buffers "modified")
-    ("u" ibuffer-mark-unsaved-buffers "unsaved")
-    ("s" ibuffer-mark-special-buffers "special")
-    ("r" ibuffer-mark-read-only-buffers "read-only")
-    ("/" ibuffer-mark-dired-buffers "dired")
-    ("e" ibuffer-mark-dissociated-buffers "dissociated")
-    ("h" ibuffer-mark-help-buffers "help")
-    ("z" ibuffer-mark-compressed-file-buffers "compressed")
-    ("b" hydra-ibuffer-main/body "back" :color blue))
-  (defhydra hydra-ibuffer-action (:color teal :columns 4
-                                  :after-exit
-                                  (if (eq major-mode 'ibuffer-mode)
-                                      (hydra-ibuffer-main/body)))
-    "Action"
-    ("A" ibuffer-do-view "view")
-    ("E" ibuffer-do-eval "eval")
-    ("F" ibuffer-do-shell-command-file "shell-command-file")
-    ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
-    ("H" ibuffer-do-view-other-frame "view-other-frame")
-    ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
-    ("M" ibuffer-do-toggle-modified "toggle-modified")
-    ("O" ibuffer-do-occur "occur")
-    ("P" ibuffer-do-print "print")
-    ("Q" ibuffer-do-query-replace "query-replace")
-    ("R" ibuffer-do-rename-uniquely "rename-uniquely")
-    ("T" ibuffer-do-toggle-read-only "toggle-read-only")
-    ("U" ibuffer-do-replace-regexp "replace-regexp")
-    ("V" ibuffer-do-revert "revert")
-    ("W" ibuffer-do-view-and-eval "view-and-eval")
-    ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
-    ("b" nil "back"))
-  (defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
-    "Sort"
-    ("i" ibuffer-invert-sorting "invert")
-    ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
-    ("v" ibuffer-do-sort-by-recency "recently used")
-    ("s" ibuffer-do-sort-by-size "size")
-    ("f" ibuffer-do-sort-by-filename/process "filename")
-    ("m" ibuffer-do-sort-by-major-mode "mode")
-    ("b" hydra-ibuffer-main/body "back" :color blue))
-  (defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
-    "Filter"
-    ("m" ibuffer-filter-by-used-mode "mode")
-    ("M" ibuffer-filter-by-derived-mode "derived mode")
-    ("n" ibuffer-filter-by-name "name")
-    ("c" ibuffer-filter-by-content "content")
-    ("e" ibuffer-filter-by-predicate "predicate")
-    ("f" ibuffer-filter-by-filename "filename")
-    (">" ibuffer-filter-by-size-gt "size")
-    ("<" ibuffer-filter-by-size-lt "size")
-    ("/" ibuffer-filter-disable "disable")
-    ("b" hydra-ibuffer-main/body "back" :color blue))
-  (general-define-key :keymaps '(ibuffer-mode-map)
-                      :states '(normal)
-                      "SPC" 'hydra-ibuffer-main/body
-                      "j" 'ibuffer-forward-line
-                      "k" 'ibuffer-backward-line
-                      "J" 'ibuffer-jump-to-buffer)
+      ("j" ibuffer-forward-line)
+      ("RET" ibuffer-visit-buffer :color blue)
+      ("k" ibuffer-backward-line)
+      ("m" ibuffer-mark-forward)
+      ("u" ibuffer-unmark-forward)
+      ("*" hydra-ibuffer-mark/body :color blue)
+      ("D" ibuffer-do-delete)
+      ("S" ibuffer-do-save)
+      ("a" hydra-ibuffer-action/body :color blue)
+      ("g" ibuffer-update)
+      ("s" hydra-ibuffer-sort/body :color blue)
+      ("/" hydra-ibuffer-filter/body :color blue)
+      ("q" ibuffer-quit "quit ibuffer" :color blue))
+    (defhydra hydra-ibuffer-mark (:color teal :columns 5
+                                  :after-exit (hydra-ibuffer-main/body))
+      "Mark"
+      ("*" ibuffer-unmark-all "unmark all")
+      ("M" ibuffer-mark-by-mode "mode")
+      ("m" ibuffer-mark-modified-buffers "modified")
+      ("u" ibuffer-mark-unsaved-buffers "unsaved")
+      ("s" ibuffer-mark-special-buffers "special")
+      ("r" ibuffer-mark-read-only-buffers "read-only")
+      ("/" ibuffer-mark-dired-buffers "dired")
+      ("e" ibuffer-mark-dissociated-buffers "dissociated")
+      ("h" ibuffer-mark-help-buffers "help")
+      ("z" ibuffer-mark-compressed-file-buffers "compressed")
+      ("b" hydra-ibuffer-main/body "back" :color blue))
+    (defhydra hydra-ibuffer-action (:color teal :columns 4
+                                    :after-exit
+                                    (if (eq major-mode 'ibuffer-mode)
+                                        (hydra-ibuffer-main/body)))
+      "Action"
+      ("A" ibuffer-do-view "view")
+      ("E" ibuffer-do-eval "eval")
+      ("F" ibuffer-do-shell-command-file "shell-command-file")
+      ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
+      ("H" ibuffer-do-view-other-frame "view-other-frame")
+      ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
+      ("M" ibuffer-do-toggle-modified "toggle-modified")
+      ("O" ibuffer-do-occur "occur")
+      ("P" ibuffer-do-print "print")
+      ("Q" ibuffer-do-query-replace "query-replace")
+      ("R" ibuffer-do-rename-uniquely "rename-uniquely")
+      ("T" ibuffer-do-toggle-read-only "toggle-read-only")
+      ("U" ibuffer-do-replace-regexp "replace-regexp")
+      ("V" ibuffer-do-revert "revert")
+      ("W" ibuffer-do-view-and-eval "view-and-eval")
+      ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
+      ("b" nil "back"))
+    (defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
+      "Sort"
+      ("i" ibuffer-invert-sorting "invert")
+      ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
+      ("v" ibuffer-do-sort-by-recency "recently used")
+      ("s" ibuffer-do-sort-by-size "size")
+      ("f" ibuffer-do-sort-by-filename/process "filename")
+      ("m" ibuffer-do-sort-by-major-mode "mode")
+      ("b" hydra-ibuffer-main/body "back" :color blue))
+    (defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
+      "Filter"
+      ("m" ibuffer-filter-by-used-mode "mode")
+      ("M" ibuffer-filter-by-derived-mode "derived mode")
+      ("n" ibuffer-filter-by-name "name")
+      ("c" ibuffer-filter-by-content "content")
+      ("e" ibuffer-filter-by-predicate "predicate")
+      ("f" ibuffer-filter-by-filename "filename")
+      (">" ibuffer-filter-by-size-gt "size")
+      ("<" ibuffer-filter-by-size-lt "size")
+      ("/" ibuffer-filter-disable "disable")
+      ("b" hydra-ibuffer-main/body "back" :color blue))
+  (with-eval-after-load 'general
+    (general-define-key :keymaps '(ibuffer-mode-map)
+                        :states '(normal)
+                        "SPC" 'hydra-ibuffer-main/body
+                        "j" 'ibuffer-forward-line
+                        "k" 'ibuffer-backward-line
+                        "J" 'ibuffer-jump-to-buffer)
+  )
+
+  )
 #+end_src
 ** ibuffer-project
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ibuffer-project
     :init
     (add-hook 'ibuffer-hook
@@ -1152,17 +1199,21 @@ view your registers and marks in a posframe before using them
                 (setq ibuffer-filter-groups (ibuffer-project-generate-filter-groups)))))
 #+end_src
 ** help
-#+begin_src emacs-lisp
-  (general-define-key :keymaps '(help-mode-map)
-                      :states '(normal)
-                      "C-o" 'help-go-back
-                      "C-i" 'help-go-forward
-                      "r" 'help-follow
-                      "q" 'quit-window)
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (with-eval-after-load 'general
+    (general-define-key :keymaps '(help-mode-map)
+                        :states '(normal)
+                        "C-o" 'help-go-back
+                        "C-i" 'help-go-forward
+                        "r" 'help-follow
+                        "q" 'quit-window)
+ )
 #+end_src
-** package-menu
-#+begin_src emacs-lisp
+** COMMENT package-menu
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq package-menu-async t)
+
+  (with-eval-after-load 'general
   (general-define-key :keymaps '(package-menu-mode-map)
                       :states '(normal)
                       "i" 'package-menu-mark-install
@@ -1177,9 +1228,10 @@ view your registers and marks in a posframe before using them
                       ;; "q" 'quit-window ; macros can make sense here.
                       "ZQ" 'evil-quit
                       "ZZ" 'quit-window)
+)
 #+end_src
 ** evil-replace-with-register
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-replace-with-register
     :after (evil evil-collection)
     :init
@@ -1187,16 +1239,16 @@ view your registers and marks in a posframe before using them
     (evil-replace-with-register-install))
 #+end_src
 ** artist-mode
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (add-hook 'artist-mode-hook #'(lambda () (evil-emacs-state)))
 #+end_src
 ** abbrev
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq-default
  abbrev-mode t)
 #+end_src
 * corfu
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package corfu
     ;; Optional customizations
     :custom
@@ -1236,12 +1288,12 @@ view your registers and marks in a posframe before using them
 #+END_SRC
 ** narrowing
 enable narrowing
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
  (put 'narrow-to-defun  'disabled nil)
  (put 'narrow-to-page   'disabled nil)
  (put 'narrow-to-region 'disabled nil)
 #+end_src
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (defun narrow-to-region-indirect (start end)
     "Restrict editing in this buffer to the current region, indirectly."
     (interactive "r")
@@ -1251,13 +1303,16 @@ enable narrowing
         (narrow-to-region start end))
         (switch-to-buffer buf)))
 
+
+
+  (with-eval-after-load 'general
   (general-define-key
-      :states '(normal operator visual)
+   :states '(normal operator visual)
    :keymaps 'override
-   "zn" 'evil-narrow-indirect)
+   "zn" 'evil-narrow-indirect))
 #+end_src
 * cape
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
       (use-package cape
         :after '(corfu)
         :init
@@ -1281,16 +1336,17 @@ enable narrowing
 
 * Packages
 ** Flycheck
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package flycheck
-    :general
-    (:keymaps 'normal
-              "] q" 'flycheck-next-error
-              "[ q" 'flycheck-previous-error)
-    :after (fringe-helper)
+    :after (fringe-helper general)
     :init
     (global-flycheck-mode)
     :config
+    (general-define-key
+     :states 'normal
+     "]q" 'flycheck-next-error
+     "[q" 'flycheck-previous-error)
+
     (setq flycheck-indication-mode 'right-fringe)
     ;; A non-descript, left-pointing arrow
     (fringe-helper-define 'flycheck-fringe-bitmap-double-arrow 'center
@@ -1304,7 +1360,7 @@ enable narrowing
     )
 #+end_src
 ** Exec-path
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package exec-path-from-shell
       :config
       (when (memq window-system '(mac ns x))
@@ -1313,7 +1369,7 @@ enable narrowing
         (exec-path-from-shell-initialize)))
 #+END_SRC
 ** COMMENT Shackle
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 
     (use-package shackle
       :init
@@ -1341,7 +1397,7 @@ enable narrowing
       (shackle-mode 1))
 #+END_SRC
 ** clojure
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (defun json->edn ()
     (interactive)
     (shell-command-on-region (region-beginning)
@@ -1469,28 +1525,31 @@ enable narrowing
 
 #+end_src
 ** elisp
-#+BEGIN_SRC emacs-lisp
-  (general-define-key :states 'normal
-                      :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
-                      "c" (general-key-dispatch 'evil-change
-                      :name list-evil-change-dispatch
-                            "p" (general-key-dispatch 'evil-eval-elisp-text-object
-                                  :name general-dispatch-eval-elisp-text-object
-                                  "p" (lambda ()
-                                        (interactive)
-                                        (let* ((range (evil-a-sexp))
-                                               (beg (elt range 0))
-                                               (end (elt range 1)))
-                                          (evil-eval-elisp-text-object beg end))))))
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (with-eval-after-load 'general
+      (general-define-key :states 'normal
+                          :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
+                          "c" (general-key-dispatch 'evil-change
+                                :name list-evil-change-dispatch
+                                "p" (general-key-dispatch 'evil-eval-elisp-text-object
+                                      :name general-dispatch-eval-elisp-text-object
+                                      "p" (lambda ()
+                                            (interactive)
+                                            (let* ((range (evil-a-sexp))
+                                                   (beg (elt range 0))
+                                                   (end (elt range 1)))
+                                              (evil-eval-elisp-text-object beg end))))))
 
-   ;; for some reason the above also overrides visual state keybindings
-  (general-define-key :states 'visual
-                      :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
-                      "c" 'evil-change)
+      ;; for some reason the above also overrides visual state keybindings
+      (general-define-key :states 'visual
+                          :keymaps '(emacs-lisp-mode-map lisp-interaction-mode-map)
+                          "c" 'evil-change)
+      )
 
 #+END_SRC
+
 ** which-key
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package which-key
     :init
     (which-key-mode))
@@ -1499,12 +1558,12 @@ enable narrowing
   ;;  (which-key-posframe-mode))
 #+END_SRC
 ** Fringe helper
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package fringe-helper
   :demand t)
 #+END_SRC
 ** Git Gutter
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package git-gutter-fringe
     :after (fringe-helper)
     :demand t
@@ -1526,7 +1585,7 @@ enable narrowing
 #+END_SRC
 
 ** Magit
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package magit-section)
   (use-package magit
     :config
@@ -1544,7 +1603,7 @@ enable narrowing
                         "q" 'git-timemachine-quit))
 #+END_SRC
 ** imenu-list (file overview)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package imenu-list
     :config
     (setq imenu-list-focus-after-activation t)
@@ -1561,68 +1620,78 @@ enable narrowing
                         "q" 'imenu-list-quit-window))
 #+END_SRC
 ** COMMENT Visual fill Column
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package visual-fill-column
     :config
     ;;(setq-default visual-fill-column-center-text t)
     :ghook 'text-mode-hook)
 #+END_SRC
 ** Visual Line Mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   ;; soft-wrap lines
   (add-hook 'text-mode-hook #'visual-line-mode)
   ;; show right-curly arrow on right of wrapped lines
   (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 #+END_SRC
 ** Org Mode
+*** auto-tangle-mode
+#+BEGIN_SRC emacs-lisp :tangle init.el
+    (use-package org-auto-tangle
+    :elpaca (org-auto-tangle
+             :host github
+             :repo "yilkalargaw/org-auto-tangle"
+             :main "org-auto-tangle.el")
+    :defer t
+    :hook (org-mode . org-auto-tangle-mode))
+#+END_SRC
 *** org settings
 **** latex syntax highlight
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq org-highlight-latex-and-related '(latex script entities))
 #+END_SRC
 **** log done date
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq org-log-done t)
 #+END_SRC
 **** COMMENT org-indent-mode (indent sub-headings)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (add-hook 'org-mode-hook 'org-indent-mode)
 #+END_SRC
 **** use default log drawer
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq org-log-into-drawer t)
 #+END_SRC
 **** adapt indentation
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq org-adapt-indentation nil)
 #+END_SRC
 **** set image width
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq org-image-actual-width 250)
 #+END_SRC
 **** show images
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq org-image-actual-width 250)
   (setq org-startup-with-inline-images t)
 #+END_SRC
 **** enable syntax highlighting in org-babel source code
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq org-src-fontify-natively t)
 #+END_SRC
 **** set org default directory
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq org-agenda-files '("~/org/")
         org-directory "~/org/"
         org-archive-location "~/org/archive/%s::")
 #+END_SRC
 **** org src block indention
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq org-src-preserve-indentation nil
         org-edit-src-content-indentation 2)
 #+END_SRC
 
 **** COMMENT set default output directory (and not use the current directory by default)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (defvar-local org-export-output-directory (concat (getenv "HOME") "/Downloads/org-exports") "directory used for org-mode export")
 
   (defadvice org-export-output-file-name (before org-add-export-dir activate)
@@ -1636,7 +1705,7 @@ enable narrowing
 #+END_SRC
 
 **** latex export class book-noparts (skip part in book layout)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq org-latex-caption-above nil)
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
@@ -1650,11 +1719,11 @@ enable narrowing
                 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 #+END_SRC
 **** capture templates
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
   (use-package org-id
     :after (org)
-    :straight org-contrib
+    :elpaca org-contrib
     :ensure t
     :config
 
@@ -1707,7 +1776,7 @@ Org capture provides several hooks we can use to tweak the default behaviour.
 
 First, we make sure the capture buffer window takes the whole frame. To do this, we first save the current window configuration and then delete all other windows on entering the org-capture-mode. Unfortunately there is no "before anything happens" hook so we use a before advice instead.
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (defvar my-org-capture-before-config nil
     "Window configuration before `org-capture'.")
 
@@ -1728,7 +1797,7 @@ Next, after we finish the capture work flow (either with success or cancellation
 
 Finally, let's make sure that after we refile the captured content the frame which was possibly created (if capture was invoked with org-protocol) closes itself automatically. This keeps us in the flow and keeps the distraction of killing the frame manually away. We use the frame name to decide if we wish to kill the frame or not (this is the -F argument from above).
 
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (defun my-org-capture-cleanup ()
   "Clean up the frame created while capturing via org-protocol."
   ;; In case we run capture from emacs itself and not an external app,
@@ -1744,7 +1813,7 @@ Finally, let's make sure that after we refile the captured content the frame whi
 
 With these tweaks the whole capture experience is much more streamlined for me. When I invoke capture from anywhere (Emacs or via org-protocol), I get a full screen frame/window where I can quickly jot my thoughts. After I'm finished everything restores itself to the previous state and I can continue with whatever task I was consumed prior to the capture process. 
 **** set inline image background
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (defcustom org-inline-image-background nil
     "The color used as the default background for inline images.
     When nil, use the default face background."
@@ -1769,15 +1838,15 @@ With these tweaks the whole capture experience is much more streamlined for me. 
     (setq org-inline-image-background "#ffffff")
 #+END_SRC
 **** smart invisible edits (show edits and don't allow deletion)
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC emacs-lisp :tangle init.el
 (setq-default org-catch-invisible-edits 'smart)
      #+END_SRC
 **** COMMENT hide leading stars
-     #+BEGIN_SRC emacs-lisp
+     #+BEGIN_SRC emacs-lisp :tangle init.el
 (setq-default org-hide-leading-stars t)
      #+END_SRC
 *** COMMENT org-sticky-header
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
    (use-package org-sticky-header
      :init
      (add-hook 'org-mode-hook 'org-sticky-header-mode)
@@ -1785,11 +1854,11 @@ With these tweaks the whole capture experience is much more streamlined for me. 
      (setq org-sticky-header-full-path 'full))
 #+END_SRC
 *** COMMENT blank before new entry
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq-default org-blank-before-new-entry '((heading . nil) (plain-list-item . nil)))
 #+END_SRC
 *** babel languages
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((shell . t)
@@ -1800,11 +1869,11 @@ With these tweaks the whole capture experience is much more streamlined for me. 
      (dot . t)))
 #+end_src
 *** org-ref
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package org-ref)
 #+END_SRC
 *** org-Reveal (HTML presentations)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ox-reveal)
   ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
   ;;(setq org-reveal-mathjax t)
@@ -1813,7 +1882,7 @@ With these tweaks the whole capture experience is much more streamlined for me. 
 #+END_SRC
 *** org-templates
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (when (version<= "9.2.0" (org-version))
     (require 'org-tempo)
     (add-to-list 'org-modules 'org-tempo)
@@ -1821,7 +1890,7 @@ With these tweaks the whole capture experience is much more streamlined for me. 
 #+END_SRC
 
 *** org-habit
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (require 'org-habit)
   (add-to-list 'org-modules 'org-habit)
   (setq org-habit-show-habits-only-for-today nil)
@@ -1829,11 +1898,11 @@ With these tweaks the whole capture experience is much more streamlined for me. 
 
 *** fontify-whole-heading-line
 Fontify the whole line for headings (with a background color).
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq-default org-fontify-whole-heading-line t)
 #+END_SRC
-*** evil keybindings in org-mode
-#+BEGIN_SRC emacs-lisp
+*** COMMENT evil keybindings in org-mode
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package worf
     :after (evil org hydra)
     :init
@@ -1968,11 +2037,11 @@ Fontify the whole line for headings (with a background color).
     )
 #+END_SRC
 *** open source code in same windowemacs
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq org-src-window-setup 'current-window)
 #+END_SRC
 *** org-sidebar
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package org-sidebar)
 #+END_SRC
 *** evil-org
@@ -1988,7 +2057,7 @@ I only use a few features from this mode like testobjects:
 | R   | Org Subtree         |
 |-----+---------------------|
 and the `>` and `<` opererators for promoting and demoting headers and
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-org
     :after org
     :init
@@ -2002,7 +2071,7 @@ and the `>` and `<` opererators for promoting and demoting headers and
 #+END_SRC
 *** org-download
 Download images and insert them into org buffers (drag and drop support)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package org-download
     :after org
     :init
@@ -2013,246 +2082,249 @@ Download images and insert them into org buffers (drag and drop support)
     (require 'org-download))
 #+END_SRC
 *** org-treeusage
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package org-treeusage
      :ensure t
-     :straight (:host github
+     :elpaca (:host github
                 :repo "mtekman/org-treeusage.el")
     :after org)
 #+END_SRC
 ** smartparens
-#+BEGIN_SRC emacs-lisp
-    (use-package smartparens
-      :init
-      (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode)
-      (add-hook 'cide-clojure-interaction-mode-hook 'turn-on-smartparens-strict-mode)
-      (add-hook 'lisp-interaction-mode-hook 'turn-on-smartparens-strict-mode)
-      (add-hook 'cider-repl-mode-hook 'turn-on-smartparens-strict-mode)
-      (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
-      (smartparens-global-mode 1)
-      :config
-      (setq sp-navigate-interactive-always-progress-point t)
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (use-package smartparens
+    :init
+    (add-hook 'clojure-mode-hook 'turn-on-smartparens-strict-mode)
+    (add-hook 'cide-clojure-interaction-mode-hook 'turn-on-smartparens-strict-mode)
+    (add-hook 'lisp-interaction-mode-hook 'turn-on-smartparens-strict-mode)
+    (add-hook 'cider-repl-mode-hook 'turn-on-smartparens-strict-mode)
+    (add-hook 'emacs-lisp-mode-hook 'turn-on-smartparens-strict-mode)
+    (smartparens-global-mode 1)
+    :config
+    (setq sp-navigate-interactive-always-progress-point t)
 
-      (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
-      (sp-local-pair 'clojure-mode "'" nil :actions nil)
-      (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
-      (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
-      (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
+    (sp-local-pair 'emacs-lisp-mode "'" nil :actions nil)
+    (sp-local-pair 'clojure-mode "'" nil :actions nil)
+    (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
+    (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
+    (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
 
-    (use-package evil-smartparens
-      ;;:init (require 'evil-smartparens)
-      :after (evil general smartparens evil-surround)
-      :config
-      (add-to-list 'evil-surround-operator-alist
-      '(evil-sp-change . change))
-      (add-to-list 'evil-surround-operator-alist
-      '(evil-sp-change . change))
-      (add-to-list 'evil-surround-operator-alist
-      '(evil-sp-delete . delete))
-      (add-to-list 'evil-surround-operator-alist
-      '(evil-sp-delete . delete))
+  (use-package evil-smartparens
+    ;;:init (require 'evil-smartparens)
+    :after (evil general smartparens evil-surround symex)
+    :config
+    (add-to-list 'evil-surround-operator-alist
+    '(evil-sp-change . change))
+    (add-to-list 'evil-surround-operator-alist
+    '(evil-sp-change . change))
+    (add-to-list 'evil-surround-operator-alist
+    '(evil-sp-delete . delete))
+    (add-to-list 'evil-surround-operator-alist
+    '(evil-sp-delete . delete))
 
-      (defun maybe-join-lisp-line ()
-        (save-excursion
-          (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
-            (evil-previous-line-first-non-blank)
-            (join-line 1))))
+    (defun maybe-join-lisp-line ()
+      (save-excursion
+        (when (string-match-p "^\s*[\])}]+\s*$" (thing-at-point 'line t))
+          (evil-previous-line-first-non-blank)
+          (join-line 1))))
 
-      (defun in-sexp ()
-        (> (nth 0 (syntax-ppss)) 0))
+    (defun in-sexp ()
+      (> (nth 0 (syntax-ppss)) 0))
 
-      (defun next-paren (&optional closing)
-        "Go to the next/previous closing/opening parenthesis/bracket/brace."
-        (if closing
-            (let ((curr (point)))
-              (forward-char)
-              (unless (eq curr (search-forward-regexp "[])}]"))
-                (backward-char)))
-          (search-backward-regexp "[[({]")))
+    (defun next-paren (&optional closing)
+      "Go to the next/previous closing/opening parenthesis/bracket/brace."
+      (if closing
+          (let ((curr (point)))
+            (forward-char)
+            (unless (eq curr (search-forward-regexp "[])}]"))
+              (backward-char)))
+        (search-backward-regexp "[[({]")))
 
-      (defun open-paren-around (paren element beginning)
-        (when (and element (in-sexp))
-          (next-paren))
-        (sp-wrap-with-pair paren)
-        (if beginning
-            (progn
-              (insert " ")
-              (evil-backward-char 1))
+    (defun open-paren-around (paren element beginning)
+      (when (and element (in-sexp))
+        (next-paren))
+      (sp-wrap-with-pair paren)
+      (if beginning
           (progn
-            (evilmi-jump-items)
-            (evil-forward-char 1)
-            (insert " ")))
-        (evil-insert nil))
+            (insert " ")
+            (evil-backward-char 1))
+        (progn
+          (evilmi-jump-items)
+          (evil-forward-char 1)
+          (insert " ")))
+      (evil-insert nil))
 
-      (evil-define-command lisp-next-symbol (count)
-        (interactive "<c>")
-        (call-interactively 'sp-forward-symbol)
-        (if count
-            (dotimes (number count)
-              (call-interactively 'sp-forward-symbol))
-          (call-interactively 'sp-forward-symbol))
-        (sp-backward-symbol))
+    (evil-define-command lisp-next-symbol (count)
+      (interactive "<c>")
+      (call-interactively 'sp-forward-symbol)
+      (if count
+          (dotimes (number count)
+            (call-interactively 'sp-forward-symbol))
+        (call-interactively 'sp-forward-symbol))
+      (sp-backward-symbol))
 
-      (evil-define-command lisp-previous-symbol (count)
-          (interactive "<c>")
-          (if count
-              (dotimes (number count)
-                (call-interactively 'sp-backward-symbol))
-            (call-interactively 'sp-backward-symbol)))
-
-      (evil-define-command lisp-next-paren (count)
+    (evil-define-command lisp-previous-symbol (count)
         (interactive "<c>")
         (if count
             (dotimes (number count)
-              (call-interactively 'sp-next-sexp))
-          (call-interactively 'sp-next-sexp)))
+              (call-interactively 'sp-backward-symbol))
+          (call-interactively 'sp-backward-symbol)))
 
-      (evil-define-command lisp-previous-paren (count)
-        (interactive "<c>")
-        (if count
-            (sp-next-sexp (* count -1))
-          (sp-next-sexp -1)))
+    (evil-define-command lisp-next-paren (count)
+      (interactive "<c>")
+      (if count
+          (dotimes (number count)
+            (call-interactively 'sp-next-sexp))
+        (call-interactively 'sp-next-sexp)))
 
-      (general-define-key
-       :states '(normal operator visual)
-       :keymaps lisp-mode-maps
-       [remap evil-delete] 'evil-sp-delete
-       [remap evil-change] 'evil-sp-change)
+    (evil-define-command lisp-previous-paren (count)
+      (interactive "<c>")
+      (if count
+          (sp-next-sexp (* count -1))
+        (sp-next-sexp -1)))
 
-      (general-define-key
-       :states 'normal
-       :keymaps lisp-mode-maps
-       :prefix my-leader2
-       "W" (lambda ()
-             (interactive)
-             (open-paren-around "(" t nil))
-       "w" (lambda ()
-             (interactive)
-             (open-paren-around "(" t t))
-       "e)" (lambda ()
-              (interactive)
-              (open-paren-around "(" t nil))
-       "e(" (lambda ()
-              (interactive)
-              (open-paren-around "(" t t))
-       "e}" (lambda ()
-              (interactive)
-              (open-paren-around "{" t nil))
-       "e{" (lambda ()
-              (interactive)
-              (open-paren-around "{" t t))
-       "e]" (lambda ()
-              (interactive)
-              (open-paren-around "[" t nil))
-       "e[" (lambda ()
-              (interactive)
-              (open-paren-around "[" t t))
-       "e}" (lambda ()
-              (interactive)
-              (open-paren-around "{" t nil))
-       "e{" (lambda ()
-              (interactive)
-              (open-paren-around "{" t t))
-       "i" (lambda ()
-             (interactive)
-             (open-paren-around "(" nil t))
-       "I" (lambda ()
-             (interactive)
-             (open-paren-around "(" nil nil))
-       "(" (lambda ()
-             (interactive)
-             (open-paren-around "(" nil t))
-       ")" (lambda ()
-             (interactive)
-             (open-paren-around "(" nil nil))
-       "[" (lambda ()
-             (interactive)
-             (open-paren-around "[" nil t))
-       "]" (lambda ()
-             (interactive)
-             (open-paren-around "[" nil nil))
-       "{" (lambda ()
-             (interactive)
-             (open-paren-around "{" nil t))
-       "}" (lambda ()
-             (interactive)
-             (open-paren-aroundn "{" nil nil))
-       "@" 'sp-splice-sexp
-       "o" (lambda ()
-             (interactive)
-             (when (string-match-p "^[^\[({]" (thing-at-point 'sexp t))
-               (sp-backward-up-sexp))
-             (sp-raise-sexp))
-       "O" 'sp-raise-sexp)
+    (general-define-key
+     :states '(normal operator visual)
+     :keymaps lisp-mode-maps
+     [remap evil-delete] 'evil-sp-delete
+     [remap evil-change] 'evil-sp-change)
 
-      (general-define-key
-       :states 'normal
-       :keymaps lisp-mode-maps
-       ;;c is defined in vim-exchange
-       "W" 'symex-traverse-forward-skip
-       "w" 'symex-traverse-forward
-       "B" 'symex-traverse-backward-skip
-       "b" 'symex-traverse-backward
-  
-       "(" 'sp-backward-up-sexp
-       ")" (lambda ()
-             (interactive)
-             (sp-backward-up-sexp)
-             (evilmi-jump-items))
-       ">" (general-key-dispatch 'evil-shift-right
-             "I" (lambda ()
-                   (interactive)
-                   (sp-end-of-sexp)
-                   (when (not (char-equal (preceding-char)  ?  ))
-                     (insert " "))
-                   (evil-insert nil))
-             ")" 'sp-forward-slurp-sexp
-             "(" 'sp-backward-barf-sexp)
-       "<" (general-key-dispatch 'evil-shift-left
-             "I" (lambda ()
-                   (interactive)
-                   (sp-beginning-of-sexp)
-                   (when (not (char-equal (following-char)  ?  ))
-                     (insert " ")
-                     (evil-backward-char))
-                   (evil-insert nil))
-             ")" 'sp-forward-barf-sexp
-             "(" 'sp-backward-slurp-sexp)
+    (general-define-key
+     :states 'normal
+     :keymaps lisp-mode-maps
+     :prefix my-leader2
+     "W" (lambda ()
+           (interactive)
+           (open-paren-around "(" t nil))
+     "w" (lambda ()
+           (interactive)
+           (open-paren-around "(" t t))
+     "e)" (lambda ()
+            (interactive)
+            (open-paren-around "(" t nil))
+     "e(" (lambda ()
+            (interactive)
+            (open-paren-around "(" t t))
+     "e}" (lambda ()
+            (interactive)
+            (open-paren-around "{" t nil))
+     "e{" (lambda ()
+            (interactive)
+            (open-paren-around "{" t t))
+     "e]" (lambda ()
+            (interactive)
+            (open-paren-around "[" t nil))
+     "e[" (lambda ()
+            (interactive)
+            (open-paren-around "[" t t))
+     "e}" (lambda ()
+            (interactive)
+            (open-paren-around "{" t nil))
+     "e{" (lambda ()
+            (interactive)
+            (open-paren-around "{" t t))
+     "i" (lambda ()
+           (interactive)
+           (open-paren-around "(" nil t))
+     "I" (lambda ()
+           (interactive)
+           (open-paren-around "(" nil nil))
+     "(" (lambda ()
+           (interactive)
+           (open-paren-around "(" nil t))
+     ")" (lambda ()
+           (interactive)
+           (open-paren-around "(" nil nil))
+     "[" (lambda ()
+           (interactive)
+           (open-paren-around "[" nil t))
+     "]" (lambda ()
+           (interactive)
+           (open-paren-around "[" nil nil))
+     "{" (lambda ()
+           (interactive)
+           (open-paren-around "{" nil t))
+     "}" (lambda ()
+           (interactive)
+           (open-paren-aroundn "{" nil nil))
+     "@" 'sp-splice-sexp
+     "o" (lambda ()
+           (interactive)
+           (when (string-match-p "^[^\[({]" (thing-at-point 'sexp t))
+             (sp-backward-up-sexp))
+           (sp-raise-sexp))
+     "O" 'sp-raise-sexp)
 
-       [remap evil-change-line] 'evil-sp-change-line
-       [remap evil-delete-line] 'evil-sp-delete-line)
+    (general-define-key
+     :states 'normal
+     :keymaps lisp-mode-maps
+     ;;c is defined in vim-exchange
+     "W" 'symex-traverse-forward-skip
+     "w" 'symex-traverse-forward
+     "B" 'symex-traverse-backward-skip
+     "b" 'symex-traverse-backward
+
+     "(" 'sp-backward-up-sexp
+     ")" (lambda ()
+           (interactive)
+           (sp-backward-up-sexp)
+           (evilmi-jump-items))
+     ">" (general-key-dispatch 'evil-shift-right
+           "I" (lambda ()
+                 (interactive)
+                 (sp-end-of-sexp)
+                 (when (not (char-equal (preceding-char)  ?  ))
+                   (insert " "))
+                 (evil-insert nil))
+           ")" 'sp-forward-slurp-sexp
+           "(" 'sp-backward-barf-sexp)
+     "<" (general-key-dispatch 'evil-shift-left
+           "I" (lambda ()
+                 (interactive)
+                 (sp-beginning-of-sexp)
+                 (when (not (char-equal (following-char)  ?  ))
+                   (insert " ")
+                   (evil-backward-char))
+                 (evil-insert nil))
+           ")" 'sp-forward-barf-sexp
+           "(" 'sp-backward-slurp-sexp)
+
+     [remap evil-change-line] 'evil-sp-change-line
+     [remap evil-delete-line] 'evil-sp-delete-line)
 
 
-      (general-def 'normal
-        ">" (general-key-dispatch 'evil-shift-right
-              ")" 'sp-forward-slurp-sexp
-              "(" 'sp-backward-barf-sexp)
-        "<" (general-key-dispatch 'evil-shift-left
-              ")" 'sp-forward-barf-sexp
-              "(" 'sp-backward-slurp-sexp))))
+    (general-def 'normal
+      ">" (general-key-dispatch 'evil-shift-right
+            ")" 'sp-forward-slurp-sexp
+            "(" 'sp-backward-barf-sexp)
+      "<" (general-key-dispatch 'evil-shift-left
+            ")" 'sp-forward-barf-sexp
+            "(" 'sp-backward-slurp-sexp))))
 
 #+END_SRC
 ** Latex
 ** AucTex
-#+BEGIN_SRC emacs-lisp
-  (use-package auctex-latexmk
+#+BEGIN_SRC emacs-lisp :tangle init.el
+    (use-package tex
+    :elpaca auctex
     :init
-    (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
-    (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
-    (add-hook 'LaTeX-mode-hook
-              (lambda ()
-                (push
-                 '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
-                   :help "Run latexmk on file")
-                 TeX-command-list)))
+      (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
+      (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
+      (add-hook 'LaTeX-mode-hook
+                (lambda ()
+                  (push
+                   '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
+                     :help "Run latexmk on file")
+                   TeX-command-list)))
+    :defer t
     :config
-    (auctex-latexmk-setup))
-
-  (setq-default TeX-quote-after-quote t)
+    (setq-default TeX-quote-after-quote t)
+    (auctex-latexmk-setup)
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t))
 
 #+END_SRC
 ** projectile
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package projectile
     :config
     ;; test fn in hashtabe has to be equal because we will use strings as keys
@@ -2261,11 +2333,11 @@ Download images and insert them into org buffers (drag and drop support)
     (projectile-global-mode))
 #+end_src
 ** popup (dependency)
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package popup)
 #+end_src
 ** rainbow-delimiters
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package rainbow-delimiters
     :init
     (add-hook 'prog-mode-hook #'rainbow-delimiters-mode)
@@ -2273,7 +2345,7 @@ Download images and insert them into org buffers (drag and drop support)
     )
 #+end_src
 ** undo-tree
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package undo-tree
     :init
     (setq undo-tree-visualizer-timestamps t
@@ -2294,15 +2366,17 @@ Download images and insert them into org buffers (drag and drop support)
 #+end_src
 ** recentf
 for keeping track of recent files, provides helm-recentf with data
-#+begin_src emacs-lisp
-     (use-package recentf
-       :config
-       (recentf-mode 1)
-       )
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (use-package recentf
+    :ensure nil
+    :elpaca nil
+    :config
+    (recentf-mode 1)
+    )
 #+end_src
 ** COMMENT ivy
 http://oremacs.com/swiper/
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
       (use-package ivy
         :init (ivy-mode t)
         :config
@@ -2338,75 +2412,72 @@ http://oremacs.com/swiper/
 #+END_SRC
 ** Completion
 *** vertico
-#+begin_src emacs-lisp
-  ;; Enable vertico
-(use-package vertico
-  :init
-  (vertico-mode)
+#+BEGIN_SRC emacs-lisp :tangle init.el
+    ;; Enable vertico
+  (use-package vertico
+    :init
+    (vertico-mode)
 
-  ;; Grow and shrink the Vertico minibuffer
-  ;; (setq vertico-resize t)
+    ;; Grow and shrink the Vertico minibuffer
+    ;; (setq vertico-resize t)
 
-  ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
-  ;; (setq vertico-cycle t)
-  )
+    ;; Optionally enable cycling for `vertico-next' and `vertico-previous'.
+    ;; (setq vertico-cycle t)
+    )
 
-;; Optionally use the `orderless' completion style. See
-;; `+orderless-dispatch' in the Consult wiki for an advanced Orderless style
-;; dispatcher. Additionally enable `partial-completion' for file path
-;; expansion. `partial-completion' is important for wildcard support.
-;; Multiple files can be opened at once with `find-file' if you enter a
-;; wildcard. You may also give the `initials' completion style a try.
-(use-package orderless
-  :init
-  ;; Configure a custom style dispatcher (see the Consult wiki)
-  ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
-  ;;       orderless-component-separator #'orderless-escapable-split-on-space)
-  (setq completion-styles '(orderless)
-        completion-category-defaults nil
-        completion-category-overrides '((file (styles partial-completion)))))
+  ;; Optionally use the `orderless' completion style. See
+  ;; `+orderless-dispatch' in the Consult wiki for an advanced Orderless style
+  ;; dispatcher. Additionally enable `partial-completion' for file path
+  ;; expansion. `partial-completion' is important for wildcard support.
+  ;; Multiple files can be opened at once with `find-file' if you enter a
+  ;; wildcard. You may also give the `initials' completion style a try.
+  (use-package orderless
+    :init
+    ;; Configure a custom style dispatcher (see the Consult wiki)
+    ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+    ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+    (setq completion-styles '(orderless)
+          completion-category-defaults nil
+          completion-category-overrides '((file (styles partial-completion)))))
 
-;; Persist history over Emacs restarts. Vertico sorts by history position.
-(use-package savehist
-  :init
-  (savehist-mode))
+  ;; Persist history over Emacs restarts. Vertico sorts by history position.
+  (use-package savehist
+    :ensure nil
+    :elpaca nil
+    :init
+    (savehist-mode))
 
-;; A few more useful configurations...
-(use-package emacs
-  :init
-  ;; Add prompt indicator to `completing-read-multiple'.
-  ;; Alternatively try `consult-completing-read-multiple'.
-  (defun crm-indicator (args)
-    (cons (concat "[CRM] " (car args)) (cdr args)))
-  (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
+  ;; A few more useful configurations...
+  (use-package emacs
+    :ensure nil
+    :elpaca nil
+    :init
+    ;; Add prompt indicator to `completing-read-multiple'.
+    ;; Alternatively try `consult-completing-read-multiple'.
+    (defun crm-indicator (args)
+      (cons (concat "[CRM] " (car args)) (cdr args)))
+    (advice-add #'completing-read-multiple :filter-args #'crm-indicator)
 
-  ;; Do not allow the cursor in the minibuffer prompt
-  (setq minibuffer-prompt-properties
-        '(read-only t cursor-intangible t face minibuffer-prompt))
-  (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
+    ;; Do not allow the cursor in the minibuffer prompt
+    (setq minibuffer-prompt-properties
+          '(read-only t cursor-intangible t face minibuffer-prompt))
+    (add-hook 'minibuffer-setup-hook #'cursor-intangible-mode)
 
-  ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
-  ;; Vertico commands are hidden in normal buffers.
-  ;; (setq read-extended-command-predicate
-  ;;       #'command-completion-default-include-p)
+    ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+    ;; Vertico commands are hidden in normal buffers.
+    ;; (setq read-extended-command-predicate
+    ;;       #'command-completion-default-include-p)
 
-  ;; Enable recursive minibuffers
-  (setq enable-recursive-minibuffers t))
+    ;; Enable recursive minibuffers
+    (setq enable-recursive-minibuffers t))
 #+END_SRC
 *** consult
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   ;; Enable consult
 (use-package consult)
 #+END_SRC
-*** orderless
-#+begin_src emacs-lisp
-  ;; Enable orderless
-  (use-package orderless
-  :ensure t
-  :custom (completion-styles '(orderless)))
-#+end_src
 *** marginalia
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 ;; Enable richer annotations using the Marginalia package
 (use-package marginalia
   ;; The :init configuration is always executed (Not lazy!)
@@ -2416,7 +2487,7 @@ http://oremacs.com/swiper/
   (marginalia-mode))
 #+end_src
 *** embark
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package embark
       :ensure t
       :after (evil general)
@@ -2461,24 +2532,24 @@ http://oremacs.com/swiper/
 #+end_src
 
 ** hex colors
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package rainbow-mode
     :config)
 #+end_src
 ** command-log-mode
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package command-log-mode
     :config)
 #+end_src
 ** tabbar-mode
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   ;;(tab-bar-mode 1)
   (setq tab-bar-close-button-show nil)
   (setq tab-bar-new-button-show nil)
   (setq tab-bar-position nil)
 #+end_src
 ** highlight-symbol
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package highlight-symbol
     :init
     (highlight-symbol-mode t)
@@ -2504,66 +2575,66 @@ http://oremacs.com/swiper/
 ** dired
 *** settings
 load direx-x (for dired-jump)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (load "dired-x")
 #+END_SRC
 Dired tries to guess a default target directory, when dired windows a next to each other.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq dired-dwim-target t)
 #+END_SRC
 Hide details by default (can be toggled with "(")
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (add-hook 'dired-mode-hook
       (lambda ()
         (dired-hide-details-mode)))
 #+END_SRC
 move files to trash
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
       (setq delete-by-moving-to-trash t)
 #+END_SRC
 Human readable filesize
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
       (setq dired-listing-switches "-alh")
 #+END_SRC
 Prevents dired from creating an annoying popup when dired-find-alternate-file is called.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (put 'dired-find-alternate-file 'disabled nil)
 #+END_SRC
 Recursive copy and deletion
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (setq dired-recursive-copies 'always
         dired-recursive-deletes 'always)
 #+END_SRC
 *** COMMENT Colourful columns
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package diredfl
     :init
     (diredfl-global-mode 1))
 #+END_SRC
 
 *** COMMENT Git info
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dired-git-info)
 #+END_SRC
 
 *** COMMENT dired-subtree
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dired-subtree
     :after (dired)
     :config)
 #+END_SRC
 *** COMMENT dired-ranger
 Multi-stage copy/pasting of files and bookmarks
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ranger
     :after (dired))
 #+END_SRC
 *** COMMENT peep-dired
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package peep-dired)
 #+end_src
 *** dired-sidebar
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dired-sidebar
         :after (dired)
         :commands (dired-sidebar-toggle-sidebar)
@@ -2588,7 +2659,7 @@ Multi-stage copy/pasting of files and bookmarks
 #+end_src
 
 *** COMMENT all-the-icons-dired
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package all-the-icons-dired
       :after (all-the-icons)
       :init
@@ -2597,7 +2668,7 @@ Multi-stage copy/pasting of files and bookmarks
 #+end_src
 
 *** COMMENT Keybindings
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (defun my/dired-open-file ()
         "In dired, open the file named on this line."
         (interactive)
@@ -2643,13 +2714,13 @@ Multi-stage copy/pasting of files and bookmarks
                         "!" 'dired-do-shell-command)
 #+END_SRC
 ** restclient
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package restclient)
 #+end_src
 ** SQL
 Fix Misaligned query result for postgres
 See https://www.emacswiki.org/emacs/SqlMode
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
  (defun my-sql-login-hook ()
    "Custom SQL log-in behaviours. See `sql-login-hook'."
    ;; n.b. If you are looking for a response and need to parse the
@@ -2661,13 +2732,13 @@ See https://www.emacswiki.org/emacs/SqlMode
        (comint-send-string proc "\\set ECHO queries\n"))))
 #+end_src
 ** sql
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package sqlup-mode
     :config
     (add-hook 'sql-mode-hook (lambda () (sqlup-mode 1))))
 #+end_src
 ** web-mode
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package web-mode
     :init
     (setq web-mode-markup-indent-offset 2)
@@ -2683,7 +2754,7 @@ See https://www.emacswiki.org/emacs/SqlMode
     )
 #+end_src
 ** javascript
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package js2-mode
     :init
     ;;(add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
@@ -2712,7 +2783,7 @@ See https://www.emacswiki.org/emacs/SqlMode
 
 #+end_src
 ** COMMENT elixir
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package elixir-mode
       :init
 
@@ -2791,24 +2862,24 @@ See https://www.emacswiki.org/emacs/SqlMode
     )
 #+end_src
 ** COMMENT erlang
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package erlang
     :config)
 #+end_src
 ** docker
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package docker)
 #+end_src
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dockerfile-mode)
 #+end_src
 ** yaml
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package yaml-mode
       :config)
 #+end_src
 ** wgrep
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package wgrep
     :config
     (setq wgrep-enable-key "w")
@@ -2816,7 +2887,7 @@ See https://www.emacswiki.org/emacs/SqlMode
     )
 #+end_src
 ** ag, ripgrep,.. (global search)
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package rg
     :config
     (rg-enable-menu))
@@ -2825,27 +2896,30 @@ See https://www.emacswiki.org/emacs/SqlMode
     ;;(setq ag-reuse-window 't)
 #+end_src
 ** whitespace mode
-#+begin_src emacs-lisp
-    (use-package whitespace
-      :init
-      (global-whitespace-mode 1)
-      :config
-      (setq-default
-       whitespace-style '(face trailing space-before-tab::tab tab-mark)
-       whitespace-line-column nil) ;; use fill-column by default
-      (set-face-attribute 'whitespace-line nil :underline "#ff0000" :inherit 'normal)
-      (general-add-hook 'prog-mode-hook (lambda ()
-                                          (setq-local whitespace-style
-                                                    (cons 'lines-tail whitespace-style))))
-      (setq whitespace-global-modes '(not
-                                      dired-mode
-                                      alchemist-test-mode
-                                      alchemist-iex-mode
-                                      vterm-mode
-                                      cider-repl-mode)))
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (use-package whitespace
+    :ensure nil
+    :elpaca nil
+    :after (general)
+    :init
+    (global-whitespace-mode 1)
+    :config
+    (setq-default
+     whitespace-style '(face trailing space-before-tab::tab tab-mark)
+     whitespace-line-column nil) ;; use fill-column by default
+    (set-face-attribute 'whitespace-line nil :underline "#ff0000" :inherit 'normal)
+    (general-add-hook 'prog-mode-hook (lambda ()
+                                        (setq-local whitespace-style
+                                                  (cons 'lines-tail whitespace-style))))
+    (setq whitespace-global-modes '(not
+                                    dired-mode
+                                    alchemist-test-mode
+                                    alchemist-iex-mode
+                                    vterm-mode
+                                    cider-repl-mode)))
 #+end_src
 ** markdown-mode
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package markdown-mode
     :commands (markdown-mode gfm-mode)
     :mode (("README\\.md\\'" . gfm-mode)
@@ -2854,7 +2928,7 @@ See https://www.emacswiki.org/emacs/SqlMode
     :init (setq markdown-command "multimarkdown"))
 #+end_src
 ** pdf-tools
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package pdf-tools
       :mode (("\\.pdf\\'" . pdf-view-mode))
       :config
@@ -2864,7 +2938,7 @@ See https://www.emacswiki.org/emacs/SqlMode
                                       (setq pdf-view-midnight-colors '("#cbe3e7" . "#1b182c" )))
 #+end_src
 ** evil-goggles
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-goggles
     :config
     (setq evil-goggles-duration 0.150)
@@ -2873,54 +2947,55 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 
 ** evil-traces
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil-traces
     :config
     (evil-traces-use-diff-faces)
     (evil-traces-mode))
 #+end_src
 ** editorconfig
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package editorconfig
     :init
     (editorconfig-mode 1))
 #+end_src
 ** fill-column-indicator
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (when (fboundp 'global-display-fill-column-indicator-mode)
     (global-display-fill-column-indicator-mode))
 #+end_src
 ** ace-window
-#+begin_src emacs-lisp
-(use-package ace-window
-  :init
-  (general-define-key :prefix my-leader "W" 'ace-window)
-  (ace-window-display-mode 1)
-  :config
-  (set-face-attribute 'aw-leading-char-face nil :background nil :foreground (face-attribute 'error :foreground))
-  (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
-        ;;aw-background nil
-        aw-dispatch-always t
-        aw-dispatch-alist
-        '((?x aw-delete-window     "Ace - Delete Window")
-          (?c aw-swap-window       "Ace - Swap Window")
-          (?w aw-flip-window)
-          (?o delete-other-windows)
-          (?b balance-windows)
-          ))
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (use-package ace-window
+    :after (hydra)
+    :init
+    (general-define-key :prefix my-leader "W" 'ace-window)
+    (ace-window-display-mode 1)
+    :config
+    (set-face-attribute 'aw-leading-char-face nil :background nil :foreground (face-attribute 'error :foreground))
+    (setq aw-keys '(?a ?s ?d ?f ?g ?h ?j ?k ?l)
+          ;;aw-background nil
+          aw-dispatch-always t
+          aw-dispatch-alist
+          '((?x aw-delete-window     "Ace - Delete Window")
+            (?c aw-swap-window       "Ace - Swap Window")
+            (?w aw-flip-window)
+            (?o delete-other-windows)
+            (?b balance-windows)
+            ))
 
-  (defhydra hydra-window-size (:color red)
-    "Windows size"
-    ("h" shrink-window-horizontally "shrink horizontal")
-    ("j" shrink-window "shrink vertical")
-    ("k" enlarge-window "enlarge vertical")
-    ("l" enlarge-window-horizontally "enlarge horizontal"))
-  (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t)
+    (defhydra hydra-window-size (:color red)
+      "Windows size"
+      ("h" shrink-window-horizontally "shrink horizontal")
+      ("j" shrink-window "shrink vertical")
+      ("k" enlarge-window "enlarge vertical")
+      ("l" enlarge-window-horizontally "enlarge horizontal"))
+    (add-to-list 'aw-dispatch-alist '(?r hydra-window-size/body) t)
 
-  )
+    )
 #+end_src
 ** COMMENT doom-modeline
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
       (use-package doom-modeline
         ;;:hook (after-init . doom-modeline-init)
         :config
@@ -2934,7 +3009,7 @@ See https://www.emacswiki.org/emacs/SqlMode
   )
 #+END_SRC
 ** mood-line modeline
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package mood-line
       :ensure t
       ;; Enable mood-line
@@ -2944,7 +3019,7 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+END_SRC
 
 ** COMMENT emojify
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package emojify
     :init
     (add-hook 'after-init-hook #'global-emojify-mode)
@@ -2952,26 +3027,26 @@ See https://www.emacswiki.org/emacs/SqlMode
     (setq emojify-display-style 'unicode))
 #+end_src
 ** dumb-jump
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dumb-jump
     :config
     ;; integrate with evil-jump (C-i, C-o)
     (advice-add 'dumb-jump-go :before (lambda (&rest r) (evil-set-jump))))
 #+end_src
 ** view-large-files
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package vlf
     :init
     (require 'vlf-setup))
 #+end_src
 ** language-server
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package eglot
     :init
     (add-hook 'clojure-mode-hook 'eglot-ensure))
 #+end_src
 ** langtool
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package langtool
     :init
     (general-define-key
@@ -2996,7 +3071,7 @@ See https://www.emacswiki.org/emacs/SqlMode
 
 #+END_SRC
 ** reformatter
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package reformatter
     :config
     (reformatter-define
@@ -3004,49 +3079,49 @@ See https://www.emacswiki.org/emacs/SqlMode
      :program "zprint"))
 #+END_SRC
 ** format-all
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package format-all)
 #+END_SRC
 ** tramp
 Make tramp recognize fancy coloured prompts
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
 #+END_SRC
 ** scratch
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package scratch)
 #+END_SRC
 ** Highlight escape sequences
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package highlight-escape-sequences
   :init (hes-mode))
 #+END_SRC
 ** COMMENT Adaptive Wrap
 This package will visually indent soft-wrapped lines that are bullet points.
 Deactivated because it could not handle long lines with org-indent-mode and visual-line-mode.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package adaptive-wrap
   :ghook ('text-mode-hook #'adaptive-wrap-prefix-mode))
 #+END_SRC
 ** COMMENT Stripe Buffer
 Deactivated, because it makes org mode very slow.
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package stripe-buffer
   :ghook ('org-mode-hook #'turn-on-stripe-table-mode))
 #+END_SRC
 ** elisp-demos
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package elisp-demos
     :init
     (advice-add 'helpful-update :after #'elisp-demos-advice-helpful-update)
    (advice-add 'describe-function-1 :after #'elisp-demos-advice-describe-function-1))
  #+END_SRC
 ** helpful
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package helpful)
  #+END_SRC
 ** COMMENT ivy-posframe
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ivy-posframe
     :init
     (ivy-posframe-mode 1)
@@ -3058,49 +3133,49 @@ Deactivated, because it makes org mode very slow.
     )
  #+END_SRC
 ** COMMENT hydra-posframe
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package hydra-posframe
-     :straight (:host github
+     :elpaca (:host github
                 :repo "Ladicle/hydra-posframe")
      :after hydra
      :hook (after-init . hydra-posframe-enable))
 #+end_src
 ** restart-emacs
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package restart-emacs)
 #+END_SRC
 ** suggest (suggest emacs lisp functions based on input/output)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package suggest)
 #+END_SRC
 ** COMMENT keyfreq
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package keyfreq
   :init
   (keyfreq-mode)
   (keyfreq-autosave-mode 1))
 #+END_SRC
 ** ob-async (async babel)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ob-async
     :init
     (require 'ob-async))
 #+END_SRC
 ** ob-graphql
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ob-graphql
     :init
     (require 'ob-graphql))
 #+END_SRC
 
 ** libvterm
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package vterm)
 #+END_SRC
 ** deft
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package notdeft
-    :straight (:host github
+    :elpaca (:host github
                :repo "hasu/notdeft"
                :files ("*.el" "xapian"))
     :ensure t
@@ -3117,16 +3192,17 @@ Deactivated, because it makes org mode very slow.
     )
 #+END_SRC
 ** direnv
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package envrc
    :ensure t
    :config
    (envrc-global-mode))
 #+end_src
 ** dashboard
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dashboard
-    :init
+    :elpaca t
+    :config
     (setq dashboard-startup-banner 3)
     (setq dashboard-center-content t)
     (setq dashboard-set-heading-icons t)
@@ -3136,44 +3212,44 @@ Deactivated, because it makes org mode very slow.
     (setq dashboard-items '((projects  . 5)
                             (bookmarks . 5)
                             (recents . 5)))
-    (setq initial-buffer-choice
-          (lambda () (get-buffer "*dashboard*")))
-    (dashboard-setup-startup-hook)
+  (add-hook 'elpaca-after-init-hook #'dashboard-insert-startupify-lists)
+  (add-hook 'elpaca-after-init-hook #'dashboard-initialize)
+  (dashboard-setup-startup-hook)
   )
 #+end_src
 
 ** ansible
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ansible
     :init (add-hook 'ansible-hook 'ansible-auto-decrypt-encrypt))
 
 #+end_src
 ** gcmh (Garbage Collector Magic Hack)
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package gcmh
       :ensure t
       :init (gcmh-mode 1))
 #+end_src
 
 ** ledger-mode
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package ledger-mode)
 #+end_src
 
 ** journalctl mode
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package journalctl-mode)
 #+end_src
 
 ** mermaid graphs
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ob-mermaid
     :config
     (setq ob-mermaid-cli-path "/home/max/.config/yarn/global/node_modules/.bin/mmdc"))
 #+end_src
 
 ** bufler
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package bufler)
 #+end_src
 
@@ -3181,57 +3257,59 @@ Deactivated, because it makes org mode very slow.
 Package `no-littering' changes the default paths for lots of
 different packages, with the net result that the ~/.emacs.d folder
 is much more clean and organized.
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package no-littering)
 #+end_src
 
 ** COMMENT svg-lib
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package svg-lib
   :config)
 #+end_src
 
 ** symex
-#+begin_src emacs-lisp
-      (use-package symex
-        :custom
-        (symex-modal-backend 'evil)
-        :config
-        (symex-initialize)
-        (general-define-key
-         :states '(normal)
-         :keymaps lisp-mode-maps
-         :prefix my-leader2
-         "s" 'symex-mode-interface)
-        #_(general-define-key
-         :states '(normal)
-         :keymaps lisp-mode-maps
-         "<escape>" 'symex-mode-interface)
-        (general-define-key
-         :states '(insert)
-         :keymaps lisp-mode-maps
-         "<escape>" 'symex-mode-interface))
+#+BEGIN_SRC emacs-lisp :tangle init.el
+        (use-package symex
+          :after (general evil)
+          :custom
+          (symex-modal-backend 'evil)
+          :config
+          (symex-initialize)
+          (general-define-key
+           :states '(normal)
+           :keymaps lisp-mode-maps
+           :prefix my-leader2
+           "s" 'symex-mode-interface)
+           ;; (general-define-key
+           ;;  :states '(normal)
+           ;;  :keymaps lisp-mode-maps
+           ;;  "<escape>" 'symex-mode-interface)
+          ;; (general-define-key
+          ;;  :states '(insert)
+          ;;  :keymaps lisp-mode-maps
+          ;;  "<escape>" 'symex-mode-interface)
+  )
 
 #+end_src
 
 ** zenity-color-picker
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package zenity-color-picker)
 #+end_src
 ** COMMENT proctrack-mode (terminal buffer name)
-#+begin_src emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package proctrack-mode
-        :straight (:host gitlab :repo "pennersr/proctrack-mode"))
+        :elpaca (:host gitlab :repo "pennersr/proctrack-mode"))
 #+end_src
 
 ** org-modern
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package org-modern
       :hook (org-mode . org-modern-mode))
 #+END_SRC
 
 ** COMMENT mixed-font-mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package mixed-pitch
       :hook
       (text-mode . mixed-pitch-mode)
@@ -3240,9 +3318,9 @@ is much more clean and organized.
 
 #+END_SRC
 ** ligature
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ligature
-    :straight (:host github :repo "mickeynp/ligature.el")
+    :elpaca (:host github :repo "mickeynp/ligature.el")
     :ensure t
     :config
     ;; Enable the "www" ligature in every possible major mode
@@ -3262,7 +3340,7 @@ is much more clean and organized.
 #+END_SRC
 
 ** Open Street Map
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package osm
     :ensure t
     :custom
@@ -3278,7 +3356,7 @@ is much more clean and organized.
 #+END_SRC
 
 ** Literate calc mode
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package literate-calc-mode
   :ensure t)
 #+END_SRC
@@ -3287,7 +3365,7 @@ is much more clean and organized.
 ** Dirvish
 Dirvish is an improved version of the Emacs inbuilt package Dired. It not only gives Dired an appealing and highly customizable user interface, but also comes together with almost all possible parts required for full usability as a modern file manager.
 
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dirvish
     :ensure t
     :init
@@ -3343,7 +3421,7 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
 #+END_SRC
 
 ** COMMENT MEOW
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package meow
     :ensure t
     :config
@@ -3469,16 +3547,15 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
 #+END_SRC
 
 ** COMMENT org-menu
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package org-menu
-    :straight (:host github :repo "sheijk/org-menu" :branch "main")
-    :ensure t
-)
+    :elpaca (:host github :repo "sheijk/org-menu" :branch "main")
+    :ensure t)
 #+END_SRC
 
 
 ** minions (better minior mode modeline menu)
-#+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp :tangle init.el
   ;; open minions minior mode menu with: minions-minor-modes-menu
     (use-package minions
       :config (minions-mode 1))
