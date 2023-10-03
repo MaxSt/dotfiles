@@ -1621,7 +1621,7 @@ enable narrowing
         org-edit-src-content-indentation 2)
 #+END_SRC
 
-**** set default output directory (and not use the current directory by default)
+**** COMMENT set default output directory (and not use the current directory by default)
 #+BEGIN_SRC emacs-lisp
   (defvar-local org-export-output-directory (concat (getenv "HOME") "/Downloads/org-exports") "directory used for org-mode export")
 
@@ -3086,6 +3086,13 @@ Deactivated, because it makes org mode very slow.
     :init
     (require 'ob-async))
 #+END_SRC
+** ob-graphql
+#+BEGIN_SRC emacs-lisp
+  (use-package ob-graphql
+    :init
+    (require 'ob-graphql))
+#+END_SRC
+
 ** libvterm
 #+BEGIN_SRC emacs-lisp
   (use-package vterm)
