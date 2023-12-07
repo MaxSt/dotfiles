@@ -6,13 +6,13 @@
 * Elpaca
 ** Bootstrap
 #+begin_src elisp :tangle init.el
-  (defvar elpaca-installer-version 0.5)
+  (defvar elpaca-installer-version 0.6)
   (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
   (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
   (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
   (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
                                 :ref nil
-                                :files (:defaults (:exclude "extensions"))
+                                :files (:defaults "elpaca-test.el" (:exclude "extensions"))
                                 :build (:not elpaca--activate-package)))
   (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
          (build (expand-file-name "elpaca/" elpaca-builds-directory))
@@ -932,7 +932,7 @@ These are the Files creating in the current Directory for files that have not be
      "n" 'next-error
      "N" 'previous-error
      "z" 'hydra-zoom/body
-     "o" 'dirvish
+     "o" 'dired-jump
      "O" 'dired)
 
     (general-define-key
@@ -950,6 +950,7 @@ These are the Files creating in the current Directory for files that have not be
     )
 
 #+END_SRC
+
 ** move-text
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package move-text
@@ -1095,100 +1096,6 @@ view your registers and marks in a posframe before using them
         (general-def 'normal 'override
           "g/" 'evil-search-textobject)
         ))
-#+end_src
-** ibuffer
-#+BEGIN_SRC emacs-lisp :tangle init.el
-
-  (with-eval-after-load 'hydra
-    (defhydra hydra-ibuffer-main (:color pink :hint nil)
-      "
-     ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
-    -^----------^-+-^----^--------+-^-------^--------+-^----^-------
-      _k_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
-     _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
-      _j_:    v   | _*_: specific | _a_: all actions | _/_: filter
-    -^----------^-+-^----^--------+-^-------^--------+-^----^-------
-    "
-      ("j" ibuffer-forward-line)
-      ("RET" ibuffer-visit-buffer :color blue)
-      ("k" ibuffer-backward-line)
-      ("m" ibuffer-mark-forward)
-      ("u" ibuffer-unmark-forward)
-      ("*" hydra-ibuffer-mark/body :color blue)
-      ("D" ibuffer-do-delete)
-      ("S" ibuffer-do-save)
-      ("a" hydra-ibuffer-action/body :color blue)
-      ("g" ibuffer-update)
-      ("s" hydra-ibuffer-sort/body :color blue)
-      ("/" hydra-ibuffer-filter/body :color blue)
-      ("q" ibuffer-quit "quit ibuffer" :color blue))
-    (defhydra hydra-ibuffer-mark (:color teal :columns 5
-                                  :after-exit (hydra-ibuffer-main/body))
-      "Mark"
-      ("*" ibuffer-unmark-all "unmark all")
-      ("M" ibuffer-mark-by-mode "mode")
-      ("m" ibuffer-mark-modified-buffers "modified")
-      ("u" ibuffer-mark-unsaved-buffers "unsaved")
-      ("s" ibuffer-mark-special-buffers "special")
-      ("r" ibuffer-mark-read-only-buffers "read-only")
-      ("/" ibuffer-mark-dired-buffers "dired")
-      ("e" ibuffer-mark-dissociated-buffers "dissociated")
-      ("h" ibuffer-mark-help-buffers "help")
-      ("z" ibuffer-mark-compressed-file-buffers "compressed")
-      ("b" hydra-ibuffer-main/body "back" :color blue))
-    (defhydra hydra-ibuffer-action (:color teal :columns 4
-                                    :after-exit
-                                    (if (eq major-mode 'ibuffer-mode)
-                                        (hydra-ibuffer-main/body)))
-      "Action"
-      ("A" ibuffer-do-view "view")
-      ("E" ibuffer-do-eval "eval")
-      ("F" ibuffer-do-shell-command-file "shell-command-file")
-      ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
-      ("H" ibuffer-do-view-other-frame "view-other-frame")
-      ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
-      ("M" ibuffer-do-toggle-modified "toggle-modified")
-      ("O" ibuffer-do-occur "occur")
-      ("P" ibuffer-do-print "print")
-      ("Q" ibuffer-do-query-replace "query-replace")
-      ("R" ibuffer-do-rename-uniquely "rename-uniquely")
-      ("T" ibuffer-do-toggle-read-only "toggle-read-only")
-      ("U" ibuffer-do-replace-regexp "replace-regexp")
-      ("V" ibuffer-do-revert "revert")
-      ("W" ibuffer-do-view-and-eval "view-and-eval")
-      ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
-      ("b" nil "back"))
-    (defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
-      "Sort"
-      ("i" ibuffer-invert-sorting "invert")
-      ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
-      ("v" ibuffer-do-sort-by-recency "recently used")
-      ("s" ibuffer-do-sort-by-size "size")
-      ("f" ibuffer-do-sort-by-filename/process "filename")
-      ("m" ibuffer-do-sort-by-major-mode "mode")
-      ("b" hydra-ibuffer-main/body "back" :color blue))
-    (defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
-      "Filter"
-      ("m" ibuffer-filter-by-used-mode "mode")
-      ("M" ibuffer-filter-by-derived-mode "derived mode")
-      ("n" ibuffer-filter-by-name "name")
-      ("c" ibuffer-filter-by-content "content")
-      ("e" ibuffer-filter-by-predicate "predicate")
-      ("f" ibuffer-filter-by-filename "filename")
-      (">" ibuffer-filter-by-size-gt "size")
-      ("<" ibuffer-filter-by-size-lt "size")
-      ("/" ibuffer-filter-disable "disable")
-      ("b" hydra-ibuffer-main/body "back" :color blue))
-  (with-eval-after-load 'general
-    (general-define-key :keymaps '(ibuffer-mode-map)
-                        :states '(normal)
-                        "SPC" 'hydra-ibuffer-main/body
-                        "j" 'ibuffer-forward-line
-                        "k" 'ibuffer-backward-line
-                        "J" 'ibuffer-jump-to-buffer)
-  )
-
-  )
 #+end_src
 ** ibuffer-project
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -1605,6 +1512,7 @@ enable narrowing
 ** imenu-list (file overview)
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package imenu-list
+    :after general
     :config
     (setq imenu-list-focus-after-activation t)
     (setq imenu-list-position 'left)
@@ -1901,16 +1809,19 @@ Fontify the whole line for headings (with a background color).
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (setq-default org-fontify-whole-heading-line t)
 #+END_SRC
-*** COMMENT evil keybindings in org-mode
+*** evil keybindings in org-mode
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package worf
-    :after (evil org hydra)
+    :after (evil org hydra general)
+    :elpaca (:build (:not elpaca--byte-compile))
+     ;;https://github.com/leotaku/worf/commit/38e901d3888e3a245a5cba14a061bffa1c5fd20b
     :init
     (add-hook #'org-mode-hook (lambda () (worf-mode 1)))
     ;; set the worf-mode keymap to an empty keymap to remove all worf bindings
     (add-hook #'worf-mode-hook
               (lambda ()
                 (push `(worf-mode . ,(make-sparse-keymap)) minor-mode-overriding-map-alist)))
+    :config
     (defhydra myorg-hydra-change (:hint nil)
       "
   ^ ^ _k_ ^ ^    _t_ags    _p_rop | _x_:archive
@@ -2036,6 +1947,9 @@ Fontify the whole line for headings (with a background color).
                         "RET" 'org-edit-src-exit)
     )
 #+END_SRC
+
+#+RESULTS:
+
 *** open source code in same windowemacs
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (setq org-src-window-setup 'current-window)
@@ -2106,7 +2020,7 @@ Download images and insert them into org buffers (drag and drop support)
     (sp-local-pair 'clojure-mode "'" nil :actions nil)
     (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
     (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
-    (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
+    (sp-local-pair 'cider-repl-mode "'" nil :actions nil))
 
   (use-package evil-smartparens
     ;;:init (require 'evil-smartparens)
@@ -2298,9 +2212,12 @@ Download images and insert them into org buffers (drag and drop support)
             "(" 'sp-backward-barf-sexp)
       "<" (general-key-dispatch 'evil-shift-left
             ")" 'sp-forward-barf-sexp
-            "(" 'sp-backward-slurp-sexp))))
+            "(" 'sp-backward-slurp-sexp)))
 
 #+END_SRC
+
+#+RESULTS:
+
 ** Latex
 ** AucTex
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -2377,38 +2294,39 @@ for keeping track of recent files, provides helm-recentf with data
 ** COMMENT ivy
 http://oremacs.com/swiper/
 #+BEGIN_SRC emacs-lisp :tangle init.el
-      (use-package ivy
-        :init (ivy-mode t)
-        :config
-        ;; regex order
-        (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
-        (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
-        (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
-        (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
-      (general-define-key :keymaps '(ivy-occur-grep-mode-map)
-                          :states '(normal)
-                          "q" 'evil-delete-buffer)
-        (defvar pop-target-window)
-        (make-variable-buffer-local 'pop-target-window)
-        (advice-add 'compilation-goto-locus :around #'my-around-compilation-goto-locus)
-        (defun my-around-compilation-goto-locus (orig-func &rest args)
-          (advice-add 'pop-to-buffer :override #'my-pop-to-buffer)
-          (apply orig-func args))
-        (defun my-pop-to-buffer (buffer &optional action norecord)
-          (advice-remove 'pop-to-buffer #'my-pop-to-buffer)
-          (let ((from-buffer (current-buffer))
-                (reused-window (display-buffer-reuse-window buffer nil)))
-            (cond (reused-window
-                   (select-window reused-window norecord))
-                  ((and (bound-and-true-p pop-target-window)
-                        (window-live-p pop-target-window))
-                   (window--display-buffer buffer pop-target-window 'reuse)
-                   (select-window pop-target-window norecord))
-                  (t
-                   (pop-to-buffer buffer action norecord)
-                   (with-current-buffer from-buffer
-                     (setq-local pop-target-window (selected-window)))))))
-        )
+  (use-package ivy
+    :init (ivy-mode t)
+    :after (general)
+    :config
+    ;; regex order
+    (setq ivy-re-builders-alist '((t . ivy--regex-ignore-order)))
+    (define-key ivy-mode-map [escape] 'minibuffer-keyboard-quit)
+    (define-key ivy-minibuffer-map (kbd "C-i") 'ivy-call)
+    (define-key ivy-minibuffer-map (kbd "C-o") 'ivy-occur)
+  (general-define-key :keymaps '(ivy-occur-grep-mode-map)
+                      :states '(normal)
+                      "q" 'evil-delete-buffer)
+    (defvar pop-target-window)
+    (make-variable-buffer-local 'pop-target-window)
+    (advice-add 'compilation-goto-locus :around #'my-around-compilation-goto-locus)
+    (defun my-around-compilation-goto-locus (orig-func &rest args)
+      (advice-add 'pop-to-buffer :override #'my-pop-to-buffer)
+      (apply orig-func args))
+    (defun my-pop-to-buffer (buffer &optional action norecord)
+      (advice-remove 'pop-to-buffer #'my-pop-to-buffer)
+      (let ((from-buffer (current-buffer))
+            (reused-window (display-buffer-reuse-window buffer nil)))
+        (cond (reused-window
+               (select-window reused-window norecord))
+              ((and (bound-and-true-p pop-target-window)
+                    (window-live-p pop-target-window))
+               (window--display-buffer buffer pop-target-window 'reuse)
+               (select-window pop-target-window norecord))
+              (t
+               (pop-to-buffer buffer action norecord)
+               (with-current-buffer from-buffer
+                 (setq-local pop-target-window (selected-window)))))))
+    )
 #+END_SRC
 ** Completion
 *** vertico
@@ -2605,31 +2523,31 @@ Recursive copy and deletion
   (setq dired-recursive-copies 'always
         dired-recursive-deletes 'always)
 #+END_SRC
-*** COMMENT Colourful columns
+*** Colourful columns
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package diredfl
     :init
     (diredfl-global-mode 1))
 #+END_SRC
 
-*** COMMENT Git info
+*** Git info
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dired-git-info)
 #+END_SRC
 
-*** COMMENT dired-subtree
+*** dired-subtree
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dired-subtree
     :after (dired)
     :config)
 #+END_SRC
-*** COMMENT dired-ranger
+*** dired-ranger
 Multi-stage copy/pasting of files and bookmarks
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ranger
     :after (dired))
 #+END_SRC
-*** COMMENT peep-dired
+*** peep-dired
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package peep-dired)
 #+end_src
@@ -2658,7 +2576,7 @@ Multi-stage copy/pasting of files and bookmarks
         )
 #+end_src
 
-*** COMMENT all-the-icons-dired
+*** all-the-icons-dired
 #+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package all-the-icons-dired
       :after (all-the-icons)
@@ -2667,7 +2585,7 @@ Multi-stage copy/pasting of files and bookmarks
   )
 #+end_src
 
-*** COMMENT Keybindings
+*** Keybindings
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (defun my/dired-open-file ()
         "In dired, open the file named on this line."
@@ -2681,6 +2599,7 @@ Multi-stage copy/pasting of files and bookmarks
       (let ((old (current-buffer)))
         (dired-up-directory)
         (kill-buffer old)))
+  
     (defun my/dired-create-file (file)
       (interactive
        (list
@@ -2690,6 +2609,7 @@ Multi-stage copy/pasting of files and bookmarks
       (revert-buffer)
       (dired-goto-file (expand-file-name file)))
 
+  (with-eval-after-load 'general
     (general-define-key :keymaps '(dired-mode-map)
                         :states '(normal)
                         "h" 'my/dired-up-directory
@@ -2711,7 +2631,7 @@ Multi-stage copy/pasting of files and bookmarks
                         "n" 'evil-ex-search-next
                         "N" 'evil-ex-search-previous
                         "q" 'kill-this-buffer
-                        "!" 'dired-do-shell-command)
+                        "!" 'dired-do-shell-command))
 #+END_SRC
 ** restclient
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -2967,7 +2887,7 @@ See https://www.emacswiki.org/emacs/SqlMode
 ** ace-window
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ace-window
-    :after (hydra)
+    :after (hydra general)
     :init
     (general-define-key :prefix my-leader "W" 'ace-window)
     (ace-window-display-mode 1)
@@ -3048,6 +2968,7 @@ See https://www.emacswiki.org/emacs/SqlMode
 ** langtool
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package langtool
+    :after (general)
     :init
     (general-define-key
      :states '(normal visual)
@@ -3341,18 +3262,14 @@ is much more clean and organized.
 
 ** Open Street Map
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (use-package osm
-    :ensure t
-    :custom
-    ;; Take a look at the customization group `osm' for more options.
-    (osm-server 'default) ;; Configure the tile server
-    ;;(osm-home '())
-    ;;(osm-copyright t)     ;; Display the copyright information
-
-    :init
-    ;; Load Org link support
-    (with-eval-after-load 'org
-      (require 'osm-ol)))
+    (use-package osm
+      :ensure t
+      :custom
+      ;; Take a look at the customization group `osm' for more options.
+      (osm-server 'default) ;; Configure the tile server
+      ;;(osm-home '())
+      ;;(osm-copyright t)     ;; Display the copyright information
+  )
 #+END_SRC
 
 ** Literate calc mode
@@ -3362,12 +3279,13 @@ is much more clean and organized.
 #+END_SRC
 
 
-** Dirvish
+** COMMENT Dirvish
 Dirvish is an improved version of the Emacs inbuilt package Dired. It not only gives Dired an appealing and highly customizable user interface, but also comes together with almost all possible parts required for full usability as a modern file manager.
 
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dirvish
     :ensure t
+    :after (general)
     :init
     ;; Let Dirvish take over Dired globally
     (dirvish-override-dired-mode)
@@ -3555,8 +3473,31 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
 
 
 ** minions (better minior mode modeline menu)
-#+BEGIN_SRC emacs-lisp :tangle init.el
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
   ;; open minions minior mode menu with: minions-minor-modes-menu
     (use-package minions
       :config (minions-mode 1))
+#+END_SRC
+
+
+** solaire (darker look for 'unreal' buffers)
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (message "IN SOLAIRE MODE BLOCK")
+  (use-package solaire-mode
+    :ensure t
+    :init
+    (solaire-global-mode +1))
+#+END_SRC
+
+** COMMENT ChatGPT-Shell
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (use-package chatgpt-shell
+    :requires shell-maker
+    :elpaca (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell.el"))
+    :config
+    ;; or if using auth-sources, e.g., so the file ~/.authinfo has this line:
+    ;;  machine api.openai.com password OPENAI_KEY
+    (setq chatgpt-shell-openai-key
+          (auth-source-pick-first-password :host "api.openai.com")))
+
 #+END_SRC

@@ -1,10 +1,10 @@
-(defvar elpaca-installer-version 0.5)
+(defvar elpaca-installer-version 0.6)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
                               :ref nil
-                              :files (:defaults (:exclude "extensions"))
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
                               :build (:not elpaca--activate-package)))
 (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
        (build (expand-file-name "elpaca/" elpaca-builds-directory))
@@ -765,7 +765,7 @@
    "n" 'next-error
    "N" 'previous-error
    "z" 'hydra-zoom/body
-   "o" 'dirvish
+   "o" 'dired-jump
    "O" 'dired)
 
   (general-define-key
@@ -887,97 +887,6 @@
       (general-def 'normal 'override
         "g/" 'evil-search-textobject)
       ))
-
-(with-eval-after-load 'hydra
-  (defhydra hydra-ibuffer-main (:color pink :hint nil)
-    "
-   ^Navigation^ | ^Mark^        | ^Actions^        | ^View^
-  -^----------^-+-^----^--------+-^-------^--------+-^----^-------
-    _k_:    ʌ   | _m_: mark     | _D_: delete      | _g_: refresh
-   _RET_: visit | _u_: unmark   | _S_: save        | _s_: sort
-    _j_:    v   | _*_: specific | _a_: all actions | _/_: filter
-  -^----------^-+-^----^--------+-^-------^--------+-^----^-------
-  "
-    ("j" ibuffer-forward-line)
-    ("RET" ibuffer-visit-buffer :color blue)
-    ("k" ibuffer-backward-line)
-    ("m" ibuffer-mark-forward)
-    ("u" ibuffer-unmark-forward)
-    ("*" hydra-ibuffer-mark/body :color blue)
-    ("D" ibuffer-do-delete)
-    ("S" ibuffer-do-save)
-    ("a" hydra-ibuffer-action/body :color blue)
-    ("g" ibuffer-update)
-    ("s" hydra-ibuffer-sort/body :color blue)
-    ("/" hydra-ibuffer-filter/body :color blue)
-    ("q" ibuffer-quit "quit ibuffer" :color blue))
-  (defhydra hydra-ibuffer-mark (:color teal :columns 5
-                                :after-exit (hydra-ibuffer-main/body))
-    "Mark"
-    ("*" ibuffer-unmark-all "unmark all")
-    ("M" ibuffer-mark-by-mode "mode")
-    ("m" ibuffer-mark-modified-buffers "modified")
-    ("u" ibuffer-mark-unsaved-buffers "unsaved")
-    ("s" ibuffer-mark-special-buffers "special")
-    ("r" ibuffer-mark-read-only-buffers "read-only")
-    ("/" ibuffer-mark-dired-buffers "dired")
-    ("e" ibuffer-mark-dissociated-buffers "dissociated")
-    ("h" ibuffer-mark-help-buffers "help")
-    ("z" ibuffer-mark-compressed-file-buffers "compressed")
-    ("b" hydra-ibuffer-main/body "back" :color blue))
-  (defhydra hydra-ibuffer-action (:color teal :columns 4
-                                  :after-exit
-                                  (if (eq major-mode 'ibuffer-mode)
-                                      (hydra-ibuffer-main/body)))
-    "Action"
-    ("A" ibuffer-do-view "view")
-    ("E" ibuffer-do-eval "eval")
-    ("F" ibuffer-do-shell-command-file "shell-command-file")
-    ("I" ibuffer-do-query-replace-regexp "query-replace-regexp")
-    ("H" ibuffer-do-view-other-frame "view-other-frame")
-    ("N" ibuffer-do-shell-command-pipe-replace "shell-cmd-pipe-replace")
-    ("M" ibuffer-do-toggle-modified "toggle-modified")
-    ("O" ibuffer-do-occur "occur")
-    ("P" ibuffer-do-print "print")
-    ("Q" ibuffer-do-query-replace "query-replace")
-    ("R" ibuffer-do-rename-uniquely "rename-uniquely")
-    ("T" ibuffer-do-toggle-read-only "toggle-read-only")
-    ("U" ibuffer-do-replace-regexp "replace-regexp")
-    ("V" ibuffer-do-revert "revert")
-    ("W" ibuffer-do-view-and-eval "view-and-eval")
-    ("X" ibuffer-do-shell-command-pipe "shell-command-pipe")
-    ("b" nil "back"))
-  (defhydra hydra-ibuffer-sort (:color amaranth :columns 3)
-    "Sort"
-    ("i" ibuffer-invert-sorting "invert")
-    ("a" ibuffer-do-sort-by-alphabetic "alphabetic")
-    ("v" ibuffer-do-sort-by-recency "recently used")
-    ("s" ibuffer-do-sort-by-size "size")
-    ("f" ibuffer-do-sort-by-filename/process "filename")
-    ("m" ibuffer-do-sort-by-major-mode "mode")
-    ("b" hydra-ibuffer-main/body "back" :color blue))
-  (defhydra hydra-ibuffer-filter (:color amaranth :columns 4)
-    "Filter"
-    ("m" ibuffer-filter-by-used-mode "mode")
-    ("M" ibuffer-filter-by-derived-mode "derived mode")
-    ("n" ibuffer-filter-by-name "name")
-    ("c" ibuffer-filter-by-content "content")
-    ("e" ibuffer-filter-by-predicate "predicate")
-    ("f" ibuffer-filter-by-filename "filename")
-    (">" ibuffer-filter-by-size-gt "size")
-    ("<" ibuffer-filter-by-size-lt "size")
-    ("/" ibuffer-filter-disable "disable")
-    ("b" hydra-ibuffer-main/body "back" :color blue))
-(with-eval-after-load 'general
-  (general-define-key :keymaps '(ibuffer-mode-map)
-                      :states '(normal)
-                      "SPC" 'hydra-ibuffer-main/body
-                      "j" 'ibuffer-forward-line
-                      "k" 'ibuffer-backward-line
-                      "J" 'ibuffer-jump-to-buffer)
-)
-
-)
 
 (use-package ibuffer-project
   :init
@@ -1301,6 +1210,7 @@
                       "q" 'git-timemachine-quit))
 
 (use-package imenu-list
+  :after general
   :config
   (setq imenu-list-focus-after-activation t)
   (setq imenu-list-position 'left)
@@ -1321,12 +1231,12 @@
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 
 (use-package org-auto-tangle
-  :elpaca (org-auto-tangle
-           :host github
-           :repo "yilkalargaw/org-auto-tangle"
-           :main "org-auto-tangle.el")
-  :defer t
-  :hook (org-mode . org-auto-tangle-mode))
+:elpaca (org-auto-tangle
+         :host github
+         :repo "yilkalargaw/org-auto-tangle"
+         :main "org-auto-tangle.el")
+:defer t
+:hook (org-mode . org-auto-tangle-mode))
 
 (setq org-highlight-latex-and-related '(latex script entities))
 
@@ -1490,6 +1400,142 @@
 
 (setq-default org-fontify-whole-heading-line t)
 
+(use-package worf
+  :after (evil org hydra general)
+  :elpaca (:build (:not elpaca--byte-compile))
+   ;;https://github.com/leotaku/worf/commit/38e901d3888e3a245a5cba14a061bffa1c5fd20b
+  :init
+  (add-hook #'org-mode-hook (lambda () (worf-mode 1)))
+  ;; set the worf-mode keymap to an empty keymap to remove all worf bindings
+  (add-hook #'worf-mode-hook
+            (lambda ()
+              (push `(worf-mode . ,(make-sparse-keymap)) minor-mode-overriding-map-alist)))
+  :config
+  (defhydra myorg-hydra-change (:hint nil)
+    "
+^ ^ _k_ ^ ^    _t_ags    _p_rop | _x_:archive
+_h_ ^+^ _l_    _n_ame    _e_ol  |
+^ ^ _j_ ^ ^    ^ ^       ^ ^    |
+"
+    ;; arrows
+    ("j" org-metadown)
+    ("k" org-metaup)
+    ("h" org-metaleft)
+    ("l" org-metaright)
+
+    ("e" move-end-of-line :exit t)
+    ;; misc
+    ("p" org-set-property :exit t)
+    ("t" org-set-tags :exit t)
+    ("n" worf-change-name :exit t)
+    ("x" org-archive-subtree-default-with-confirmation :exit t)
+    ("q" nil)
+    ("c" nil))
+
+
+  (defun my-org-before-or-after (before)
+    (if before
+        (evil-insert-line nil)
+      (evil-append-line nil)))
+
+  (defun my-org-new-item (before)
+    (if (org-at-heading-p)
+        (progn
+          (my-org-before-or-after before)
+          (if before
+              (org-insert-heading)
+            (org-insert-heading-respect-content)))
+      (if (org-at-item-checkbox-p)
+          (progn
+            (my-org-before-or-after before)
+            (org-insert-todo-heading 1))
+        (if (org-at-item-p)
+            (progn
+              (my-org-before-or-after before)
+              (org-insert-item))
+          (progn
+            (worf-back-to-heading)
+            (my-org-new-item before))))))
+
+  (defun my-org-new-item-before ()
+    (interactive)
+    (my-org-new-item t))
+
+  (defun my-org-new-item-after ()
+    (interactive)
+    (my-org-new-item nil))
+
+  (defun my-org-export-widen ()
+    (interactive)
+    (save-restriction
+      (widen)
+      (org-export-dispatch)))
+  (general-define-key :keymaps 'org-mode-map
+                      :states '(normal)
+                      ;;"TAB" 'org-cycle
+                      "<" 'org-metaleft
+                      ">" 'org-metaright
+                      "|" 'org-sidebar-tree
+                      "RET" (lambda ()
+                              (interactive)
+                              (if (org-in-src-block-p)
+                                  (org-edit-special)
+                                (if (org-at-item-checkbox-p)
+                                    (org-toggle-checkbox)
+                                  (org-open-at-point)))
+                              (evil-normal-state))
+                      (kbd "S-<return>") 'org-narrow-to-subtree)
+  (general-define-key :prefix my-leader2
+                      :keymaps 'org-mode-map
+                      :states '(normal)
+                      ;;"o" (lambda ()
+                      ;;(interactive)
+                      ;;(org-insert-heading-respect-content)
+                      ;;(evil-insert-state))
+                      "e" 'my-org-export-widen
+                      "o" 'my-org-new-item-after
+                      "O" 'my-org-new-item-before
+                      "a" (lambda ()
+                            (interactive)
+                            (org-insert-heading-respect-content)
+                            (org-demote-subtree)
+                            (evil-insert-state))
+                      "X" 'org-archive-subtree-default-with-confirmation
+                      "s" 'org-schedule
+                      "S" 'org-deadline
+                      "r" 'org-refile
+                      "n" 'org-narrow-to-subtree
+                      "t" 'org-todo
+                      ;;"T" 'counsel-org-tag
+                      "p" 'org-insert-link
+                      "y" 'org-store-link
+                      "x" 'org-archive-subtree
+                      "c" 'myorg-hydra-change/body
+                      "l" 'worf-right
+                      "g" 'consult-org-heading
+                      "j" 'worf-down
+                      "k" 'worf-up
+                      "h" 'worf-left
+                      "J" 'org-metadown
+                      "K" 'org-metaup
+                      "H" 'org-metaleft
+                      "L" 'org-metaright
+                      "/" 'org-toggle-comment
+                      "RET" (lambda ()
+                              (interactive)
+                              (org-tree-to-indirect-buffer)
+                              (other-window 1))
+                      "SPC" 'worf-back-to-heading
+                      "H" (lambda ()
+                            (interactive)
+                            (worf-left)
+                            (org-cycle)))
+  ;; key for exiting src edit mode
+  (general-define-key :keymaps 'org-src-mode-map
+                      :states '(normal)
+                      "RET" 'org-edit-src-exit)
+  )
+
 (setq org-src-window-setup 'current-window)
 
 (use-package org-sidebar)
@@ -1535,7 +1581,7 @@
   (sp-local-pair 'clojure-mode "'" nil :actions nil)
   (sp-local-pair 'lisp-interaction-mode "'" nil :actions nil)
   (sp-local-pair 'clojure-interaction-mode "'" nil :actions nil)
-  (sp-local-pair 'cider-repl-mode "'" nil :actions nil)
+  (sp-local-pair 'cider-repl-mode "'" nil :actions nil))
 
 (use-package evil-smartparens
   ;;:init (require 'evil-smartparens)
@@ -1727,7 +1773,7 @@
           "(" 'sp-backward-barf-sexp)
     "<" (general-key-dispatch 'evil-shift-left
           ")" 'sp-forward-barf-sexp
-          "(" 'sp-backward-slurp-sexp))))
+          "(" 'sp-backward-slurp-sexp)))
 
 (use-package tex
 :elpaca auctex
@@ -1948,6 +1994,21 @@
 (setq dired-recursive-copies 'always
       dired-recursive-deletes 'always)
 
+(use-package diredfl
+  :init
+  (diredfl-global-mode 1))
+
+(use-package dired-git-info)
+
+(use-package dired-subtree
+  :after (dired)
+  :config)
+
+(use-package ranger
+  :after (dired))
+
+(use-package peep-dired)
+
 (use-package dired-sidebar
       :after (dired)
       :commands (dired-sidebar-toggle-sidebar)
@@ -1969,6 +2030,58 @@
       ;; (setq dired-sidebar-use-term-integration t)
       ;; (setq dired-sidebar-use-custom-font t)
       )
+
+(use-package all-the-icons-dired
+    :after (all-the-icons)
+    :init
+    ;;(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+)
+
+(defun my/dired-open-file ()
+      "In dired, open the file named on this line."
+      (interactive)
+      (let* ((file (dired-get-filename nil t)))
+        (call-process "xdg-open" nil 0 nil file)))
+
+  (defun my/dired-up-directory ()
+    "Take dired up one directory, but behave like dired-find-alternative-file (leave no orphan buffer)"
+    (interactive)
+    (let ((old (current-buffer)))
+      (dired-up-directory)
+      (kill-buffer old)))
+
+  (defun my/dired-create-file (file)
+    (interactive
+     (list
+      (read-file-name "Create file: " (dired-current-directory))))
+    (write-region "" nil (expand-file-name file) t)
+    (dired-add-file file)
+    (revert-buffer)
+    (dired-goto-file (expand-file-name file)))
+
+(with-eval-after-load 'general
+  (general-define-key :keymaps '(dired-mode-map)
+                      :states '(normal)
+                      "h" 'my/dired-up-directory
+                      "DEL" 'my/dired-up-directory
+                      (kbd "S-<return>") 'my/dired-open-file
+                      "RET" 'dired-find-alternate-file
+                      "TAB" 'dired-subtree-toggle
+                      "i" 'peep-dired
+                      "l" 'dired-find-alternate-file
+                      "c" 'dired-do-rename
+                      "C" 'dired-do-copy
+                      "y" 'dired-ranger-copy
+                      "p" 'dired-ranger-paste
+                      "v" 'dired-ranger-move
+                      "R" 'dired-do-redisplay
+                      "r" 'wdired-change-to-wdired-mode
+                      "o" 'my/dired-create-file
+                      "O" 'dired-create-directory
+                      "n" 'evil-ex-search-next
+                      "N" 'evil-ex-search-previous
+                      "q" 'kill-this-buffer
+                      "!" 'dired-do-shell-command))
 
 (use-package restclient)
 
@@ -2101,7 +2214,7 @@
   (global-display-fill-column-indicator-mode))
 
 (use-package ace-window
-  :after (hydra)
+  :after (hydra general)
   :init
   (general-define-key :prefix my-leader "W" 'ace-window)
   (ace-window-display-mode 1)
@@ -2148,6 +2261,7 @@
   (add-hook 'clojure-mode-hook 'eglot-ensure))
 
 (use-package langtool
+  :after (general)
   :init
   (general-define-key
    :states '(normal visual)
@@ -2309,73 +2423,23 @@
   (global-ligature-mode t))
 
 (use-package osm
-  :ensure t
-  :custom
-  ;; Take a look at the customization group `osm' for more options.
-  (osm-server 'default) ;; Configure the tile server
-  ;;(osm-home '())
-  ;;(osm-copyright t)     ;; Display the copyright information
-
-  :init
-  ;; Load Org link support
-  (with-eval-after-load 'org
-    (require 'osm-ol)))
+    :ensure t
+    :custom
+    ;; Take a look at the customization group `osm' for more options.
+    (osm-server 'default) ;; Configure the tile server
+    ;;(osm-home '())
+    ;;(osm-copyright t)     ;; Display the copyright information
+)
 
 (use-package literate-calc-mode
 :ensure t)
 
-(use-package dirvish
-  :ensure t
-  :init
-  ;; Let Dirvish take over Dired globally
-  (dirvish-override-dired-mode)
-  :custom
-  ;; Go back home? Just press `bh'
-  (dirvish-bookmark-entries
-   '(("h" "~/"                          "Home")
-     ("d" "~/Downloads/"                "Downloads")
-     ("m" "/mnt/"                       "Drives")
-     ("t" "~/.local/share/Trash/files/" "TrashCan")))
-  ;; (dirvish-header-line-format '(:left (path) :right (free-space)))
-  ;; (dirvish-mode-line-format ; it's ok to place string inside
-  ;;  '(:left (sort file-time " " file-size symlink) :right (omit yank index)))
-  ;; Don't worry, Dirvish is still performant even you enable all these attributes
-  (dirvish-attributes '(all-the-icons file-size collapse subtree-state vc-state git-msg))
-  ;; Maybe the icons are too big to your eyes
-  (dirvish-all-the-icons-height 0.8)
-  ;; In case you want the details at startup like `dired'
-  ;; (dirvish-hide-details nil)
-  :config
-  (dirvish-peek-mode)
-  ;; Dired options are respected except a few exceptions, see *In relation to Dired* section above
-  (setq dired-dwim-target t)
-  (setq delete-by-moving-to-trash t)
-  ;; Enable mouse drag-and-drop files to other applications
-  (setq dired-mouse-drag-files t)                   ; added in Emacs 29
-  (setq mouse-drag-and-drop-region-cross-program t) ; added in Emacs 29
-  ;; Make sure to use the long name of flags when exists
-  ;; eg. use "--almost-all" instead of "-A"
-  ;; Otherwise some commands won't work properly
-  (setq dired-listing-switches
-        "-l --almost-all --human-readable --time-style=long-iso --group-directories-first --no-group")
-
-  (general-define-key :keymaps '(dirvish-mode-map)
-                      :states '(normal)
-                      "h" 'dired-up-directory
-                      "j" 'dired-next-line
-                      "q" 'dirvish-quit
-                      "?" 'dirvish-dispatch
-                      "k" 'dired-previous-line
-                      "l" 'dired-find-file
-                      "r" 'wdired-change-to-wdired-mode
-                      "." 'dired-omit-mode
-                      "b" 'dirvish-bookmark-jump
-                      "f" 'dirvish-file-info-menu
-                      "y" 'dirvish-yank-menu
-                      "N" 'dirvish-narrow
-                      "^" 'dirvish-history-last
-                      "!" 'dired-do-shell-command))
-
 ;; open minions minior mode menu with: minions-minor-modes-menu
   (use-package minions
     :config (minions-mode 1))
+
+(message "IN SOLAIRE MODE BLOCK")
+(use-package solaire-mode
+  :ensure t
+  :init
+  (solaire-global-mode +1))
