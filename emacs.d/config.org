@@ -319,8 +319,9 @@ These are the Files creating in the current Directory for files that have not be
 #+END_SRC
 ** font
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  ;;(set-default-font "Iosevka-12:spacing=110")
-  (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20"))
+  (when (not (string-equal system-type "android"))
+    ;;(set-default-font "Iosevka-12:spacing=110")
+    (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20")))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -2580,7 +2581,7 @@ Multi-stage copy/pasting of files and bookmarks
 #+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package all-the-icons-dired
       :after (all-the-icons)
-      :init
+      :hook  ('dired-mode . 'all-the-icons-dired-mode)
       ;;(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
   )
 #+end_src
@@ -3500,4 +3501,13 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
     (setq chatgpt-shell-openai-key
           (auth-source-pick-first-password :host "api.openai.com")))
 
+#+END_SRC
+
+** Spacious padding
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+   (use-package spacious-padding
+     :ensure t
+     :config
+     (setq spacious-padding-subtle-mode-line t)
+     :init (spacious-padding-mode 1))
 #+END_SRC

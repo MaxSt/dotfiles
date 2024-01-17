@@ -185,8 +185,9 @@
 
 (set-frame-parameter nil 'internal-border-width 10)
 
-;;(set-default-font "Iosevka-12:spacing=110")
-(add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20"))
+(when (not (string-equal system-type "android"))
+  ;;(set-default-font "Iosevka-12:spacing=110")
+  (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20")))
 
 (scroll-bar-mode 0)
 (tool-bar-mode -1)     ; disable the tool-bar
@@ -2033,7 +2034,7 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 
 (use-package all-the-icons-dired
     :after (all-the-icons)
-    :init
+    :hook  ('dired-mode . 'all-the-icons-dired-mode)
     ;;(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 )
 
@@ -2443,3 +2444,9 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
   :ensure t
   :init
   (solaire-global-mode +1))
+
+(use-package spacious-padding
+  :ensure t
+  :config
+  (setq spacious-padding-subtle-mode-line t)
+  :init (spacious-padding-mode 1))
