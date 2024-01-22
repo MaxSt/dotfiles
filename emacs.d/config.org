@@ -357,8 +357,12 @@ These are the Files creating in the current Directory for files that have not be
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package challenger-deep-theme
     :elpaca (:host github :repo "challenger-deep-theme/emacs" :branch "master" :local-repo-name "challenger-deep-theme")
+    :defer t
     :ensure t
-    :init (load-theme 'challenger-deep t)
+    :init
+    (if (daemonp)
+        (add-hook 'server-after-make-frame-hook (lambda () (load-theme 'challenger-deep t)))
+      (load-theme 'challenger-deep t))
     :config
     (set-face-attribute 'window-divider nil :foreground "#1b182c")
     (set-face-attribute 'window-divider-first-pixel nil :foreground "#1b182c")
@@ -2222,25 +2226,32 @@ Download images and insert them into org buffers (drag and drop support)
 ** Latex
 ** AucTex
 #+BEGIN_SRC emacs-lisp :tangle init.el
-    (use-package tex
-    :elpaca auctex
-    :init
-      (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
-      (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
-      (add-hook 'LaTeX-mode-hook
-                (lambda ()
-                  (push
-                   '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
-                     :help "Run latexmk on file")
-                   TeX-command-list)))
-    :defer t
-    :config
-    (setq-default TeX-quote-after-quote t)
-    (auctex-latexmk-setup)
-    (setq TeX-auto-save t)
-    (setq TeX-parse-self t))
+  (use-package tex
+  :elpaca (auctex :pre-build (("./autogen.sh")
+                              ("./configure" "--without-texmf-dir" "--with-lispdir=.")
+                              ("make")
+                              ("install-info" "doc/auctex.info" "doc/dir")
+                              ("install-info" "doc/preview-latex.info" "doc/dir")))
+  :init
+    (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
+    (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
+    (add-hook 'LaTeX-mode-hook
+              (lambda ()
+                (push
+                 '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
+                   :help "Run latexmk on file")
+                 TeX-command-list)))
+  ;;:defer t
+  :config
+  (setq-default TeX-quote-after-quote t)
+  ;;(auctex-latexmk-setup)
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t))
 
 #+END_SRC
+
+#+RESULTS:
+
 ** projectile
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package projectile
@@ -2929,15 +2940,25 @@ See https://www.emacswiki.org/emacs/SqlMode
         ;;(setq-default header-line-format '((:eval (doom-modeline 'main))))
   )
 #+END_SRC
+
 ** mood-line modeline
 #+BEGIN_SRC emacs-lisp :tangle init.el
-    (use-package mood-line
-      :ensure t
-      ;; Enable mood-line
-      :config
-      (mood-line-mode))
-
+  (use-package mood-line
+    :ensure t
+    :config
+    ;; Enable mood-line
+    (mood-line-mode))
 #+END_SRC
+
+** Spacious padding
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+    (use-package spacious-padding
+      :ensure t
+      :hook (server-after-make-frame . spacious-padding-mode)
+      :init
+      (setq spacious-padding-subtle-mode-line t))
+#+END_SRC
+
 
 ** COMMENT emojify
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -3483,10 +3504,9 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
 
 ** solaire (darker look for 'unreal' buffers)
 #+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
-  (message "IN SOLAIRE MODE BLOCK")
   (use-package solaire-mode
-    :ensure t
-    :init
+    :defer t
+    :custom
     (solaire-global-mode +1))
 #+END_SRC
 
@@ -3503,11 +3523,3 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
 
 #+END_SRC
 
-** Spacious padding
-#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
-   (use-package spacious-padding
-     :ensure t
-     :config
-     (setq spacious-padding-subtle-mode-line t)
-     :init (spacious-padding-mode 1))
-#+END_SRC

@@ -215,8 +215,12 @@
 
 (use-package challenger-deep-theme
   :elpaca (:host github :repo "challenger-deep-theme/emacs" :branch "master" :local-repo-name "challenger-deep-theme")
+  :defer t
   :ensure t
-  :init (load-theme 'challenger-deep t)
+  :init
+  (if (daemonp)
+      (add-hook 'server-after-make-frame-hook (lambda () (load-theme 'challenger-deep t)))
+    (load-theme 'challenger-deep t))
   :config
   (set-face-attribute 'window-divider nil :foreground "#1b182c")
   (set-face-attribute 'window-divider-first-pixel nil :foreground "#1b182c")
@@ -227,6 +231,7 @@
   (set-face-attribute 'org-level-4 nil :background "#2b2942" :foreground (face-attribute 'success :foreground))
   (set-face-attribute 'org-level-5 nil :background "#2b2942" :foreground (face-attribute 'org-special-keyword :foreground))
   (set-face-attribute 'org-level-6 nil :background "#2b2942" :foreground (face-attribute 'org-table :foreground)))
+
 
 (use-package all-the-icons
   :config
@@ -1777,7 +1782,11 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
           "(" 'sp-backward-slurp-sexp)))
 
 (use-package tex
-:elpaca auctex
+:elpaca (auctex :pre-build (("./autogen.sh")
+                            ("./configure" "--without-texmf-dir" "--with-lispdir=.")
+                            ("make")
+                            ("install-info" "doc/auctex.info" "doc/dir")
+                            ("install-info" "doc/preview-latex.info" "doc/dir")))
 :init
   (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
   (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
@@ -1787,10 +1796,10 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
                '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
                  :help "Run latexmk on file")
                TeX-command-list)))
-:defer t
+;;:defer t
 :config
 (setq-default TeX-quote-after-quote t)
-(auctex-latexmk-setup)
+;;(auctex-latexmk-setup)
 (setq TeX-auto-save t)
 (setq TeX-parse-self t))
 
@@ -2244,9 +2253,15 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 
 (use-package mood-line
   :ensure t
-  ;; Enable mood-line
   :config
+  ;; Enable mood-line
   (mood-line-mode))
+
+(use-package spacious-padding
+  :ensure t
+  :hook (server-after-make-frame . spacious-padding-mode)
+  :init
+  (setq spacious-padding-subtle-mode-line t))
 
 (use-package dumb-jump
   :config
@@ -2439,14 +2454,7 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
   (use-package minions
     :config (minions-mode 1))
 
-(message "IN SOLAIRE MODE BLOCK")
 (use-package solaire-mode
-  :ensure t
-  :init
+  :defer t
+  :custom
   (solaire-global-mode +1))
-
-(use-package spacious-padding
-  :ensure t
-  :config
-  (setq spacious-padding-subtle-mode-line t)
-  :init (spacious-padding-mode 1))
