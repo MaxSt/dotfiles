@@ -235,6 +235,8 @@ previously compiled manually then all of the package initialization will still t
    blink-matching-paren nil ; don't blink--too distracting
    ;;show-trailing-whitespace t ;; show trailing whitespace
    )
+  ;; always show keyboard on touch screen
+  (setq touch-screen-display-keyboard t)
    ;; turn off ad-redefinition warnings
   (setq ad-redefinition-action 'accept)
   ;; disable the annoying bell ring
@@ -319,9 +321,9 @@ These are the Files creating in the current Directory for files that have not be
 #+END_SRC
 ** font
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (when (not (string-equal system-type "android"))
-    ;;(set-default-font "Iosevka-12:spacing=110")
-    (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20")))
+   (when (not (my/is-android-p))
+     ;;(set-default-font "Iosevka-12:spacing=110")
+     (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20")))
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -1787,11 +1789,11 @@ With these tweaks the whole capture experience is much more streamlined for me. 
 #+END_SRC
 *** org-Reveal (HTML presentations)
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (use-package ox-reveal)
-  ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
-  ;;(setq org-reveal-mathjax t)
-  (use-package org-re-reveal-ref)
-  (use-package htmlize)
+     (use-package ox-reveal :if (not (my/is-android-p)))
+     ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
+     ;;(setq org-reveal-mathjax t)
+     (use-package org-re-reveal-ref :if (not (my/is-android-p)))
+     (use-package htmlize :if (not (my/is-android-p)))
 #+END_SRC
 *** org-templates
 
@@ -2227,12 +2229,13 @@ Download images and insert them into org buffers (drag and drop support)
 ** AucTex
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package tex
-  :elpaca (auctex :pre-build (("./autogen.sh")
-                              ("./configure" "--without-texmf-dir" "--with-lispdir=.")
-                              ("make")
-                              ("install-info" "doc/auctex.info" "doc/dir")
-                              ("install-info" "doc/preview-latex.info" "doc/dir")))
-  :init
+    :if (not (my/is-android-p))
+    :elpaca (auctex :pre-build (("./autogen.sh")
+                                ("./configure" "--without-texmf-dir" "--with-lispdir=.")
+                                ("make")
+                                ("install-info" "doc/auctex.info" "doc/dir")
+                                ("install-info" "doc/preview-latex.info" "doc/dir")))
+    :init
     (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
     (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
     (add-hook 'LaTeX-mode-hook
@@ -2241,12 +2244,12 @@ Download images and insert them into org buffers (drag and drop support)
                  '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
                    :help "Run latexmk on file")
                  TeX-command-list)))
-  ;;:defer t
-  :config
-  (setq-default TeX-quote-after-quote t)
-  ;;(auctex-latexmk-setup)
-  (setq TeX-auto-save t)
-  (setq TeX-parse-self t))
+    ;;:defer t
+    :config
+    (setq-default TeX-quote-after-quote t)
+    ;;(auctex-latexmk-setup)
+    (setq TeX-auto-save t)
+    (setq TeX-parse-self t))
 
 #+END_SRC
 
@@ -2800,7 +2803,7 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** docker
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (use-package docker)
+    (use-package docker :if (not (my/is-android-p)))
 #+end_src
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dockerfile-mode)

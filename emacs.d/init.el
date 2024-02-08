@@ -121,6 +121,8 @@
  blink-matching-paren nil ; don't blink--too distracting
  ;;show-trailing-whitespace t ;; show trailing whitespace
  )
+;; always show keyboard on touch screen
+(setq touch-screen-display-keyboard t)
  ;; turn off ad-redefinition warnings
 (setq ad-redefinition-action 'accept)
 ;; disable the annoying bell ring
@@ -185,7 +187,7 @@
 
 (set-frame-parameter nil 'internal-border-width 10)
 
-(when (not (string-equal system-type "android"))
+(when (not (my/is-android-p))
   ;;(set-default-font "Iosevka-12:spacing=110")
   (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20")))
 
@@ -231,7 +233,6 @@
   (set-face-attribute 'org-level-4 nil :background "#2b2942" :foreground (face-attribute 'success :foreground))
   (set-face-attribute 'org-level-5 nil :background "#2b2942" :foreground (face-attribute 'org-special-keyword :foreground))
   (set-face-attribute 'org-level-6 nil :background "#2b2942" :foreground (face-attribute 'org-table :foreground)))
-
 
 (use-package all-the-icons
   :config
@@ -1389,11 +1390,11 @@
 
 (use-package org-ref)
 
-(use-package ox-reveal)
+(use-package ox-reveal :if (not (my/is-android-p)))
 ;;(setq org-reveal-root "http://cdn.jsdelivr.net/reveal.js/3.0.0/")
 ;;(setq org-reveal-mathjax t)
-(use-package org-re-reveal-ref)
-(use-package htmlize)
+(use-package org-re-reveal-ref :if (not (my/is-android-p)))
+(use-package htmlize :if (not (my/is-android-p)))
 
 (when (version<= "9.2.0" (org-version))
   (require 'org-tempo)
@@ -1782,12 +1783,13 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
           "(" 'sp-backward-slurp-sexp)))
 
 (use-package tex
-:elpaca (auctex :pre-build (("./autogen.sh")
-                            ("./configure" "--without-texmf-dir" "--with-lispdir=.")
-                            ("make")
-                            ("install-info" "doc/auctex.info" "doc/dir")
-                            ("install-info" "doc/preview-latex.info" "doc/dir")))
-:init
+  :if (not (my/is-android-p))
+  :elpaca (auctex :pre-build (("./autogen.sh")
+                              ("./configure" "--without-texmf-dir" "--with-lispdir=.")
+                              ("make")
+                              ("install-info" "doc/auctex.info" "doc/dir")
+                              ("install-info" "doc/preview-latex.info" "doc/dir")))
+  :init
   (add-hook 'latex-mode-local-vars-hook '(lambda () (setq TeX-command-default "latexmk")))
   (add-hook 'latex-mode-local-vars-hook 'flyspell-mode)
   (add-hook 'LaTeX-mode-hook
@@ -1796,12 +1798,12 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
                '("latexmk" "latexmk -pdf -pvc %s" TeX-run-TeX nil t
                  :help "Run latexmk on file")
                TeX-command-list)))
-;;:defer t
-:config
-(setq-default TeX-quote-after-quote t)
-;;(auctex-latexmk-setup)
-(setq TeX-auto-save t)
-(setq TeX-parse-self t))
+  ;;:defer t
+  :config
+  (setq-default TeX-quote-after-quote t)
+  ;;(auctex-latexmk-setup)
+  (setq TeX-auto-save t)
+  (setq TeX-parse-self t))
 
 (use-package projectile
     :config
@@ -2149,7 +2151,7 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
   :init
   (add-to-list 'auto-mode-alist '("\\.js\\'" . rjsx-mode)))
 
-(use-package docker)
+(use-package docker :if (not (my/is-android-p)))
 
 (use-package dockerfile-mode)
 
