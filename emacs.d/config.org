@@ -2896,8 +2896,9 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** fill-column-indicator
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (when (fboundp 'global-display-fill-column-indicator-mode)
-    (global-display-fill-column-indicator-mode))
+   (when (and (not (my/is-android-p))
+              (fboundp 'global-display-fill-column-indicator-mode))
+     (global-display-fill-column-indicator-mode))
 #+end_src
 ** ace-window
 #+BEGIN_SRC emacs-lisp :tangle init.el

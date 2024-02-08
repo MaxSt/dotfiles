@@ -2222,7 +2222,8 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
   :init
   (editorconfig-mode 1))
 
-(when (fboundp 'global-display-fill-column-indicator-mode)
+(when (and (not (my/is-android-p))
+           (fboundp 'global-display-fill-column-indicator-mode))
   (global-display-fill-column-indicator-mode))
 
 (use-package ace-window
