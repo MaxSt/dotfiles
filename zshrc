@@ -65,6 +65,9 @@ fi
 # Load FZF when available
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# Emacs Eat integration
+[ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
+  source "$EAT_SHELL_INTEGRATION_DIR/zsh"
 
 # PATH setting
 PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/bin/vendor_perl:/usr/bin/core_perl
@@ -82,3 +85,9 @@ function chpwd(){
 
 # direnv integration
 eval "$(direnv hook zsh)"
+
+## [Completion]
+## Completion scripts setup. Remove the following line to uninstall
+[[ -f /home/max/.dart-cli-completion/zsh-config.zsh ]] && . /home/max/.dart-cli-completion/zsh-config.zsh || true
+## [/Completion]
+

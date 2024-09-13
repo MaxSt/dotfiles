@@ -1,5 +1,6 @@
 [Unit]
 Description=Emacs text editor
+After=graphical-session.target
 Documentation=info:emacs man:emacs(1) https://gnu.org/software/emacs/
 
 [Service]
@@ -11,3 +12,4 @@ Restart=on-failure
 
 [Install]
 WantedBy=default.target
+WantedBy=graphical-session.target

@@ -1,3 +1,4 @@
+;; Also configured and tangled in config.org
 (setq package-enable-at-startup nil)
 (message "in early-init!")
 
@@ -12,3 +13,5 @@
                                     (getenv "LD_LIBRARY_PATH")))
   (setq magit-git-executable "/data/data/com.termux/files/usr/bin/git")
   (push "/data/data/com.termux/files/usr/bin" exec-path))
+
+(setq debug-on-error t)

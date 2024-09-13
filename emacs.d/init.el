@@ -1,9 +1,9 @@
-(defvar elpaca-installer-version 0.6)
+(defvar elpaca-installer-version 0.7)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil
+                              :ref nil :depth 1
                               :files (:defaults "elpaca-test.el" (:exclude "extensions"))
                               :build (:not elpaca--activate-package)))
 (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
@@ -16,8 +16,10 @@
     (when (< emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
         (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                 ((zerop (call-process "git" nil buffer t "clone"
-                                       (plist-get order :repo) repo)))
+                 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                 ,@(when-let ((depth (plist-get order :depth)))
+                                                     (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                 ,(plist-get order :repo) ,repo))))
                  ((zerop (call-process "git" nil buffer t "checkout"
                                        (or (plist-get order :ref) "--"))))
                  (emacs (concat invocation-directory invocation-name))
@@ -153,7 +155,6 @@
 
 (use-package flyspell
   :ensure nil
-  :elpaca nil
   :hook ((prog-mode . flyspell-prog-mode)
          (text-mode . flyspell-mode))
   :config (setq flyspell-issue-message-flag nil)
@@ -216,10 +217,10 @@
 (set-fringe-bitmap-face 'tilde 'fringe)
 
 (use-package challenger-deep-theme
-  :elpaca (:host github :repo "challenger-deep-theme/emacs" :branch "master" :local-repo-name "challenger-deep-theme")
-  :defer t
-  :ensure t
+  :ensure (challenger-deep-theme :host github :repo "challenger-deep-theme/emacs" :branch "master")
+  ;;:ensure (:repo "/home/max/Documents/challenger-deep/themes/emacs")
   :init
+  ;;(add-to-list 'custom-theme-load-path "/home/max/Documents/challenger-deep/themes/emacs")
   (if (daemonp)
       (add-hook 'server-after-make-frame-hook (lambda () (load-theme 'challenger-deep t)))
     (load-theme 'challenger-deep t))
@@ -463,8 +464,7 @@
 (add-hook 'kill-emacs-hook 'my-desktop-kill-emacs-hook)
 
 (use-package evil
-  :elpaca (:host github :repo "emacs-evil/evil")
-  :ensure t
+  :ensure (:host github :repo "emacs-evil/evil")
   :init
   (setq evil-want-integration nil)
   (setq evil-want-keybinding nil)
@@ -1200,8 +1200,11 @@
     "XXXX....")
   )
 
-(use-package magit-section)
+(use-package transient)
+(use-package magit-section
+  :after magit)
 (use-package magit
+  :after transient
   :config
   (setq magit-diff-refine-hunk (quote all)))
 
@@ -1238,7 +1241,7 @@
 (setq visual-line-fringe-indicators '(left-curly-arrow right-curly-arrow))
 
 (use-package org-auto-tangle
-:elpaca (org-auto-tangle
+:ensure (org-auto-tangle
          :host github
          :repo "yilkalargaw/org-auto-tangle"
          :main "org-auto-tangle.el")
@@ -1282,8 +1285,7 @@
 (add-hook 'org-capture-mode-hook 'evil-insert-state)
 (use-package org-id
   :after (org)
-  :elpaca org-contrib
-  :ensure t
+  :ensure org-contrib
   :config
 
   (defun my/add-org-id (properties)
@@ -1383,6 +1385,7 @@
  'org-babel-load-languages
  '((shell . t)
    (gnuplot . t)
+   (clojure . t)
    (python .t)
    (R . t)
    (sql . t)
@@ -1409,7 +1412,7 @@
 
 (use-package worf
   :after (evil org hydra general)
-  :elpaca (:build (:not elpaca--byte-compile))
+  :ensure (:build (:not elpaca--byte-compile))
    ;;https://github.com/leotaku/worf/commit/38e901d3888e3a245a5cba14a061bffa1c5fd20b
   :init
   (add-hook #'org-mode-hook (lambda () (worf-mode 1)))
@@ -1568,8 +1571,7 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
   (require 'org-download))
 
 (use-package org-treeusage
-   :ensure t
-   :elpaca (:host github
+   :ensure (:host github
               :repo "mtekman/org-treeusage.el")
   :after org)
 
@@ -1784,7 +1786,7 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 
 (use-package tex
   :if (not (my/is-android-p))
-  :elpaca (auctex :pre-build (("./autogen.sh")
+  :ensure (auctex :pre-build (("./autogen.sh")
                               ("./configure" "--without-texmf-dir" "--with-lispdir=.")
                               ("make")
                               ("install-info" "doc/auctex.info" "doc/dir")
@@ -1840,7 +1842,6 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 
 (use-package recentf
   :ensure nil
-  :elpaca nil
   :config
   (recentf-mode 1)
   )
@@ -1875,14 +1876,12 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 ;; Persist history over Emacs restarts. Vertico sorts by history position.
 (use-package savehist
   :ensure nil
-  :elpaca nil
   :init
   (savehist-mode))
 
 ;; A few more useful configurations...
 (use-package emacs
   :ensure nil
-  :elpaca nil
   :init
   ;; Add prompt indicator to `completing-read-multiple'.
   ;; Alternatively try `consult-completing-read-multiple'.
@@ -1966,6 +1965,15 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 (setq tab-bar-close-button-show nil)
 (setq tab-bar-new-button-show nil)
 (setq tab-bar-position nil)
+
+(use-package modern-tab-bar
+:ensure (modern-tab-bar :host github :repo "aaronjensen/emacs-modern-tab-bar" :protocol ssh)
+:init
+(setq tab-bar-show t
+      tab-bar-new-button nil
+      tab-bar-close-button-show nil)
+
+(modern-tab-bar-mode))
 
 (use-package highlight-symbol
   :init
@@ -2173,7 +2181,6 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 
 (use-package whitespace
   :ensure nil
-  :elpaca nil
   :after (general)
   :init
   (global-whitespace-mode 1)
@@ -2275,9 +2282,14 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
   :init
   (require 'vlf-setup))
 
+(use-package jsonrpc)
+(use-package eldoc)
 (use-package eglot
+  :after (eldoc jsonrpc)
   :init
-  (add-hook 'clojure-mode-hook 'eglot-ensure))
+  (add-hook 'clojure-mode-hook 'eglot-ensure)
+  :config
+  (setq eglot-connect-timeout 60))
 
 (use-package langtool
   :after (general)
@@ -2339,10 +2351,9 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 (use-package vterm)
 
 (use-package notdeft
-  :elpaca (:host github
+  :ensure (:host github
              :repo "hasu/notdeft"
              :files ("*.el" "xapian"))
-  :ensure t
   :init
   (autoload 'notdeft-xapian-make-program-when-uncurrent "notdeft-xapian-make")
   (add-hook 'notdeft-load-hook 'notdeft-xapian-make-program-when-uncurrent)
@@ -2361,7 +2372,7 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
  (envrc-global-mode))
 
 (use-package dashboard
-  :elpaca t
+  :ensure t
   :config
   (setq dashboard-startup-banner 3)
   (setq dashboard-center-content t)
@@ -2423,8 +2434,7 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
     :hook (org-mode . org-modern-mode))
 
 (use-package ligature
-  :elpaca (:host github :repo "mickeynp/ligature.el")
-  :ensure t
+  :ensure (:host github :repo "mickeynp/ligature.el")
   :config
   ;; Enable the "www" ligature in every possible major mode
   (ligature-set-ligatures 't '("www"))
@@ -2453,6 +2463,16 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 (use-package literate-calc-mode
 :ensure t)
 
+(use-package casual-lib
+:ensure (:repo "kickingvegas/casual-lib"
+         :host github))
+(use-package casual-dired
+:ensure (:repo "kickingvegas/casual-dired"
+         :host github))
+(use-package casual-calc
+:ensure (:repo "kickingvegas/casual-calc"
+         :host github))
+
 ;; open minions minior mode menu with: minions-minor-modes-menu
   (use-package minions
     :config (minions-mode 1))
@@ -2461,3 +2481,33 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
   :defer t
   :custom
   (solaire-global-mode +1))
+
+(use-package treesit-auto
+  :if (not (my/is-android-p))
+  :ensure t
+  :custom
+  (treesit-auto-install 'prompt)
+  :config
+  (treesit-auto-add-to-auto-mode-alist 'all)
+  (global-treesit-auto-mode))
+
+(use-package atomic-chrome
+  :demand t
+  :ensure (:repo "KarimAziev/atomic-chrome"
+           :host github)
+  :commands (atomic-chrome-start-server)
+  :config (atomic-chrome-start-server))
+
+(use-package indent-bars
+  :demand t
+  :ensure (:repo "jdtsmith/indent-bars"
+           :host github
+           :hook ((python-mode yaml-mode emacs-lisp-mode clojure-mode make makefile-gmake-mode) . indent-bars-mode)))
+
+(use-package calc
+  :ensure nil
+  :config
+;; TODO Does not work (setting comma instead of dot)
+  ;;(setq calc-point-char ",")
+  ;;(setq calc-group-char ".")
+  )

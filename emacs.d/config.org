@@ -3,15 +3,37 @@
 #+STARTUP: overview
 #+AUTO_TANGLE: true
 
+
+* Early Init
+#+begin_src elisp :tangle early-init.el
+  ;; Also configured and tangled in config.org
+  (setq package-enable-at-startup nil)
+  (message "in early-init!")
+
+  (defun my/is-android-p ()
+    (string-equal system-type "android"))
+
+  (when (my/is-android-p)
+    (message "hello android!")
+    (setenv "PATH" (format "%s:%s" "/data/data/com.termux/files/usr/bin" (getenv "PATH")))
+    (setenv "LD_LIBRARY_PATH" (format "%s:%s"
+                                      "/data/data/com.termux/files/usr/lib"
+                                      (getenv "LD_LIBRARY_PATH")))
+    (setq magit-git-executable "/data/data/com.termux/files/usr/bin/git")
+    (push "/data/data/com.termux/files/usr/bin" exec-path))
+
+  (setq debug-on-error t)
+#+end_src
+
 * Elpaca
 ** Bootstrap
 #+begin_src elisp :tangle init.el
-  (defvar elpaca-installer-version 0.6)
+  (defvar elpaca-installer-version 0.7)
   (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
   (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
   (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
   (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                                :ref nil
+                                :ref nil :depth 1
                                 :files (:defaults "elpaca-test.el" (:exclude "extensions"))
                                 :build (:not elpaca--activate-package)))
   (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
@@ -24,8 +46,10 @@
       (when (< emacs-major-version 28) (require 'subr-x))
       (condition-case-unless-debug err
           (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                   ((zerop (call-process "git" nil buffer t "clone"
-                                         (plist-get order :repo) repo)))
+                   ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                   ,@(when-let ((depth (plist-get order :depth)))
+                                                       (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                   ,(plist-get order :repo) ,repo))))
                    ((zerop (call-process "git" nil buffer t "checkout"
                                          (or (plist-get order :ref) "--"))))
                    (emacs (concat invocation-directory invocation-name))
@@ -42,10 +66,6 @@
       (load "./elpaca-autoloads")))
   (add-hook 'after-init-hook #'elpaca-process-queues)
   (elpaca `(,@elpaca-order))
-#+end_src
-
-#+begin_src elisp :tangle early-init.el
-  (setq package-enable-at-startup nil)
 #+end_src
 
 ** Use-package
@@ -269,7 +289,6 @@ previously compiled manually then all of the package initialization will still t
 
   (use-package flyspell
     :ensure nil
-    :elpaca nil
     :hook ((prog-mode . flyspell-prog-mode)
            (text-mode . flyspell-mode))
     :config (setq flyspell-issue-message-flag nil)
@@ -355,13 +374,15 @@ These are the Files creating in the current Directory for files that have not be
   (define-fringe-bitmap 'tilde [64 168 16] nil nil 'center)
   (set-fringe-bitmap-face 'tilde 'fringe)
 #+END_SRC
+
+
 ** Themes
-#+BEGIN_SRC emacs-lisp :tangle init.el
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
   (use-package challenger-deep-theme
-    :elpaca (:host github :repo "challenger-deep-theme/emacs" :branch "master" :local-repo-name "challenger-deep-theme")
-    :defer t
-    :ensure t
+    :ensure (challenger-deep-theme :host github :repo "challenger-deep-theme/emacs" :branch "master")
+    ;;:ensure (:repo "/home/max/Documents/challenger-deep/themes/emacs")
     :init
+    ;;(add-to-list 'custom-theme-load-path "/home/max/Documents/challenger-deep/themes/emacs")
     (if (daemonp)
         (add-hook 'server-after-make-frame-hook (lambda () (load-theme 'challenger-deep t)))
       (load-theme 'challenger-deep t))
@@ -375,7 +396,10 @@ These are the Files creating in the current Directory for files that have not be
     (set-face-attribute 'org-level-4 nil :background "#2b2942" :foreground (face-attribute 'success :foreground))
     (set-face-attribute 'org-level-5 nil :background "#2b2942" :foreground (face-attribute 'org-special-keyword :foreground))
     (set-face-attribute 'org-level-6 nil :background "#2b2942" :foreground (face-attribute 'org-table :foreground)))
+#+end_src
 
+** all the icons
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
   (use-package all-the-icons
     :config
     ;; org-mode ellipsis
@@ -384,7 +408,11 @@ These are the Files creating in the current Directory for files that have not be
   (use-package all-the-icons-ibuffer
     :ensure t
     :init (all-the-icons-ibuffer-mode 1))
-#+end_src
+#+END_SRC
+
+
+
+
 * custom Functions
 ** local abbrev
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -617,8 +645,7 @@ These are the Files creating in the current Directory for files that have not be
 ** initialize
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package evil
-    :elpaca (:host github :repo "emacs-evil/evil")
-    :ensure t
+    :ensure (:host github :repo "emacs-evil/evil")
     :init
     (setq evil-want-integration nil)
     (setq evil-want-keybinding nil)
@@ -1500,8 +1527,11 @@ enable narrowing
 
 ** Magit
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (use-package magit-section)
+  (use-package transient)
+  (use-package magit-section
+    :after magit)
   (use-package magit
+    :after transient
     :config
     (setq magit-diff-refine-hunk (quote all)))
 
@@ -1552,7 +1582,7 @@ enable narrowing
 *** auto-tangle-mode
 #+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package org-auto-tangle
-    :elpaca (org-auto-tangle
+    :ensure (org-auto-tangle
              :host github
              :repo "yilkalargaw/org-auto-tangle"
              :main "org-auto-tangle.el")
@@ -1638,8 +1668,7 @@ enable narrowing
   (add-hook 'org-capture-mode-hook 'evil-insert-state)
   (use-package org-id
     :after (org)
-    :elpaca org-contrib
-    :ensure t
+    :ensure org-contrib
     :config
 
     (defun my/add-org-id (properties)
@@ -1778,6 +1807,7 @@ With these tweaks the whole capture experience is much more streamlined for me. 
    'org-babel-load-languages
    '((shell . t)
      (gnuplot . t)
+     (clojure . t)
      (python .t)
      (R . t)
      (sql . t)
@@ -1820,7 +1850,7 @@ Fontify the whole line for headings (with a background color).
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package worf
     :after (evil org hydra general)
-    :elpaca (:build (:not elpaca--byte-compile))
+    :ensure (:build (:not elpaca--byte-compile))
      ;;https://github.com/leotaku/worf/commit/38e901d3888e3a245a5cba14a061bffa1c5fd20b
     :init
     (add-hook #'org-mode-hook (lambda () (worf-mode 1)))
@@ -2005,8 +2035,7 @@ Download images and insert them into org buffers (drag and drop support)
 *** org-treeusage
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package org-treeusage
-     :ensure t
-     :elpaca (:host github
+     :ensure (:host github
                 :repo "mtekman/org-treeusage.el")
     :after org)
 #+END_SRC
@@ -2230,7 +2259,7 @@ Download images and insert them into org buffers (drag and drop support)
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package tex
     :if (not (my/is-android-p))
-    :elpaca (auctex :pre-build (("./autogen.sh")
+    :ensure (auctex :pre-build (("./autogen.sh")
                                 ("./configure" "--without-texmf-dir" "--with-lispdir=.")
                                 ("make")
                                 ("install-info" "doc/auctex.info" "doc/dir")
@@ -2301,7 +2330,6 @@ for keeping track of recent files, provides helm-recentf with data
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package recentf
     :ensure nil
-    :elpaca nil
     :config
     (recentf-mode 1)
     )
@@ -2376,14 +2404,12 @@ http://oremacs.com/swiper/
   ;; Persist history over Emacs restarts. Vertico sorts by history position.
   (use-package savehist
     :ensure nil
-    :elpaca nil
     :init
     (savehist-mode))
 
   ;; A few more useful configurations...
   (use-package emacs
     :ensure nil
-    :elpaca nil
     :init
     ;; Add prompt indicator to `completing-read-multiple'.
     ;; Alternatively try `consult-completing-read-multiple'.
@@ -2480,6 +2506,16 @@ http://oremacs.com/swiper/
   (setq tab-bar-close-button-show nil)
   (setq tab-bar-new-button-show nil)
   (setq tab-bar-position nil)
+
+  (use-package modern-tab-bar
+  :ensure (modern-tab-bar :host github :repo "aaronjensen/emacs-modern-tab-bar" :protocol ssh)
+  :init
+  (setq tab-bar-show t
+        tab-bar-new-button nil
+        tab-bar-close-button-show nil)
+
+  (modern-tab-bar-mode))
+
 #+end_src
 ** highlight-symbol
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -2834,7 +2870,6 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package whitespace
     :ensure nil
-    :elpaca nil
     :after (general)
     :init
     (global-whitespace-mode 1)
@@ -2987,10 +3022,19 @@ See https://www.emacswiki.org/emacs/SqlMode
 #+end_src
 ** language-server
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (use-package eglot
-    :init
-    (add-hook 'clojure-mode-hook 'eglot-ensure))
+    (use-package jsonrpc)
+    (use-package eldoc)
+    (use-package eglot
+      :after (eldoc jsonrpc)
+      :init
+      (add-hook 'clojure-mode-hook 'eglot-ensure)
+      :config
+      (setq eglot-connect-timeout 60))
 #+end_src
+
+#+RESULTS:
+: [nil 26219 60386 959884 nil elpaca-process-queues nil nil 45999 nil]
+
 ** langtool
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package langtool
@@ -3082,7 +3126,7 @@ Deactivated, because it makes org mode very slow.
 ** COMMENT hydra-posframe
 #+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package hydra-posframe
-     :elpaca (:host github
+     :ensure (:host github
                 :repo "Ladicle/hydra-posframe")
      :after hydra
      :hook (after-init . hydra-posframe-enable))
@@ -3122,10 +3166,9 @@ Deactivated, because it makes org mode very slow.
 ** deft
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package notdeft
-    :elpaca (:host github
+    :ensure (:host github
                :repo "hasu/notdeft"
                :files ("*.el" "xapian"))
-    :ensure t
     :init
     (autoload 'notdeft-xapian-make-program-when-uncurrent "notdeft-xapian-make")
     (add-hook 'notdeft-load-hook 'notdeft-xapian-make-program-when-uncurrent)
@@ -3148,7 +3191,7 @@ Deactivated, because it makes org mode very slow.
 ** dashboard
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package dashboard
-    :elpaca t
+    :ensure t
     :config
     (setq dashboard-startup-banner 3)
     (setq dashboard-center-content t)
@@ -3246,7 +3289,7 @@ is much more clean and organized.
 ** COMMENT proctrack-mode (terminal buffer name)
 #+BEGIN_SRC emacs-lisp :tangle init.el
     (use-package proctrack-mode
-        :elpaca (:host gitlab :repo "pennersr/proctrack-mode"))
+        :ensure (:host gitlab :repo "pennersr/proctrack-mode"))
 #+end_src
 
 ** org-modern
@@ -3267,8 +3310,7 @@ is much more clean and organized.
 ** ligature
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package ligature
-    :elpaca (:host github :repo "mickeynp/ligature.el")
-    :ensure t
+    :ensure (:host github :repo "mickeynp/ligature.el")
     :config
     ;; Enable the "www" ligature in every possible major mode
     (ligature-set-ligatures 't '("www"))
@@ -3299,9 +3341,22 @@ is much more clean and organized.
 #+END_SRC
 
 ** Literate calc mode
-#+BEGIN_SRC emacs-lisp :tangle init.el
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
   (use-package literate-calc-mode
   :ensure t)
+#+END_SRC
+
+*** Casual
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package casual-lib
+  :ensure (:repo "kickingvegas/casual-lib"
+           :host github))
+  (use-package casual-dired
+  :ensure (:repo "kickingvegas/casual-dired"
+           :host github))
+  (use-package casual-calc
+  :ensure (:repo "kickingvegas/casual-calc"
+           :host github))
 #+END_SRC
 
 
@@ -3493,8 +3548,8 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
 ** COMMENT org-menu
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package org-menu
-    :elpaca (:host github :repo "sheijk/org-menu" :branch "main")
-    :ensure t)
+    :ensure (:host github :repo "sheijk/org-menu" :branch "main")
+   )
 #+END_SRC
 
 
@@ -3518,7 +3573,7 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package chatgpt-shell
     :requires shell-maker
-    :elpaca (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell.el"))
+    :ensure (:host github :repo "xenodium/chatgpt-shell" :files ("chatgpt-shell.el"))
     :config
     ;; or if using auth-sources, e.g., so the file ~/.authinfo has this line:
     ;;  machine api.openai.com password OPENAI_KEY
@@ -3526,4 +3581,73 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
           (auth-source-pick-first-password :host "api.openai.com")))
 
 #+END_SRC
+
+** treesit-auto
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package treesit-auto
+    :if (not (my/is-android-p))
+    :ensure t
+    :custom
+    (treesit-auto-install 'prompt)
+    :config
+    (treesit-auto-add-to-auto-mode-alist 'all)
+    (global-treesit-auto-mode))
+#+END_SRC
+
+** atomic-chrome
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package atomic-chrome
+    :demand t
+    :ensure (:repo "KarimAziev/atomic-chrome"
+             :host github)
+    :commands (atomic-chrome-start-server)
+    :config (atomic-chrome-start-server))
+#+END_SRC
+
+* Indent Bars
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package indent-bars
+    :demand t
+    :ensure (:repo "jdtsmith/indent-bars"
+             :host github
+             :hook ((python-mode yaml-mode emacs-lisp-mode clojure-mode make makefile-gmake-mode) . indent-bars-mode)))
+#+END_SRC
+
+* Calc
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package calc
+    :ensure nil
+    :config
+  ;; TODO Does not work (setting comma instead of dot)
+    ;;(setq calc-point-char ",")
+    ;;(setq calc-group-char ".")
+    )
+#+END_SRC
+
+* COMMENT Eat (Terminal Emulator)
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package eat
+    :demand t
+    :config
+    (setq eat-enable-shell-prompt-annotation nil)
+    (setq eat-enable-directory-tracking t)
+    (setq eat-enable-yank-to-terminal t)
+    (setq eat-enable-auto-line-mode t)
+    (setq eat-enable-kill-from-terminal t)
+  (general-define-key
+     :states 'normal
+     :keymaps '(eat-mode-map)
+     "p" 'eat-yank)
+    :ensure (:type git
+             :host codeberg
+             :repo "akib/emacs-eat"
+             :files
+             ("*.el" ("term" "term/*.el") "*.texi"
+              "*.ti" ("terminfo/e" "terminfo/e/*")
+              ("terminfo/65" "terminfo/65/*")
+              ("integration" "integration/*")
+              (:exclude ".dir-locals.el" "*-tests.el"))))
+
+#+END_SRC
+
 

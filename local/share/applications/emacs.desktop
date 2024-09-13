@@ -11,3 +11,8 @@ Keywords=Text;Editor;
 Categories=Development;TextEditor;
 StartupNotify=true
 StartupWMClass=Emacs
+[Unit]
+After=graphical-session.target
+
+[Install]
+WantedBy=graphical-session.target
