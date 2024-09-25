@@ -217,7 +217,7 @@
 (set-fringe-bitmap-face 'tilde 'fringe)
 
 (use-package challenger-deep-theme
-  :ensure (challenger-deep-theme :host github :repo "challenger-deep-theme/emacs" :branch "master")
+  :ensure (:host github :repo "challenger-deep-theme/emacs" :branch "master")
   ;;:ensure (:repo "/home/max/Documents/challenger-deep/themes/emacs")
   :init
   ;;(add-to-list 'custom-theme-load-path "/home/max/Documents/challenger-deep/themes/emacs")
@@ -1071,11 +1071,17 @@
 ;;   (add-to-list 'flycheck-checkers 'clojure-joker t)
 ;;   (add-to-list 'flycheck-checkers 'clojurescript-joker t))
 
-;;(use-package clj-refactor
-  ;;:init
-  ;;(defun my-clj-refactor-mode-hook ()
-    ;;(clj-refactor-mode 1))
-  ;;(add-hook 'clojure-mode-hook #'my-clj-refactor-mode-hook))
+(use-package inflections
+  ;; elpaca is setting the wrong version so i have to this for clj-refactor to work
+  :ensure (inflections :version (lambda (_) "2.6"))
+  )
+
+(use-package clj-refactor
+  :after (cider)
+  :init
+  (defun my-clj-refactor-mode-hook ()
+    (clj-refactor-mode 1))
+  (add-hook 'clojure-mode-hook #'my-clj-refactor-mode-hook))
 
 (use-package cider
   :init
@@ -1121,6 +1127,7 @@
     "t" 'cider-hydra-test/body
     "d" 'cider-hydra-doc/body
     "e" 'cider-hydra-eval/body
+    "a" 'eglot-code-actions
     "q" 'hydra-cljr-help-menu/body)
   (general-def 'normal '(clojure-mode-map cider-repl-mode-map cider-clojure-interaction-mode-map)
     "c" (general-key-dispatch 'evil-change
@@ -2283,13 +2290,13 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
   (require 'vlf-setup))
 
 (use-package jsonrpc)
-(use-package eldoc)
 (use-package eglot
   :after (eldoc jsonrpc)
   :init
   (add-hook 'clojure-mode-hook 'eglot-ensure)
+  ;;(remove-hook 'clojure-mode-hook 'eglot-ensue)
   :config
-  (setq eglot-connect-timeout 60))
+  (setq eglot-connect-timeout 120))
 
 (use-package langtool
   :after (general)
