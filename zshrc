@@ -65,10 +65,6 @@ fi
 # Load FZF when available
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
-# Emacs Eat integration
-[ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
-  source "$EAT_SHELL_INTEGRATION_DIR/zsh"
-
 # PATH setting
 PATH=$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/X11/bin:/usr/local/git/bin:/usr/bin/vendor_perl:/usr/bin/core_perl
 PATH=$PATH:$HOME/.rvm/bin # Add RVM to PATH for scripting
@@ -91,3 +87,27 @@ eval "$(direnv hook zsh)"
 [[ -f /home/max/.dart-cli-completion/zsh-config.zsh ]] && . /home/max/.dart-cli-completion/zsh-config.zsh || true
 ## [/Completion]
 
+## [Emacs]
+# Emacs Eat integration
+[ -n "$EAT_SHELL_INTEGRATION_DIR" ] && \
+  source "$EAT_SHELL_INTEGRATION_DIR/zsh"
+
+vterm_printf() {
+    if [ -n "$TMUX" ] && ([ "${TERM%%-*}" = "tmux" ] || [ "${TERM%%-*}" = "screen" ]); then
+        # Tell tmux to pass the escape sequences through
+        printf "\ePtmux;\e\e]%s\007\e\\" "$1"
+    elif [ "${TERM%%-*}" = "screen" ]; then
+        # GNU screen (screen, screen-256color, screen-256color-bce)
+        printf "\eP\e]%s\007\e\\" "$1"
+    else
+        printf "\e]%s\e\\" "$1"
+    fi
+}
+
+# Emacs Vterm integration
+vterm_prompt_end() {
+    vterm_printf "51;A$(whoami)@$(hostname):$(pwd)"
+}
+setopt PROMPT_SUBST
+PROMPT=$PROMPT'%{$(vterm_prompt_end)%}'
+## [/Emacs]

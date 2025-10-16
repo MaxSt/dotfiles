@@ -27,13 +27,13 @@
 
 * Elpaca
 ** Bootstrap
-#+begin_src elisp :tangle init.el
-  (defvar elpaca-installer-version 0.7)
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (defvar elpaca-installer-version 0.11)
   (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
   (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
   (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
   (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                                :ref nil :depth 1
+                                :ref nil :depth 1 :inherit ignore
                                 :files (:defaults "elpaca-test.el" (:exclude "extensions"))
                                 :build (:not elpaca--activate-package)))
   (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
@@ -43,27 +43,27 @@
     (add-to-list 'load-path (if (file-exists-p build) build repo))
     (unless (file-exists-p repo)
       (make-directory repo t)
-      (when (< emacs-major-version 28) (require 'subr-x))
+      (when (<= emacs-major-version 28) (require 'subr-x))
       (condition-case-unless-debug err
-          (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                   ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                   ,@(when-let ((depth (plist-get order :depth)))
-                                                       (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                   ,(plist-get order :repo) ,repo))))
-                   ((zerop (call-process "git" nil buffer t "checkout"
-                                         (or (plist-get order :ref) "--"))))
-                   (emacs (concat invocation-directory invocation-name))
-                   ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                         "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                   ((require 'elpaca))
-                   ((elpaca-generate-autoloads "elpaca" repo)))
+          (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                    ,@(when-let* ((depth (plist-get order :depth)))
+                                                        (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                    ,(plist-get order :repo) ,repo))))
+                    ((zerop (call-process "git" nil buffer t "checkout"
+                                          (or (plist-get order :ref) "--"))))
+                    (emacs (concat invocation-directory invocation-name))
+                    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                          "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                    ((require 'elpaca))
+                    ((elpaca-generate-autoloads "elpaca" repo)))
               (progn (message "%s" (buffer-string)) (kill-buffer buffer))
             (error "%s" (with-current-buffer buffer (buffer-string))))
         ((error) (warn "%s" err) (delete-directory repo 'recursive))))
     (unless (require 'elpaca-autoloads nil t)
       (require 'elpaca)
       (elpaca-generate-autoloads "elpaca" repo)
-      (load "./elpaca-autoloads")))
+      (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
   (add-hook 'after-init-hook #'elpaca-process-queues)
   (elpaca `(,@elpaca-order))
 #+end_src
@@ -205,74 +205,79 @@ previously compiled manually then all of the package initialization will still t
 * Defaults
 ** global
 #+BEGIN_SRC emacs-lisp :tangle init.el
-  (setq
-   inhibit-startup-screen t
-   x-select-enable-clipboard t
+    (setq
+     inhibit-startup-screen t
+     x-select-enable-clipboard t
 
-   ;; Save whatever’s in the current (system) clipboard before
-   ;; replacing it with the Emacs’ text.
-   ;; https://github.com/dakrone/eos/blob/master/eos.org
-   save-interprogram-paste-before-kill t
+     ;; Save whatever’s in the current (system) clipboard before
+     ;; replacing it with the Emacs’ text.
+     ;; https://github.com/dakrone/eos/blob/master/eos.org
+     save-interprogram-paste-before-kill t
 
-   column-number-mode t
+     column-number-mode t
 
-   ;; faster scrolling (see https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag/28746)
-   auto-window-vscroll nil
+     ;; faster scrolling (see https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag/28746)
+     auto-window-vscroll nil
 
-   ;; scroll line by line (https://www.gnu.org/software/emacs/manual/html_node/efaq/Scrolling-only-one-line.html)
-   scroll-conservatively most-positive-fixnum
+     ;; Non-nil means that built-in packages can be upgraded via a package archive.
+     ;; If disabled, then package-install will not suggest to replace a
+     ;; built-in package with a (possibly newer) version from a package archive.
+     ; ;package-install-upgrade-built-in t
 
-   tab-stop-list (number-sequence 2 120 2))
-  ;; relative line numbers
-  ;; The problem with 'visual is that it does not play very nice with
-  ;; visual-fill-column, because it shows a line number for a wrapped line.
-  ;; The problem with 'relative is, that it does not work for folded org-mode headers.
-  ;;(setq-default display-line-numbers 'visual)
-  (setq-default display-line-numbers nil)
-  ;; make current line 0
-  (setq display-line-numbers-current-absolute nil)
-  (setq display-line-numbers-widen t)
-  (setq-default fill-column 80)
-  (setq-default truncate-lines nil) ; line wrap
-  (setq-default indent-tabs-mode nil
-                tab-width 2)
-  (defvaralias 'c-basic-offset 'tab-width)
-  ;; the blinking cursor is nothing, but an annoyance
-  (blink-cursor-mode -1)
-  (setq-default
-   indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
-   indicate-empty-lines nil        ; don't show empty lines
-   fringes-outside-margins t       ; switches order of fringe and margin
-   ;; Keep cursors and highlights in current window only
-   cursor-in-non-selected-windows nil
-   highlight-nonselected-windows nil
-   ;; Disable bidirectional text support for slight performance bonus
-   bidi-display-reordering nil
-   bidi-paragraph-direction nil
-   ;; Remove continuation arrow on right fringe
-   ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
-   ;;                              fringe-indicator-alist)
-   blink-matching-paren nil ; don't blink--too distracting
-   ;;show-trailing-whitespace t ;; show trailing whitespace
-   )
-  ;; always show keyboard on touch screen
-  (setq touch-screen-display-keyboard t)
-   ;; turn off ad-redefinition warnings
-  (setq ad-redefinition-action 'accept)
-  ;; disable the annoying bell ring
-  (setq ring-bell-function 'ignore)
-  ;; reduce the frequency of garbage collection by making it happen on
-  ;; each 50MB of allocated data (the default is on every 0.76MB)
-  ;; (setq gc-cons-threshold 50000000)
-  ;; enable y/n answers
-  (fset 'yes-or-no-p 'y-or-n-p)
-  ;; revert buffers automatically when underlying files are changed externally
-  (global-auto-revert-mode t)
-  (prefer-coding-system 'utf-8)
-  (set-default-coding-systems 'utf-8)
-  (set-terminal-coding-system 'utf-8)
-  (set-keyboard-coding-system 'utf-8)
-  (global-hl-line-mode t) ;; highlight current line
+     ;; scroll line by line (https://www.gnu.org/software/emacs/manual/html_node/efaq/Scrolling-only-one-line.html)
+     scroll-conservatively most-positive-fixnum
+
+     tab-stop-list (number-sequence 2 120 2))
+    ;; relative line numbers
+    ;; The problem with 'visual is that it does not play very nice with
+    ;; visual-fill-column, because it shows a line number for a wrapped line.
+    ;; The problem with 'relative is, that it does not work for folded org-mode headers.
+    ;;(setq-default display-line-numbers 'visual)
+    (setq-default display-line-numbers nil)
+    ;; make current line 0
+    (setq display-line-numbers-current-absolute nil)
+    (setq display-line-numbers-widen t)
+    (setq-default fill-column 80)
+    (setq-default truncate-lines nil) ; line wrap
+    (setq-default indent-tabs-mode nil
+                  tab-width 2)
+    (defvaralias 'c-basic-offset 'tab-width)
+    ;; the blinking cursor is nothing, but an annoyance
+    (blink-cursor-mode -1)
+    (setq-default
+     indicate-buffer-boundaries nil  ; don't show where buffer starts/ends
+     indicate-empty-lines nil        ; don't show empty lines
+     fringes-outside-margins t       ; switches order of fringe and margin
+     ;; Keep cursors and highlights in current window only
+     cursor-in-non-selected-windows nil
+     highlight-nonselected-windows nil
+     ;; Disable bidirectional text support for slight performance bonus
+     bidi-display-reordering nil
+     bidi-paragraph-direction nil
+     ;; Remove continuation arrow on right fringe
+     ;; fringe-indicator-alist (delq (assq 'continuation fringe-indicator-alist)
+     ;;                              fringe-indicator-alist)
+     blink-matching-paren nil ; don't blink--too distracting
+     ;;show-trailing-whitespace t ;; show trailing whitespace
+     )
+    ;; always show keyboard on touch screen
+    (setq touch-screen-display-keyboard t)
+     ;; turn off ad-redefinition warnings
+    (setq ad-redefinition-action 'accept)
+    ;; disable the annoying bell ring
+    (setq ring-bell-function 'ignore)
+    ;; reduce the frequency of garbage collection by making it happen on
+    ;; each 50MB of allocated data (the default is on every 0.76MB)
+    ;; (setq gc-cons-threshold 50000000)
+    ;; enable y/n answers
+    (fset 'yes-or-no-p 'y-or-n-p)
+    ;; revert buffers automatically when underlying files are changed externally
+    (global-auto-revert-mode t)
+    (prefer-coding-system 'utf-8)
+    (set-default-coding-systems 'utf-8)
+    (set-terminal-coding-system 'utf-8)
+    (set-keyboard-coding-system 'utf-8)
+    (global-hl-line-mode t) ;; highlight current line
 #+END_SRC
 ** flyspell
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -282,6 +287,7 @@ previously compiled manually then all of the package initialization will still t
 
     ;; you could set `ispell-dictionary` instead but `ispell-local-dictionary' has higher priority
     (setq ispell-local-dictionary "en_US")
+  (setq ispell-alternate-dictionary "/usr/share/hunspell/en_US.dic")
 
     ;; use the hunspell -d flag to add more dictionaries
     (setq ispell-local-dictionary-alist
@@ -340,9 +346,11 @@ These are the Files creating in the current Directory for files that have not be
 #+END_SRC
 ** font
 #+BEGIN_SRC emacs-lisp :tangle init.el
-   (when (not (my/is-android-p))
-     ;;(set-default-font "Iosevka-12:spacing=110")
-     (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20")))
+         (when (not (my/is-android-p))
+           ;;(set-default-font "Iosevka-12:spacing=110")
+           ;;(add-to-list 'default-frame-alist '(font . "Share Tech Mono:pixelsize=23"))
+           (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20"))
+    )
 #+END_SRC
 ** disable menubar
 #+BEGIN_SRC emacs-lisp :tangle init.el
@@ -378,24 +386,24 @@ These are the Files creating in the current Directory for files that have not be
 
 ** Themes
 #+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
-  (use-package challenger-deep-theme
-    :ensure (:host github :repo "challenger-deep-theme/emacs" :branch "master")
-    ;;:ensure (:repo "/home/max/Documents/challenger-deep/themes/emacs")
-    :init
-    ;;(add-to-list 'custom-theme-load-path "/home/max/Documents/challenger-deep/themes/emacs")
-    (if (daemonp)
-        (add-hook 'server-after-make-frame-hook (lambda () (load-theme 'challenger-deep t)))
-      (load-theme 'challenger-deep t))
-    :config
-    (set-face-attribute 'window-divider nil :foreground "#1b182c")
-    (set-face-attribute 'window-divider-first-pixel nil :foreground "#1b182c")
-    (set-face-attribute 'window-divider-last-pixel nil :foreground "#1b182c")
-    (set-face-attribute 'org-level-1 nil :background "#2b2942")
-    (set-face-attribute 'org-level-2 nil :background "#2b2942" :foreground (face-attribute 'warning :foreground))
-    (set-face-attribute 'org-level-3 nil :background "#2b2942" :foreground (face-attribute 'error :foreground))
-    (set-face-attribute 'org-level-4 nil :background "#2b2942" :foreground (face-attribute 'success :foreground))
-    (set-face-attribute 'org-level-5 nil :background "#2b2942" :foreground (face-attribute 'org-special-keyword :foreground))
-    (set-face-attribute 'org-level-6 nil :background "#2b2942" :foreground (face-attribute 'org-table :foreground)))
+    (use-package challenger-deep-theme
+      :ensure (:host github :repo "challenger-deep-theme/emacs" :branch "master")
+      ;;:ensure (:repo "/home/max/Documents/challenger-deep/themes/emacs")
+      :init
+      ;;(add-to-list 'custom-theme-load-path "/home/max/Documents/challenger-deep/themes/emacs")
+      (if (daemonp)
+          (add-hook 'server-after-make-frame-hook (lambda () (load-theme 'challenger-deep t)))
+        (load-theme 'challenger-deep t))
+      :config
+      (set-face-attribute 'window-divider nil :foreground "#1b182c")
+      (set-face-attribute 'window-divider-first-pixel nil :foreground "#1b182c")
+      (set-face-attribute 'window-divider-last-pixel nil :foreground "#1b182c")
+      (set-face-attribute 'org-level-1 nil :background "#2b2942")
+      (set-face-attribute 'org-level-2 nil :background "#2b2942" :foreground (face-attribute 'warning :foreground))
+      (set-face-attribute 'org-level-3 nil :background "#2b2942" :foreground (face-attribute 'error :foreground))
+      (set-face-attribute 'org-level-4 nil :background "#2b2942" :foreground (face-attribute 'success :foreground))
+      (set-face-attribute 'org-level-5 nil :background "#2b2942" :foreground (face-attribute 'org-special-keyword :foreground))
+      (set-face-attribute 'org-level-6 nil :background "#2b2942" :foreground (face-attribute 'org-table :foreground)))
 #+end_src
 
 ** all the icons
@@ -814,6 +822,7 @@ These are the Files creating in the current Directory for files that have not be
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package yasnippet
     :init
+    (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
     (yas-global-mode 1))
 #+END_SRC
 ** default-text-scale
@@ -831,8 +840,7 @@ These are the Files creating in the current Directory for files that have not be
 #+END_SRC
 ** hydra
 #+BEGIN_SRC emacs-lisp :tangle init.el
-    (use-package hydra)
-
+  (use-package hydra)
   (with-eval-after-load 'hydra
             (defhydra hydra-window-resize ()
               "Window resizing"
@@ -1301,14 +1309,17 @@ enable narrowing
     )
 #+end_src
 ** Exec-path
-#+BEGIN_SRC emacs-lisp :tangle init.el
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
   (use-package exec-path-from-shell
       :config
+      (exec-path-from-shell-initialize)
       (when (memq window-system '(mac ns x))
         (exec-path-from-shell-copy-env "PGUSER")
         (exec-path-from-shell-copy-env "PGPASSWORD")
-        (exec-path-from-shell-initialize)))
+        ;(exec-path-from-shell-copy-env "PATH")
+        ))
 #+END_SRC
+
 ** COMMENT Shackle
 #+BEGIN_SRC emacs-lisp :tangle init.el
 
@@ -1468,7 +1479,7 @@ enable narrowing
 
   (defun clj-dev-go ()
     (interactive)
-    (cider-interactive-eval "(go)" nil nil `(("ns" "user"))))
+    (cider-interactive-eval "(refresh)(go)" nil nil `(("ns" "user"))))
 
 
 #+end_src
@@ -1533,7 +1544,7 @@ enable narrowing
 #+END_SRC
 
 ** Magit
-#+BEGIN_SRC emacs-lisp :tangle init.el
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
   (use-package transient)
   (use-package magit-section
     :after magit)
@@ -2507,7 +2518,7 @@ http://oremacs.com/swiper/
   (use-package command-log-mode
     :config)
 #+end_src
-** tabbar-mode
+** COMMENT tabbar-mode
 #+BEGIN_SRC emacs-lisp :tangle init.el
   ;;(tab-bar-mode 1)
   (setq tab-bar-close-button-show nil)
@@ -2524,6 +2535,19 @@ http://oremacs.com/swiper/
   (modern-tab-bar-mode))
 
 #+end_src
+** vim-tab-bar-mode
+#+BEGIN_SRC emacs-lisp :tangle init.el
+  (use-package vim-tab-bar
+  :ensure t
+  :init
+  (setq tab-bar-show t
+        tab-bar-new-button nil
+        tab-bar-close-button-show nil)
+  :commands vim-tab-bar-mode
+  :hook
+  (after-init . vim-tab-bar-mode))
+#+end_src
+
 ** highlight-symbol
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package highlight-symbol
@@ -3067,14 +3091,19 @@ See https://www.emacswiki.org/emacs/SqlMode
 
 #+END_SRC
 ** reformatter
-#+BEGIN_SRC emacs-lisp :tangle init.el
-  (use-package reformatter
-    :config
-    (reformatter-define
-     clojure-format
-     :program "zprint"))
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+    (use-package reformatter
+      :config
+      (reformatter-define
+       clojure-format
+       :program "standard-clj"
+       :args '("fix" "-"))
+  (add-hook 'clojure-mode-hook #'clojure-format-on-save-mode)
+  )
 #+END_SRC
-** format-all
+
+
+** COMMENT format-all
 #+BEGIN_SRC emacs-lisp :tangle init.el
 (use-package format-all)
 #+END_SRC
@@ -3117,7 +3146,7 @@ Deactivated, because it makes org mode very slow.
   (use-package helpful)
  #+END_SRC
 ** COMMENT ivy-posframe
-#+BEGIN_SRC emacs-lisp :tangle init.el
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
   (use-package ivy-posframe
     :init
     (ivy-posframe-mode 1)
@@ -3128,14 +3157,35 @@ Deactivated, because it makes org mode very slow.
             (right-fringe . 8)))
     )
  #+END_SRC
-** COMMENT hydra-posframe
-#+BEGIN_SRC emacs-lisp :tangle init.el
-    (use-package hydra-posframe
-     :ensure (:host github
-                :repo "Ladicle/hydra-posframe")
-     :after hydra
-     :hook (after-init . hydra-posframe-enable))
+
+** hydra-posframe
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package hydra-posframe
+   :ensure (:host github
+            :repo "Ladicle/hydra-posframe")
+   :config (hydra-posframe-enable)
+   :after hydra)
 #+end_src
+
+
+** transient-posframe
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package transient-posframe
+    :after (transient posframe)
+    :ensure (:host github
+             :repo "yanghaoxie/transient-posframe")
+    :init (transient-posframe-mode 1))
+#+end_src
+
+** vertigo-posframe
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package vertico-posframe
+   :after vertico
+   :ensure (:host github
+            :repo "tumashu/vertico-posframe")
+   :init (vertico-posframe-mode 1))
+#+end_src
+
 ** restart-emacs
 #+BEGIN_SRC emacs-lisp :tangle init.el
   (use-package restart-emacs)
@@ -3264,27 +3314,31 @@ is much more clean and organized.
 
 ** symex
 #+BEGIN_SRC emacs-lisp :tangle init.el
-        (use-package symex
-          :after (general evil)
-          :custom
-          (symex-modal-backend 'evil)
-          :config
-          (symex-initialize)
-          (general-define-key
-           :states '(normal)
-           :keymaps lisp-mode-maps
-           :prefix my-leader2
-           "s" 'symex-mode-interface)
-           ;; (general-define-key
-           ;;  :states '(normal)
-           ;;  :keymaps lisp-mode-maps
-           ;;  "<escape>" 'symex-mode-interface)
-          ;; (general-define-key
-          ;;  :states '(insert)
-          ;;  :keymaps lisp-mode-maps
-          ;;  "<escape>" 'symex-mode-interface)
-  )
+  (use-package symex-core
+    :ensure
+    (:host github :repo "drym-org/symex.el" :files ("symex-core/symex*.el")))
 
+  (use-package symex
+    :ensure (:host github :repo "drym-org/symex.el" :files ("symex/symex*.el" "symex/doc/*.texi" "symex/doc/figures"))
+    :after (general evil symex-core)
+    :custom
+    (symex-modal-backend 'evil)
+    :config
+    (symex-initialize)
+    (general-define-key
+     :states '(normal)
+     :keymaps lisp-mode-maps
+     :prefix my-leader2
+     "s" 'symex-mode-interface)
+    ;; (general-define-key
+    ;;  :states '(normal)
+    ;;  :keymaps lisp-mode-maps
+    ;;  "<escape>" 'symex-mode-interface)
+    ;; (general-define-key
+    ;;  :states '(insert)
+    ;;  :keymaps lisp-mode-maps
+    ;;  "<escape>" 'symex-mode-interface)
+    )
 #+end_src
 
 ** zenity-color-picker
@@ -3351,7 +3405,7 @@ is much more clean and organized.
   :ensure t)
 #+END_SRC
 
-*** Casual
+*** COMMENT Casual single
 #+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
   (use-package casual-lib
   :ensure (:repo "kickingvegas/casual-lib"
@@ -3362,6 +3416,19 @@ is much more clean and organized.
   (use-package casual-calc
   :ensure (:repo "kickingvegas/casual-calc"
            :host github))
+  (use-package casual-make
+  :ensure (:repo "kickingvegas/casual-make"
+           :host github))
+#+END_SRC
+
+*** Casual all
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package casual
+  :ensure t
+  :config
+  (require 'casual-make) ; optional
+  (keymap-set makefile-mode-map "M-m" #'casual-make-tmenu)
+  )
 #+END_SRC
 
 
@@ -3655,4 +3722,37 @@ Dirvish is an improved version of the Emacs inbuilt package Dired. It not only g
 
 #+END_SRC
 
+
+
+* Flycheck Overlay
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+  (use-package flyover
+    :demand t
+    :config
+    (setq flyover-info-icon "✅")
+    (setq flyover-warning-icon "⚠️")
+    (setq flyover-error-icon "❌")
+    ;;:hook (flycheck-mode . flyover-mode)
+    :ensure (:repo "konrad1977/flyover"
+                   :host github))
+#+END_SRC
+
+
+* Cal
+#+BEGIN_SRC emacs-lisp :tangle init.el :results value silent
+    (use-package calfw)
+    (use-package calfw-ical
+      :demand t
+      :after calfw
+      :config
+  (defun my-open-calendar ()
+    (interactive)
+  (setq calendar-week-start-day 1)
+    (cfw:open-calendar-buffer
+     :contents-sources
+     (list
+      (cfw:ical-create-source "personal" "https://nc.stoerchle.at/remote.php/dav/calendars/Max/fima-termine_shared_by_admin" "Purple")
+     )))
+      )
+#+END_SRC
 

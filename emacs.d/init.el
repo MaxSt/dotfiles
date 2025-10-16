@@ -1,9 +1,9 @@
-(defvar elpaca-installer-version 0.7)
+(defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1
+                              :ref nil :depth 1 :inherit ignore
                               :files (:defaults "elpaca-test.el" (:exclude "extensions"))
                               :build (:not elpaca--activate-package)))
 (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
@@ -13,27 +13,27 @@
   (add-to-list 'load-path (if (file-exists-p build) build repo))
   (unless (file-exists-p repo)
     (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
+    (when (<= emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
-        (if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                 ,@(when-let ((depth (plist-get order :depth)))
-                                                     (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                 ,(plist-get order :repo) ,repo))))
-                 ((zerop (call-process "git" nil buffer t "checkout"
-                                       (or (plist-get order :ref) "--"))))
-                 (emacs (concat invocation-directory invocation-name))
-                 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                 ((require 'elpaca))
-                 ((elpaca-generate-autoloads "elpaca" repo)))
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
             (progn (message "%s" (buffer-string)) (kill-buffer buffer))
           (error "%s" (with-current-buffer buffer (buffer-string))))
       ((error) (warn "%s" err) (delete-directory repo 'recursive))))
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
     (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
 (add-hook 'after-init-hook #'elpaca-process-queues)
 (elpaca `(,@elpaca-order))
 
@@ -86,6 +86,11 @@
 
  ;; faster scrolling (see https://emacs.stackexchange.com/questions/28736/emacs-pointcursor-movement-lag/28746)
  auto-window-vscroll nil
+
+ ;; Non-nil means that built-in packages can be upgraded via a package archive.
+ ;; If disabled, then package-install will not suggest to replace a
+ ;; built-in package with a (possibly newer) version from a package archive.
+ ; ;package-install-upgrade-built-in t
 
  ;; scroll line by line (https://www.gnu.org/software/emacs/manual/html_node/efaq/Scrolling-only-one-line.html)
  scroll-conservatively most-positive-fixnum
@@ -148,6 +153,7 @@
 
   ;; you could set `ispell-dictionary` instead but `ispell-local-dictionary' has higher priority
   (setq ispell-local-dictionary "en_US")
+(setq ispell-alternate-dictionary "/usr/share/hunspell/en_US.dic")
 
   ;; use the hunspell -d flag to add more dictionaries
   (setq ispell-local-dictionary-alist
@@ -189,8 +195,10 @@
 (set-frame-parameter nil 'internal-border-width 10)
 
 (when (not (my/is-android-p))
-  ;;(set-default-font "Iosevka-12:spacing=110")
-  (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20")))
+       ;;(set-default-font "Iosevka-12:spacing=110")
+       ;;(add-to-list 'default-frame-alist '(font . "Share Tech Mono:pixelsize=23"))
+       (add-to-list 'default-frame-alist '(font . "Iosevka:pixelsize=20"))
+)
 
 (scroll-bar-mode 0)
 (tool-bar-mode -1)     ; disable the tool-bar
@@ -629,6 +637,7 @@
 
 (use-package yasnippet
   :init
+  (setq yas-snippet-dirs '("~/.emacs.d/snippets"))
   (yas-global-mode 1))
 
 (use-package default-text-scale
@@ -643,7 +652,6 @@
     ("o" text-scale-decrease "out Buffer")))
 
 (use-package hydra)
-
 (with-eval-after-load 'hydra
           (defhydra hydra-window-resize ()
             "Window resizing"
@@ -1022,10 +1030,12 @@
 
 (use-package exec-path-from-shell
     :config
+    (exec-path-from-shell-initialize)
     (when (memq window-system '(mac ns x))
       (exec-path-from-shell-copy-env "PGUSER")
       (exec-path-from-shell-copy-env "PGPASSWORD")
-      (exec-path-from-shell-initialize)))
+      ;(exec-path-from-shell-copy-env "PATH")
+      ))
 
 (defun json->edn ()
   (interactive)
@@ -1156,7 +1166,7 @@
 
 (defun clj-dev-go ()
   (interactive)
-  (cider-interactive-eval "(go)" nil nil `(("ns" "user"))))
+  (cider-interactive-eval "(refresh)(go)" nil nil `(("ns" "user"))))
 
 (with-eval-after-load 'general
     (general-define-key :states 'normal
@@ -1968,19 +1978,15 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 (use-package command-log-mode
   :config)
 
-;;(tab-bar-mode 1)
-(setq tab-bar-close-button-show nil)
-(setq tab-bar-new-button-show nil)
-(setq tab-bar-position nil)
-
-(use-package modern-tab-bar
-:ensure (modern-tab-bar :host github :repo "aaronjensen/emacs-modern-tab-bar" :protocol ssh)
+(use-package vim-tab-bar
+:ensure t
 :init
 (setq tab-bar-show t
       tab-bar-new-button nil
       tab-bar-close-button-show nil)
-
-(modern-tab-bar-mode))
+:commands vim-tab-bar-mode
+:hook
+(after-init . vim-tab-bar-mode))
 
 (use-package highlight-symbol
   :init
@@ -2322,12 +2328,13 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
   (require 'langtool))
 
 (use-package reformatter
-  :config
-  (reformatter-define
-   clojure-format
-   :program "zprint"))
-
-(use-package format-all)
+    :config
+    (reformatter-define
+     clojure-format
+     :program "standard-clj"
+     :args '("fix" "-"))
+(add-hook 'clojure-mode-hook #'clojure-format-on-save-mode)
+)
 
 (setq tramp-shell-prompt-pattern "\\(?:^\\|\r\\)[^]#$%>\n]*#?[]#$%>].* *\\(^[\\[[0-9;]*[a-zA-Z] *\\)*")
 
@@ -2342,6 +2349,24 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
  (advice-add 'describe-function-1 :after #'elisp-demos-advice-describe-function-1))
 
 (use-package helpful)
+
+(use-package hydra-posframe
+ :ensure (:host github
+          :repo "Ladicle/hydra-posframe")
+ :config (hydra-posframe-enable)
+ :after hydra)
+
+(use-package transient-posframe
+  :after (transient posframe)
+  :ensure (:host github
+           :repo "yanghaoxie/transient-posframe")
+  :init (transient-posframe-mode 1))
+
+(use-package vertico-posframe
+ :after vertico
+ :ensure (:host github
+          :repo "tumashu/vertico-posframe")
+ :init (vertico-posframe-mode 1))
 
 (use-package restart-emacs)
 
@@ -2414,26 +2439,31 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 
 (use-package no-littering)
 
+(use-package symex-core
+  :ensure
+  (:host github :repo "drym-org/symex.el" :files ("symex-core/symex*.el")))
+
 (use-package symex
-        :after (general evil)
-        :custom
-        (symex-modal-backend 'evil)
-        :config
-        (symex-initialize)
-        (general-define-key
-         :states '(normal)
-         :keymaps lisp-mode-maps
-         :prefix my-leader2
-         "s" 'symex-mode-interface)
-         ;; (general-define-key
-         ;;  :states '(normal)
-         ;;  :keymaps lisp-mode-maps
-         ;;  "<escape>" 'symex-mode-interface)
-        ;; (general-define-key
-        ;;  :states '(insert)
-        ;;  :keymaps lisp-mode-maps
-        ;;  "<escape>" 'symex-mode-interface)
-)
+  :ensure (:host github :repo "drym-org/symex.el" :files ("symex/symex*.el" "symex/doc/*.texi" "symex/doc/figures"))
+  :after (general evil symex-core)
+  :custom
+  (symex-modal-backend 'evil)
+  :config
+  (symex-initialize)
+  (general-define-key
+   :states '(normal)
+   :keymaps lisp-mode-maps
+   :prefix my-leader2
+   "s" 'symex-mode-interface)
+  ;; (general-define-key
+  ;;  :states '(normal)
+  ;;  :keymaps lisp-mode-maps
+  ;;  "<escape>" 'symex-mode-interface)
+  ;; (general-define-key
+  ;;  :states '(insert)
+  ;;  :keymaps lisp-mode-maps
+  ;;  "<escape>" 'symex-mode-interface)
+  )
 
 (use-package zenity-color-picker)
 
@@ -2470,15 +2500,12 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
 (use-package literate-calc-mode
 :ensure t)
 
-(use-package casual-lib
-:ensure (:repo "kickingvegas/casual-lib"
-         :host github))
-(use-package casual-dired
-:ensure (:repo "kickingvegas/casual-dired"
-         :host github))
-(use-package casual-calc
-:ensure (:repo "kickingvegas/casual-calc"
-         :host github))
+(use-package casual
+:ensure t
+:config
+(require 'casual-make) ; optional
+(keymap-set makefile-mode-map "M-m" #'casual-make-tmenu)
+)
 
 ;; open minions minior mode menu with: minions-minor-modes-menu
   (use-package minions
@@ -2518,3 +2545,28 @@ _h_ ^+^ _l_    _n_ame    _e_ol  |
   ;;(setq calc-point-char ",")
   ;;(setq calc-group-char ".")
   )
+
+(use-package flyover
+  :demand t
+  :config
+  (setq flyover-info-icon "✅")
+  (setq flyover-warning-icon "⚠️")
+  (setq flyover-error-icon "❌")
+  ;;:hook (flycheck-mode . flyover-mode)
+  :ensure (:repo "konrad1977/flyover"
+                 :host github))
+
+(use-package calfw)
+  (use-package calfw-ical
+    :demand t
+    :after calfw
+    :config
+(defun my-open-calendar ()
+  (interactive)
+(setq calendar-week-start-day 1)
+  (cfw:open-calendar-buffer
+   :contents-sources
+   (list
+    (cfw:ical-create-source "personal" "https://nc.stoerchle.at/remote.php/dav/calendars/Max/fima-termine_shared_by_admin" "Purple")
+   )))
+    )
